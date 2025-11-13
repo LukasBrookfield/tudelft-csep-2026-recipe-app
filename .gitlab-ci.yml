@@ -1,0 +1,5 @@
+image: maven:3.9.11-amazoncorretto-25
+
+build:
+  script:
+    - mvn -B -ntp clean verify
