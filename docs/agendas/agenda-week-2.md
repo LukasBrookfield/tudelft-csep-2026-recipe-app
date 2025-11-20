@@ -24,6 +24,7 @@
         - Signature from each member (on tablet?)
         - Consensus from group to submit to gitlab 
     - How to start coding? (15 min)
+        - Checkstyle
         - How to start with Spring and JavaFX? Anyone know any good resources (maybe ask TA about this)?
         - Look at backlog for first steps
         - Add issues to gitlab repo to track tasks
