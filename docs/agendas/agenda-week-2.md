@@ -27,6 +27,7 @@
         - Checkstyle
         - How to start with Spring and JavaFX? Anyone know any good resources (maybe ask TA about this)?
         - Look at backlog for first steps
+        - UI design
         - Add issues to gitlab repo to track tasks
             - Possibly delete any redundant classes from the template
             - Database structure - data types and fields
