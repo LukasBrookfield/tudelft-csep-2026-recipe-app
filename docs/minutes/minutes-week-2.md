@@ -7,7 +7,7 @@
 | Chair | Lukas Brookfield                                      |
 | Minute Taker | Teammate 4                               |
 | Attendees | Lukas, Teammate 4, Teammate 5, Teammate 2, Teammate 3, Teammate 1 |
-| Absent | Nobody(and nobody was late)                           |
+| Absent | Nobody(nobody was late)                           |
 
 ## Agenda Items:
 
@@ -36,7 +36,7 @@
             - Teammate 3 has done the Spring self-study.
             
 * Decisions:
-  - The entire team has agreed to finish all the self studies and send a notice on discord or even a screenshot.
+  - The entire team has agreed to finish all the self-studies and send a notice on discord or even a screenshot.
 * Action points: 
   - All team members should complete the self-studies by Saturday 23:59.
 
