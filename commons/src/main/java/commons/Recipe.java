@@ -20,10 +20,17 @@ public class Recipe {
     @OneToMany(cascade = CascadeType.ALL)
     public List<Ingredient> ingredients;
 
+    @ElementCollection
     public List<String> steps;
 
     protected Recipe() {}
 
+    /**
+     * Recipe constructor
+     * @param name The name of the recipe
+     * @param ingredients A list of ingredients needed for the recipe
+     * @param steps A list of steps that you need to follow
+     */
     public Recipe(String name, List<Ingredient> ingredients, List<String> steps) {
         this.name = name;
         this.ingredients = ingredients;
@@ -45,4 +52,3 @@ public class Recipe {
         return ToStringBuilder.reflectionToString(this, MULTI_LINE_STYLE);
     }
 }
-
