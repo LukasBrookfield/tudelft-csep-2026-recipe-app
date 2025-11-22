@@ -1,18 +1,11 @@
 package commons;
 
 public enum Unit {
-    // grams
-    G,
-    // millilitres
-    ML,
-    // tablespoons
-    TBSP,
-    // teaspoons
-    TSP,
-    // a pinch
-    PINCH,
-    // a handful
-    HANDFUL,
-    // to taste
-    TO_TASTE
+    G,        // grams
+    ML,       // millilitres
+    TBSP,     // tablespoons
+    TSP,      // teaspoons
+    PINCH,    // a pinch
+    HANDFUL,  // a handful
+    TO_TASTE  // to taste
 }
