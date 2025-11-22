@@ -15,6 +15,7 @@ public class Recipe {
     @GeneratedValue(strategy = GenerationType.AUTO)
     public long id;
 
+    @Column(nullable = false)
     public String name;
 
     @OneToMany(cascade = CascadeType.ALL)
