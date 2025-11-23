@@ -25,7 +25,7 @@ public class RecipeController {
 
     /**
      * Returns all the recipes in the database
-     * @return List<Recipe>
+     * @return List of recipes
      */
     @GetMapping(path = { "", "/" })
     public List<Recipe> getAllRecipes() {

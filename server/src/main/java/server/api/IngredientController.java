@@ -26,7 +26,7 @@ public class IngredientController {
 
     /**
      * Returns all the ingredients in the database
-     * @return List<Ingredient>
+     * @return List of ingredients
      */
     @GetMapping(path = { "", "/" })
     public List<Ingredient> getAllIngredients() {
