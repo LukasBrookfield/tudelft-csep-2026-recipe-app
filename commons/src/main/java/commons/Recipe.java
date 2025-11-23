@@ -27,7 +27,7 @@ public class Recipe {
     protected Recipe() {}
 
     /**
-     * Recipe constructor
+     * Constructs a Recipe object.
      * @param name The name of the recipe
      * @param ingredients A list of ingredients needed for the recipe
      * @param steps A list of steps that you need to follow
