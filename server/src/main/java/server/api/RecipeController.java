@@ -31,4 +31,17 @@ public class RecipeController {
     public List<Recipe> getAllRecipes() {
         return repo.findAll();
     }
+
+    /**
+     * Inputs a numeric id and returns the recipe in the database that has that id
+     * @param id The id of the recipe to get
+     * @return The recipe with the corresponding id
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<Recipe> getById(@PathVariable("id") long id) {
+        if (id < 0 || !repo.existsById(id)) {
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.ok(repo.findById(id).get());
+    }
 }
