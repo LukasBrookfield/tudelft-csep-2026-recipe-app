@@ -13,13 +13,11 @@ public class Nutrition {
     @OneToOne
     private Ingredient ingredient;
 
-    private Double carbs;  // grams per 100g
+    private Double carbs;  // grams per 100g, can be null
 
-    private Double protein;  // grams per 100g
+    private Double protein;  // grams per 100g, can be null
 
-    private Double fat;  // grams per 100g
-
-    protected Nutrition() {}
+    private Double fat;  // grams per 100g, can be null
 
     /**
      * Constructs a Nutrition object
@@ -28,29 +26,32 @@ public class Nutrition {
      * @param protein Grams of protein in 100g of the ingredient
      * @param fat Grams of fat in 100g of the ingredient
      */
-    public Nutrition(Ingredient ingredient, double carbs, double protein, double fat) {
+    public Nutrition(Ingredient ingredient, Double carbs, Double protein, Double fat) {
         this.ingredient = ingredient;
         this.carbs = carbs;
         this.protein = protein;
         this.fat = fat;
     }
 
+    protected Nutrition() {}
+
     /**
      * Uses the carbs, protein and fat content to calculate the calories per 100g
      * @return The amount of calories per 100g in the ingredient
      */
-    public double getCaloriesPer100g() {
+    public Double getCaloriesPer100g() {
+        if (carbs == null || protein == null || fat == null) return null;
         return (4.0 * carbs) + (4.0 * protein) + (9.0 * fat);
     }
 
     @Override
     public boolean equals(Object obj) {
-        return EqualsBuilder.reflectionEquals(this, obj, "id");
+        return EqualsBuilder.reflectionEquals(this, obj, "id");  // excludes id
     }
 
     @Override
     public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this, "id");
+        return HashCodeBuilder.reflectionHashCode(this, "id");  // excludes id
     }
 
     @Override
