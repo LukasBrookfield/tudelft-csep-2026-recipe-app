@@ -13,16 +13,48 @@ import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 public class Recipe {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    public long id;
+    private long id;
 
     @Column(nullable = false)
-    public String name;
+    private String name;
 
-    @OneToMany(cascade = CascadeType.ALL)
-    public List<Ingredient> ingredients;
+    @ManyToMany(cascade = CascadeType.ALL)
+    private List<Ingredient> ingredients;
 
     @ElementCollection
-    public List<String> steps;
+    private List<String> steps;
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setIngredients(List<Ingredient> ingredients) {
+        this.ingredients = ingredients;
+    }
+
+    public void setSteps(List<String> steps) {
+        this.steps = steps;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public List<Ingredient> getIngredients() {
+        return ingredients;
+    }
+
+    public List<String> getSteps() {
+        return steps;
+    }
 
     protected Recipe() {}
 
