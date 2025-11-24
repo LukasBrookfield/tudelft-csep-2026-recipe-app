@@ -52,7 +52,8 @@ public class IngredientController {
     public ResponseEntity<Ingredient> add(@RequestBody Ingredient ingredient) {
 
         //no attribute is null and the name is not empty
-        if (ingredient.name == null || ingredient.name.isEmpty() || ingredient.amount == null || ingredient.unit == null){
+        if (ingredient.name == null || ingredient.name.isEmpty()
+                || ingredient.amount == null || ingredient.unit == null){
             return ResponseEntity.badRequest().build();
         }
 
