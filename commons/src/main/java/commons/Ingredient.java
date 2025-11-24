@@ -26,7 +26,7 @@ public class Ingredient {
     private List<Recipe> recipes;  // can be null
 
     @OneToOne(cascade = CascadeType.ALL)
-    private Nutrition nutrition;
+    private Nutrition nutrition;  // can be null
 
     /**
      * Constructs an Ingredient object
@@ -52,12 +52,12 @@ public class Ingredient {
 
     @Override
     public boolean equals(Object obj) {
-        return EqualsBuilder.reflectionEquals(this, obj, "id");
+        return EqualsBuilder.reflectionEquals(this, obj, "id");  // excludes id
     }
 
     @Override
     public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this, "id");
+        return HashCodeBuilder.reflectionHashCode(this, "id");  // excludes id
     }
 
     @Override
