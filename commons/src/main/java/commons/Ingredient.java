@@ -25,7 +25,7 @@ public class Ingredient {
     protected Ingredient() {}
 
     /**
-     * Ingredient constructor
+     * Constructs an Ingredient object
      * @param name Name of the ingredient
      * @param amount Amount of the ingredient
      * @param unit Unit the ingredient is in e.g. grams
