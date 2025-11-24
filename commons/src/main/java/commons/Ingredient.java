@@ -1,58 +1,115 @@
 package commons;
 
 import jakarta.persistence.*;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-
-import java.util.Objects;
-
 import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
+
+import java.util.List;
 
 @Entity
 public class Ingredient {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    public long id;
+    private long id;
 
     @Column(nullable = false)
-    public String name;
+    private String name;
 
-    public Double amount;  // can be null
+    private Double amount;  // can be null
 
     @Enumerated(EnumType.STRING)
-    public Unit unit;  // can be null
+    private Unit unit;  // can be null
 
-    protected Ingredient() {}
+    @ManyToMany(cascade = CascadeType.PERSIST)
+    private List<Recipe> recipes;  // can be null
+
+    @OneToOne(cascade = CascadeType.ALL)
+    private Nutrition nutrition;
 
     /**
      * Constructs an Ingredient object
      * @param name Name of the ingredient
      * @param amount Amount of the ingredient
      * @param unit Unit the ingredient is in e.g. grams
+     * @param recipes The recipes this ingredient belongs to
+     * @param nutrition Nutritional info of the ingredient
      */
-    public Ingredient(String name, Double amount, Unit unit) {
+    public Ingredient(String name,
+                      Double amount,
+                      Unit unit,
+                      List<Recipe> recipes,
+                      Nutrition nutrition) {
         this.name = name;
         this.amount = amount;
         this.unit = unit;
+        this.recipes = recipes;
+        this.nutrition = nutrition;
     }
 
+    protected Ingredient() {}
+
     @Override
-    public boolean equals(Object o) {
-        // this equals method doesn't compare the id so that ingredients from
-        // different recipes can be compared
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Ingredient that = (Ingredient) o;
-        return name.equals(that.name) && Objects.equals(amount, that.amount) && unit == that.unit;
+    public boolean equals(Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj, "id");
     }
 
     @Override
     public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this);
+        return HashCodeBuilder.reflectionHashCode(this, "id");
     }
 
     @Override
     public String toString() {
         return ToStringBuilder.reflectionToString(this, MULTI_LINE_STYLE);
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setAmount(Double amount) {
+        this.amount = amount;
+    }
+
+    public void setUnit(Unit unit) {
+        this.unit = unit;
+    }
+
+    public void setRecipes(List<Recipe> recipes) {
+        this.recipes = recipes;
+    }
+
+    public void setNutrition(Nutrition nutrition) {
+        this.nutrition = nutrition;
+    }
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Double getAmount() {
+        return amount;
+    }
+
+    public Unit getUnit() {
+        return unit;
+    }
+
+    public List<Recipe> getRecipes() {
+        return recipes;
+    }
+
+    public Nutrition getNutrition() {
+        return nutrition;
     }
 }
