@@ -3,10 +3,7 @@ package server.api;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import server.database.IngredientRepository;
 
 import commons.Ingredient;
@@ -44,5 +41,22 @@ public class IngredientController {
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok(repo.findById(id).get());
+    }
+
+    /**
+     * Takes an ingredient and posts it
+     * @param ingredient The ingredient
+     * @return The ingredient which has been saved
+     */
+    @PostMapping(path = { "", "/" })
+    public ResponseEntity<Ingredient> add(@RequestBody Ingredient ingredient) {
+
+        //no attribute is null and the name is not empty
+        if (ingredient.name == null || ingredient.name.isEmpty() || ingredient.amount == null || ingredient.unit == null){
+            return ResponseEntity.badRequest().build();
+        }
+
+        Ingredient saved = repo.save(ingredient);
+        return ResponseEntity.ok(saved);
     }
 }
