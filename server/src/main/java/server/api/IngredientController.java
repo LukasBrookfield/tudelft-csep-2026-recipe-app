@@ -67,7 +67,7 @@ public class IngredientController {
         //the amount of the ingredient is larger than 0
         if (ingredient.name == null || ingredient.name.isEmpty()
                 || ingredient.amount == null || ingredient.unit == null
-                || ingredient.unit.isEmpty() || ingredient.amount <= 0){
+                || ingredient.amount <= 0){
             return ResponseEntity.badRequest().build();
         }
 
