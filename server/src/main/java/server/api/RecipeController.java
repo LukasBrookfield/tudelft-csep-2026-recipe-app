@@ -2,10 +2,7 @@ package server.api;
 
 import java.util.List;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import commons.Recipe;
 import server.database.RecipeRepository;
@@ -43,5 +40,35 @@ public class RecipeController {
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok(repo.findById(id).get());
+    }
+
+    /**
+     * Receives a recipe from the client via HTTP and saves it to the database.
+     *
+     * This method validates the incoming recipe to ensure that:
+     *
+     *   The recipe name is not null or empty.
+     *   The ingredient list is not null or empty.
+     *   The steps list is not null or empty.
+     *
+     * If any of these validation checks fail, a 400 Bad Request response
+     * is returned. Otherwise, the recipe is saved to the repository and returned
+     * with a 200 OK response.
+     *
+     * @param recipe the Recipe provided in the request body
+     * @return a ResponseEntity containing the saved recipe or an error
+     *         response if validation fails
+     */
+    @PostMapping(path = { "", "/" })
+    public ResponseEntity<Recipe> add(@RequestBody Recipe recipe) {
+
+        //lists and name are not null and not empty
+        if (recipe.name == null || recipe.name.isEmpty() || recipe.ingredients == null ||
+                recipe.ingredients.isEmpty() || recipe.steps == null || recipe.steps.isEmpty()) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        Recipe saved = repo.save(recipe);
+        return ResponseEntity.ok(saved);
     }
 }
