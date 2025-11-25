@@ -40,8 +40,7 @@ public class RecipeControllerTest {
     @Test
     public void getRecipeByIdTest(){
         sut.add(recipe1);
-        sut.getById((long)1);
-        assertTrue(repo.calledMethods.contains("findById"));
+        assertEquals(sut.getById((long)0),  ResponseEntity.ok(recipe1));
     }
 
     @Test
@@ -61,8 +60,4 @@ public class RecipeControllerTest {
         assertTrue(repo.calledMethods.contains("save"));
     }
 
-    @Test
-    public void getByIdTest(){
-
-    }
 }

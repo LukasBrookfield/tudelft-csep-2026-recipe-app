@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.FluentQuery;
 import server.database.RecipeRepository;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
@@ -16,9 +17,16 @@ import java.util.function.Function;
 public class TestRecipeRepository implements RecipeRepository {
     public final List<Recipe> recipes = new ArrayList<>();
     public final List<String> calledMethods = new ArrayList<>();
+    public final HashMap<Long, Integer> longToInt= new HashMap<>();
 
     private void call(String name) {
         calledMethods.add(name);
+    }
+
+    public TestRecipeRepository() {
+        for(int i = 0; i<1000000; i++){
+            longToInt.put((long)i, i);
+        }
     }
 
     @Override
@@ -104,7 +112,6 @@ public class TestRecipeRepository implements RecipeRepository {
     @Override
     public <S extends Recipe> S save(S entity) {
         call("save");
-        entity.id = (long) recipes.size();
         recipes.add(entity);
         calledMethods.add("save");
         return entity;
@@ -118,12 +125,12 @@ public class TestRecipeRepository implements RecipeRepository {
     @Override
     public Optional<Recipe> findById(Long aLong) {
         calledMethods.add("findById");
-        return Optional.of(new Recipe(null, null, null));
+        return Optional.of(recipes.get(longToInt.get(aLong)));
     }
 
     @Override
     public boolean existsById(Long aLong) {
-        return true;
+        return recipes.contains(recipes.get(longToInt.get(aLong)));
     }
 
     @Override
