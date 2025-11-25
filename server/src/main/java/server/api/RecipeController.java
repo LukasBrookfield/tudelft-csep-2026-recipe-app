@@ -43,9 +43,21 @@ public class RecipeController {
     }
 
     /**
-     * Takes a recipe and posts it
-     * @param recipe The recipe
-     * @return The recipe which has been saved
+     * Receives a recipe from the client via HTTP and saves it to the database.
+     *
+     * This method validates the incoming recipe to ensure that:
+     *
+     *   The recipe name is not null or empty.
+     *   The ingredient list is not null or empty.
+     *   The steps list is not null or empty.
+     *
+     * If any of these validation checks fail, a 400 Bad Request response
+     * is returned. Otherwise, the recipe is saved to the repository and returned
+     * with a 200 OK response.
+     *
+     * @param recipe the Recipe provided in the request body
+     * @return a ResponseEntity containing the saved recipe or an error
+     *         response if validation fails
      */
     @PostMapping(path = { "", "/" })
     public ResponseEntity<Recipe> add(@RequestBody Recipe recipe) {
