@@ -1,17 +1,13 @@
 package client.utils;
 
 import commons.Ingredient;
-import commons.Quote;
 import commons.Recipe;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.client.Client;
-import jakarta.ws.rs.client.ClientBuilder;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.GenericType;
 import jakarta.ws.rs.core.Response;
-import org.glassfish.jersey.client.ClientConfig;
-
 import java.net.ConnectException;
 import java.util.List;
 
@@ -123,7 +119,7 @@ public class ServerUtils {
      * Sends a DELETE request to remove an ingredient at {.../api/ingredients/{id}}.
      *
      * @param id The ID of the ingredient to delete.
-     *@return boolean corresponding to the server response status
+     * @return boolean corresponding to the server response status
      * {204 -> request was successful and the response body is empty}
      */
     public boolean deleteIngredient(long id) {
