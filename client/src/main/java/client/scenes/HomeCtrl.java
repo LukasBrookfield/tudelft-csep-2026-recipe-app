@@ -3,14 +3,16 @@ package client.scenes;
 import com.google.inject.Inject;
 
 import client.utils.ServerUtils;
-import commons.Person;
-import commons.Quote;
+import commons.*;
 import jakarta.ws.rs.WebApplicationException;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Modality;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class HomeCtrl {
 
@@ -30,7 +32,7 @@ public class HomeCtrl {
     private TextField recipeSearchField;
 
     @FXML
-    private ListView<String> recipeListView;
+    private ListView<Recipe> recipeListView;
 
     @FXML
     private Button addRecipeButton;
@@ -50,7 +52,7 @@ public class HomeCtrl {
     private Label ingredientsHeaderLabel;
 
     @FXML
-    private ListView<String> ingredientListView;
+    private ListView<Ingredient> ingredientListView;
 
     @FXML
     private Button removeIngredientButton;
@@ -88,18 +90,16 @@ public class HomeCtrl {
     @FXML
     private void initialize() {
         // Dummy content
-        recipeListView.getItems().setAll(
-                "Tomato Sauce",
-                "Pizza Dough",
-                "Sebas' Stew",
-                "Potato Salad",
-                "Soup"
-        );
+        Ingredient tomato = new Ingredient("tomato", 400.0, Unit.G);
+        Ingredient oliveOil = new Ingredient("olive oil", 30.0, Unit.ML);
+        Ingredient onion = new Ingredient("onion", 100.0, Unit.G);
+        List<Ingredient> tomatoSauceIngredients = new ArrayList<>(List.of(tomato, oliveOil, onion));
+        Recipe tomatoSauce = new Recipe("Tomato Sauce", tomatoSauceIngredients,
+                List.of("Do this and that","Heat up"));
 
-        ingredientListView.getItems().setAll(
-                "100g Sugar",
-                "A pinch of Salt"
-        );
+        recipeListView.getItems().setAll(tomatoSauce);
+
+        ingredientListView.getItems().setAll(tomato, oliveOil, onion);
 
         preparationStepListView.getItems().setAll(
                 "Do this and that",
