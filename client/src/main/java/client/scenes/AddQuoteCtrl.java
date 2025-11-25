@@ -15,6 +15,7 @@
  */
 package client.scenes;
 
+import client.utils.ServerUtilsQuote;
 import com.google.inject.Inject;
 
 import client.utils.ServerUtils;
@@ -29,7 +30,7 @@ import javafx.stage.Modality;
 
 public class AddQuoteCtrl {
 
-    private final ServerUtils server;
+    private final ServerUtilsQuote server;
     private final MainCtrl mainCtrl;
 
     @FXML
@@ -42,7 +43,7 @@ public class AddQuoteCtrl {
     private TextField quote;
 
     @Inject
-    public AddQuoteCtrl(ServerUtils server, MainCtrl mainCtrl) {
+    public AddQuoteCtrl(ServerUtilsQuote server, MainCtrl mainCtrl) {
         this.mainCtrl = mainCtrl;
         this.server = server;
 

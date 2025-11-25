@@ -18,6 +18,7 @@ package client.scenes;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import client.utils.ServerUtilsQuote;
 import com.google.inject.Inject;
 
 import client.utils.ServerUtils;
@@ -32,7 +33,7 @@ import javafx.scene.control.TableView;
 
 public class QuoteOverviewCtrl implements Initializable {
 
-    private final ServerUtils server;
+    private final ServerUtilsQuote server;
     private final MainCtrl mainCtrl;
 
     private ObservableList<Quote> data;
@@ -47,7 +48,7 @@ public class QuoteOverviewCtrl implements Initializable {
     private TableColumn<Quote, String> colQuote;
 
     @Inject
-    public QuoteOverviewCtrl(ServerUtils server, MainCtrl mainCtrl) {
+    public QuoteOverviewCtrl(ServerUtilsQuote server, MainCtrl mainCtrl) {
         this.server = server;
         this.mainCtrl = mainCtrl;
     }
