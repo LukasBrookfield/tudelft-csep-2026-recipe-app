@@ -45,7 +45,7 @@ public class Nutrition {
      * Uses the carbs, protein and fat content to calculate the calories per 100g
      * @return The amount of calories per 100g in the ingredient
      */
-    public Double getCaloriesPer100g() {
+    public Double getCalories() {
         if (carbs == null || protein == null || fat == null) return null;
         return (4.0 * carbs) + (4.0 * protein) + (9.0 * fat);
     }
