@@ -1,5 +1,7 @@
 package commons;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -26,7 +28,11 @@ public class Nutrition {
      * @param protein Grams of protein in 100g of the ingredient
      * @param fat Grams of fat in 100g of the ingredient
      */
-    public Nutrition(Ingredient ingredient, Double carbs, Double protein, Double fat) {
+    @JsonCreator
+    public Nutrition(@JsonProperty("ingredient") Ingredient ingredient,
+                     @JsonProperty("carbs") Double carbs,
+                     @JsonProperty("protein") Double protein,
+                     @JsonProperty("fat") Double fat) {
         this.ingredient = ingredient;
         this.carbs = carbs;
         this.protein = protein;

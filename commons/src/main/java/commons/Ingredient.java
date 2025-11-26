@@ -1,5 +1,7 @@
 package commons;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -36,11 +38,12 @@ public class Ingredient {
      * @param recipes The recipes this ingredient belongs to
      * @param nutrition Nutritional info of the ingredient
      */
-    public Ingredient(String name,
-                      Double amount,
-                      Unit unit,
-                      List<Recipe> recipes,
-                      Nutrition nutrition) {
+    @JsonCreator
+    public Ingredient(@JsonProperty("name") String name,
+                      @JsonProperty("amount") Double amount,
+                      @JsonProperty("unit") Unit unit,
+                      @JsonProperty("recipes") List<Recipe> recipes,
+                      @JsonProperty("nutrition") Nutrition nutrition) {
         this.name = name;
         this.amount = amount;
         this.unit = unit;

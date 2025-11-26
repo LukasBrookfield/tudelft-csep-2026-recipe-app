@@ -1,5 +1,7 @@
 package commons;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -18,7 +20,7 @@ public class Recipe {
     @Column(nullable = false)
     private String name;
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.PERSIST)
     private List<Ingredient> ingredients;
 
     @ElementCollection
@@ -64,7 +66,10 @@ public class Recipe {
      * @param ingredients A list of ingredients needed for the recipe
      * @param steps A list of steps that you need to follow
      */
-    public Recipe(String name, List<Ingredient> ingredients, List<String> steps) {
+    @JsonCreator
+    public Recipe(@JsonProperty("name") String name,
+                  @JsonProperty("ingredients") List<Ingredient> ingredients,
+                  @JsonProperty("steps") List<String> steps) {
         this.name = name;
         this.ingredients = ingredients;
         this.steps = steps;
