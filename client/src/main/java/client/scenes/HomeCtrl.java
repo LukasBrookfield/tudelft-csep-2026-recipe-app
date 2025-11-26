@@ -138,6 +138,15 @@ public class HomeCtrl {
     @FXML
     private void onRemoveRecipe() {}
 
+
+    /**
+     * Generates a PDF file from the recipe information.
+     * @param file the PDF file to write to
+     * @param title the title of the recipe
+     * @param ingredients the list of ingredients belonging to the recipe
+     * @param steps the ordered list of preparation steps
+     * @throws Exception if the PDF cannot be created or written for the recipe
+     */
     private void writeRecipePDF(File file, String title, List<Ingredient> ingredients, List<String> steps) throws Exception {
 
         // Define fonts
@@ -168,6 +177,10 @@ public class HomeCtrl {
 
     }
 
+    /**
+     * Download button:
+     * Asks the user where to save the PDF, then writes the recipe PDF there.
+     */
     @FXML
     private void onDownloadRecipe() {
         String title = recipeTitleLabel.getText();
@@ -209,6 +222,10 @@ public class HomeCtrl {
     }
 
 
+    /**
+     * Print button:
+     * Creates a temporary PDF file and sends it to the OS printer.
+     */
     @FXML
     private void onPrintRecipe() {
         String title = recipeTitleLabel.getText();
