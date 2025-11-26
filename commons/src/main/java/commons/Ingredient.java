@@ -2,11 +2,7 @@ package commons;
 
 import jakarta.persistence.*;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-
 import java.util.Objects;
-
-import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
 @Entity
 public class Ingredient {
@@ -53,6 +49,6 @@ public class Ingredient {
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this, MULTI_LINE_STYLE);
+        return name + " " + amount + " " + unit;
     }
 }
