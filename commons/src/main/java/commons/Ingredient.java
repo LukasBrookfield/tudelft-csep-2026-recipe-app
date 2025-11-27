@@ -24,6 +24,10 @@ public class Ingredient {
 
     protected Ingredient() {}
 
+    /**
+     * Constructs an Ingredient object with only a name
+     * @param name Name of the ingredient
+     */
     public Ingredient(String name) {
         this.name = name;
         this.amount = null;
@@ -57,6 +61,10 @@ public class Ingredient {
         return HashCodeBuilder.reflectionHashCode(this);
     }
 
+    /**
+     * Turns an ingredient object into a string
+     * @return The ingredient in string format
+     */
     @Override
     public String toString() {
         if (amount == null && unit == null) {
