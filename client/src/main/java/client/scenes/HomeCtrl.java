@@ -89,10 +89,6 @@ public class HomeCtrl {
         this.mainCtrl = mainCtrl;
         this.server = server;
         this.user = user;
-        user.getShoppingList().add(new Ingredient("Potato", 100.0, Unit.G));
-        user.saveUser();
-        System.out.println(user.getShoppingList());
-        System.out.println(user.getFavouriteRecipes());
     }
 
     @FXML
