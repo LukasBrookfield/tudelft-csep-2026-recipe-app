@@ -4,26 +4,50 @@ import commons.Ingredient;
 import commons.Recipe;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
+import server.database.RecipeRepository;
+
 import java.util.List;
 import static commons.Unit.G;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.OK;
 
-
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class RecipeControllerTest {
 
+    //For testing with TestRecipeRepository
     private TestRecipeRepository repo;
     private RecipeController sut;
     private Recipe recipe1;
+    private Recipe recipe2;
+
+    //for testing with SpringBoot
+    @Autowired
+    @Qualifier("recipeRepository")
+    private RecipeRepository repo2;
+
+    private RecipeController sut2;
 
     @BeforeEach
     public void setUp()
     {
+        //For testing with SpringBoot
+        repo2.deleteAll();
+        sut2 = new RecipeController(repo2);
+
+        //For testing with TestRecipeRepository
         repo = new TestRecipeRepository();
         sut = new RecipeController(repo);
         Ingredient ingredient1 = new Ingredient("cucumber", 100.0, G);
+        Ingredient ingredient2 = new Ingredient("cucumber", 100.0, G);
         recipe1 = new Recipe("cucumber salad", List.of(ingredient1), List.of("add cucumbers"));
+        recipe2 = new Recipe("cucumber with salt", List.of(ingredient2), List.of("add cucumbers"));
     }
+
     @Test
     public void getAllRecipesTest(){
         sut.add(recipe1);
@@ -58,6 +82,61 @@ public class RecipeControllerTest {
     public void addRecipeDatabaseUsedTest(){
         sut.add(recipe1);
         assertTrue(repo.calledMethods.contains("save"));
+    }
+
+    @Test
+    public void deleteTest() {
+        sut2.add(recipe1);
+        sut2.add(recipe2);
+        sut2.delete(recipe1.id);
+        assertFalse(repo2.findAll().contains(recipe1));
+    }
+
+    @Test
+    public void deleteWithWrongIdTest0() {
+        sut2.add(recipe1);
+        sut2.add(recipe2);
+        var result = sut2.delete(3);
+        assertEquals(BAD_REQUEST, result.getStatusCode());
+    }
+
+    @Test
+    public void deleteAlreadyDeletedTest0() {
+        sut2.add(recipe1);
+        sut2.add(recipe2);
+        var result = sut2.delete(recipe1.id);
+        var result2 = sut2.delete(recipe1.id);
+        assertEquals(OK, result.getStatusCode());
+        assertEquals(BAD_REQUEST, result2.getStatusCode());
+    }
+
+    @Test
+    public void updateTest() {
+        sut2.add(recipe1);
+        var result = sut2.update(recipe1.id, recipe2);
+        assertEquals(OK, result.getStatusCode());
+
+        //so that recipes have the sam id (for equals)
+        recipe2.id = recipe1.id;
+        assertEquals(repo2.findById(recipe1.id).get().id, recipe2.id);
+        assertIterableEquals(repo2.findById(recipe1.id).get().steps, recipe2.steps);
+        assertEquals(repo2.findById(recipe1.id).get().name, recipe2.name);
+        assertIterableEquals(repo2.findById(recipe1.id).get().ingredients, recipe2.ingredients);
+    }
+
+    @Test
+    public void updateWrongIdTest() {
+        sut2.add(recipe1);
+        var result = sut2.update(2, recipe2);
+        assertEquals(BAD_REQUEST, result.getStatusCode());
+    }
+
+    @Test
+    public void updateWrongIngredientTest() {
+        sut2.add(recipe1);
+        Recipe recipe = new Recipe("cucumber", null, null);
+        var result = sut2.update(recipe1.id, recipe);
+        assertEquals(BAD_REQUEST, result.getStatusCode());
     }
 
 }
