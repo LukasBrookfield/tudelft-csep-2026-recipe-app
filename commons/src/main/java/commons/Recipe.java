@@ -19,10 +19,10 @@ public class Recipe {
     @Column(nullable = false)
     public String name;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @OneToMany(cascade = CascadeType.ALL)
     public List<Ingredient> ingredients;
 
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection
     public List<String> steps;
 
     protected Recipe() {}

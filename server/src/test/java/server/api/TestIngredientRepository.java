@@ -153,8 +153,7 @@ public class TestIngredientRepository implements IngredientRepository {
 
     @Override
     public void deleteById(Long aLong) {
-        calledMethods.add("deleteById");
-        ingredients.remove(longToInt.get(aLong));
+
     }
 
     @Override
