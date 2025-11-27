@@ -1,5 +1,6 @@
 package client.scenes;
 
+import client.utils.UserConfig;
 import com.google.inject.Inject;
 
 import client.utils.ServerUtils;
@@ -17,6 +18,9 @@ import java.util.List;
 public class HomeCtrl {
 
     private final ServerUtils server;
+
+    private UserConfig user;
+
     private final MainCtrl mainCtrl;
 
     // Root
@@ -81,10 +85,14 @@ public class HomeCtrl {
 
 
     @Inject
-    public HomeCtrl(ServerUtils server, MainCtrl mainCtrl) {
+    public HomeCtrl(ServerUtils server, UserConfig user, MainCtrl mainCtrl) {
         this.mainCtrl = mainCtrl;
         this.server = server;
-
+        this.user = user;
+        user.getShoppingList().add(new Ingredient("Potato", 100.0, Unit.G));
+        user.saveUser();
+        System.out.println(user.getShoppingList());
+        System.out.println(user.getFavouriteRecipes());
     }
 
     @FXML
