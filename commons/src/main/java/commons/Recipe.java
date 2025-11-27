@@ -5,6 +5,7 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
@@ -25,6 +26,16 @@ public class Recipe {
     public List<String> steps;
 
     protected Recipe() {}
+
+    /**
+     * Constructs a Recipe object with only a name
+     * @param name the name of the recipe
+     */
+    public Recipe(String name) {
+        this.name = name;
+        this.ingredients = new ArrayList<>();
+        this.steps = new ArrayList<>();
+    }
 
     /**
      * Constructs a Recipe object
