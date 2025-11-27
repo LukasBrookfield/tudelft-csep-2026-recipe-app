@@ -24,6 +24,12 @@ public class Ingredient {
 
     protected Ingredient() {}
 
+    public Ingredient(String name) {
+        this.name = name;
+        this.amount = null;
+        this.unit = null;
+    }
+
     /**
      * Constructs an Ingredient object
      * @param name Name of the ingredient
@@ -53,6 +59,44 @@ public class Ingredient {
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this, MULTI_LINE_STYLE);
+        if (amount == null && unit == null) {
+            return name;
+        }
+        if (unit == null) {
+            return amount + " " + name;
+        }
+
+        switch (unit.name()) {
+            case "G":
+            case "ML":
+                return amount + unit.name() + " " + name;
+            case "TBSP":
+                if (amount == 1) {
+                    return "1 tablespoon of " + name;
+                } else {
+                    return amount + " tablespoons of " + name;
+                }
+            case "TSP":
+                if (amount == 1) {
+                    return "1 teaspoon of " + name;
+                } else {
+                    return amount + " teaspoons of " + name;
+                }
+            case "PINCH":
+                if (amount == 1) {
+                    return "A pinch of " + name;
+                } else {
+                    return amount + " pinches of " + name;
+                }
+            case "HANDFUL":
+                if (amount == 1) {
+                    return "A handful of " + name;
+                } else {
+                    return amount + " handfuls of " + name;
+                }
+            case "TO_TASTE":
+                return name + " to taste";
+        }
+        return "";
     }
 }
