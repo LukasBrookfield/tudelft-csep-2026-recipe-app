@@ -37,7 +37,10 @@
                                 <ButtonBar prefHeight="43.0" prefWidth="2.0" HBox.hgrow="NEVER" />
                                 <HBox alignment="BOTTOM_CENTER" prefHeight="43.0" prefWidth="43.0">
                                     <children>
-                                        <Button fx:id="refreshButton" alignment="BOTTOM_CENTER" maxHeight="25.0" maxWidth="27.0" minHeight="0.0" minWidth="27.0" mnemonicParsing="false" prefHeight="0.0" prefWidth="27.0" text="⟳" textAlignment="CENTER" />
+                                        <Button fx:id="refreshButton" alignment="BOTTOM_CENTER" maxHeight="25.0" maxWidth="27.0" minHeight="0.0" minWidth="27.0" mnemonicParsing="false" prefHeight="0.0" prefWidth="27.0" text="⟳" textAlignment="CENTER">
+                                 <HBox.margin>
+                                    <Insets right="3.0" />
+                                 </HBox.margin></Button>
                                     </children>
                                 </HBox>
                             </children>
@@ -81,13 +84,16 @@
                                             </font>
                                         </Label>
                                         <Button fx:id="editRecipeTitleButton" cacheShape="false" mnemonicParsing="false" prefHeight="25.0" prefWidth="28.0" text="✎" />
+                              <Pane prefHeight="25.0" prefWidth="107.0" HBox.hgrow="ALWAYS" />
+                              <Button fx:id="downloadRecipeButton" alignment="CENTER_RIGHT" cacheShape="false" mnemonicParsing="false" onAction="#onDownloadRecipe" prefHeight="25.0" prefWidth="71.0" text="Download" />
+                              <Button fx:id="printRecipeButton" alignment="CENTER_RIGHT" cacheShape="false" mnemonicParsing="false" onAction="#onPrintRecipe" prefHeight="25.0" prefWidth="42.0" text="Print"/>
                                     </children>
                                 </HBox>
                                 <Separator prefWidth="200.0" />
                                 <Label fx:id="ingredientsHeaderLabel" text="Ingredients">
                                     <font>
                                         <Font name="System Bold" size="13.0" />
-                                    </font>
+                                    </font>w
                                 </Label>
                                 <ListView fx:id="ingredientListView" prefHeight="103.5" prefWidth="200.0" />
                                 <HBox alignment="CENTER_LEFT" prefHeight="0.0" prefWidth="395.0" spacing="5.0">
