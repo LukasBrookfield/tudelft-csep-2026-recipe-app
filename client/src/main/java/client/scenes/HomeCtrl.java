@@ -169,6 +169,13 @@ public class HomeCtrl {
 
         recipeSearchField.setDisable(value);
         recipeListView.setDisable(value);
+
+        // When going into edit mode, it automatically selects the
+        // recipe name field
+        Platform.runLater(() -> {
+            recipeTitleField.requestFocus();
+            recipeTitleField.selectAll();
+        });
     }
 
     /**
@@ -179,6 +186,15 @@ public class HomeCtrl {
         removeStepButton.getParent().setVisible(!value);
         editStepField.getParent().setVisible(value);
         removeStepButton.getParent().setMouseTransparent(value);
+        preparationStepListView.setDisable(value);
+        removeIngredientButton.getParent().setVisible(!value);
+
+        // When going into edit mode, it automatically selects the
+        // step name field
+        Platform.runLater(() -> {
+            editStepField.requestFocus();
+            editStepField.selectAll();
+        });
     }
 
     /**
@@ -189,6 +205,16 @@ public class HomeCtrl {
         removeIngredientButton.getParent().setVisible(!value);
         editIngredientNameField.getParent().setVisible(value);
         removeIngredientButton.getParent().setMouseTransparent(value);
+        ingredientListView.setDisable(value);
+        removeStepButton.getParent().setVisible(!value);
+        editIngredientNameField.requestFocus();
+
+        // When going into edit mode, it automatically selects the
+        // ingredient name field
+        Platform.runLater(() -> {
+            editIngredientNameField.requestFocus();
+            editIngredientNameField.selectAll();
+        });
     }
 
     /**
