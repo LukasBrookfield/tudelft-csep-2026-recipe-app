@@ -154,7 +154,7 @@
 * Teammate 3 will create a milestone for next week to handle:
 
   * Making the home window look nicer.
-  * Adding a welcome image.
+  * Warnings in UI when missing values.
 
 ---
 
