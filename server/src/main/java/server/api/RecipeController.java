@@ -1,5 +1,6 @@
 package server.api;
 
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -129,8 +130,14 @@ public class RecipeController {
         }else{
             Recipe recipeToUpdate = repo.findById(id).get();
             recipeToUpdate.name = updatedRecipe.name;
-            recipeToUpdate.ingredients = updatedRecipe.ingredients;
-            recipeToUpdate.steps = updatedRecipe.steps;
+
+            // Replace collections safely
+            recipeToUpdate.ingredients.clear();
+            recipeToUpdate.ingredients.addAll(updatedRecipe.ingredients);
+
+            recipeToUpdate.steps.clear();
+            recipeToUpdate.steps.addAll(updatedRecipe.steps);
+
             Recipe updated = repo.save(recipeToUpdate);
             return ResponseEntity.ok(updated);
         }

@@ -8,15 +8,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
+import server.database.IngredientRepository;
 import server.database.RecipeRepository;
 
+import java.util.ArrayList;
 import java.util.List;
 import static commons.Unit.G;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.OK;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest
+@Transactional
 public class RecipeControllerTest {
 
     //For testing with TestRecipeRepository
@@ -32,11 +36,15 @@ public class RecipeControllerTest {
 
     private RecipeController sut2;
 
+    @Autowired
+    private IngredientRepository ingredientRepository; // must clear dependent table
+
     @BeforeEach
     public void setUp()
     {
         //For testing with SpringBoot
         repo2.deleteAll();
+        ingredientRepository.deleteAll();
         sut2 = new RecipeController(repo2);
 
         //For testing with TestRecipeRepository
@@ -44,8 +52,12 @@ public class RecipeControllerTest {
         sut = new RecipeController(repo);
         Ingredient ingredient1 = new Ingredient("cucumber", 100.0, G);
         Ingredient ingredient2 = new Ingredient("cucumber", 100.0, G);
-        recipe1 = new Recipe("cucumber salad", List.of(ingredient1), List.of("add cucumbers"));
-        recipe2 = new Recipe("cucumber with salt", List.of(ingredient2), List.of("add cucumbers"));
+        recipe1 = new Recipe("cucumber salad",
+                new ArrayList<>(List.of(ingredient1)),
+                new ArrayList<>(List.of("add cucumbers")));
+        recipe2 = new Recipe("cucumber with salt",
+                new ArrayList<>(List.of(ingredient2)),
+                new ArrayList<>(List.of("add cucumbers")));
     }
 
     @Test

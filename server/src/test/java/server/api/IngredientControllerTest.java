@@ -7,14 +7,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import server.database.IngredientRepository;
+import server.database.RecipeRepository;
 
 import static commons.Unit.G;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.OK;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@SpringBootTest
+@Transactional
 public class IngredientControllerTest {
     private TestIngredientRepository repo;
     private Ingredient ingredient1;
@@ -26,12 +29,16 @@ public class IngredientControllerTest {
     @Qualifier("ingredientRepository")
     private IngredientRepository repo2;
 
+    @Autowired
+    private RecipeRepository recipeRepository; // must clear dependent table
+
     private IngredientController sut2;
 
     @BeforeEach
     public void setup() {
         //for testing with SpringBoot
         repo2.deleteAll();
+        recipeRepository.deleteAll();
         sut2 = new IngredientController(repo2);
 
         //for testing with TestIngredientRepository
