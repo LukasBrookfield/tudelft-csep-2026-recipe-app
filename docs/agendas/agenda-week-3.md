@@ -19,7 +19,7 @@
 ## Assignments/completed workload (time est. ~4 minutes)
 
 - Are the self-studies done now?
-- Has everyone been able to finish their issues? If not, tell me why
+- Has everyone been able to finish their issues? If not, we will discuss it later within this meeting.
 - Did everybody understand this week's lecture?
 
 ## Announcements (time est. ~2 minutes)
@@ -31,12 +31,16 @@
 
 ## Talking points for today (mostly discussion, some voting included, time est. ~25 minutes)
 - Add density to ingredients??
-
-- What fields can be null in the database?
-
+- **What fields can be null in the database?**
 - How do we implement the serving sizes/calories per 100g?
-
 - we need to change the way we are defining the ingredients and basically have a database of ingredients and each type you add a recipe you pick an ingredient from the database (or add a new one of none is there)
-
 - Maybe make the home screen like looking the same all the time, and then multiple possible things in the main pane: generic welcome image, edit recipe mode, view recipe mode, …
 - (Most of these points were copied from a Google doc, filled in by participants. List is subject to change until meeting begins at 16:45 to 17:30.)
+
+## Issues and Problems within collaboration (if we have none, extra time may be given to Talking Points, time est. ~5 minutes)
+- If anyone hasn't completed their workload, they may raise their hand and state why (no shame in doing so)
+- Does anyone have other issues they would like to mention?
+- If not, move on to next section:
+
+## Summary of meeting and confirmation of decisions (time est. ~5 minutes)
+- Confirmation and summary of all things discussed
