@@ -201,9 +201,9 @@
 ## Issues and problems within collaboration (time est. ~5 minutes) – Actual duration: 4 min
 
 * The chair asked if anyone had any collaboration-related issues or annoyances.
-* Teammate 5 shared that he **hasn’t been able to contribute much** because he feels he is not as experienced as the others.
+* Teammate 5 shared that he hasn’t been able to contribute much because he feels he is not as experienced as the others.
 
-  * He stressed that everyone is doing an incredible job and requested that the team **help him catch up**.
+  * He stressed that everyone is doing an incredible job and requested that the team help him catch up.
 Sebas suggested we go over how everything works together next Monday at 13:45, so everyone is on the same page.
 
 * Lukas added a reminder to use **4-space indentation**.
