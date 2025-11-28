@@ -34,7 +34,7 @@
                                     </padding>
                                 </Label>
                         <HBox prefHeight="33.0" prefWidth="134.0" HBox.hgrow="ALWAYS" />
-                                <HBox alignment="CENTER_RIGHT" prefHeight="33.0" prefWidth="375.0" spacing="10.0">
+                                <HBox alignment="CENTER_RIGHT" prefHeight="33.0" prefWidth="375.0" spacing="5.0">
                                     <children>
                               <Button fx:id="downloadRecipeButton" alignment="CENTER_RIGHT" cacheShape="false" mnemonicParsing="false" onAction="#onDownloadRecipe" prefHeight="25.0" prefWidth="71.0" text="Download" />
                               <Button fx:id="printRecipeButton" alignment="CENTER_RIGHT" cacheShape="false" mnemonicParsing="false" onAction="#onPrintRecipe" prefHeight="25.0" prefWidth="42.0" text="Print" />
