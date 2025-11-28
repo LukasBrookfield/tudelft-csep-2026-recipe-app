@@ -5,6 +5,7 @@ import com.google.inject.Inject;
 
 import client.utils.ServerUtils;
 import commons.*;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -227,6 +228,10 @@ public class HomeCtrl {
                     onRefresh();
                 }
         );
+
+        // Makes it so that the 'Add Recipe' button is selected when the app gets
+        // started
+        Platform.runLater(() -> addRecipeButton.requestFocus());
     }
 
     /**
@@ -241,6 +246,9 @@ public class HomeCtrl {
 
         boolean empty = recipeListView.getItems().isEmpty();
         mainSeparator.getParent().setVisible(!empty);
+        downloadRecipeButton.setVisible(!empty);
+        printRecipeButton.setVisible(!empty);
+        refreshButton.setVisible(!empty);
 
         setLabelsAndFields();
     }
@@ -688,6 +696,10 @@ public class HomeCtrl {
      */
     @FXML
     private void onDoneEditButton() {
+        if (recipeTitleField.getText().isEmpty()) {
+            System.out.println("The recipe needs a name");
+            return;
+        }
         Recipe recipe = recipeListView.getSelectionModel().getSelectedItem();
         recipe.name = recipeTitleField.getText();
         recipe.ingredients = ingredientListView.getItems();
