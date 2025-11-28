@@ -4,21 +4,16 @@ import client.utils.UserConfig;
 import com.google.inject.Inject;
 
 import client.utils.ServerUtils;
-import com.lowagie.text.pdf.PdfDocument;
 import commons.*;
-import jakarta.ws.rs.WebApplicationException;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.control.cell.TextFieldListCell;
-import javafx.scene.input.KeyEvent;
+
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
-import javafx.stage.Modality;
 
 import java.awt.*;
 import java.io.File;
@@ -285,7 +280,9 @@ public class HomeCtrl {
      * @param steps the ordered list of preparation steps
      * @throws Exception if the content cannot be added to the document
      */
-    private void addRecipeContentToDocument(Document doc, String title, List<Ingredient> ingredients, List<String> steps) throws Exception {
+    private void addRecipeContentToDocument(Document doc,
+                                            String title, List<Ingredient> ingredients,
+                                            List<String> steps) throws Exception {
 
         // Define fonts
         Font titleFont = FontFactory.getFont(FontFactory.HELVETICA, 18, Font.BOLD);
@@ -316,7 +313,8 @@ public class HomeCtrl {
      * @param steps the ordered list of preparation steps
      * @throws Exception if the PDF cannot be created
      */
-    private void writeRecipePDF(File file, String title, List<Ingredient> ingredients, List<String> steps) throws Exception {
+    private void writeRecipePDF(File file, String title,
+                                List<Ingredient> ingredients, List<String> steps) throws Exception {
 
         Document doc = new Document();
 
@@ -376,7 +374,8 @@ public class HomeCtrl {
         chooser.setTitle("Save recipe as PDF");
 
         // This limits visible file types to *.pdf
-        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PDF files (*.pdf)", "*.pdf"));
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(
+                "PDF files (*.pdf)", "*.pdf"));
 
         // Suggest a default filename based on the recipe title
         String safeName = title.replaceAll("\\s+","_").toLowerCase();
@@ -449,10 +448,10 @@ public class HomeCtrl {
                 System.out.println("PDF not printed.");
             }
         } catch (Exception e) {
-                System.out.println("ERROR: Could not send PDF to printer.");
-                e.printStackTrace();
-            }
+            System.out.println("ERROR: Could not send PDF to printer.");
+            e.printStackTrace();
         }
+    }
     // MAYBE KEEP SOMETHING LIKE THIS FROM THE PROJECT TEMPLATE:
 //    public void keyPressed(KeyEvent e) {
 //        switch (e.getCode()) {
