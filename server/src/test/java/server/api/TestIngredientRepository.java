@@ -20,13 +20,6 @@ import static commons.Unit.G;
 public class TestIngredientRepository implements IngredientRepository {
     public final List<Ingredient> ingredients = new ArrayList<>();
     public final List<String> calledMethods = new ArrayList<>();
-    public final HashMap<Long, Integer> longToInt= new HashMap<>();
-
-    public TestIngredientRepository() {
-        for(int i = 0; i<1000000; i++){
-            longToInt.put((long)i, i);
-        }
-    }
 
     private void call(String name) {
         calledMethods.add(name);
@@ -115,6 +108,7 @@ public class TestIngredientRepository implements IngredientRepository {
 
     @Override
     public <S extends Ingredient> S save(S entity) {
+        entity.id = ingredients.size()-1;
         ingredients.add(entity);
         return entity;
     }
@@ -127,12 +121,22 @@ public class TestIngredientRepository implements IngredientRepository {
     @Override
     public Optional<Ingredient> findById(Long aLong) {
         calledMethods.add("findById");
-        return Optional.of(ingredients.get(longToInt.get(aLong)));
+        for(int i=0; i<ingredients.size(); i++){
+            if(i==aLong){
+                return Optional.of(ingredients.get(i));
+            }
+        }
+        return Optional.empty();
     }
 
     @Override
     public boolean existsById(Long aLong) {
-        return ingredients.contains(ingredients.get(longToInt.get(aLong)));
+        for(int i=0; i<ingredients.size(); i++){
+            if(i==aLong){
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -186,3 +190,5 @@ public class TestIngredientRepository implements IngredientRepository {
         return null;
     }
 }
+
+
