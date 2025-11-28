@@ -3,21 +3,21 @@ package client.scenes;
 import com.google.inject.Inject;
 
 import client.utils.ServerUtils;
-import com.lowagie.text.pdf.PdfDocument;
 import commons.*;
-import jakarta.ws.rs.WebApplicationException;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.TextFieldListCell;
-import javafx.scene.input.KeyEvent;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
-import javafx.stage.Modality;
 
+import java.awt.*;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -270,24 +270,20 @@ public class HomeCtrl {
 
     /**
      * Generates a PDF file from the recipe information.
-     * @param file the PDF file to write to
+     * @param doc the document to write to
      * @param title the title of the recipe
      * @param ingredients the list of ingredients belonging to the recipe
      * @param steps the ordered list of preparation steps
-     * @throws Exception if the PDF cannot be created or written for the recipe
+     * @throws Exception if the content cannot be added to the document
      */
-    private void writeRecipePDF(File file, String title, List<Ingredient> ingredients, List<String> steps) throws Exception {
+    private void addRecipeContentToDocument(Document doc,
+                                            String title, List<Ingredient> ingredients,
+                                            List<String> steps) throws Exception {
 
         // Define fonts
         Font titleFont = FontFactory.getFont(FontFactory.HELVETICA, 18, Font.BOLD);
         Font sectinFont = FontFactory.getFont(FontFactory.HELVETICA, 14, Font.BOLD);
         Font bodyFont = FontFactory.getFont(FontFactory.HELVETICA, 12);
-
-        // doc is the document we're building
-        Document doc = new Document();
-
-        // PdfWriter connects the doc to an OutputStream (a file in this case)
-        PdfWriter.getInstance(doc, new FileOutputStream(file));
 
         doc.open();
         doc.add(new Paragraph("Recipe: " + title, titleFont));
@@ -302,9 +298,57 @@ public class HomeCtrl {
             Object step = steps.get(i);
             doc.add(new Paragraph(String.valueOf(i + 1) + ". " + step, bodyFont));
         }
-        doc.close();
-
     }
+
+
+    /**
+     * Generates a PDF file from the previously created doc (with the recipe content).
+     * @param file the PDF to write to
+     * @param title the title of the recipe
+     * @param ingredients the list of ingredients belonging to the recipe
+     * @param steps the ordered list of preparation steps
+     * @throws Exception if the PDF cannot be created
+     */
+    private void writeRecipePDF(File file, String title,
+                                List<Ingredient> ingredients, List<String> steps) throws Exception {
+
+        Document doc = new Document();
+
+        // PdfWriter connects the doc to an OutputStream (a file in this case)
+        PdfWriter.getInstance(doc, new FileOutputStream(file));
+
+        doc.open();
+        addRecipeContentToDocument(doc, title, ingredients, steps);
+        doc.close();
+    }
+
+    /**
+     * Tries to open the PDF file in the default PDF viewer.
+     * @param file to be opened
+     */
+    private void openPdfInViewer(File file) {
+        if (file == null){
+            return;
+        }
+        try {
+            if (!Desktop.isDesktopSupported()) {
+                System.out.println("ERROR: Desktop not supported.");
+                return;
+            }
+
+            Desktop desktop = Desktop.getDesktop();
+            if (!desktop.isSupported(Desktop.Action.OPEN)) {
+                System.out.println("ERROR: Opening PDF not supported.");
+                return;
+            }
+
+            desktop.open(file);
+        } catch (IOException e) {
+            System.out.println("ERROR: Could not open PDF in viewer.");
+            e.printStackTrace();
+        }
+    }
+
 
     /**
      * Download button:
@@ -326,7 +370,8 @@ public class HomeCtrl {
         chooser.setTitle("Save recipe as PDF");
 
         // This limits visible file types to *.pdf
-        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PDF files (*.pdf)", "*.pdf"));
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(
+                "PDF files (*.pdf)", "*.pdf"));
 
         // Suggest a default filename based on the recipe title
         String safeName = title.replaceAll("\\s+","_").toLowerCase();
@@ -344,6 +389,8 @@ public class HomeCtrl {
         try{
             writeRecipePDF(file, title, ingredients, steps);
             System.out.println("Recipe saved as PDF" + file.getAbsolutePath());
+
+            openPdfInViewer(file);
         } catch (Exception e){
             System.out.println("ERROR: Could not save recipe PDF.");
             e.printStackTrace();
@@ -366,37 +413,41 @@ public class HomeCtrl {
         var ingredients = ingredientListView.getItems();
         var steps = preparationStepListView.getItems();
 
+        File tempFile;
+
         try {
             // Create a temporary PDF file
-            File tempFile = File.createTempFile("recipe", ".pdf");
+            tempFile = File.createTempFile("recipe", ".pdf");
 
             writeRecipePDF(tempFile, title, ingredients, steps);
             System.out.println("Temporary recipe PDF for printing:" + tempFile.getAbsolutePath());
+        } catch (Exception e) {
+            System.out.println("ERROR: Could not create PDF for printing.");
+            e.printStackTrace();
+            return;
+        }
 
-            // Load the PDF with the PDFBox library
-            try (PDDocument document = PDDocument.load(tempFile)) {
+        // Load the PDF with the PDFBox library
+        try (PDDocument document = PDDocument.load(tempFile)) {
+            // Create a PrinterJob (the Java printing system)
+            PrinterJob job = PrinterJob.getPrinterJob();
 
-                // Create a PrinterJob (the Java printing system)
-                PrinterJob job = PrinterJob.getPrinterJob();
+            // Wrap the PDF so the printer knows how many pages etc.
+            job.setPageable(new PDFPageable(document));
 
-                // Wrap the PDF so the printer knows how many pages etc.
-                job.setPageable(new PDFPageable(document));
-
-                // Show the print dialog (select printer, pages, etc.)
-                if (job.printDialog()) {
-                    // Print the document
-                    job.print();
-                    System.out.println("PDF sent to printer.");
-                } else {
-                    System.out.println("PDF not printed.");
-                }
-
+            // Show the print dialog (select printer, pages, etc.)
+            if (job.printDialog()) {
+                // Print the document
+                job.print();
+                System.out.println("PDF sent to printer.");
+            } else {
+                System.out.println("PDF not printed.");
             }
         } catch (Exception e) {
-                System.out.println("ERROR: Could not generate PDF for printing.");
-                e.printStackTrace();
-            }
+            System.out.println("ERROR: Could not send PDF to printer.");
+            e.printStackTrace();
         }
+    }
     // MAYBE KEEP SOMETHING LIKE THIS FROM THE PROJECT TEMPLATE:
 //    public void keyPressed(KeyEvent e) {
 //        switch (e.getCode()) {
