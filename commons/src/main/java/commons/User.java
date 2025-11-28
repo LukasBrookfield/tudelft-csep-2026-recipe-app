@@ -7,7 +7,7 @@ import java.util.List;
 import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
 public class User {
-    private List<Integer> favouriteRecipes;
+    private List<Long> favouriteRecipes;
     private List<Ingredient> shoppingList;
 
     private User() {}  // for object mapper
@@ -17,12 +17,12 @@ public class User {
      * @param favouriteRecipes A list of the ids of the user's favourite recipes
      * @param shoppingList A list of ingredients part of the user's shopping list
      */
-    public User(List<Integer> favouriteRecipes, List<Ingredient> shoppingList) {
+    public User(List<Long> favouriteRecipes, List<Ingredient> shoppingList) {
         this.favouriteRecipes = favouriteRecipes;
         this.shoppingList = shoppingList;
     }
 
-    public List<Integer> getFavouriteRecipes() {
+    public List<Long> getFavouriteRecipes() {
         return favouriteRecipes;
     }
 
@@ -30,7 +30,7 @@ public class User {
         return shoppingList;
     }
 
-    public void setFavouriteRecipes(List<Integer> favouriteRecipes) {
+    public void setFavouriteRecipes(List<Long> favouriteRecipes) {
         this.favouriteRecipes = favouriteRecipes;
     }
 
@@ -40,7 +40,7 @@ public class User {
 
     @Override
     public boolean equals(Object obj) {
-        return EqualsBuilder.reflectionEquals (this,obj);
+        return EqualsBuilder.reflectionEquals (this, obj);
     }
 
     @Override

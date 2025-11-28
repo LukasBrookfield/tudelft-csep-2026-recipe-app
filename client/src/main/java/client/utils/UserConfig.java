@@ -58,7 +58,7 @@ public class UserConfig {
         return user.getShoppingList();
     }
 
-    public List<Integer> getFavouriteRecipes() {
+    public List<Long> getFavouriteRecipes() {
         return user.getFavouriteRecipes();
     }
 }
