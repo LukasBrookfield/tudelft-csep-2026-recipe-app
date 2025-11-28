@@ -2,11 +2,7 @@ package commons;
 
 import jakarta.persistence.*;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-
 import java.util.Objects;
-
-import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
 @Entity
 public class Ingredient {
@@ -23,6 +19,16 @@ public class Ingredient {
     public Unit unit;  // can be null
 
     protected Ingredient() {}
+
+    /**
+     * Constructs an Ingredient object with only a name
+     * @param name Name of the ingredient
+     */
+    public Ingredient(String name) {
+        this.name = name;
+        this.amount = null;
+        this.unit = null;
+    }
 
     /**
      * Constructs an Ingredient object
@@ -51,8 +57,50 @@ public class Ingredient {
         return HashCodeBuilder.reflectionHashCode(this);
     }
 
+    /**
+     * Turns an ingredient object into a string
+     * @return The ingredient in string format
+     */
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this, MULTI_LINE_STYLE);
+        if (amount == null && unit == null) {
+            return name;
+        }
+        if (unit == null) {
+            return amount + " " + name;
+        }
+
+        switch (unit.name()) {
+            case "G":
+            case "ML":
+                return amount + unit.name() + " " + name;
+            case "TBSP":
+                if (amount == 1) {
+                    return "1 tablespoon of " + name;
+                } else {
+                    return amount + " tablespoons of " + name;
+                }
+            case "TSP":
+                if (amount == 1) {
+                    return "1 teaspoon of " + name;
+                } else {
+                    return amount + " teaspoons of " + name;
+                }
+            case "PINCH":
+                if (amount == 1) {
+                    return "A pinch of " + name;
+                } else {
+                    return amount + " pinches of " + name;
+                }
+            case "HANDFUL":
+                if (amount == 1) {
+                    return "A handful of " + name;
+                } else {
+                    return amount + " handfuls of " + name;
+                }
+            case "TO_TASTE":
+                return name + " to taste";
+        }
+        return "";
     }
 }
