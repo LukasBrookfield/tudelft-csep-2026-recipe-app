@@ -182,9 +182,9 @@ public class HomeCtrl {
     /**
      * Generates a PDF file from the previously created doc (with the recipe content).
      * @param file the PDF to write to
-     * @param title
-     * @param ingredients
-     * @param steps
+     * @param title the title of the recipe
+     * @param ingredients the list of ingredients belonging to the recipe
+     * @param steps the ordered list of preparation steps
      * @throws Exception if the PDF cannot be created
      */
     private void writeRecipePDF(File file, String title, List<Ingredient> ingredients, List<String> steps) throws Exception {
