@@ -207,7 +207,6 @@ public class HomeCtrl {
         removeIngredientButton.getParent().setMouseTransparent(value);
         ingredientListView.setDisable(value);
         removeStepButton.getParent().setVisible(!value);
-        editIngredientNameField.requestFocus();
 
         // When going into edit mode, it automatically selects the
         // ingredient name field
