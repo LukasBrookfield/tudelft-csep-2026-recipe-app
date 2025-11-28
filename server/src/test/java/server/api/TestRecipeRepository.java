@@ -17,17 +17,11 @@ import java.util.function.Function;
 public class TestRecipeRepository implements RecipeRepository {
     public final List<Recipe> recipes = new ArrayList<>();
     public final List<String> calledMethods = new ArrayList<>();
-    public final HashMap<Long, Integer> longToInt= new HashMap<>();
 
     private void call(String name) {
         calledMethods.add(name);
     }
 
-    public TestRecipeRepository() {
-        for(int i = 0; i<1000000; i++){
-            longToInt.put((long)i, i);
-        }
-    }
 
     @Override
     public void flush() {
@@ -111,9 +105,9 @@ public class TestRecipeRepository implements RecipeRepository {
 
     @Override
     public <S extends Recipe> S save(S entity) {
+        entity.id = recipes.size()-1;
         call("save");
         recipes.add(entity);
-        calledMethods.add("save");
         return entity;
     }
 
@@ -125,12 +119,20 @@ public class TestRecipeRepository implements RecipeRepository {
     @Override
     public Optional<Recipe> findById(Long aLong) {
         calledMethods.add("findById");
-        return Optional.of(recipes.get(longToInt.get(aLong)));
+        for(int i=0;i<recipes.size();i++){
+            if(i==aLong)
+                return Optional.of(recipes.get(i));
+        }
+        return Optional.empty();
     }
 
     @Override
     public boolean existsById(Long aLong) {
-        return recipes.contains(recipes.get(longToInt.get(aLong)));
+        for(int i=0; i<recipes.size();i++){
+            if(i==aLong)
+                return true;
+        }
+        return false;
     }
 
     @Override
