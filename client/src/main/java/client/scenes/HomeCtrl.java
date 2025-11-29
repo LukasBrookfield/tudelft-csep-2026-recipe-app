@@ -341,6 +341,13 @@ public class HomeCtrl {
         recipeListView.getSelectionModel().select(
                 recipeListView.getItems().size() - 1
         );
+
+        // Now immediately enter edit mode for this recipe
+        onEditRecipeButton();
+
+        // Also clear the placeholder so the user doesn't have to delete "New recipe"
+        recipeTitleField.clear();
+        recipeTitleField.requestFocus(); // Tells JavaFX to put the cursor inside that text field
     }
 
     /**
@@ -589,6 +596,16 @@ public class HomeCtrl {
         ingredientListView.getSelectionModel().select(
                 ingredientListView.getItems().size() - 1
         );
+
+        // Immediately open ingredient edit mode
+        onEditIngredientButton();
+
+        // Clear the placeholder so the user doesn't have to delete "New ingredient"
+        editIngredientNameField.clear();
+        editIngredientAmountField.clear();
+        editUnitBox.setValue("");
+
+        editIngredientNameField.requestFocus(); // Put the cursor in the name field
     }
 
     /**
@@ -622,6 +639,9 @@ public class HomeCtrl {
 
         cancelEditButton.setVisible(false);
         doneEditButton.setVisible(false);
+
+        // Force focus into the engrident name field
+        editIngredientNameField.requestFocus();
     }
 
     /**
@@ -704,6 +724,13 @@ public class HomeCtrl {
         preparationStepListView.getSelectionModel().select(
                 preparationStepListView.getItems().size() - 1
         );
+
+        // Immediately open step edit mode
+        onEditStepButton();
+
+        // Clear the placeholder so the user doesn't have to delete "New step"
+        editStepField.clear();
+        editStepField.requestFocus();
     }
 
     /**
@@ -726,6 +753,9 @@ public class HomeCtrl {
 
         cancelEditButton.setVisible(false);
         doneEditButton.setVisible(false);
+
+        // Force focus into the step field
+        editStepField.requestFocus();
     }
 
     /**
