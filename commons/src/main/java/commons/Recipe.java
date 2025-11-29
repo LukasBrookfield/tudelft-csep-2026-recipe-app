@@ -43,7 +43,7 @@ public class Recipe {
         this.steps = steps;
     }
 
-    protected Recipe() {}
+    private Recipe() {}
 
     @Override
     public boolean equals(Object obj) {

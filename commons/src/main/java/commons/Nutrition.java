@@ -38,7 +38,7 @@ public class Nutrition {
         this.fat = fat;
     }
 
-    protected Nutrition() {}
+    private Nutrition() {}
 
     @Override
     public boolean equals(Object obj) {

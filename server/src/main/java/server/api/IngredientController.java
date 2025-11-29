@@ -132,6 +132,13 @@ public class IngredientController {
             ingredientToUpdated.name = updatedIngredient.name;
             ingredientToUpdated.amount = updatedIngredient.amount;
             ingredientToUpdated.unit = updatedIngredient.unit;
+
+            // Replace collections safely
+            ingredientToUpdated.recipes.clear();
+            ingredientToUpdated.recipes.addAll(updatedIngredient.recipes);
+
+            ingredientToUpdated.nutrition = updatedIngredient.nutrition;
+
             Ingredient updated = repo.save(ingredientToUpdated);
             return ResponseEntity.ok(updated);
         }

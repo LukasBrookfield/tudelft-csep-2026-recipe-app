@@ -55,16 +55,16 @@ public class Ingredient {
         this.nutrition = nutrition;
     }
 
-    protected Ingredient() {}
+    private Ingredient() {}
 
     @Override
     public boolean equals(Object obj) {
-        return EqualsBuilder.reflectionEquals(this, obj, "id");  // excludes id
+        return EqualsBuilder.reflectionEquals(this, obj, "id", "recipes");  // excludes id and recipes
     }
 
     @Override
     public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this, "id");  // excludes id
+        return HashCodeBuilder.reflectionHashCode(this, "id", "recipes");  // excludes id and recipes
     }
 
     /**
