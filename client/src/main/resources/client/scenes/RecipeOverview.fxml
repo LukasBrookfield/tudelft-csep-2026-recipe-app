@@ -38,10 +38,7 @@
                                     <children>
                               <Button fx:id="downloadRecipeButton" alignment="CENTER_RIGHT" cacheShape="false" mnemonicParsing="false" onAction="#onDownloadRecipe" prefHeight="25.0" prefWidth="71.0" text="Download" />
                               <Button fx:id="printRecipeButton" alignment="CENTER_RIGHT" cacheShape="false" mnemonicParsing="false" onAction="#onPrintRecipe" prefHeight="25.0" prefWidth="42.0" text="Print" />
-                                        <Button fx:id="refreshButton" alignment="BOTTOM_CENTER" maxHeight="25.0" maxWidth="27.0" minHeight="0.0" minWidth="27.0" mnemonicParsing="false" onAction="#onRefresh" prefHeight="0.0" prefWidth="27.0" text="⟳" textAlignment="CENTER">
-                                 <HBox.margin>
-                                    <Insets right="3.0" />
-                                 </HBox.margin></Button>
+                              <Button fx:id="toggleOverviewButton" mnemonicParsing="false" onAction="#onToggleOverviewButton" text="View ingredient overview" />
                                     </children>
                            <HBox.margin>
                               <Insets right="6.5" />

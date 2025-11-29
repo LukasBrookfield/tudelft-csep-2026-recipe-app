@@ -32,7 +32,7 @@ import java.awt.print.PrinterJob;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.printing.PDFPageable;
 
-public class HomeCtrl {
+public class RecipeOverviewCtrl {
 
     private final ServerUtils server;
 
@@ -43,10 +43,6 @@ public class HomeCtrl {
     // Root
     @FXML
     private AnchorPane rootPane;
-
-    // Top bar
-    @FXML
-    private Button refreshButton;
 
     // Sidebar
     @FXML
@@ -142,8 +138,11 @@ public class HomeCtrl {
     @FXML
     private Button doneEditButton;
 
+    @FXML
+    private Button toggleOverviewButton;
+
     @Inject
-    public HomeCtrl(ServerUtils server, UserConfig user, MainCtrl mainCtrl) {
+    public RecipeOverviewCtrl(ServerUtils server, UserConfig user, MainCtrl mainCtrl) {
         this.mainCtrl = mainCtrl;
         this.server = server;
         this.user = user;
@@ -273,7 +272,6 @@ public class HomeCtrl {
         mainSeparator.getParent().setVisible(!empty);
         downloadRecipeButton.setVisible(!empty);
         printRecipeButton.setVisible(!empty);
-        refreshButton.setVisible(!empty);
 
         setLabelsAndFields();
     }
@@ -731,5 +729,10 @@ public class HomeCtrl {
         recipe.steps = preparationStepListView.getItems();
         onRefresh();
         changeViewEditMode(false);
+    }
+
+    @FXML
+    private void onToggleOverviewButton() {
+        mainCtrl.showIngredientOverview();
     }
 }
