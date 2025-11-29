@@ -18,11 +18,14 @@ public class Nutrition {
     @OneToOne
     public Ingredient ingredient;
 
-    public Double carbs;  // grams per 100g, can be null
+    // grams of carbs per 100g of the ingredient
+    public Double carbs;  // can be null
 
-    public Double protein;  // grams per 100g, can be null
+    // grams of protein per 100g of the ingredient
+    public Double protein;  // can be null
 
-    public Double fat;  // grams per 100g, can be null
+    // grams of fat per 100g of the ingredient
+    public Double fat;  // can be null
 
     /**
      * Constructs a Nutrition object
