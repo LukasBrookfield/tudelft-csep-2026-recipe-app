@@ -12,6 +12,9 @@ import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 @Entity
 public class Nutrition {
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    public long id;
+
     @OneToOne
     public Ingredient ingredient;
 
