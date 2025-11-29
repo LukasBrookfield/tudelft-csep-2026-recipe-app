@@ -261,7 +261,7 @@ Sebas suggested we go over how everything works together next Monday at 13:45, s
 ### Teammate 3
 - Implement the full search feature  
 - Make it so new recipes/ingredients/steps go straight into edit mode  
-- Replace exceptions with alerts  
+- Add up/down arrows to move steps
 
 ### Teammate 4
 - Automated change synchronization  
