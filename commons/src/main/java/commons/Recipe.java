@@ -16,10 +16,10 @@ public class Recipe {
     public String name;
 
     @ManyToMany(cascade = CascadeType.PERSIST)
-    public List<Ingredient> ingredients;  // can be null
+    public List<Ingredient> ingredients;
 
     @ElementCollection
-    public List<String> steps;  // can be null
+    public List<String> steps;
 
     /**
      * Constructs a Recipe object with only a name
