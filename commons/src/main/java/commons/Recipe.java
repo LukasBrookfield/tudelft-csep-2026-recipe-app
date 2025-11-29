@@ -3,11 +3,8 @@ package commons;
 import jakarta.persistence.*;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-
+import java.util.ArrayList;
 import java.util.List;
-
-import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
 @Entity
 public class Recipe {
@@ -24,7 +21,15 @@ public class Recipe {
     @ElementCollection
     public List<String> steps;  // can be null
 
-    protected Recipe() {}
+    /**
+     * Constructs a Recipe object with only a name
+     * @param name the name of the recipe
+     */
+    public Recipe(String name) {
+        this.name = name;
+        this.ingredients = new ArrayList<>();
+        this.steps = new ArrayList<>();
+    }
 
     /**
      * Constructs a Recipe object
@@ -38,6 +43,8 @@ public class Recipe {
         this.steps = steps;
     }
 
+    protected Recipe() {}
+
     @Override
     public boolean equals(Object obj) {
         return EqualsBuilder.reflectionEquals(this, obj, "id");
@@ -50,6 +57,6 @@ public class Recipe {
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this, MULTI_LINE_STYLE);
+        return name;
     }
 }
