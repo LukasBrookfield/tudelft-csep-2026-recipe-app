@@ -1,7 +1,5 @@
 package commons;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -15,48 +13,16 @@ import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 public class Recipe {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long id;
+    public long id;
 
     @Column(nullable = false)
-    private String name;
+    public String name;
 
     @ManyToMany(cascade = CascadeType.PERSIST)
-    private List<Ingredient> ingredients;
+    public List<Ingredient> ingredients;  // can be null
 
     @ElementCollection
-    private List<String> steps;
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public void setIngredients(List<Ingredient> ingredients) {
-        this.ingredients = ingredients;
-    }
-
-    public void setSteps(List<String> steps) {
-        this.steps = steps;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public List<Ingredient> getIngredients() {
-        return ingredients;
-    }
-
-    public List<String> getSteps() {
-        return steps;
-    }
+    public List<String> steps;  // can be null
 
     protected Recipe() {}
 
@@ -66,10 +32,7 @@ public class Recipe {
      * @param ingredients A list of ingredients needed for the recipe
      * @param steps A list of steps that you need to follow
      */
-    @JsonCreator
-    public Recipe(@JsonProperty("name") String name,
-                  @JsonProperty("ingredients") List<Ingredient> ingredients,
-                  @JsonProperty("steps") List<String> steps) {
+    public Recipe(String name, List<Ingredient> ingredients, List<String> steps) {
         this.name = name;
         this.ingredients = ingredients;
         this.steps = steps;
@@ -77,12 +40,12 @@ public class Recipe {
 
     @Override
     public boolean equals(Object obj) {
-        return EqualsBuilder.reflectionEquals(this, obj);
+        return EqualsBuilder.reflectionEquals(this, obj, "id");
     }
 
     @Override
     public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this);
+        return HashCodeBuilder.reflectionHashCode(this, "id");
     }
 
     @Override
