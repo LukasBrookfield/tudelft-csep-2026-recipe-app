@@ -33,7 +33,10 @@
                                         <Insets left="5.0" />
                                     </padding>
                                 </Label>
-                        <HBox prefHeight="33.0" prefWidth="134.0" HBox.hgrow="ALWAYS" />
+                        <HBox prefHeight="33.0" prefWidth="134.0" HBox.hgrow="ALWAYS">
+                           <children>
+                              <Button fx:id="bag" mnemonicParsing="false" onAction="#onBag" prefHeight="33.0" prefWidth="71.0" text="Bag" />
+                           </children></HBox>
                                 <HBox alignment="CENTER_RIGHT" prefHeight="33.0" prefWidth="375.0" spacing="5.0">
                                     <children>
                               <Button fx:id="downloadRecipeButton" alignment="CENTER_RIGHT" cacheShape="false" mnemonicParsing="false" onAction="#onDownloadRecipe" prefHeight="25.0" prefWidth="71.0" text="Download" />

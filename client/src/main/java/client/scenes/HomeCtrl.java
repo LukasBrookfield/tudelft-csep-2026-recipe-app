@@ -8,6 +8,9 @@ import commons.*;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -29,6 +32,9 @@ import com.lowagie.text.Paragraph;
 import com.lowagie.text.Font;
 import com.lowagie.text.FontFactory;
 import java.awt.print.PrinterJob;
+
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.printing.PDFPageable;
 
@@ -141,6 +147,10 @@ public class HomeCtrl {
 
     @FXML
     private Button doneEditButton;
+
+    //shopping list
+    @FXML
+    private Button bag;
 
     @Inject
     public HomeCtrl(ServerUtils server, UserConfig user, MainCtrl mainCtrl) {
@@ -706,5 +716,23 @@ public class HomeCtrl {
         recipe.steps = preparationStepListView.getItems();
         onRefresh();
         changeViewEditMode(false);
+    }
+
+    @FXML
+    private void onBag(){
+        Parent root;
+        try {
+            root = FXMLLoader.load(getClass().getResource("ShoppingList.fxml"));
+        }catch(Exception e){
+            System.out.println("Error loading ShoppingList.fxml");
+            return;
+        }
+
+        Stage stage = new Stage();
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.setTitle("Shopping List");
+        stage.initModality(Modality.APPLICATION_MODAL); //forbids to close the parent window before this one
+        stage.show();
     }
 }
