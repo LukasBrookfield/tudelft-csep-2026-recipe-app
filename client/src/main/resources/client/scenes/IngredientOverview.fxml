@@ -118,14 +118,14 @@
                   </Label>
                   <HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="25.0" prefWidth="437.0" spacing="5.0">
                      <children>
-                        <HBox alignment="CENTER_LEFT" prefHeight="25.0" prefWidth="195.0" spacing="5.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
+                        <HBox alignment="CENTER_LEFT" prefHeight="25.0" prefWidth="178.0" spacing="5.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
                            <children>
                               <Label text="Name:">
                                  <HBox.margin>
                                     <Insets left="5.0" />
                                  </HBox.margin>
                               </Label>
-                              <Label fx:id="nameLabel" alignment="CENTER_RIGHT" prefHeight="17.0" prefWidth="111.0">
+                              <Label fx:id="nameLabel" alignment="CENTER_RIGHT" prefHeight="17.0" prefWidth="103.0">
                                  <HBox.margin>
                                     <Insets right="5.0" />
                                  </HBox.margin>
@@ -135,7 +135,7 @@
                               <Insets />
                            </HBox.margin>
                         </HBox>
-                        <HBox alignment="CENTER_LEFT" prefHeight="25.0" prefWidth="149.0" spacing="5.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
+                        <HBox alignment="CENTER_LEFT" prefHeight="25.0" prefWidth="139.0" spacing="5.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
                            <children>
                               <Label text="Amount:">
                                  <HBox.margin>
@@ -171,13 +171,13 @@
                            <children>
                               <HBox prefHeight="25.0" prefWidth="307.0" spacing="5.0">
                                  <children>
-                                    <TextField fx:id="editNameField" prefHeight="25.0" prefWidth="265.0" promptText="Enter an ingredient name" />
-                                    <TextField fx:id="editAmountField" prefHeight="25.0" prefWidth="163.0" promptText="Amount" />
-                                    <ChoiceBox fx:id="editUnitBox" prefHeight="25.0" prefWidth="151.0" />
+                                    <TextField fx:id="editNameField" prefHeight="25.0" prefWidth="248.0" promptText="Enter an ingredient name" />
+                                    <TextField fx:id="editAmountField" prefHeight="25.0" prefWidth="160.0" promptText="Amount" />
+                                    <ChoiceBox fx:id="editUnitBox" prefHeight="25.0" prefWidth="135.0" />
                                     <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
                                        <children>
-                                          <Button fx:id="cancelEditDetailsButton" mnemonicParsing="false" onAction="#onCancelEditDetailsButton" text="Cancel" />
-                                          <Button fx:id="doneEditDetailsButton" mnemonicParsing="false" onAction="#onDoneEditDetailsButton" text="Done" />
+                                          <Button fx:id="cancelEditDetailsButton" mnemonicParsing="false" onAction="#onCancelEditDetailsButton" prefHeight="25.0" prefWidth="55.0" text="Cancel" />
+                                          <Button fx:id="doneEditDetailsButton" mnemonicParsing="false" onAction="#onDoneEditDetailsButton" prefHeight="25.0" prefWidth="50.0" text="Done" />
                                        </children>
                                     </HBox>
                                  </children>
