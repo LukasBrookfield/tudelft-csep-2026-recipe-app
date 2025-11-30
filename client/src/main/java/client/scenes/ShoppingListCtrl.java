@@ -100,6 +100,9 @@ public class ShoppingListCtrl {
         // Makes it so that the 'Add Recipe' button is selected when the app gets
         // started
         Platform.runLater(() -> addIngredientButton.requestFocus());
+
+        user.readUser();
+        ingredientListView.getItems().addAll(user.getShoppingList());
     }
 
     /**
@@ -119,6 +122,9 @@ public class ShoppingListCtrl {
         }
         int index = ingredientListView.getSelectionModel().getSelectedIndex();
         ingredientListView.getItems().remove(index);
+
+        user.setShoppingList(ingredientListView.getItems());
+        user.saveUser();
     }
 
     /**
@@ -143,11 +149,11 @@ public class ShoppingListCtrl {
      */
     @FXML
     private void onEditIngredientButton() {
-        if (ingredientListView.getItems().isEmpty()) {
+        if(ingredientListView.getItems().isEmpty()){
             System.out.println("There is no ingredient to edit.");
             return;
         }
-        if (ingredientListView.getSelectionModel().getSelectedItem() == null) {
+        if(ingredientListView.getSelectionModel().getSelectedItem() == null){
             System.out.println("There is no ingredient selected.");
             return;
         }
@@ -214,5 +220,8 @@ public class ShoppingListCtrl {
         ingredientListView.getItems().set(index, ingredient);
 
         changeIngredientViewEditMode(false);
+
+        user.setShoppingList(ingredientListView.getItems());
+        user.saveUser();
     }
 }
