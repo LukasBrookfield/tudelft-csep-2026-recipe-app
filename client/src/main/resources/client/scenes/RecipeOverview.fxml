@@ -20,7 +20,7 @@
             <children>
                 <BorderPane layoutX="194.0" layoutY="39.0" prefHeight="375.0" prefWidth="640.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <top>
-                        <HBox alignment="CENTER" prefHeight="33.0" prefWidth="518.0" BorderPane.alignment="BOTTOM_LEFT">
+                        <HBox alignment="CENTER" prefHeight="33.0" prefWidth="518.0" BorderPane.alignment="CENTER">
                             <padding>
                                 <Insets left="10.0" right="10.0" />
                             </padding>
@@ -41,7 +41,7 @@
                               <Button fx:id="toggleOverviewButton" mnemonicParsing="false" onAction="#onToggleOverviewButton" text="View ingredient overview" />
                                     </children>
                            <HBox.margin>
-                              <Insets right="6.5" />
+                              <Insets right="10.0" />
                            </HBox.margin>
                                 </HBox>
                             </children>
@@ -61,7 +61,7 @@
                               <Insets bottom="5.0" />
                            </VBox.margin></TextField>
                                 <ListView fx:id="recipeListView" prefHeight="294.0" prefWidth="190.0" VBox.vgrow="ALWAYS" />
-                                <HBox alignment="CENTER_LEFT" prefHeight="29.0" prefWidth="190.0" spacing="10.0">
+                                <HBox alignment="CENTER_LEFT" prefHeight="29.0" prefWidth="190.0" spacing="5.0">
                                     <children>
                                         <Button fx:id="removeRecipeButton" mnemonicParsing="false" onAction="#onRemoveRecipe" prefHeight="25.0" prefWidth="25.0" text="✕">
                                             <font>
@@ -86,7 +86,7 @@
                                 <Insets bottom="10.0" left="10.0" right="20.0" top="10.0" />
                             </padding>
                             <children>
-                                <HBox alignment="CENTER" prefHeight="25.0" prefWidth="410.0" spacing="2.5">
+                                <HBox alignment="CENTER" prefHeight="25.0" prefWidth="410.0" spacing="5.0">
                                     <children>
                               <StackPane alignment="CENTER_LEFT" prefHeight="25.0" prefWidth="390.0" HBox.hgrow="ALWAYS">
                                  <children>
@@ -98,7 +98,6 @@
                                     <TextField fx:id="recipeTitleField" prefHeight="25.0" prefWidth="275.0" promptText="Enter a recipe name" StackPane.alignment="CENTER_LEFT" />
                                  </children>
                               </StackPane>
-                              <HBox maxWidth="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
                               <StackPane alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="248.0" HBox.hgrow="ALWAYS">
                                  <children>
                                     <HBox alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="102.0" spacing="5.0" StackPane.alignment="CENTER_RIGHT">
