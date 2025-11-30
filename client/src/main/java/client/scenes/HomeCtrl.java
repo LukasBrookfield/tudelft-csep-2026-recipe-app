@@ -1,9 +1,12 @@
 package client.scenes;
 
+import client.MyModule;
 import client.utils.UserConfig;
+import com.google.inject.Guice;
 import com.google.inject.Inject;
 
 import client.utils.ServerUtils;
+import com.google.inject.Injector;
 import commons.*;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -718,11 +721,19 @@ public class HomeCtrl {
         changeViewEditMode(false);
     }
 
+    /**
+     * On action method for the Bag button
+     * A new window with shopping list is opened
+     */
     @FXML
     private void onBag(){
         Parent root;
         try {
-            root = FXMLLoader.load(getClass().getResource("ShoppingList.fxml"));
+            Injector injector = Guice.createInjector(new MyModule());
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("ShoppingList.fxml"));
+            loader.setControllerFactory(injector::getInstance);
+            root = loader.load();
         }catch(Exception e){
             System.out.println("Error loading ShoppingList.fxml");
             return;
