@@ -29,19 +29,4 @@ public class MainCtrl {
         primaryStage.setTitle("FoodPal");
         primaryStage.setScene(home);
     }
-
-    public void initializeShoppingList(Stage shoppingListStage, Pair<ShoppingListCtrl, Parent> shoppingList) {
-        this.shoppingListStage = shoppingListStage;
-
-        this.shoppingListCtrl = shoppingList.getKey();
-        this.shoppingList =  new Scene(shoppingList.getValue());
-
-        showShoppingList();
-        shoppingListStage.show();
-    }
-
-    public void showShoppingList() {
-        shoppingListStage.setTitle("Shopping List");
-        shoppingListStage.setScene(shoppingList);
-    }
 }

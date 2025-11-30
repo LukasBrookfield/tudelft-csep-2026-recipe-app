@@ -732,7 +732,14 @@ public class HomeCtrl {
             Injector injector = Guice.createInjector(new MyModule());
 
             FXMLLoader loader = new FXMLLoader(getClass().getResource("ShoppingList.fxml"));
-            loader.setControllerFactory(injector::getInstance);
+            loader.setControllerFactory(type -> {
+                if (type == ShoppingListCtrl.class) {
+                    return new ShoppingListCtrl(server, user);
+                }else{
+                    throw new RuntimeException();
+                }
+            });
+
             root = loader.load();
         }catch(Exception e){
             System.out.println("Error loading ShoppingList.fxml");
