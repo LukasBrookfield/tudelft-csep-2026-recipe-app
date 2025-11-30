@@ -1,6 +1,7 @@
 package server.api;
 
 import commons.Ingredient;
+import org.hibernate.collection.spi.PersistentBag;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import server.database.IngredientRepository;
 import server.database.RecipeRepository;
+
+import java.util.ArrayList;
 
 import static commons.Unit.G;
 import static org.junit.jupiter.api.Assertions.*;
@@ -45,8 +48,8 @@ public class IngredientControllerTest {
         repo = new TestIngredientRepository();
         sut = new IngredientController(repo);
 
-        ingredient1 = new Ingredient("cucumber", 100.0, G);
-        ingredient2 = new Ingredient("cucumber", 99.0, G);
+        ingredient1 = new Ingredient("cucumber", 100.0, G, new ArrayList<>(), null);
+        ingredient2 = new Ingredient("cucumber", 99.0, G, new ArrayList<>(), null);
     }
 
     @Test
@@ -78,7 +81,7 @@ public class IngredientControllerTest {
     @Test
     public void deleteWithWrongIdTest0() {
         sut2.add(ingredient1);
-        sut2.add(new Ingredient("cucumber", 99.0, G));
+        sut2.add(new Ingredient("cucumber", 99.0, G, new ArrayList<>(), null));
         var result = sut2.delete(3);
         assertEquals(BAD_REQUEST, result.getStatusCode());
     }
@@ -86,7 +89,7 @@ public class IngredientControllerTest {
     @Test
     public void deleteAlreadyDeletedTest0() {
         sut2.add(ingredient1);
-        sut2.add(new Ingredient("cucumber", 99.0, G));
+        sut2.add(new Ingredient("cucumber", 99.0, G, new ArrayList<>(), null));
         var result = sut2.delete(ingredient1.id);
         var result2 = sut2.delete(ingredient1.id);
         assertEquals(OK, result.getStatusCode());
@@ -96,7 +99,7 @@ public class IngredientControllerTest {
     @Test
     public void updateTest() {
         sut2.add(ingredient1);
-        Ingredient ingredient = new Ingredient("cucumber", 100.0, G);
+        Ingredient ingredient = new Ingredient("cucumber", 100.0, G, new ArrayList<>(), null);
         var result = sut2.update(ingredient1.id, ingredient);
         assertEquals(OK, result.getStatusCode());
         assertEquals(repo2.findById(ingredient1.id).get(), ingredient);
@@ -112,7 +115,7 @@ public class IngredientControllerTest {
     @Test
     public void updateWrongIngredientTest() {
         sut2.add(ingredient1);
-        Ingredient ingredient = new Ingredient("cucumber", 99.0, null);
+        Ingredient ingredient = new Ingredient("cucumber", 99.0, null, new ArrayList<>(), null);
         var result = sut2.update(ingredient1.id, ingredient);
         assertEquals(BAD_REQUEST, result.getStatusCode());
     }

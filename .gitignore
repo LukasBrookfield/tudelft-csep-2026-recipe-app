@@ -43,4 +43,6 @@ out/
 ### VS Code ###
 .vscode/
 
+# Extra added by team
 UserConfig.json
+h2-database.trace.db
