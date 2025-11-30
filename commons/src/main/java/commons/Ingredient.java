@@ -1,8 +1,9 @@
 package commons;
 
 import jakarta.persistence.*;
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import java.util.Objects;
+import java.util.List;
 
 @Entity
 public class Ingredient {
@@ -18,7 +19,11 @@ public class Ingredient {
     @Enumerated(EnumType.STRING)
     public Unit unit;  // can be null
 
-    protected Ingredient() {}
+    @ManyToMany(cascade = CascadeType.PERSIST)
+    public List<Recipe> recipes;  // can be null
+
+    @OneToOne(cascade = CascadeType.ALL)
+    public Nutrition nutrition;  // can be null
 
     /**
      * Constructs an Ingredient object with only a name
@@ -35,26 +40,31 @@ public class Ingredient {
      * @param name Name of the ingredient
      * @param amount Amount of the ingredient
      * @param unit Unit the ingredient is in e.g. grams
+     * @param recipes The recipes this ingredient belongs to
+     * @param nutrition Nutritional info of the ingredient
      */
-    public Ingredient(String name, Double amount, Unit unit) {
+    public Ingredient(String name,
+                      Double amount,
+                      Unit unit,
+                      List<Recipe> recipes,
+                      Nutrition nutrition) {
         this.name = name;
         this.amount = amount;
         this.unit = unit;
+        this.recipes = recipes;
+        this.nutrition = nutrition;
     }
 
+    private Ingredient() {}
+
     @Override
-    public boolean equals(Object o) {
-        // this equals method doesn't compare the id so that ingredients from
-        // different recipes can be compared
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Ingredient that = (Ingredient) o;
-        return name.equals(that.name) && Objects.equals(amount, that.amount) && unit == that.unit;
+    public boolean equals(Object obj) {
+        return EqualsBuilder.reflectionEquals(this, obj, "id", "recipes");  // excludes id and recipes
     }
 
     @Override
     public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this);
+        return HashCodeBuilder.reflectionHashCode(this, "id", "recipes");  // excludes id and recipes
     }
 
     /**

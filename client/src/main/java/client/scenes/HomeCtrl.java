@@ -1,5 +1,6 @@
 package client.scenes;
 
+import client.utils.RecipeUtils;
 import client.utils.UserConfig;
 import com.google.inject.Inject;
 
@@ -35,6 +36,8 @@ import org.apache.pdfbox.printing.PDFPageable;
 public class HomeCtrl {
 
     private final ServerUtils server;
+
+    private final RecipeUtils recipeUtils;
 
     private UserConfig user;
 
@@ -143,9 +146,13 @@ public class HomeCtrl {
     private Button doneEditButton;
 
     @Inject
-    public HomeCtrl(ServerUtils server, UserConfig user, MainCtrl mainCtrl) {
+    public HomeCtrl(ServerUtils server,
+                    RecipeUtils recipeUtils,
+                    UserConfig user,
+                    MainCtrl mainCtrl) {
         this.mainCtrl = mainCtrl;
         this.server = server;
+        this.recipeUtils = recipeUtils;
         this.user = user;
     }
 
