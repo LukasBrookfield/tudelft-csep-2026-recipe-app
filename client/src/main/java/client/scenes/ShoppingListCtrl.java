@@ -100,7 +100,7 @@ public class ShoppingListCtrl {
         // Makes it so that the 'Add Recipe' button is selected when the app gets
         // started
         Platform.runLater(() -> addIngredientButton.requestFocus());
-        
+
         ingredientListView.getItems().addAll(user.getShoppingList());
     }
 
@@ -123,6 +123,7 @@ public class ShoppingListCtrl {
         ingredientListView.getItems().remove(index);
 
         user.setShoppingList(ingredientListView.getItems());
+        user.saveUser();
     }
 
     /**
@@ -220,5 +221,6 @@ public class ShoppingListCtrl {
         changeIngredientViewEditMode(false);
 
         user.setShoppingList(ingredientListView.getItems());
+        user.saveUser();
     }
 }

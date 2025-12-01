@@ -1,13 +1,11 @@
 package client.scenes;
 
-import client.MyModule;
+
 import client.utils.RecipeUtils;
 import client.utils.UserConfig;
-import com.google.inject.Guice;
 import com.google.inject.Inject;
 
 import client.utils.ServerUtils;
-import com.google.inject.Injector;
 import commons.*;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -866,7 +864,6 @@ public class HomeCtrl {
     private void onBag(){
         Parent root;
         try {
-            Injector injector = Guice.createInjector(new MyModule());
 
             FXMLLoader loader = new FXMLLoader(getClass().getResource("ShoppingList.fxml"));
             loader.setControllerFactory(type -> {
