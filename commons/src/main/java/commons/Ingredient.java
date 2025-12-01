@@ -3,7 +3,6 @@ package commons;
 import jakarta.persistence.*;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import java.util.List;
 
 @Entity
 public class Ingredient {
@@ -19,38 +18,38 @@ public class Ingredient {
     @Enumerated(EnumType.STRING)
     public Unit unit;  // can be null
 
-    @ManyToMany(cascade = CascadeType.PERSIST)
-    public List<Recipe> recipes;  // can be null
+    @ManyToOne(cascade = CascadeType.PERSIST, optional = false)
+    public Recipe recipe;
 
     /**
      * Constructs an Ingredient object
      * @param ingredientType Type of ingredient
      * @param amount Amount of the ingredient
      * @param unit Unit the ingredient is in e.g. grams
-     * @param recipes The recipes this ingredient belongs to
+     * @param recipe The recipe this ingredient belongs to
      */
     public Ingredient(IngredientType ingredientType,
                       Double amount,
                       Unit unit,
-                      List<Recipe> recipes) {
+                      Recipe recipe) {
         this.ingredientType = ingredientType;
         this.amount = amount;
         this.unit = unit;
-        this.recipes = recipes;
+        this.recipe = recipe;
     }
 
-    private Ingredient() {}
+    private Ingredient() {}  // for object mapper
 
     @Override
     public boolean equals(Object obj) {
         return EqualsBuilder.reflectionEquals(this, obj,
-                "id", "recipes");  // excludes id and recipes
+                "id", "recipe");  // excludes id and recipes
     }
 
     @Override
     public int hashCode() {
         return HashCodeBuilder.reflectionHashCode(this,
-                "id", "recipes");  // excludes id and recipes
+                "id", "recipe");  // excludes id and recipes
     }
 
     @Override

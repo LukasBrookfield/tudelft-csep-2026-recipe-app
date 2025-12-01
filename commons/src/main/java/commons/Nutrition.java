@@ -33,7 +33,7 @@ public class Nutrition {
         this.fat = fat;
     }
 
-    private Nutrition() {}
+    private Nutrition() {}  // for object mapper
 
     @Override
     public boolean equals(Object obj) {

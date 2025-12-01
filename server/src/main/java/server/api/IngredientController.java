@@ -105,8 +105,7 @@ public class IngredientController {
             ingredientToUpdate.ingredientType = updatedIngredient.ingredientType;
             ingredientToUpdate.amount = updatedIngredient.amount;
             ingredientToUpdate.unit = updatedIngredient.unit;
-            ingredientToUpdate.recipes.clear();
-            ingredientToUpdate.recipes.addAll(updatedIngredient.recipes);
+            ingredientToUpdate.recipe = updatedIngredient.recipe;
 
             Ingredient updated = repo.save(ingredientToUpdate);
             return ResponseEntity.ok(updated);

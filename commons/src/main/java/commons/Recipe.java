@@ -15,7 +15,7 @@ public class Recipe {
     @Column(nullable = false)
     public String name;
 
-    @ManyToMany(cascade = CascadeType.PERSIST)
+    @OneToMany(cascade = CascadeType.ALL)
     public List<Ingredient> ingredients;
 
     @ElementCollection
@@ -23,7 +23,7 @@ public class Recipe {
 
     /**
      * Constructs a Recipe object with only a name
-     * @param name the name of the recipe
+     * @param name The name of the recipe
      */
     public Recipe(String name) {
         this.name = name;
@@ -43,16 +43,16 @@ public class Recipe {
         this.steps = steps;
     }
 
-    private Recipe() {}
+    private Recipe() {}  // for object mapper
 
     @Override
     public boolean equals(Object obj) {
-        return EqualsBuilder.reflectionEquals(this, obj, "id");
+        return EqualsBuilder.reflectionEquals(this, obj, "id");  // excludes id
     }
 
     @Override
     public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this, "id");
+        return HashCodeBuilder.reflectionHashCode(this, "id");  // excludes id
     }
 
     @Override
