@@ -199,6 +199,8 @@
                                                     </Button>
                                                     <Button fx:id="addStepButton" mnemonicParsing="false" onAction="#onAddStepButton" prefHeight="25.0" prefWidth="25.0" text="+" />
                                                     <Button fx:id="editStepButton" mnemonicParsing="false" onAction="#onEditStepButton" prefHeight="25.0" prefWidth="28.0" text="✎" />
+                                          <Button fx:id="moveStepUpButton" mnemonicParsing="false" onAction="#onMoveStepUpButton" prefHeight="25.0" prefWidth="6.0" text="↑" />
+                                          <Button fx:id="moveStepDownButton" mnemonicParsing="false" onAction="#onMoveStepDownButton" prefHeight="25.0" prefWidth="6.0" text="↓" />
                                        </children>
                                        <StackPane.margin>
                                           <Insets />

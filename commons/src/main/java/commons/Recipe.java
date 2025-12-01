@@ -3,12 +3,8 @@ package commons;
 import jakarta.persistence.*;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
 @Entity
 public class Recipe {
@@ -19,13 +15,11 @@ public class Recipe {
     @Column(nullable = false)
     public String name;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @ManyToMany(cascade = CascadeType.PERSIST)
     public List<Ingredient> ingredients;
 
     @ElementCollection
     public List<String> steps;
-
-    protected Recipe() {}
 
     /**
      * Constructs a Recipe object with only a name
@@ -49,14 +43,16 @@ public class Recipe {
         this.steps = steps;
     }
 
+    private Recipe() {}
+
     @Override
     public boolean equals(Object obj) {
-        return EqualsBuilder.reflectionEquals(this, obj);
+        return EqualsBuilder.reflectionEquals(this, obj, "id");
     }
 
     @Override
     public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this);
+        return HashCodeBuilder.reflectionHashCode(this, "id");
     }
 
     @Override

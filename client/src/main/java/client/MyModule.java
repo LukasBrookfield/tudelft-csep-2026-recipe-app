@@ -1,6 +1,7 @@
 package client;
 
 import client.scenes.IngredientOverviewCtrl;
+import client.utils.RecipeUtils;
 import client.utils.ServerUtils;
 import client.utils.UserConfig;
 import com.google.inject.Binder;
@@ -25,5 +26,6 @@ public class MyModule implements Module {
         binder.bind(Client.class).toInstance(ClientBuilder.newClient(new ClientConfig()));
         binder.bind(ServerUtils.class).in(Scopes.SINGLETON);
         binder.bind(UserConfig.class).in(Scopes.SINGLETON);
+        binder.bind(RecipeUtils.class).in(Scopes.SINGLETON);
     }
 }

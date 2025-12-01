@@ -246,9 +246,7 @@ Sebas suggested we go over how everything works together next Monday at 13:45, s
 * The TA noted that we **forgot to discuss each other’s contributions** during the meeting.
 * Next chair should make sure this is explicitly included and discussed in the next meeting.
 
-## Sprint Week 4 – Issues (decided before the meeting)
-
-For this week (Sprint Week 4), the concrete issues and owners are:
+## Sprint Week 4 – Issues (decided before the meeting - issues provided per member of the team)
 
 ### Teammate 1
 - Basic shopping list properties  
@@ -263,16 +261,14 @@ For this week (Sprint Week 4), the concrete issues and owners are:
 ### Teammate 3
 - Implement the full search feature  
 - Make it so new recipes/ingredients/steps go straight into edit mode  
-- Replace exceptions with alerts  
+- Add up/down arrows to move steps
 
 ### Teammate 4
 - Automated change synchronization  
 
 ### Teammate 2
-- Unit testing for the JavaFX adding recipe scene and nutritional value  
+- Unit testing for the JavaFX adding recipe scene
+- Add nutritional values feature
 
 ### Teammate 5
-- 
-
-### Teammate 1
-- 
+- Settings menu
