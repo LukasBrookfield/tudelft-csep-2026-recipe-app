@@ -5,9 +5,10 @@ import static com.google.inject.Guice.createInjector;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
+import client.scenes.IngredientOverviewCtrl;
 import com.google.inject.Injector;
 
-import client.scenes.HomeCtrl;
+import client.scenes.RecipeOverviewCtrl;
 import client.scenes.MainCtrl;
 import client.utils.ServerUtils;
 import javafx.application.Application;
@@ -32,9 +33,12 @@ public class Main extends Application {
             return;
         }
 
-        var home = FXML.load(HomeCtrl.class, "client", "scenes", "HomeUI.fxml");
+        var recipeOverview = FXML.load(RecipeOverviewCtrl.class,
+                "client", "scenes", "RecipeOverview.fxml");
+        var ingredientOverview =  FXML.load(IngredientOverviewCtrl.class,
+                "client", "scenes", "IngredientOverview.fxml");
 
         var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
-        mainCtrl.initialize(primaryStage, home);
+        mainCtrl.initialize(primaryStage, recipeOverview, ingredientOverview);
     }
 }

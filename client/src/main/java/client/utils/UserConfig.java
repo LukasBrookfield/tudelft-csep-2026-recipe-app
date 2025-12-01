@@ -61,4 +61,8 @@ public class UserConfig {
     public List<Long> getFavouriteRecipes() {
         return user.getFavouriteRecipes();
     }
+
+    public void setShoppingList(List<Ingredient> shoppingList) {
+        user.setShoppingList(shoppingList);
+    }
 }
