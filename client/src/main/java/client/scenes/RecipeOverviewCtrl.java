@@ -33,7 +33,7 @@ import java.awt.print.PrinterJob;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.printing.PDFPageable;
 
-public class HomeCtrl {
+public class RecipeOverviewCtrl {
 
     private final ServerUtils server;
 
@@ -44,14 +44,12 @@ public class HomeCtrl {
     private final MainCtrl mainCtrl;
 
     // Root
+
     @FXML
     private AnchorPane rootPane;
 
-    // Top bar
-    @FXML
-    private Button refreshButton;
+    // Left Sidebar
 
-    // Sidebar
     @FXML
     private TextField recipeSearchField;
 
@@ -64,7 +62,19 @@ public class HomeCtrl {
     @FXML
     private Button addRecipeButton;
 
-    // Title row
+    // Top right
+
+    @FXML
+    private Button downloadRecipeButton;
+
+    @FXML
+    private Button printRecipeButton;
+
+    @FXML
+    private Button toggleOverviewButton;
+
+    // Recipe title row
+
     @FXML
     private Label recipeTitleLabel;
 
@@ -75,14 +85,23 @@ public class HomeCtrl {
     private Button editRecipeButton;
 
     @FXML
+    private Button cancelEditButton;
+
+    @FXML
+    private Button doneEditButton;
+
+    @FXML
     private Separator mainSeparator;
 
     // Ingredients
+
     @FXML
     private Label ingredientsHeaderLabel;
 
     @FXML
     private ListView<Ingredient> ingredientListView;
+
+    // Edit ingredient section
 
     @FXML
     private Button removeIngredientButton;
@@ -109,11 +128,14 @@ public class HomeCtrl {
     private Button doneEditIngredientButton;
 
     // Preparation
+
     @FXML
     private Label preparationHeaderLabel;
 
     @FXML
     private ListView<String> preparationStepListView;
+
+    // Edit preparation section
 
     @FXML
     private Button removeStepButton;
@@ -123,12 +145,6 @@ public class HomeCtrl {
 
     @FXML
     private Button editStepButton;
-
-    @FXML
-    private Button downloadRecipeButton;
-
-    @FXML
-    private Button printRecipeButton;
 
     @FXML
     private TextField editStepField;
@@ -145,14 +161,10 @@ public class HomeCtrl {
     @FXML
     private Button doneEditStepButton;
 
-    @FXML
-    private Button cancelEditButton;
-
-    @FXML
-    private Button doneEditButton;
+    // General
 
     @Inject
-    public HomeCtrl(ServerUtils server,
+    public RecipeOverviewCtrl(ServerUtils server,
                     RecipeUtils recipeUtils,
                     UserConfig user,
                     MainCtrl mainCtrl) {
@@ -355,9 +367,21 @@ public class HomeCtrl {
         mainSeparator.getParent().setVisible(!empty);
         downloadRecipeButton.setVisible(!empty);
         printRecipeButton.setVisible(!empty);
-        refreshButton.setVisible(!empty);
 
         setLabelsAndFields();
+    }
+
+    // Left sidebar
+
+    /**
+     * On action method for the Remove Recipe button
+     * It removes the currently selected recipe
+     */
+    @FXML
+    private void onRemoveRecipe() {
+        Recipe recipe = recipeListView.getSelectionModel().getSelectedItem();
+        recipeListView.getItems().remove(recipe);
+        onRefresh();
     }
 
     /**
@@ -382,17 +406,7 @@ public class HomeCtrl {
         recipeTitleField.requestFocus(); // Tells JavaFX to put the cursor inside that text field
     }
 
-    /**
-     * On action method for the Remove Recipe button
-     * It removes the currently selected recipe
-     */
-    @FXML
-    private void onRemoveRecipe() {
-        Recipe recipe = recipeListView.getSelectionModel().getSelectedItem();
-        recipeListView.getItems().remove(recipe);
-        onRefresh();
-    }
-
+    // Top right
 
     /**
      * Generates a PDF file from the recipe information.
@@ -425,7 +439,6 @@ public class HomeCtrl {
             doc.add(new Paragraph(String.valueOf(i + 1) + ". " + step, bodyFont));
         }
     }
-
 
     /**
      * Generates a PDF file from the previously created doc (with the recipe content).
@@ -475,7 +488,6 @@ public class HomeCtrl {
         }
     }
 
-
     /**
      * Download button:
      * Asks the user where to save the PDF, then writes the recipe PDF there.
@@ -522,7 +534,6 @@ public class HomeCtrl {
             e.printStackTrace();
         }
     }
-
 
     /**
      * Print button:
@@ -574,19 +585,13 @@ public class HomeCtrl {
             e.printStackTrace();
         }
     }
-    // MAYBE KEEP SOMETHING LIKE THIS FROM THE PROJECT TEMPLATE:
-//    public void keyPressed(KeyEvent e) {
-//        switch (e.getCode()) {
-//            case ENTER:
-//                ok();
-//                break;
-//            case ESCAPE:
-//                cancel();
-//                break;
-//            default:
-//                break;
-//        }
-//    }
+
+    @FXML
+    private void onToggleOverviewButton() {
+        mainCtrl.showIngredientOverview();
+    }
+
+    // Recipe title row
 
     /**
      * On action method for the Edit Recipe button
@@ -597,6 +602,36 @@ public class HomeCtrl {
         changeViewEditMode(true);
         recipeTitleField.setText(recipeTitleLabel.getText());
     }
+
+    /**
+     * On action method for the Cancel Edit Button
+     * The original recipe is not changed
+     */
+    @FXML
+    private void onCancelEditButton() {
+        onRefresh();
+        changeViewEditMode(false);
+    }
+
+    /**
+     * On action method for the Done Edit button
+     * All the changes are added to the selected recipe
+     */
+    @FXML
+    private void onDoneEditButton() {
+        if (recipeTitleField.getText().isEmpty()) {
+            System.out.println("The recipe needs a name");
+            return;
+        }
+        Recipe recipe = recipeListView.getSelectionModel().getSelectedItem();
+        recipe.name = recipeTitleField.getText();
+        recipe.ingredients = ingredientListView.getItems();
+        recipe.steps = preparationStepListView.getItems();
+        onRefresh();
+        changeViewEditMode(false);
+    }
+
+    // Ingredient edit section
 
     /**
      * On action method for the Remove Ingredient Button
@@ -728,6 +763,8 @@ public class HomeCtrl {
         doneEditButton.setVisible(true);
     }
 
+    // Edit preparation step section
+
     /**
      * On action method for the Remove Step button
      * Removes the currently selected step (if any)
@@ -817,31 +854,17 @@ public class HomeCtrl {
         doneEditButton.setVisible(true);
     }
 
-    /**
-     * On action method for the Cancel Edit Button
-     * The original recipe is not changed
-     */
-    @FXML
-    private void onCancelEditButton() {
-        onRefresh();
-        changeViewEditMode(false);
-    }
-
-    /**
-     * On action method for the Done Edit button
-     * All the changes are added to the selected recipe
-     */
-    @FXML
-    private void onDoneEditButton() {
-        if (recipeTitleField.getText().isEmpty()) {
-            System.out.println("The recipe needs a name");
-            return;
-        }
-        Recipe recipe = recipeListView.getSelectionModel().getSelectedItem();
-        recipe.name = recipeTitleField.getText();
-        recipe.ingredients = ingredientListView.getItems();
-        recipe.steps = preparationStepListView.getItems();
-        onRefresh();
-        changeViewEditMode(false);
-    }
+    // MAYBE KEEP SOMETHING LIKE THIS FROM THE PROJECT TEMPLATE:
+//    public void keyPressed(KeyEvent e) {
+//        switch (e.getCode()) {
+//            case ENTER:
+//                ok();
+//                break;
+//            case ESCAPE:
+//                cancel();
+//                break;
+//            default:
+//                break;
+//        }
+//    }
 }
