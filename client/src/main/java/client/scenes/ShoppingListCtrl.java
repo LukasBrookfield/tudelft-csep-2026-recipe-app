@@ -4,6 +4,7 @@ import client.utils.ServerUtils;
 import client.utils.UserConfig;
 import com.google.inject.Inject;
 import commons.Ingredient;
+import commons.IngredientType;
 import commons.Unit;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -133,7 +134,7 @@ public class ShoppingListCtrl {
      */
     @FXML
     private void onAddIngredientButton() {
-        ingredientListView.getItems().add(new Ingredient("New ingredient"));
+        ingredientListView.getItems().add(new Ingredient(new IngredientType("New Ingredient", null, null), null, null, null));
         ingredientListView.getSelectionModel().select(
                 ingredientListView.getItems().size() - 1
         );
@@ -159,7 +160,7 @@ public class ShoppingListCtrl {
         changeIngredientViewEditMode(true);
 
         Ingredient ingredient = ingredientListView.getSelectionModel().getSelectedItem();
-        editIngredientNameField.setText(ingredient.name);
+        editIngredientNameField.setText(ingredient.ingredientType.name);
         if (ingredient.amount != null) {
             editIngredientAmountField.setText(String.valueOf(ingredient.amount));
         } else {
@@ -205,7 +206,7 @@ public class ShoppingListCtrl {
         int index = ingredientListView.getSelectionModel().getSelectedIndex();
         Ingredient ingredient = ingredientListView.getItems().get(index);
 
-        ingredient.name = editIngredientNameField.getText();
+        ingredient.ingredientType.name = editIngredientNameField.getText();
         if (!editIngredientAmountField.getText().isEmpty()) {
             ingredient.amount = Double.parseDouble(editIngredientAmountField.getText());
         } else {
