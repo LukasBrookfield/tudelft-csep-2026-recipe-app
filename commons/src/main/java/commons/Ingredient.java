@@ -54,6 +54,9 @@ public class Ingredient {
 
     @Override
     public String toString() {
+        if (ingredientType == null) {
+            return "New ingredient";
+        }
         if (amount == null && unit == null) {
             return ingredientType.name;
         }

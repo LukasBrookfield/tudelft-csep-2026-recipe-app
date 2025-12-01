@@ -668,7 +668,10 @@ public class RecipeOverviewCtrl {
      */
     @FXML
     private void onAddIngredientButton() {
-        ingredientListView.getItems().add(new Ingredient("New ingredient"));
+        Recipe recipe = recipeListView.getSelectionModel().getSelectedItem();
+        Ingredient ingredient = new Ingredient(null,
+                null, null, recipe);
+        ingredientListView.getItems().add(ingredient);
         ingredientListView.getSelectionModel().select(
                 ingredientListView.getItems().size() - 1
         );
@@ -701,7 +704,11 @@ public class RecipeOverviewCtrl {
         changeIngredientViewEditMode(true);
 
         Ingredient ingredient = ingredientListView.getSelectionModel().getSelectedItem();
-        editIngredientNameField.setText(ingredient.name);
+        if (ingredient.ingredientType != null) {
+            editIngredientNameField.setText(ingredient.ingredientType.name);
+        } else {
+            editIngredientNameField.setText("");
+        }
         if (ingredient.amount != null) {
             editIngredientAmountField.setText(String.valueOf(ingredient.amount));
         } else {
@@ -754,7 +761,8 @@ public class RecipeOverviewCtrl {
         int index = ingredientListView.getSelectionModel().getSelectedIndex();
         Ingredient ingredient = ingredientListView.getItems().get(index);
 
-        ingredient.name = editIngredientNameField.getText();
+        ingredient.ingredientType = new IngredientType(
+                editIngredientNameField.getText(), null, null);
         if (!editIngredientAmountField.getText().isEmpty()) {
             ingredient.amount = Double.parseDouble(editIngredientAmountField.getText());
         } else {
