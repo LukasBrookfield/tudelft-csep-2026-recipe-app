@@ -1,6 +1,325 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.Pane?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.IngredientOverviewCtrl" />
+<VBox prefHeight="400.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.IngredientOverviewCtrl">
+   <children>
+      <AnchorPane fx:id="rootPane" VBox.vgrow="ALWAYS">
+         <children>
+            <BorderPane prefHeight="400.0" prefWidth="640.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <top>
+                  <HBox alignment="CENTER" prefHeight="33.0" prefWidth="518.0" BorderPane.alignment="CENTER">
+                     <BorderPane.margin>
+                        <Insets right="2.5" top="5.0" />
+                     </BorderPane.margin>
+                     <children>
+                        <Label prefHeight="25.0" prefWidth="137.0" text="🍽 FoodPal" textFill="#589ed5">
+                           <padding>
+                              <Insets left="5.0" />
+                           </padding>
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin>
+                           <font>
+                              <Font name="System Bold" size="16.0" />
+                           </font>
+                        </Label>
+                        <HBox prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
+                           <HBox.margin>
+                              <Insets />
+                           </HBox.margin>
+                        </HBox>
+                        <Button fx:id="toggleOverviewButton" mnemonicParsing="false" onAction="#onToggleOverviewButton" text="View recipe overview">
+                           <HBox.margin>
+                              <Insets right="6.5" />
+                           </HBox.margin>
+                        </Button>
+                     </children>
+                     <padding>
+                        <Insets left="10.0" right="10.0" />
+                     </padding>
+                  </HBox>
+               </top>
+               <left>
+                  <VBox prefHeight="200.0" prefWidth="210.0" spacing="3.0" BorderPane.alignment="CENTER">
+                     <children>
+                        <TextField fx:id="ingredientSearchField" promptText="Search ingredients...">
+                           <VBox.margin>
+                              <Insets bottom="5.0" />
+                           </VBox.margin>
+                        </TextField>
+                        <ListView fx:id="ingredientListView" prefHeight="294.0" prefWidth="190.0" VBox.vgrow="ALWAYS" />
+                        <HBox prefHeight="29.0" prefWidth="190.0" spacing="5.0">
+                           <children>
+                              <Button fx:id="removeIngredientButton" mnemonicParsing="false" onAction="#onRemoveIngredientButton" prefHeight="25.0" prefWidth="25.0" text="✕">
+                                 <font>
+                                    <Font size="9.0" />
+                                 </font>
+                              </Button>
+                              <Button fx:id="addIngredientButton" mnemonicParsing="false" onAction="#onAddIngredientButton" text="+" />
+                           </children>
+                           <VBox.margin>
+                              <Insets top="5.0" />
+                           </VBox.margin>
+                        </HBox>
+                     </children>
+                     <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </padding>
+                     <BorderPane.margin>
+                        <Insets left="5.0" />
+                     </BorderPane.margin>
+                  </VBox>
+               </left>
+               <center>
+                  <VBox prefHeight="200.0" prefWidth="100.0" spacing="3.0" BorderPane.alignment="TOP_LEFT">
+                     <children>
+                        <HBox alignment="CENTER" prefHeight="25.0" prefWidth="410.0" spacing="2.5">
+                           <VBox.margin>
+                              <Insets bottom="5.0" />
+                           </VBox.margin>
+                           <children>
+                              <StackPane alignment="TOP_LEFT" prefHeight="25.0" prefWidth="390.0" HBox.hgrow="ALWAYS">
+                                 <children>
+                                    <Label fx:id="ingredientTitleLabel" prefHeight="25.0" prefWidth="275.0" text="New ingredient">
+                                       <font>
+                                          <Font name="System Bold" size="14.0" />
+                                       </font>
+                                    </Label>
+                                 </children>
+                              </StackPane>
+                              <StackPane alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="252.0" HBox.hgrow="ALWAYS">
+                                 <children>
+                                    <HBox alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="102.0" spacing="5.0" StackPane.alignment="CENTER_RIGHT">
+                                       <children>
+                                          <Button fx:id="cancelEditButton" mnemonicParsing="false" onAction="#onCancelEditButton" prefHeight="25.0" prefWidth="67.0" text="Cancel" />
+                                          <Button fx:id="doneEditButton" mnemonicParsing="false" onAction="#onDoneEditButton" prefHeight="25.0" prefWidth="57.0" text="Done" />
+                                       </children>
+                                    </HBox>
+                                    <Button fx:id="editIngredientButton" mnemonicParsing="false" onAction="#onEditIngredientButton" text="✎" />
+                                 </children>
+                              </StackPane>
+                           </children>
+                        </HBox>
+                        <Separator fx:id="mainSeparator" prefWidth="200.0" />
+                        <Label text="Details">
+                           <font>
+                              <Font name="System Bold" size="13.0" />
+                           </font>
+                        </Label>
+                        <HBox alignment="CENTER_LEFT" prefHeight="25.0" prefWidth="437.0" spacing="5.0">
+                           <children>
+                              <HBox alignment="CENTER_LEFT" prefHeight="25.0" prefWidth="177.0" spacing="5.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
+                                 <children>
+                                    <Label text="Name:">
+                                       <HBox.margin>
+                                          <Insets left="5.0" />
+                                       </HBox.margin>
+                                    </Label>
+                                    <Label fx:id="nameLabel" alignment="CENTER_RIGHT" prefHeight="17.0" prefWidth="103.0">
+                                       <HBox.margin>
+                                          <Insets right="5.0" />
+                                       </HBox.margin>
+                                    </Label>
+                                 </children>
+                                 <HBox.margin>
+                                    <Insets />
+                                 </HBox.margin>
+                              </HBox>
+                              <HBox alignment="CENTER_LEFT" prefHeight="25.0" prefWidth="138.0" spacing="5.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
+                                 <children>
+                                    <Label text="Amount:">
+                                       <HBox.margin>
+                                          <Insets left="5.0" />
+                                       </HBox.margin>
+                                    </Label>
+                                    <Label fx:id="amountLabel" alignment="CENTER_RIGHT" prefHeight="17.0" prefWidth="54.0">
+                                       <HBox.margin>
+                                          <Insets right="5.0" />
+                                       </HBox.margin>
+                                    </Label>
+                                 </children>
+                              </HBox>
+                              <HBox alignment="CENTER_LEFT" prefHeight="25.0" prefWidth="129.0" spacing="5.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
+                                 <children>
+                                    <Label text="Unit:">
+                                       <HBox.margin>
+                                          <Insets left="5.0" />
+                                       </HBox.margin>
+                                    </Label>
+                                    <Label fx:id="unitLabel" alignment="CENTER_RIGHT" prefHeight="17.0" prefWidth="66.0">
+                                       <HBox.margin>
+                                          <Insets right="5.0" />
+                                       </HBox.margin>
+                                    </Label>
+                                 </children>
+                              </HBox>
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT" prefHeight="0.0" prefWidth="395.0" spacing="5.0">
+                           <children>
+                              <StackPane prefHeight="25.0" prefWidth="411.0">
+                                 <children>
+                                    <HBox alignment="CENTER_LEFT" prefHeight="25.0" prefWidth="307.0" spacing="5.0">
+                                       <children>
+                                          <TextField fx:id="editNameField" prefHeight="25.0" prefWidth="248.0" promptText="Enter an ingredient name" />
+                                          <TextField fx:id="editAmountField" prefHeight="25.0" prefWidth="160.0" promptText="Amount" />
+                                          <ChoiceBox fx:id="editUnitBox" prefHeight="25.0" prefWidth="135.0" />
+                                          <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                                             <children>
+                                                <Button fx:id="cancelEditDetailsButton" mnemonicParsing="false" onAction="#onCancelEditDetailsButton" prefHeight="25.0" prefWidth="55.0" text="Cancel" />
+                                                <Button fx:id="doneEditDetailsButton" mnemonicParsing="false" onAction="#onDoneEditDetailsButton" prefHeight="25.0" prefWidth="50.0" text="Done" />
+                                             </children>
+                                          </HBox>
+                                       </children>
+                                    </HBox>
+                                    <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                                       <children>
+                                          <Button fx:id="editDetailsButton" mnemonicParsing="false" onAction="#onEditDetailsButton" prefHeight="25.0" prefWidth="28.0" text="✎" />
+                                       </children>
+                                       <StackPane.margin>
+                                          <Insets />
+                                       </StackPane.margin>
+                                    </HBox>
+                                 </children>
+                                 <HBox.margin>
+                                    <Insets />
+                                 </HBox.margin>
+                              </StackPane>
+                           </children>
+                           <VBox.margin>
+                              <Insets top="5.0" />
+                           </VBox.margin>
+                        </HBox>
+                        <Label text="Nutritional values (per 100g)">
+                           <font>
+                              <Font name="System Bold" size="13.0" />
+                           </font>
+                           <VBox.margin>
+                              <Insets top="3.0" />
+                           </VBox.margin>
+                        </Label>
+                        <HBox prefHeight="121.0" prefWidth="298.0">
+                           <children>
+                              <HBox prefHeight="121.0" prefWidth="182.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
+                                 <children>
+                                    <VBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="100.0" spacing="10.0">
+                                       <children>
+                                          <Label text="Protein:" />
+                                          <Label text="Fat:" />
+                                          <Label text="Carbohydrates:" />
+                                          <Separator prefWidth="200.0">
+                                             <VBox.margin>
+                                                <Insets bottom="-5.0" />
+                                             </VBox.margin>
+                                          </Separator>
+                                          <Label text="Kcal:" />
+                                       </children>
+                                       <HBox.margin>
+                                          <Insets />
+                                       </HBox.margin>
+                                       <padding>
+                                          <Insets bottom="5.0" left="5.0" top="5.0" />
+                                       </padding>
+                                    </VBox>
+                                    <VBox alignment="CENTER_RIGHT" prefHeight="119.0" prefWidth="79.0" spacing="10.0">
+                                       <children>
+                                          <Label fx:id="proteinLabel" text="-" />
+                                          <Label fx:id="fatLabel" text="-" />
+                                          <Label fx:id="carbsLabel" text="-" />
+                                          <Separator prefWidth="200.0">
+                                             <VBox.margin>
+                                                <Insets bottom="-5.0" />
+                                             </VBox.margin>
+                                          </Separator>
+                                          <Label fx:id="kcalLabel" text="-" />
+                                       </children>
+                                       <padding>
+                                          <Insets bottom="5.0" top="5.0" />
+                                       </padding>
+                                       <HBox.margin>
+                                          <Insets right="5.0" />
+                                       </HBox.margin>
+                                    </VBox>
+                                 </children>
+                              </HBox>
+                              <VBox prefHeight="121.0" prefWidth="115.0" spacing="5.0">
+                                 <children>
+                                    <TextField fx:id="proteinTextField" promptText="Protein" />
+                                    <TextField fx:id="fatTextField" promptText="Fat" />
+                                    <TextField fx:id="carbsTextField" promptText="Carbohydrates" />
+                                 </children>
+                                 <HBox.margin>
+                                    <Insets left="5.0" right="5.0" />
+                                 </HBox.margin>
+                              </VBox>
+                           </children>
+                        </HBox>
+                        <HBox prefHeight="25.0" prefWidth="200.0" spacing="5.0">
+                           <children>
+                              <StackPane alignment="TOP_RIGHT" prefHeight="25.0" prefWidth="405.0">
+                                 <children>
+                                    <HBox alignment="TOP_RIGHT" prefHeight="25.0" prefWidth="220.0" spacing="5.0" StackPane.alignment="CENTER_RIGHT">
+                                       <children>
+                                          <HBox alignment="TOP_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                                             <children>
+                                                <Button fx:id="cancelEditNutritionButton" alignment="TOP_RIGHT" contentDisplay="CENTER" mnemonicParsing="false" onAction="#onCancelEditNutritionButton" prefHeight="25.0" prefWidth="57.0" text="Cancel" />
+                                                <Button fx:id="doneEditNutritionButton" alignment="TOP_RIGHT" mnemonicParsing="false" onAction="#onDoneEditNutritionButton" prefHeight="25.0" prefWidth="49.0" text="Done" />
+                                             </children>
+                                             <HBox.margin>
+                                                <Insets />
+                                             </HBox.margin>
+                                          </HBox>
+                                       </children>
+                                       <StackPane.margin>
+                                          <Insets />
+                                       </StackPane.margin>
+                                    </HBox>
+                                    <HBox prefHeight="25.0" prefWidth="380.0" spacing="5.0">
+                                       <children>
+                                          <Button fx:id="editNutritionButton" mnemonicParsing="false" onAction="#onEditNutritionButton" prefHeight="25.0" prefWidth="28.0" text="✎" />
+                                       </children>
+                                       <StackPane.margin>
+                                          <Insets />
+                                       </StackPane.margin>
+                                    </HBox>
+                                 </children>
+                              </StackPane>
+                           </children>
+                           <VBox.margin>
+                              <Insets top="5.0" />
+                           </VBox.margin>
+                        </HBox>
+                        <HBox alignment="CENTER" prefHeight="25.0" prefWidth="200.0">
+                           <children>
+                              <Label fx:id="usedInRecipesLabel" text="This ingredient is used in 0 recipes">
+                                 <HBox.margin>
+                                    <Insets top="5.0" />
+                                 </HBox.margin>
+                              </Label>
+                           </children>
+                        </HBox>
+                     </children>
+                     <padding>
+                        <Insets bottom="10.0" left="10.0" right="20.0" top="10.0" />
+                     </padding>
+                  </VBox>
+               </center>
+            </BorderPane>
+         </children>
+      </AnchorPane>
+   </children>
+</VBox>

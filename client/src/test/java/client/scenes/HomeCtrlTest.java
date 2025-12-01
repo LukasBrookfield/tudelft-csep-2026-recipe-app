@@ -6,9 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static com.google.inject.Guice.createInjector;
 
-import client.utils.ServerUtils;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 import org.testfx.framework.junit5.ApplicationTest;
 
 import com.google.inject.Injector;
@@ -17,15 +15,12 @@ import client.MyFXML;
 import client.MyModule;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 
 public class HomeCtrlTest extends ApplicationTest{
 
-    private HomeCtrl sut;
+    private RecipeOverviewCtrl sut;
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -33,9 +28,9 @@ public class HomeCtrlTest extends ApplicationTest{
         Injector injector = createInjector(new MyModule());
         MyFXML fxml = new MyFXML(injector);
 
-        Pair<HomeCtrl, Parent> loaded = fxml.load(
-                HomeCtrl.class,
-                "client", "scenes", "HomeUI.fxml"
+        Pair<RecipeOverviewCtrl, Parent> loaded = fxml.load(
+                RecipeOverviewCtrl.class,
+                "client", "scenes", "RecipeOverview.fxml"
         );
 
         sut = loaded.getKey();
