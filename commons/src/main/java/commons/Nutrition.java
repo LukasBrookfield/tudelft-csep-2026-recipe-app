@@ -1,12 +1,9 @@
 package commons;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-
 import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
 @Entity
@@ -14,9 +11,6 @@ public class Nutrition {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     public long id;
-
-    @OneToOne
-    public Ingredient ingredient;
 
     // grams of carbs per 100g of the ingredient
     public Double carbs;  // can be null
@@ -29,13 +23,11 @@ public class Nutrition {
 
     /**
      * Constructs a Nutrition object
-     * @param ingredient The ingredient that has this nutrition
      * @param carbs Grams of carbs in 100g of the ingredient
      * @param protein Grams of protein in 100g of the ingredient
      * @param fat Grams of fat in 100g of the ingredient
      */
-    public Nutrition(Ingredient ingredient, Double carbs, Double protein, Double fat) {
-        this.ingredient = ingredient;
+    public Nutrition(Double carbs, Double protein, Double fat) {
         this.carbs = carbs;
         this.protein = protein;
         this.fat = fat;
