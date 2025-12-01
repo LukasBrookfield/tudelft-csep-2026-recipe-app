@@ -9,6 +9,9 @@ import commons.*;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -30,6 +33,9 @@ import com.lowagie.text.Paragraph;
 import com.lowagie.text.Font;
 import com.lowagie.text.FontFactory;
 import java.awt.print.PrinterJob;
+
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.printing.PDFPageable;
 
@@ -161,6 +167,9 @@ public class RecipeOverviewCtrl {
     @FXML
     private Button doneEditStepButton;
 
+    @FXML
+    private Button bag;
+    
     // General
 
     @Inject
@@ -852,6 +861,38 @@ public class RecipeOverviewCtrl {
         changeStepViewEditMode(false);
         cancelEditButton.setVisible(true);
         doneEditButton.setVisible(true);
+    }
+
+    /**
+     * On action method for the Bag button
+     * A new window with shopping list is opened
+     */
+    @FXML
+    private void onBag(){
+        Parent root;
+        try {
+
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("ShoppingList.fxml"));
+            loader.setControllerFactory(type -> {
+                if (type == ShoppingListCtrl.class) {
+                    return new ShoppingListCtrl(server, user);
+                }else{
+                    throw new RuntimeException();
+                }
+            });
+
+            root = loader.load();
+        }catch(Exception e){
+            System.out.println("Error loading ShoppingList.fxml");
+            return;
+        }
+
+        Stage stage = new Stage();
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.setTitle("Shopping List");
+        stage.initModality(Modality.APPLICATION_MODAL); //forbids to close the parent window before this one
+        stage.show();
     }
 
     // MAYBE KEEP SOMETHING LIKE THIS FROM THE PROJECT TEMPLATE:
