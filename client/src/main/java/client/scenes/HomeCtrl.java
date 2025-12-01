@@ -143,6 +143,12 @@ public class HomeCtrl {
     private TextField editStepField;
 
     @FXML
+    private Button moveStepUpButton;
+
+    @FXML
+    private Button moveStepDownButton;
+
+    @FXML
     private Button cancelEditStepButton;
 
     @FXML
@@ -237,6 +243,51 @@ public class HomeCtrl {
     }
 
     /**
+     * On action method for the Move Step Up button
+     */
+    @FXML
+    private void onMoveStepUpButton(){
+        moveSelectedStep(-1);
+    }
+
+    /**
+     * On action method for the Move Step Down button
+     */
+    @FXML
+    private void onMoveStepDownButton(){
+        moveSelectedStep(1);
+    }
+
+    /**
+     * Moves the selected preparation step up or down one step (in the UI and in the actual recipe).
+     * @param offset can be -1 or 1, moving, respectively, up or down one step.
+     */
+    private void moveSelectedStep(int offset){
+        int index = preparationStepListView.getSelectionModel().getSelectedIndex();
+        var items = preparationStepListView.getItems();
+
+        // Nothing selected or empty list
+        if (index < 0 || items.isEmpty()) {
+            System.out.println("There is no preparation step selected to move.");
+            return;
+        }
+
+        int newIndex = index + offset;
+
+        // Out of bounds (already at the top or bottom)
+        if (newIndex < 0 || newIndex >= items.size()) {
+            return;
+        }
+
+        // Remove and re-insert at new position
+        String step = items.remove(index);
+        items.add(newIndex, step);
+
+        // Keep the moved item selected
+        preparationStepListView.getSelectionModel().select(newIndex);
+    }
+
+    /**
      * Sets the title, ingredient list and preparation step list based on which
      * recipe is selected
      */
@@ -274,8 +325,32 @@ public class HomeCtrl {
                 }
         );
 
-        // Makes it so that the 'Add Recipe' button is selected when the app gets
-        // started
+        moveStepUpButton.setVisible(false);
+        moveStepDownButton.setVisible(false);
+
+        // Show/hide and enable/disable the step reordering arrows
+        // (based on which preparation step is selected)
+        preparationStepListView.getSelectionModel().selectedIndexProperty()
+                .addListener((obs, oldIndex, newIndex) -> {
+                    int idx = newIndex == null ? -1 : newIndex.intValue();
+                    int size = preparationStepListView.getItems().size();
+
+                    boolean hasSelection = (idx >= 0 && size > 0);
+
+                    // Only show arros if a step is selected
+                    moveStepUpButton.setVisible(hasSelection);
+                    moveStepDownButton.setVisible(hasSelection);
+
+                    if (!hasSelection) {
+                        return;
+                    }
+
+                    // Disable Up at the top and Down at the bottom
+                    moveStepUpButton.setDisable(idx == 0);
+                    moveStepDownButton.setDisable(idx == size - 1);
+                });
+
+        // Makes it so that the 'Add Recipe' button is selected when the app gets started
         Platform.runLater(() -> addRecipeButton.requestFocus());
     }
 
@@ -311,6 +386,13 @@ public class HomeCtrl {
         recipeListView.getSelectionModel().select(
                 recipeListView.getItems().size() - 1
         );
+
+        // Now immediately enter edit mode for this recipe
+        onEditRecipeButton();
+
+        // Also clear the placeholder so the user doesn't have to delete "New recipe"
+        recipeTitleField.clear();
+        recipeTitleField.requestFocus(); // Tells JavaFX to put the cursor inside that text field
     }
 
     /**
@@ -559,6 +641,16 @@ public class HomeCtrl {
         ingredientListView.getSelectionModel().select(
                 ingredientListView.getItems().size() - 1
         );
+
+        // Immediately open ingredient edit mode
+        onEditIngredientButton();
+
+        // Clear the placeholder so the user doesn't have to delete "New ingredient"
+        editIngredientNameField.clear();
+        editIngredientAmountField.clear();
+        editUnitBox.setValue("");
+
+        editIngredientNameField.requestFocus(); // Put the cursor in the name field
     }
 
     /**
@@ -592,6 +684,9 @@ public class HomeCtrl {
 
         cancelEditButton.setVisible(false);
         doneEditButton.setVisible(false);
+
+        // Force focus into the engrident name field
+        editIngredientNameField.requestFocus();
     }
 
     /**
@@ -674,6 +769,13 @@ public class HomeCtrl {
         preparationStepListView.getSelectionModel().select(
                 preparationStepListView.getItems().size() - 1
         );
+
+        // Immediately open step edit mode
+        onEditStepButton();
+
+        // Clear the placeholder so the user doesn't have to delete "New step"
+        editStepField.clear();
+        editStepField.requestFocus();
     }
 
     /**
@@ -696,6 +798,9 @@ public class HomeCtrl {
 
         cancelEditButton.setVisible(false);
         doneEditButton.setVisible(false);
+
+        // Force focus into the step field
+        editStepField.requestFocus();
     }
 
     /**
