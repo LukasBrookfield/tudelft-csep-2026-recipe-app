@@ -1,6 +1,7 @@
 package client;
 
 import client.scenes.IngredientOverviewCtrl;
+import client.scenes.ShoppingListCtrl;
 import client.utils.RecipeUtils;
 import client.utils.ServerUtils;
 import client.utils.UserConfig;
@@ -26,6 +27,7 @@ public class MyModule implements Module {
         binder.bind(Client.class).toInstance(ClientBuilder.newClient(new ClientConfig()));
         binder.bind(ServerUtils.class).in(Scopes.SINGLETON);
         binder.bind(UserConfig.class).in(Scopes.SINGLETON);
+        binder.bind(ShoppingListCtrl.class);
         binder.bind(RecipeUtils.class).in(Scopes.SINGLETON);
     }
 }
