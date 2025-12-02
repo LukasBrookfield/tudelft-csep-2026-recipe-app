@@ -4,6 +4,7 @@ import client.utils.ServerUtils;
 import client.utils.UserConfig;
 import com.google.inject.Inject;
 import commons.Ingredient;
+import commons.IngredientType;
 import commons.Recipe;
 import commons.Unit;
 import javafx.application.Platform;
@@ -205,7 +206,12 @@ public class IngredientOverviewCtrl {
         Ingredient ingredient = ingredientListView.getSelectionModel().getSelectedItem();
         if (ingredient != null) {
             ingredientTitleLabel.setText(ingredient.toString());
-            nameLabel.setText(ingredient.name);
+
+            if (ingredient.ingredientType != null) {
+                nameLabel.setText(ingredient.ingredientType.name);
+            } else {
+                nameLabel.setText("-");
+            }
 
             if (ingredient.amount != null) {
                 amountLabel.setText(String.valueOf(ingredient.amount));
@@ -276,7 +282,8 @@ public class IngredientOverviewCtrl {
      */
     @FXML
     private void onAddIngredientButton() {
-        Ingredient ingredient = new Ingredient("New ingredient");
+        Ingredient ingredient = new Ingredient(null,
+                null, null, null);
 
         ingredientListView.getItems().add(ingredient);
         ingredientListView.getSelectionModel().select(
@@ -330,8 +337,10 @@ public class IngredientOverviewCtrl {
             return;
         }
 
-        Ingredient ingredient =  ingredientListView.getSelectionModel().getSelectedItem();
-        ingredient.name =  nameLabel.getText();
+        Ingredient ingredient = ingredientListView.getSelectionModel().getSelectedItem();
+
+        ingredient.ingredientType = new IngredientType(nameLabel.getText(),
+                null, null);
 
         if (!amountLabel.getText().equals("-")) {
             ingredient.amount = Double.parseDouble(amountLabel.getText());

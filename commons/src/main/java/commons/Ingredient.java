@@ -3,7 +3,6 @@ package commons;
 import jakarta.persistence.*;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import java.util.List;
 
 @Entity
 public class Ingredient {
@@ -11,105 +10,90 @@ public class Ingredient {
     @GeneratedValue(strategy = GenerationType.AUTO)
     public long id;
 
-    @Column(nullable = false)
-    public String name;
+    @ManyToOne(optional = false, cascade = CascadeType.PERSIST)
+    public IngredientType ingredientType;
 
     public Double amount;  // can be null
 
     @Enumerated(EnumType.STRING)
     public Unit unit;  // can be null
 
-    @ManyToMany(cascade = CascadeType.PERSIST)
-    public List<Recipe> recipes;  // can be null
-
-    @OneToOne(cascade = CascadeType.ALL)
-    public Nutrition nutrition;  // can be null
-
-    /**
-     * Constructs an Ingredient object with only a name
-     * @param name Name of the ingredient
-     */
-    public Ingredient(String name) {
-        this.name = name;
-        this.amount = null;
-        this.unit = null;
-    }
+    @ManyToOne(cascade = CascadeType.PERSIST, optional = false)
+    public Recipe recipe;
 
     /**
      * Constructs an Ingredient object
-     * @param name Name of the ingredient
+     * @param ingredientType Type of ingredient
      * @param amount Amount of the ingredient
      * @param unit Unit the ingredient is in e.g. grams
-     * @param recipes The recipes this ingredient belongs to
-     * @param nutrition Nutritional info of the ingredient
+     * @param recipe The recipe this ingredient belongs to
      */
-    public Ingredient(String name,
+    public Ingredient(IngredientType ingredientType,
                       Double amount,
                       Unit unit,
-                      List<Recipe> recipes,
-                      Nutrition nutrition) {
-        this.name = name;
+                      Recipe recipe) {
+        this.ingredientType = ingredientType;
         this.amount = amount;
         this.unit = unit;
-        this.recipes = recipes;
-        this.nutrition = nutrition;
+        this.recipe = recipe;
     }
 
-    private Ingredient() {}
+    private Ingredient() {}  // for object mapper
 
     @Override
     public boolean equals(Object obj) {
-        return EqualsBuilder.reflectionEquals(this, obj, "id", "recipes");  // excludes id and recipes
+        return EqualsBuilder.reflectionEquals(this, obj,
+                "id", "recipe");  // excludes id and recipes
     }
 
     @Override
     public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this, "id", "recipes");  // excludes id and recipes
+        return HashCodeBuilder.reflectionHashCode(this,
+                "id", "recipe");  // excludes id and recipes
     }
 
-    /**
-     * Turns an ingredient object into a string
-     * @return The ingredient in string format
-     */
     @Override
     public String toString() {
+        if (ingredientType == null) {
+            return "New ingredient";
+        }
         if (amount == null && unit == null) {
-            return name;
+            return ingredientType.name;
         }
         if (unit == null) {
-            return amount + " " + name;
+            return amount + " " + ingredientType.name;
         }
 
         switch (unit.name()) {
             case "G":
             case "ML":
-                return amount + unit.name() + " " + name;
+                return amount + unit.name() + " " + ingredientType.name;
             case "TBSP":
                 if (amount == 1) {
-                    return "1 tablespoon of " + name;
+                    return "1 tablespoon of " + ingredientType.name;
                 } else {
-                    return amount + " tablespoons of " + name;
+                    return amount + " tablespoons of " + ingredientType.name;
                 }
             case "TSP":
                 if (amount == 1) {
-                    return "1 teaspoon of " + name;
+                    return "1 teaspoon of " + ingredientType.name;
                 } else {
-                    return amount + " teaspoons of " + name;
+                    return amount + " teaspoons of " + ingredientType.name;
                 }
             case "PINCH":
                 if (amount == 1) {
-                    return "A pinch of " + name;
+                    return "A pinch of " + ingredientType.name;
                 } else {
-                    return amount + " pinches of " + name;
+                    return amount + " pinches of " + ingredientType.name;
                 }
             case "HANDFUL":
                 if (amount == 1) {
-                    return "A handful of " + name;
+                    return "A handful of " + ingredientType.name;
                 } else {
-                    return amount + " handfuls of " + name;
+                    return amount + " handfuls of " + ingredientType.name;
                 }
             case "TO_TASTE":
-                return name + " to taste";
+                return ingredientType.name + " to taste";
         }
         return "";
     }

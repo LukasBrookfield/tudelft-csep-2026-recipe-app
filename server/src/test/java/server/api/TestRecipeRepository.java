@@ -105,7 +105,7 @@ public class TestRecipeRepository implements RecipeRepository {
 
     @Override
     public <S extends Recipe> S save(S entity) {
-        entity.id = recipes.size()-1;
+        entity.id = (long) recipes.size();
         call("save");
         recipes.add(entity);
         return entity;
@@ -119,18 +119,19 @@ public class TestRecipeRepository implements RecipeRepository {
     @Override
     public Optional<Recipe> findById(Long aLong) {
         calledMethods.add("findById");
-        for(int i=0;i<recipes.size();i++){
-            if(i==aLong)
-                return Optional.of(recipes.get(i));
+        for (Recipe recipe : recipes) {
+            if (recipe.id == aLong)
+                return Optional.of(recipe);
         }
         return Optional.empty();
     }
 
     @Override
     public boolean existsById(Long aLong) {
-        for(int i=0; i<recipes.size();i++){
-            if(i==aLong)
+        for (Recipe recipe : recipes) {
+            if (recipe.id == aLong) {
                 return true;
+            }
         }
         return false;
     }
@@ -148,12 +149,17 @@ public class TestRecipeRepository implements RecipeRepository {
 
     @Override
     public long count() {
-        return 0;
+        return recipes.size();
     }
 
     @Override
     public void deleteById(Long aLong) {
-
+        for (Recipe recipe : recipes) {
+            if (recipe.id == aLong) {
+                recipes.remove(recipe);
+                return;
+            }
+        }
     }
 
     @Override

@@ -45,45 +45,28 @@ public class IngredientController {
 
     /**
      * Receives an ingredient from the client via HTTP and saves it to the database.
-     *
-     * This method validates the incoming ingredient to ensure that:
-     *
-     *   The name is not null or empty.
-     *   The amount is not null and greater than 0.
-     *   The unit is not null or empty.
-     *
      * If any validation fails, a 400 Bad Request response is returned.
      * Otherwise, the ingredient is saved to the repository and returned with a
      * 200 OK with the saved ingredient.
-     *
      * @param ingredient the Ingredient object provided in the request body
      * @return a ResponseEntity containing the saved ingredient or an
      *         error response if validation fails
      */
     @PostMapping(path = { "", "/" })
     public ResponseEntity<Ingredient> add(@RequestBody Ingredient ingredient) {
-
-        //no attribute is null and the name is not empty
-        //the amount of the ingredient is larger than 0
-        if (ingredient.name == null || ingredient.name.isEmpty()
-                || ingredient.amount == null || ingredient.unit == null
-                || ingredient.amount <= 0){
+        if (ingredient.ingredientType == null) {
             return ResponseEntity.badRequest().build();
         }
-
         Ingredient saved = repo.save(ingredient);
         return ResponseEntity.ok(saved);
     }
 
     /**
      * Deletes an ingredient in database by its ID.
-     *
      * This method validates the incoming ingredient id to ensure that it exists.
-     *
      * If the ID is valid, retrieves the ingredient from the repository.
      * Then deletes the ingredient from the repository.
      * Returns the deleted ingredient wrapped in a 200 OK response.
-     *
      * @param id the ID of the ingredient to delete
      * @return ResponseEntity containing the deleted ingredient if successful,
      *         or a 400 Bad Request response if the ID is invalid or does not exist.
@@ -92,7 +75,7 @@ public class IngredientController {
     public ResponseEntity<Ingredient> delete(@PathVariable("id") long id) {
         if (id < 0 || !repo.existsById(id)) {
             return ResponseEntity.badRequest().build();
-        }else{
+        } else {
             Ingredient deleted = repo.findById(id).get();
             repo.deleteById(id);
             return ResponseEntity.ok(deleted);
@@ -101,18 +84,11 @@ public class IngredientController {
 
     /**
      * Updates an existing ingredient with the given ID.
-     *
      * This method validates the incoming ingredient id and new ingredient.
-     *
-     *             Name must not be null or empty
-     *             Amount must not be null and must be greater than 0
-     *             Unit must not be null
-     *             ID must be non-negative and exist in the repository
-     *
-     *  If validation fails, or the ID does not exist, returns a 400 Bad Request response.
-     *  If the ID is valid, retrieves the existing ingredient from the repository,
-     *  updates its fields, saves it, and returns the updated ingredient with 200 OK.
-     *
+     *     It makes sure that the ingredient type is not null.
+     * If validation fails, or the ID does not exist, returns a 400 Bad Request response.
+     * If the ID is valid, retrieves the existing ingredient from the repository,
+     * updates its fields, saves it, and returns the updated ingredient with 200 OK.
      * @param id the ID of the ingredient to update
      * @param updatedIngredient the ingredient object containing the updated values
      * @return ResponseEntity containing the updated ingredient if successful,
@@ -121,25 +97,18 @@ public class IngredientController {
     @PutMapping("/{id}")
     public ResponseEntity<Ingredient> update(@PathVariable("id") long id,
                                              @RequestBody Ingredient updatedIngredient) {
-        //no attribute is null and the name is not empty
-        //the amount of the ingredient is larger than 0
-        if (updatedIngredient.name == null || updatedIngredient.name.isEmpty()
-                || updatedIngredient.amount == null || updatedIngredient.unit == null
-                || updatedIngredient.amount <= 0 || id < 0 || !repo.existsById(id)){
+        if (updatedIngredient.ingredientType == null || id < 0 || !repo.existsById(id)) {
             return ResponseEntity.badRequest().build();
-        }else{
-            Ingredient ingredientToUpdated = repo.findById(id).get();
-            ingredientToUpdated.name = updatedIngredient.name;
-            ingredientToUpdated.amount = updatedIngredient.amount;
-            ingredientToUpdated.unit = updatedIngredient.unit;
+        } else {
+            Ingredient ingredientToUpdate = repo.findById(id).get();
 
-            // Replace collections safely
-            ingredientToUpdated.recipes.clear();
-            ingredientToUpdated.recipes.addAll(updatedIngredient.recipes);
+            // update fields
+            ingredientToUpdate.ingredientType = updatedIngredient.ingredientType;
+            ingredientToUpdate.amount = updatedIngredient.amount;
+            ingredientToUpdate.unit = updatedIngredient.unit;
+            ingredientToUpdate.recipe = updatedIngredient.recipe;
 
-            ingredientToUpdated.nutrition = updatedIngredient.nutrition;
-
-            Ingredient updated = repo.save(ingredientToUpdated);
+            Ingredient updated = repo.save(ingredientToUpdate);
             return ResponseEntity.ok(updated);
         }
     }

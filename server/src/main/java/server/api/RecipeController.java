@@ -45,13 +45,10 @@ public class RecipeController {
 
     /**
      * Receives a recipe from the client via HTTP and saves it to the database.
-     *
      * This method validates the incoming recipe to ensure that:
-     *
-     *   The recipe name is not null or empty.
-     *   The ingredient list is not null or empty.
-     *   The steps list is not null or empty.
-     *
+     *     The recipe name is not null or empty.
+     *     The ingredient list is not null.
+     *     The steps list is not null.
      * If any of these validation checks fail, a 400 Bad Request response
      * is returned. Otherwise, the recipe is saved to the repository and returned
      * with a 200 OK response.
@@ -62,10 +59,10 @@ public class RecipeController {
      */
     @PostMapping(path = { "", "/" })
     public ResponseEntity<Recipe> add(@RequestBody Recipe recipe) {
-
-        //lists and name are not null and not empty
-        if (recipe.name == null || recipe.name.isEmpty() || recipe.ingredients == null ||
-                recipe.ingredients.isEmpty() || recipe.steps == null || recipe.steps.isEmpty()) {
+        if (recipe.name == null
+                || recipe.name.isEmpty()
+                || recipe.ingredients == null
+                || recipe.steps == null) {
             return ResponseEntity.badRequest().build();
         }
 
@@ -75,13 +72,10 @@ public class RecipeController {
 
     /**
      * Deletes a recipe in database by its ID.
-     *
      * This method validates the incoming recipe id to ensure that it exists.
-     *
      * If the ID is valid, retrieves the recipe from the repository.
      * Then deletes the recipe from the repository.
      * Returns the deleted recipe wrapped in a 200 OK response.
-     *
      * @param id the ID of the recipe to delete
      * @return ResponseEntity containing the deleted recipe if successful,
      *         or a 400 Bad Request response if the ID is invalid or does not exist.
@@ -99,19 +93,16 @@ public class RecipeController {
 
     /**
      * Updates an existing recipe with the given ID.
-     *
      * This method validates the incoming recipe id and new recipe.
-     *
-     *             Name must not be null or empty
-     *             Ingredients list must not be null or empty
-     *             Steps list must not be null or empty
-     *
+     *     Name must not be null or empty
+     *     Ingredients list must not be null
+     *     Steps list must not be null
      *     Checks that a recipe with the given ID exists in the repository.
-     *     If validation fails or the ID is invalid/non-existent,
-     *     returns a 400 Bad Request response.
-     *     If the ID is valid, retrieves the existing recipe,
-     *     updates its fields with the new values,
-     *     saves it in the repository, and returns the updated recipe in the response with 200 OK.
+     * If validation fails or the ID is invalid/non-existent,
+     * returns a 400 Bad Request response.
+     * If the ID is valid, retrieves the existing recipe,
+     * updates its fields with the new values,
+     * saves it in the repository, and returns the updated recipe in the response with 200 OK.
      *
      * @param id the ID of the recipe to update
      * @param updatedRecipe the recipe object containing updated values
@@ -121,13 +112,14 @@ public class RecipeController {
     @PutMapping("/{id}")
     public ResponseEntity<Recipe> update(@PathVariable("id") long id,
                                          @RequestBody Recipe updatedRecipe) {
-        //lists and name are not null and not empty
-        if (updatedRecipe.name == null || updatedRecipe.name.isEmpty() ||
-                updatedRecipe.ingredients == null || updatedRecipe.ingredients.isEmpty() ||
-                updatedRecipe.steps == null || updatedRecipe.steps.isEmpty() ||
-                id < 0 || !repo.existsById(id)) {
+        if (updatedRecipe.name == null
+                || updatedRecipe.name.isEmpty()
+                || updatedRecipe.ingredients == null
+                || updatedRecipe.steps == null
+                || id < 0
+                || !repo.existsById(id)) {
             return ResponseEntity.badRequest().build();
-        }else{
+        } else {
             Recipe recipeToUpdate = repo.findById(id).get();
             recipeToUpdate.name = updatedRecipe.name;
 
@@ -137,6 +129,8 @@ public class RecipeController {
 
             recipeToUpdate.steps.clear();
             recipeToUpdate.steps.addAll(updatedRecipe.steps);
+
+            recipeToUpdate.servings = updatedRecipe.servings;
 
             Recipe updated = repo.save(recipeToUpdate);
             return ResponseEntity.ok(updated);
