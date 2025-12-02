@@ -85,6 +85,7 @@ public class IngredientController {
     /**
      * Updates an existing ingredient with the given ID.
      * This method validates the incoming ingredient id and new ingredient.
+     *     It makes sure that the ingredient type is not null.
      * If validation fails, or the ID does not exist, returns a 400 Bad Request response.
      * If the ID is valid, retrieves the existing ingredient from the repository,
      * updates its fields, saves it, and returns the updated ingredient with 200 OK.
