@@ -108,7 +108,8 @@ public class TestIngredientRepository implements IngredientRepository {
 
     @Override
     public <S extends Ingredient> S save(S entity) {
-        entity.id = ingredients.size()-1;
+        call("save");
+        entity.id = (long) ingredients.size();
         ingredients.add(entity);
         return entity;
     }
@@ -121,9 +122,9 @@ public class TestIngredientRepository implements IngredientRepository {
     @Override
     public Optional<Ingredient> findById(Long aLong) {
         calledMethods.add("findById");
-        for(int i=0; i<ingredients.size(); i++){
-            if(i==aLong){
-                return Optional.of(ingredients.get(i));
+        for(Ingredient ingredient : ingredients) {
+            if (ingredient.id == aLong) {
+                return Optional.of(ingredient);
             }
         }
         return Optional.empty();
@@ -131,8 +132,8 @@ public class TestIngredientRepository implements IngredientRepository {
 
     @Override
     public boolean existsById(Long aLong) {
-        for(int i=0; i<ingredients.size(); i++){
-            if(i==aLong){
+        for (Ingredient ingredient : ingredients) {
+            if (ingredient.id == aLong) {
                 return true;
             }
         }
@@ -152,12 +153,17 @@ public class TestIngredientRepository implements IngredientRepository {
 
     @Override
     public long count() {
-        return 0;
+        return ingredients.size();
     }
 
     @Override
     public void deleteById(Long aLong) {
-
+        for (Ingredient ingredient : ingredients) {
+            if (ingredient.id == aLong) {
+                ingredients.remove(ingredient);
+                return;
+            }
+        }
     }
 
     @Override
@@ -190,5 +196,3 @@ public class TestIngredientRepository implements IngredientRepository {
         return null;
     }
 }
-
-

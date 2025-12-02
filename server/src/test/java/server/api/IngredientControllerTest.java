@@ -1,122 +1,116 @@
 package server.api;
 
 import commons.Ingredient;
-import org.hibernate.collection.spi.PersistentBag;
+import commons.IngredientType;
+import commons.Recipe;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
-import server.database.IngredientRepository;
-import server.database.RecipeRepository;
-
 import java.util.ArrayList;
-
+import java.util.List;
 import static commons.Unit.G;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 import static org.springframework.http.HttpStatus.OK;
 
-@SpringBootTest
-@Transactional
 public class IngredientControllerTest {
-    private TestIngredientRepository repo;
     private Ingredient ingredient1;
     private Ingredient ingredient2;
+    private Recipe recipe1;
+    private Recipe recipe2;
+
+    private TestIngredientRepository repo;
     private IngredientController sut;
-
-    //for testing with SpringBoot
-    @Autowired
-    @Qualifier("ingredientRepository")
-    private IngredientRepository repo2;
-
-    @Autowired
-    private RecipeRepository recipeRepository; // must clear dependent table
-
-    private IngredientController sut2;
 
     @BeforeEach
     public void setup() {
-        //for testing with SpringBoot
-        repo2.deleteAll();
-        recipeRepository.deleteAll();
-        sut2 = new IngredientController(repo2);
-
-        //for testing with TestIngredientRepository
+        // for testing with TestIngredientRepository
         repo = new TestIngredientRepository();
         sut = new IngredientController(repo);
 
-        ingredient1 = new Ingredient("cucumber", 100.0, G, new ArrayList<>(), null);
-        ingredient2 = new Ingredient("cucumber", 99.0, G, new ArrayList<>(), null);
+        recipe1 = new Recipe("cucumber salad",
+                new ArrayList<>(),
+                new ArrayList<>(List.of("add cucumbers")),
+                2);
+        recipe2 = new Recipe("cucumber with salt",
+                new ArrayList<>(),
+                new ArrayList<>(List.of("add cucumbers")),
+                3);
+        ingredient1 = new Ingredient(
+                new IngredientType("cucumber", null, new ArrayList<>()), 100.0, G, recipe1);
+        ingredient2 = new Ingredient(
+                new IngredientType("cucumber", null, new ArrayList<>()), 99.0, G, recipe2);
     }
 
     @Test
-    public void getAllIngredientsTes() {
-        sut.getAllIngredients();
+    public void getAllIngredientsTest() {
+        var ingredients = sut.getAllIngredients();
         assertTrue(repo.calledMethods.contains("findAll"));
     }
 
     @Test
     public void getIngredientByIdTest() {
         sut.add(ingredient1);
-        sut.getById((long)0);
-        assertTrue(repo.calledMethods.contains("findById"));
+        var ingredient = sut.getById(0).getBody();
+        assertEquals(ingredient1, ingredient);
     }
+
     @Test
     public void getIngredientByIdContainsTest() {
         sut.add(ingredient1);
-        assertEquals(sut.getById((long)0), ResponseEntity.ok(ingredient1));
+        assertEquals(sut.getById(0), ResponseEntity.ok(ingredient1));
     }
 
     @Test
     public void deleteTest() {
-        sut2.add(ingredient1);
-        sut2.add(ingredient2);
-        sut2.delete(ingredient1.id);
-        assertFalse(repo2.findAll().contains(ingredient1));
+        sut.add(ingredient1);
+        sut.add(ingredient2);
+        sut.delete(ingredient1.id);
+        assertFalse(repo.findAll().contains(ingredient1));
     }
 
     @Test
-    public void deleteWithWrongIdTest0() {
-        sut2.add(ingredient1);
-        sut2.add(new Ingredient("cucumber", 99.0, G, new ArrayList<>(), null));
-        var result = sut2.delete(3);
+    public void deleteWithWrongIdTest() {
+        sut.add(ingredient1);
+        sut.add(new Ingredient(new IngredientType("cucumber", null, null), 99.0, G, null));
+        var result = sut.delete(3);
         assertEquals(BAD_REQUEST, result.getStatusCode());
     }
 
     @Test
-    public void deleteAlreadyDeletedTest0() {
-        sut2.add(ingredient1);
-        sut2.add(new Ingredient("cucumber", 99.0, G, new ArrayList<>(), null));
-        var result = sut2.delete(ingredient1.id);
-        var result2 = sut2.delete(ingredient1.id);
+    public void deleteAlreadyDeletedTest() {
+        sut.add(ingredient1);
+        sut.add(new Ingredient(new IngredientType("cucumber", null, null), 99.0, G, null));
+        var result = sut.delete(ingredient1.id);
+        var result2 = sut.delete(ingredient1.id);
         assertEquals(OK, result.getStatusCode());
         assertEquals(BAD_REQUEST, result2.getStatusCode());
     }
 
     @Test
     public void updateTest() {
-        sut2.add(ingredient1);
-        Ingredient ingredient = new Ingredient("cucumber", 100.0, G, new ArrayList<>(), null);
-        var result = sut2.update(ingredient1.id, ingredient);
+        sut.add(ingredient1);
+        var result = sut.update(ingredient1.id, ingredient2);
         assertEquals(OK, result.getStatusCode());
-        assertEquals(repo2.findById(ingredient1.id).get(), ingredient);
+        assertEquals(repo.findById(ingredient1.id).get(), ingredient2);
     }
 
     @Test
     public void updateWrongIdTest() {
-        sut2.add(ingredient1);
-        var result = sut2.update(2, ingredient2);
+        sut.add(ingredient1);
+        var result = sut.update(2, ingredient2);
         assertEquals(BAD_REQUEST, result.getStatusCode());
     }
 
     @Test
     public void updateWrongIngredientTest() {
-        sut2.add(ingredient1);
-        Ingredient ingredient = new Ingredient("cucumber", 99.0, null, new ArrayList<>(), null);
-        var result = sut2.update(ingredient1.id, ingredient);
+        sut.add(ingredient1);
+        Ingredient ingredient = new Ingredient(
+                null,
+                99.0,
+                null,
+                null);
+        var result = sut.update(ingredient1.id, ingredient);
         assertEquals(BAD_REQUEST, result.getStatusCode());
     }
 
@@ -124,5 +118,4 @@ public class IngredientControllerTest {
     public void addIngredientTest() {
         assertEquals(ResponseEntity.ok(ingredient1), sut.add(ingredient1));
     }
-
 }

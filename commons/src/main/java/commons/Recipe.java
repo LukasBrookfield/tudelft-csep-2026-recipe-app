@@ -21,6 +21,8 @@ public class Recipe {
     @ElementCollection
     public List<String> steps;
 
+    public int servings;
+
     /**
      * Constructs a Recipe object with only a name
      * @param name The name of the recipe
@@ -36,11 +38,13 @@ public class Recipe {
      * @param name The name of the recipe
      * @param ingredients A list of ingredients needed for the recipe
      * @param steps A list of steps that you need to follow
+     * @param servings The number of servings the recipe provides
      */
-    public Recipe(String name, List<Ingredient> ingredients, List<String> steps) {
+    public Recipe(String name, List<Ingredient> ingredients, List<String> steps, int servings) {
         this.name = name;
         this.ingredients = ingredients;
         this.steps = steps;
+        this.servings = servings;
     }
 
     private Recipe() {}  // for object mapper

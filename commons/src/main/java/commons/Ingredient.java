@@ -10,7 +10,7 @@ public class Ingredient {
     @GeneratedValue(strategy = GenerationType.AUTO)
     public long id;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(optional = false, cascade = CascadeType.PERSIST)
     public IngredientType ingredientType;
 
     public Double amount;  // can be null

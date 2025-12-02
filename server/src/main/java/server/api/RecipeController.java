@@ -62,10 +62,10 @@ public class RecipeController {
      */
     @PostMapping(path = { "", "/" })
     public ResponseEntity<Recipe> add(@RequestBody Recipe recipe) {
-
-        //lists and name are not null and not empty
-        if (recipe.name == null || recipe.name.isEmpty() || recipe.ingredients == null ||
-                recipe.ingredients.isEmpty() || recipe.steps == null || recipe.steps.isEmpty()) {
+        if (recipe.name == null
+                || recipe.name.isEmpty()
+                || recipe.ingredients == null
+                || recipe.steps == null) {
             return ResponseEntity.badRequest().build();
         }
 
@@ -121,13 +121,14 @@ public class RecipeController {
     @PutMapping("/{id}")
     public ResponseEntity<Recipe> update(@PathVariable("id") long id,
                                          @RequestBody Recipe updatedRecipe) {
-        //lists and name are not null and not empty
-        if (updatedRecipe.name == null || updatedRecipe.name.isEmpty() ||
-                updatedRecipe.ingredients == null || updatedRecipe.ingredients.isEmpty() ||
-                updatedRecipe.steps == null || updatedRecipe.steps.isEmpty() ||
-                id < 0 || !repo.existsById(id)) {
+        if (updatedRecipe.name == null
+                || updatedRecipe.name.isEmpty()
+                || updatedRecipe.ingredients == null
+                || updatedRecipe.steps == null
+                || id < 0
+                || !repo.existsById(id)) {
             return ResponseEntity.badRequest().build();
-        }else{
+        } else {
             Recipe recipeToUpdate = repo.findById(id).get();
             recipeToUpdate.name = updatedRecipe.name;
 
