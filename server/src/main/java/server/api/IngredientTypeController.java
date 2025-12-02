@@ -62,13 +62,10 @@ public class IngredientTypeController {
 
     /**
      * Deletes an ingredientType in database by its ID.
-     *
      * This method validates the incoming ingredientType id to ensure that it exists.
-     *
      * If the ID is valid, retrieves the ingredientType from the repository.
      * Then deletes the ingredientType from the repository.
      * Returns the deleted ingredient wrapped in a 200 OK response.
-     *
      * @param id the ID of the ingredientType to delete
      * @return ResponseEntity containing the deleted ingredient if successful,
      *         or a 400 Bad Request response if the ID is invalid or does not exist.
@@ -86,13 +83,10 @@ public class IngredientTypeController {
 
     /**
      * Updates an existing ingredientType with the given ID.
-     *
      * This method validates the incoming ingredientType id and new ingredientType.
-     *
-     *  If validation fails, or the ID does not exist, returns a 400 Bad Request response.
-     *  If the ID is valid, retrieves the existing ingredientType from the repository,
-     *  updates its fields, saves it, and returns the updated ingredient with 200 OK.
-     *
+     * If validation fails, or the ID does not exist, returns a 400 Bad Request response.
+     * If the ID is valid, retrieves the existing ingredientType from the repository,
+     * updates its fields, saves it, and returns the updated ingredient with 200 OK.
      * @param id the ID of the ingredientType to update
      * @param updatedIngredientType the ingredientType object containing the updated values
      * @return ResponseEntity containing the updated ingredient if successful,

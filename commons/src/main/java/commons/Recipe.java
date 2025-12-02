@@ -31,6 +31,7 @@ public class Recipe {
         this.name = name;
         this.ingredients = new ArrayList<>();
         this.steps = new ArrayList<>();
+        this.servings = 1;
     }
 
     /**
