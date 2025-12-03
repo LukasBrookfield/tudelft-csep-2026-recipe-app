@@ -733,6 +733,7 @@ public class RecipeOverviewCtrl {
         Ingredient ingredient = ingredientListView.getSelectionModel().getSelectedItem();
         if (ingredient.ingredientType != null) {
             editIngredientBox.setValue(ingredient.ingredientType);
+            editIngredientNameField.setText(ingredient.ingredientType.name);
         } else {
             editIngredientBox.getSelectionModel().select(0);
         }
