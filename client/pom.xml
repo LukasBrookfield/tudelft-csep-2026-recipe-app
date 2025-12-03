@@ -14,6 +14,7 @@
 		<version.mockito>5.8.0</version.mockito>
 		<version.jersey>3.1.9</version.jersey>
 		<version.jfx>25.0.1</version.jfx>
+        <version.monocle>21.0.2</version.monocle>
 	</properties>
 
 	<dependencies>
@@ -110,6 +111,14 @@
 			<version>${version.mockito}</version>
 			<scope>test</scope>
 		</dependency>
+
+        <!--testing-->
+        <dependency>
+            <groupId>org.testfx</groupId>
+            <artifactId>openjfx-monocle</artifactId>
+            <version>${version.monocle}</version>
+            <scope>test</scope>
+        </dependency>
 	</dependencies>
 
 	<build>
@@ -150,6 +159,20 @@
 					</execution>
 				</executions>
 			</plugin>
-		</plugins>
+
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.5.2</version>
+                <!-- to run the UI tests on a buildserver, it is required to
+                enable headless mode -->
+                <configuration>
+                    <argLine>-Djava.awt.headless=true -Dtestfx.robot=glass
+                        -Dtestfx.headless=true -Dprism.order=sw</argLine>
+                </configuration>
+            </plugin>
+
+        </plugins>
 	</build>
 </project>
