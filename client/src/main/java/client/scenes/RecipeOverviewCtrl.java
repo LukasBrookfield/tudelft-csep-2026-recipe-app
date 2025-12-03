@@ -190,10 +190,10 @@ public class RecipeOverviewCtrl {
                     RecipeUtils recipeUtils,
                     UserConfig user,
                     MainCtrl mainCtrl) {
-        this.mainCtrl = mainCtrl;
         this.server = server;
         this.recipeUtils = recipeUtils;
         this.user = user;
+        this.mainCtrl = mainCtrl;
     }
 
     /**
@@ -247,9 +247,11 @@ public class RecipeOverviewCtrl {
 
     /**
      * Changes the scene between viewing and editing the ingredients
-     * @param value 0 vor viewing mode, 1 for editing part one, 2 for editing part 2
+     * @param value 0 for viewing mode, 1 for editing part 1, 2 for editing part 2
+     * Basically part 1 is where the user inputs the name of the ingredient type
+     * and part 2 is where the user inputs the unit and amount of the ingredient
      */
-    private void changeIngredientViewEditMode(int value) {
+    private void changeIngredientTypeViewEditMode(int value) {
         removeIngredientButton.getParent().setVisible(value == 0);
         editIngredientBox.getParent().setVisible(value == 1);
         editIngredientAmountField.getParent().setVisible(value == 2);
@@ -333,7 +335,7 @@ public class RecipeOverviewCtrl {
      */
     @FXML
     private void initialize() {
-        changeIngredientViewEditMode(0);
+        changeIngredientTypeViewEditMode(0);
         changeStepViewEditMode(false);
         changeViewEditMode(false);
         recipeTitleField.setVisible(false);
@@ -619,7 +621,7 @@ public class RecipeOverviewCtrl {
 
     @FXML
     private void onToggleOverviewButton() {
-        mainCtrl.showIngredientOverview();
+        mainCtrl.showIngredientTypeOverview();
     }
 
     // Recipe title row
@@ -724,7 +726,7 @@ public class RecipeOverviewCtrl {
 
         }
 
-        changeIngredientViewEditMode(1);
+        changeIngredientTypeViewEditMode(1);
         editIngredientNameField.setText("");
         editUnitBox.getSelectionModel().select(0);
 
@@ -760,11 +762,16 @@ public class RecipeOverviewCtrl {
      */
     @FXML
     private void onCancelEditIngredientButton() {
-        changeIngredientViewEditMode(0);
+        changeIngredientTypeViewEditMode(0);
         cancelEditButton.setVisible(true);
         doneEditButton.setVisible(true);
     }
 
+    /**
+     * On action method for the Next Edit Ingredient button
+     * Switches the scene to edit ingredient part 2 (which is where the user inputs
+     * the unit and amount of the ingredient)
+     */
     @FXML
     private void onNextEditIngredientButton() {
         if (editIngredientNameField.getText().isEmpty()) {
@@ -772,7 +779,7 @@ public class RecipeOverviewCtrl {
             return;
         }
 
-        changeIngredientViewEditMode(2);
+        changeIngredientTypeViewEditMode(2);
 
         Ingredient ingredient = ingredientListView.getSelectionModel()
                 .getSelectedItem();
@@ -787,9 +794,14 @@ public class RecipeOverviewCtrl {
         }
     }
 
+    /**
+     * On action method for the Back Edit Ingredient button
+     * Switches the scene back to edit ingredient part 1 (which is where the user
+     * enters the name of the ingredient type
+     */
     @FXML
     private void onBackEditIngredientButton() {
-        changeIngredientViewEditMode(1);
+        changeIngredientTypeViewEditMode(1);
     }
 
     /**
@@ -833,7 +845,7 @@ public class RecipeOverviewCtrl {
         editIngredientAmountField.setText("");
         editUnitBox.getSelectionModel().select(0);
 
-        changeIngredientViewEditMode(0);
+        changeIngredientTypeViewEditMode(0);
         cancelEditButton.setVisible(true);
         doneEditButton.setVisible(true);
 

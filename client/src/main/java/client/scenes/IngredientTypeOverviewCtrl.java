@@ -1,25 +1,21 @@
 package client.scenes;
 
+import client.utils.RecipeUtils;
 import client.utils.ServerUtils;
 import client.utils.UserConfig;
 import com.google.inject.Inject;
 import commons.Ingredient;
 import commons.IngredientType;
-import commons.Recipe;
-import commons.Unit;
+import commons.Nutrition;
 import javafx.application.Platform;
-import javafx.beans.binding.Bindings;
-import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.layout.AnchorPane;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class IngredientOverviewCtrl {
+public class IngredientTypeOverviewCtrl {
 
     private final ServerUtils server;
+
+    private final RecipeUtils recipeUtils;
 
     private UserConfig user;
 
@@ -28,16 +24,16 @@ public class IngredientOverviewCtrl {
     // Left sidebar
 
     @FXML
-    private TextField ingredientSearchField;
+    private TextField ingredientTypeSearchField;
 
     @FXML
-    private ListView<Ingredient> ingredientListView;
+    private ListView<IngredientType> ingredientTypeListView;
 
     @FXML
-    private Button removeIngredientButton;
+    private Button removeIngredientTypeButton;
 
     @FXML
-    private Button addIngredientButton;
+    private Button addIngredientTypeButton;
 
     // Top right
 
@@ -47,10 +43,10 @@ public class IngredientOverviewCtrl {
     // Ingredient title row
 
     @FXML
-    private Label ingredientTitleLabel;
+    private Label ingredientTypeTitleLabel;
 
     @FXML
-    private Button editIngredientButton;
+    private Button editIngredientTypeButton;
 
     @FXML
     private Button cancelEditButton;
@@ -66,12 +62,6 @@ public class IngredientOverviewCtrl {
     @FXML
     private Label nameLabel;
 
-    @FXML
-    private Label amountLabel;
-
-    @FXML
-    private Label unitLabel;
-
     // Edit details section
 
     @FXML
@@ -79,12 +69,6 @@ public class IngredientOverviewCtrl {
 
     @FXML
     private TextField editNameField;
-
-    @FXML
-    private TextField editAmountField;
-
-    @FXML
-    private ChoiceBox<String> editUnitBox;
 
     @FXML
     private Button cancelEditDetailsButton;
@@ -133,35 +117,39 @@ public class IngredientOverviewCtrl {
 
     // General
     @Inject
-    public IngredientOverviewCtrl(ServerUtils server, UserConfig user, MainCtrl mainCtrl) {
-        this.mainCtrl = mainCtrl;
+    public IngredientTypeOverviewCtrl(ServerUtils server,
+                                      RecipeUtils recipeUtils,
+                                      UserConfig user,
+                                      MainCtrl mainCtrl) {
         this.server = server;
+        this.recipeUtils = recipeUtils;
         this.user = user;
+        this.mainCtrl = mainCtrl;
     }
 
     /**
-     * Changes the scene between viewing and editing an ingredient
+     * Changes the scene between viewing and editing an ingredient type
      * @param value false for viewing mode, true for editing mode
      */
     @FXML
     private void changeViewEditMode(boolean value) {
-        editIngredientButton.setVisible(!value);
+        editIngredientTypeButton.setVisible(!value);
         cancelEditButton.getParent().setVisible(value);
         editDetailsButton.getParent().getParent().getParent().setVisible(value);
         editNutritionButton.getParent().getParent().getParent().setVisible(value);
 
         // While in edit mode, the user can't change to a different ingredient
-        ingredientSearchField.setDisable(value);
-        ingredientListView.setDisable(value);
+        ingredientTypeSearchField.setDisable(value);
+        ingredientTypeListView.setDisable(value);
 
         // While in edit mode, the user can't remove the current ingredient
         // or add a new one
-        addIngredientButton.setVisible(!value);
-        removeIngredientButton.setVisible(!value);
+        addIngredientTypeButton.setVisible(!value);
+        removeIngredientTypeButton.setVisible(!value);
     }
 
     /**
-     * Changes the scene between viewing and editing the ingredient details
+     * Changes the scene between viewing and editing the ingredient type details
      * @param value false for viewing mode, true for editing mode
      */
     @FXML
@@ -200,50 +188,62 @@ public class IngredientOverviewCtrl {
     }
 
     /**
-     * Sets all labels based on which ingredient is selected
+     * Sets all labels based on which ingredient type is selected
      */
     private void setLabelsAndFields() {
-        Ingredient ingredient = ingredientListView.getSelectionModel().getSelectedItem();
-        if (ingredient != null) {
-            ingredientTitleLabel.setText(ingredient.toString());
-
-            if (ingredient.ingredientType != null) {
-                nameLabel.setText(ingredient.ingredientType.name);
-            } else {
-                nameLabel.setText("-");
-            }
-
-            if (ingredient.amount != null) {
-                amountLabel.setText(String.valueOf(ingredient.amount));
-            } else {
-                amountLabel.setText("-");
-            }
-
-            if (ingredient.unit != null) {
-                unitLabel.setText(ingredient.unit.name());
-            } else {
-                unitLabel.setText("-");
-            }
+        IngredientType ingredientType = ingredientTypeListView
+                .getSelectionModel().getSelectedItem();
+        if (ingredientType == null) {
+            return;
         }
+
+        ingredientTypeTitleLabel.setText(ingredientType.name);
+        nameLabel.setText(ingredientType.name);
+        kcalLabel.setText(String.valueOf(recipeUtils
+                .getCaloriesPer100g(ingredientType)));
+
+        proteinLabel.setText("-");
+        fatLabel.setText("-");
+        carbsLabel.setText("-");
+
+        if (ingredientType.nutrition == null) {
+            return;
+        }
+        if (ingredientType.nutrition.protein != null) {
+            proteinLabel.setText(String.valueOf(ingredientType.nutrition.protein));
+        }
+        if (ingredientType.nutrition.fat != null) {
+            fatLabel.setText(String.valueOf(ingredientType.nutrition.fat));
+        }
+        if (ingredientType.nutrition.carbs != null) {
+            carbsLabel.setText(String.valueOf(ingredientType.nutrition.carbs));
+        }
+
+        int usedInRecipes = 0;
+        if (ingredientType.ingredients != null) {
+            usedInRecipes = ingredientType.ingredients.size();
+        }
+        usedInRecipesLabel.setText("This ingredient type is used in "
+        + usedInRecipes + " recipe" + (usedInRecipes == 1 ? "" : "s"));
     }
 
     /**
-     * Refreshes the list of ingredients. When there is no ingredient, the right
-     * side doesn't show. When there is an ingredient, it sets the labels based
-     * on that ingredient
+     * Refreshes the list of ingredient types. When there is no ingredient type,
+     * the right side doesn't show. When there is an ingredient type, it sets
+     * the labels based on that ingredient type
      */
     @FXML
     private void onRefresh() {
-        ingredientListView.refresh();
+        ingredientTypeListView.refresh();
 
-        boolean empty = ingredientListView.getItems().isEmpty();
+        boolean empty = ingredientTypeListView.getItems().isEmpty();
         mainSeparator.getParent().setVisible(!empty);
 
         setLabelsAndFields();
     }
 
     /**
-     * Initializes the ingredient overview with default values
+     * Initializes the ingredient type overview with default values
      */
     @FXML
     private void initialize() {
@@ -251,13 +251,11 @@ public class IngredientOverviewCtrl {
         changeNutritionViewEditMode(false);
         changeViewEditMode(false);
 
-        editUnitBox.getItems().addAll("", "G", "ML", "TBSP", "TSP", "PINCH",
-                "HANDFUL", "TO_TASTE");
-
         onRefresh();
 
-        ingredientListView.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldRecipe, newRecipe) -> {
+        ingredientTypeListView.getSelectionModel().selectedItemProperty().addListener(
+                (observable,
+                 oldIngredientType, newIngredientType) -> {
                     onRefresh();
                 }
         );
@@ -266,31 +264,32 @@ public class IngredientOverviewCtrl {
     // Left sidebar
 
     /**
-     * On action method for the Remove Ingredient button
-     * It removes the currently selected ingredient (if any)
+     * On action method for the Remove Ingredient Type button
+     * It removes the currently selected ingredient type (if any)
      */
     @FXML
-    private void onRemoveIngredientButton() {
-        Ingredient ingredient = ingredientListView.getSelectionModel().getSelectedItem();
-        ingredientListView.getItems().remove(ingredient);
+    private void onRemoveIngredientTypeButton() {
+        IngredientType ingredientType = ingredientTypeListView
+                .getSelectionModel().getSelectedItem();
+        ingredientTypeListView.getItems().remove(ingredientType);
         onRefresh();
     }
 
     /**
-     * On action method for the Add Ingredient button
-     * It creates a new ingredient and then selects this ingredient
+     * On action method for the Add Ingredient Type button
+     * It creates a new ingredient type and then selects this ingredient
      */
     @FXML
-    private void onAddIngredientButton() {
-        Ingredient ingredient = new Ingredient(null,
-                null, null, null);
+    private void onAddIngredientTypeButton() {
+        IngredientType ingredientType = new IngredientType(
+                "New ingredient", null, null);
 
-        ingredientListView.getItems().add(ingredient);
-        ingredientListView.getSelectionModel().select(
-                ingredientListView.getItems().size() - 1
+        ingredientTypeListView.getItems().add(ingredientType);
+        ingredientTypeListView.getSelectionModel().select(
+                ingredientTypeListView.getItems().size() - 1
         );
 
-        onEditIngredientButton();
+        onEditIngredientTypeButton();
         nameLabel.setText("-");
         editDetailsButton.requestFocus();
     }
@@ -308,11 +307,11 @@ public class IngredientOverviewCtrl {
     // Ingredient title row
 
     /**
-     * On action method for the Edit Ingredient button
+     * On action method for the Edit Ingredient Type button
      * Changes the scene to edit mode
      */
     @FXML
-    private void onEditIngredientButton() {
+    private void onEditIngredientTypeButton() {
         changeViewEditMode(true);
     }
 
@@ -328,7 +327,7 @@ public class IngredientOverviewCtrl {
 
     /**
      * On action method for the Done Edit button
-     * All the changes are added to the selected ingredient
+     * All the changes are added to the selected ingredient type
      */
     @FXML
     private void onDoneEditButton() {
@@ -337,21 +336,26 @@ public class IngredientOverviewCtrl {
             return;
         }
 
-        Ingredient ingredient = ingredientListView.getSelectionModel().getSelectedItem();
+        IngredientType ingredientType = ingredientTypeListView
+                .getSelectionModel().getSelectedItem();
+        ingredientType.name = nameLabel.getText();
 
-        ingredient.ingredientType = new IngredientType(nameLabel.getText(),
-                null, null);
+        if (!proteinLabel.getText().equals("-") || !fatLabel.getText().equals("-")
+                || !carbsLabel.getText().equals("-")) {
+            if (ingredientType.nutrition == null) {
+                ingredientType.nutrition = new Nutrition(null,
+                        null, null);
+            }
 
-        if (!amountLabel.getText().equals("-")) {
-            ingredient.amount = Double.parseDouble(amountLabel.getText());
-        } else {
-            ingredient.amount = null;
-        }
-
-        if (!unitLabel.getText().equals("-")) {
-            ingredient.unit = Unit.valueOf(unitLabel.getText());
-        } else {
-            ingredient.unit = null;
+            if (!proteinLabel.getText().equals("-")) {
+                ingredientType.nutrition.protein = Double.parseDouble(proteinLabel.getText());
+            }
+            if (!fatLabel.getText().equals("-")) {
+                ingredientType.nutrition.fat = Double.parseDouble(fatLabel.getText());
+            }
+            if (!carbsLabel.getText().equals("-")) {
+                ingredientType.nutrition.carbs = Double.parseDouble(carbsLabel.getText());
+            }
         }
 
         onRefresh();
@@ -373,18 +377,6 @@ public class IngredientOverviewCtrl {
         } else {
             editNameField.setText("");
         }
-
-        if (!amountLabel.getText().equals("-")) {
-            editAmountField.setText(amountLabel.getText());
-        } else {
-            editAmountField.setText("");
-        }
-
-        if (!unitLabel.getText().equals("-")) {
-            editUnitBox.setValue(unitLabel.getText());
-        } else {
-            editUnitBox.setValue("");
-        }
     }
 
     /**
@@ -401,55 +393,63 @@ public class IngredientOverviewCtrl {
 
     /**
      * On action method for the Done Edit Details button
-     * Note that this only changes the original ingredient if the user presses
+     * Note that this only changes the original ingredient type if the user presses
      * 'Done' later
      */
     @FXML
     private void onDoneEditDetailsButton() {
         if (editNameField.getText().isEmpty()) {
-            System.out.println("The ingredient needs a name.");
-            return;
-        }
-        if (!editUnitBox.getValue().equals("TO_TASTE")
-                && editAmountField.getText().isEmpty()) {
-            System.out.println("This unit needs an amount.");
-            return;
-        }
-        if (editUnitBox.getValue().equals("TO_TASTE")
-                && !editAmountField.getText().isEmpty()) {
-            System.out.println("This unit cannot have an amount.");
+            System.out.println("The ingredient type needs a name.");
             return;
         }
 
         nameLabel.setText(editNameField.getText());
-        if (!editAmountField.getText().isEmpty()) {
-            amountLabel.setText(editAmountField.getText());
-        } else {
-            amountLabel.setText("-");
-        }
-        if (!editUnitBox.getValue().isEmpty()) {
-            unitLabel.setText(editUnitBox.getValue());
-        } else {
-            unitLabel.setText("-");
-        }
 
         changeDetailsViewEditMode(false);
     }
 
     // Edit nutrition section
 
+    /**
+     * On action method for the Edit Nutrition button
+     * Changes the scene to edit nutrition mode
+     */
     @FXML
     private void onEditNutritionButton() {
         changeNutritionViewEditMode(true);
     }
 
+    /**
+     * On action method for the Cancel Edit Nutrition button
+     */
     @FXML
     private void onCancelEditNutritionButton() {
         changeNutritionViewEditMode(false);
     }
 
+    /**
+     * On action method for the Done Edit Nutrition button
+     * All changes are added onto the selected ingredient type
+     */
     @FXML
     private void onDoneEditNutritionButton() {
+        if (!proteinTextField.getText().isEmpty()) {
+            proteinLabel.setText(proteinTextField.getText());
+        } else {
+            proteinLabel.setText("-");
+        }
+        if (!fatTextField.getText().isEmpty()) {
+            fatLabel.setText(fatTextField.getText());
+        } else {
+            fatLabel.setText("-");
+        }
+        if (!carbsTextField.getText().isEmpty()) {
+            carbsLabel.setText(carbsTextField.getText());
+        } else {
+            carbsLabel.setText("-");
+        }
+
+        kcalLabel.setText("-");
         changeNutritionViewEditMode(false);
     }
 }
