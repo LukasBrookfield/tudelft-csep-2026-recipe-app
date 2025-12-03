@@ -68,6 +68,9 @@ public class RecipeOverviewCtrl {
     @FXML
     private Button addRecipeButton;
 
+    @FXML
+    private Button shoppingListButton;
+
     // Top right
 
     @FXML
@@ -118,8 +121,21 @@ public class RecipeOverviewCtrl {
     @FXML
     private Button editIngredientButton;
 
+    // Edit ingredient step 1
+
+    @FXML
+    private ChoiceBox<IngredientType> editIngredientBox;
+
     @FXML
     private TextField editIngredientNameField;
+
+    @FXML
+    private Button cancelEditIngredientButton;
+
+    @FXML
+    private Button nextEditIngredientButton;
+
+    // Edit ingredient step 2
 
     @FXML
     private TextField editIngredientAmountField;
@@ -128,10 +144,10 @@ public class RecipeOverviewCtrl {
     private ChoiceBox<String> editUnitBox;
 
     @FXML
-    private Button cancelEditIngredientButton;
+    private Button doneEditIngredientButton;
 
     @FXML
-    private Button doneEditIngredientButton;
+    private Button onBackEditIngredientButton;
 
     // Preparation
 
@@ -166,9 +182,6 @@ public class RecipeOverviewCtrl {
 
     @FXML
     private Button doneEditStepButton;
-
-    @FXML
-    private Button bag;
     
     // General
 
@@ -200,6 +213,7 @@ public class RecipeOverviewCtrl {
 
         addRecipeButton.setVisible(!value);
         removeRecipeButton.setVisible(!value);
+        shoppingListButton.setVisible(!value);
 
         recipeSearchField.setDisable(value);
         recipeListView.setDisable(value);
@@ -233,14 +247,16 @@ public class RecipeOverviewCtrl {
 
     /**
      * Changes the scene between viewing and editing the ingredients
-     * @param value false vor viewing mode, true for editing mode
+     * @param value 0 vor viewing mode, 1 for editing part one, 2 for editing part 2
      */
-    private void changeIngredientViewEditMode(boolean value) {
-        removeIngredientButton.getParent().setVisible(!value);
-        editIngredientNameField.getParent().setVisible(value);
-        removeIngredientButton.getParent().setMouseTransparent(value);
-        ingredientListView.setDisable(value);
-        removeStepButton.getParent().setVisible(!value);
+    private void changeIngredientViewEditMode(int value) {
+        removeIngredientButton.getParent().setVisible(value == 0);
+        editIngredientBox.getParent().setVisible(value == 1);
+        editIngredientAmountField.getParent().setVisible(value == 2);
+
+        removeIngredientButton.getParent().setMouseTransparent(value > 0);
+        ingredientListView.setDisable(value > 0);
+        removeStepButton.getParent().setVisible(value == 0);
 
         // When going into edit mode, it automatically selects the
         // ingredient name field
@@ -317,12 +333,18 @@ public class RecipeOverviewCtrl {
      */
     @FXML
     private void initialize() {
-        changeIngredientViewEditMode(false);
+        changeIngredientViewEditMode(0);
         changeStepViewEditMode(false);
         changeViewEditMode(false);
         recipeTitleField.setVisible(false);
 
-        editUnitBox.getItems().addAll("", "G", "ML", "TBSP", "TSP", "PINCH",
+        // Later this choicebox should show all ingredient types in the database
+        editIngredientBox.getItems().addAll(
+                new IngredientType("Create new ingredient type",
+                        null, null)
+        );;
+
+        editUnitBox.getItems().addAll("Select a unit", "G", "ML", "TBSP", "TSP", "PINCH",
                 "HANDFUL", "TO_TASTE");
 
         onRefresh();
@@ -699,32 +721,38 @@ public class RecipeOverviewCtrl {
         }
         if (ingredientListView.getSelectionModel().getSelectedItem() == null) {
             System.out.println("There is no ingredient selected.");
-            return;
+
         }
-        changeIngredientViewEditMode(true);
+
+        changeIngredientViewEditMode(1);
+        editIngredientNameField.setText("");
+        editUnitBox.getSelectionModel().select(0);
 
         Ingredient ingredient = ingredientListView.getSelectionModel().getSelectedItem();
         if (ingredient.ingredientType != null) {
-            editIngredientNameField.setText(ingredient.ingredientType.name);
+            editIngredientBox.setValue(ingredient.ingredientType);
         } else {
-            editIngredientNameField.setText("");
+            editIngredientBox.getSelectionModel().select(0);
         }
-        if (ingredient.amount != null) {
-            editIngredientAmountField.setText(String.valueOf(ingredient.amount));
-        } else {
-            editIngredientAmountField.setText("");
-        }
-        if (ingredient.unit != null) {
-            editUnitBox.setValue(ingredient.unit.name());
-        } else {
-            editUnitBox.setValue("");
-        }
+
+        editIngredientBox.getSelectionModel().selectedItemProperty()
+                .addListener((observable,
+                              oldValue, newValue) -> {
+                    if (newValue.name.equals("Create new ingredient type")) {
+                        editIngredientNameField.setDisable(false);
+                        editIngredientNameField.setText("");
+                    } else {
+                        editIngredientNameField.setDisable(true);
+                        editIngredientNameField.setText(editIngredientBox
+                                .getValue().name);
+                    }
+                });
 
         cancelEditButton.setVisible(false);
         doneEditButton.setVisible(false);
 
-        // Force focus into the engrident name field
-        editIngredientNameField.requestFocus();
+        // Force focus into the IngredientType name box
+        Platform.runLater(() -> editIngredientBox.requestFocus());
     }
 
     /**
@@ -732,9 +760,36 @@ public class RecipeOverviewCtrl {
      */
     @FXML
     private void onCancelEditIngredientButton() {
-        changeIngredientViewEditMode(false);
+        changeIngredientViewEditMode(0);
         cancelEditButton.setVisible(true);
         doneEditButton.setVisible(true);
+    }
+
+    @FXML
+    private void onNextEditIngredientButton() {
+        if (editIngredientNameField.getText().isEmpty()) {
+            System.out.println("The ingredient type needs a name.");
+            return;
+        }
+
+        changeIngredientViewEditMode(2);
+
+        Ingredient ingredient = ingredientListView.getSelectionModel()
+                .getSelectedItem();
+        if (ingredient.amount != null) {
+            editIngredientAmountField.setText(String.valueOf(ingredient.amount));
+        }
+        if (ingredient.unit != null) {
+            editUnitBox.setValue(ingredient.unit.name());
+        }
+        if (editUnitBox.getValue().isEmpty()) {
+            editUnitBox.getSelectionModel().select(0);
+        }
+    }
+
+    @FXML
+    private void onBackEditIngredientButton() {
+        changeIngredientViewEditMode(1);
     }
 
     /**
@@ -743,8 +798,8 @@ public class RecipeOverviewCtrl {
      */
     @FXML
     private void onDoneEditIngredientButton() {
-        if (editIngredientNameField.getText().isEmpty()) {
-            System.out.println("A name is required.");
+        if (editUnitBox.getValue().equals("Select a unit")) {
+            System.out.println("Select a unit.");
             return;
         }
         if (!editUnitBox.getValue().equals("TO_TASTE")
@@ -775,9 +830,16 @@ public class RecipeOverviewCtrl {
         }
         ingredientListView.getItems().set(index, ingredient);
 
-        changeIngredientViewEditMode(false);
+        editIngredientAmountField.setText("");
+        editUnitBox.getSelectionModel().select(0);
+
+        changeIngredientViewEditMode(0);
         cancelEditButton.setVisible(true);
         doneEditButton.setVisible(true);
+
+        if (!editIngredientBox.getItems().contains(ingredient.ingredientType)) {
+            editIngredientBox.getItems().add(ingredient.ingredientType);
+        }
     }
 
     // Edit preparation step section
@@ -876,7 +938,7 @@ public class RecipeOverviewCtrl {
      * A new window with shopping list is opened
      */
     @FXML
-    private void onBag(){
+    private void onShoppingListButton(){
         Parent root;
         try {
 

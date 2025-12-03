@@ -33,10 +33,7 @@
                                         <Insets left="5.0" />
                                     </padding>
                                 </Label>
-                        <HBox prefHeight="33.0" prefWidth="134.0" HBox.hgrow="ALWAYS">
-                           <children>
-                              <Button fx:id="bag" mnemonicParsing="false" onAction="#onBag" prefHeight="33.0" prefWidth="68.0" text="Bag" />
-                           </children></HBox>
+                        <HBox prefHeight="100.0" prefWidth="200.0" />
                                 <HBox alignment="CENTER_RIGHT" prefHeight="33.0" prefWidth="375.0" spacing="5.0">
                                     <children>
                               <Button fx:id="downloadRecipeButton" alignment="CENTER_RIGHT" cacheShape="false" mnemonicParsing="false" onAction="#onDownloadRecipe" prefHeight="25.0" prefWidth="71.0" text="Download" />
@@ -72,6 +69,11 @@
                                             </font>
                                         </Button>
                                         <Button fx:id="addRecipeButton" mnemonicParsing="false" onAction="#onAddRecipe" prefHeight="25.0" prefWidth="25.0" text="+" />
+                              <HBox alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="131.0">
+                                 <children>
+                                    <Button fx:id="shoppingListButton" mnemonicParsing="false" onAction="#onShoppingListButton" prefHeight="25.0" prefWidth="91.0" text="Shopping list" />
+                                 </children>
+                              </HBox>
                                     </children>
                            <VBox.margin>
                               <Insets top="5.0" />
@@ -128,20 +130,7 @@
                                     <children>
                               <StackPane prefHeight="25.0" prefWidth="411.0">
                                  <children>
-                                    <HBox prefHeight="25.0" prefWidth="307.0" spacing="5.0">
-                                       <children>
-                                          <TextField fx:id="editIngredientNameField" prefHeight="25.0" prefWidth="265.0" promptText="Enter an ingredient name" />
-                                          <TextField fx:id="editIngredientAmountField" prefHeight="25.0" prefWidth="163.0" promptText="Amount" />
-                                          <ChoiceBox fx:id="editUnitBox" prefWidth="150.0" />
-                                          <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
-                                             <children>
-                                                <Button fx:id="cancelEditIngredientButton" mnemonicParsing="false" onAction="#onCancelEditIngredientButton" text="Cancel" />
-                                                <Button fx:id="doneEditIngredientButton" mnemonicParsing="false" onAction="#onDoneEditIngredientButton" text="Done" />
-                                             </children>
-                                          </HBox>
-                                       </children>
-                                    </HBox>
-                                    <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                                    <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0" visible="false">
                                        <children>
                                                     <Button fx:id="removeIngredientButton" mnemonicParsing="false" onAction="#onRemoveIngredientButton" prefHeight="25.0" prefWidth="25.0" text="✕">
                                                         <font>
@@ -154,6 +143,30 @@
                                              </HBox.margin>
                                           </Button>
                                                     <Button fx:id="editIngredientButton" mnemonicParsing="false" onAction="#onEditIngredientButton" prefHeight="25.0" prefWidth="28.0" text="✎" />
+                                       </children>
+                                    </HBox>
+                                    <HBox prefHeight="25.0" prefWidth="307.0" spacing="5.0" visible="false">
+                                       <children>
+                                          <ChoiceBox fx:id="editIngredientBox" prefHeight="25.0" prefWidth="277.0" />
+                                          <TextField fx:id="editIngredientNameField" prefHeight="25.0" prefWidth="208.0" promptText="Ingredient type" />
+                                          <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                                             <children>
+                                                <Button fx:id="cancelEditIngredientButton" mnemonicParsing="false" onAction="#onCancelEditIngredientButton" prefHeight="25.0" prefWidth="56.0" text="Cancel" />
+                                                <Button fx:id="nextEditIngredientButton" mnemonicParsing="false" onAction="#onNextEditIngredientButton" prefHeight="25.0" prefWidth="43.0" text="Next" />
+                                             </children>
+                                          </HBox>
+                                       </children>
+                                    </HBox>
+                                    <HBox layoutX="10.0" layoutY="10.0" prefHeight="25.0" prefWidth="307.0" spacing="5.0">
+                                       <children>
+                                          <ChoiceBox fx:id="editUnitBox" prefHeight="25.0" prefWidth="203.0" />
+                                          <TextField fx:id="editIngredientAmountField" prefHeight="25.0" prefWidth="191.0" promptText="Amount" />
+                                          <HBox alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="149.0" spacing="5.0">
+                                             <children>
+                                                <Button fx:id="backEditIngredientButton1" mnemonicParsing="false" onAction="#onBackEditIngredientButton" prefHeight="25.0" prefWidth="48.0" text="Back" />
+                                                <Button fx:id="doneEditIngredientButton1" mnemonicParsing="false" onAction="#onDoneEditIngredientButton" text="Done" />
+                                             </children>
+                                          </HBox>
                                        </children>
                                     </HBox>
                                  </children>
