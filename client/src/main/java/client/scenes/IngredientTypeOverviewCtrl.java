@@ -420,6 +420,13 @@ public class IngredientTypeOverviewCtrl {
     @FXML
     private void onEditNutritionButton() {
         changeNutritionViewEditMode(true);
+
+        proteinTextField.setText(proteinLabel.getText()
+                .substring(0, proteinLabel.getText().length() - 1));
+        fatTextField.setText(fatLabel.getText()
+                .substring(0, fatLabel.getText().length() - 1));
+        carbsTextField.setText(carbsLabel.getText()
+                .substring(0, carbsLabel.getText().length() - 1));
     }
 
     /**
