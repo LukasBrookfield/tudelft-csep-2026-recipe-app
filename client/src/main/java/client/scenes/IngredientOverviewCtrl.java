@@ -340,7 +340,7 @@ public class IngredientOverviewCtrl {
         Ingredient ingredient = ingredientListView.getSelectionModel().getSelectedItem();
 
         ingredient.ingredientType = new IngredientType(nameLabel.getText(),
-                null, null);
+                null, null, null);
 
         if (!amountLabel.getText().equals("-")) {
             ingredient.amount = Double.parseDouble(amountLabel.getText());

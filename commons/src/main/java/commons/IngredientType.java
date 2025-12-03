@@ -20,16 +20,20 @@ public class IngredientType {
     @OneToMany(cascade = CascadeType.ALL)
     public List<Ingredient> ingredients;
 
+    public Double density;  // unit = g/mL
+
     /**
      * Constructs a new IngredientType object
      * @param name The name of the ingredient e.g. tomato
      * @param nutrition The nutritional information of the ingredient type
      * @param ingredients A list of recipe ingredients that use this ingredient type
+     * @param density The density of the ingredient in g/mL
      */
-    public IngredientType(String name, Nutrition nutrition, List<Ingredient> ingredients) {
+    public IngredientType(String name, Nutrition nutrition, List<Ingredient> ingredients, Double density) {
         this.name = name;
         this.nutrition = nutrition;
         this.ingredients = ingredients;
+        this.density = density;
     }
 
     private IngredientType() {}  // for object mapper

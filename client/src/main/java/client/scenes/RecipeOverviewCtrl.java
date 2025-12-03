@@ -762,7 +762,7 @@ public class RecipeOverviewCtrl {
         Ingredient ingredient = ingredientListView.getItems().get(index);
 
         ingredient.ingredientType = new IngredientType(
-                editIngredientNameField.getText(), null, null);
+                editIngredientNameField.getText(), null, null, null);
         if (!editIngredientAmountField.getText().isEmpty()) {
             ingredient.amount = Double.parseDouble(editIngredientAmountField.getText());
         } else {

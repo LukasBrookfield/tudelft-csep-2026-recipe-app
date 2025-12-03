@@ -134,7 +134,7 @@ public class ShoppingListCtrl {
      */
     @FXML
     private void onAddIngredientButton() {
-        ingredientListView.getItems().add(new Ingredient(new IngredientType("New Ingredient", null, null), null, null, null));
+        ingredientListView.getItems().add(new Ingredient(new IngredientType("New Ingredient", null, null, null), null, null, null));
         ingredientListView.getSelectionModel().select(
                 ingredientListView.getItems().size() - 1
         );
