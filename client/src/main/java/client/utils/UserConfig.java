@@ -11,8 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class UserConfig {
-    private static final String FILE_NAME = "UserConfig.json";
-    private static final String FILE_PATH = "client/src/main/java/client/utils/" + FILE_NAME;
+    private String FILE_NAME = "UserConfig.json";
+    private String FILE_PATH = "client/src/main/java/client/utils/" + FILE_NAME;
     private User user;
 
     /**
@@ -20,6 +20,19 @@ public class UserConfig {
      */
     public UserConfig() {
         readUser();
+    }
+
+    /**
+     * Constructs a new UserConfig object for testing
+     * @param path The path where the file will be created
+     */
+    public UserConfig(String path){
+        this.FILE_NAME = "TestUserConfig.json";
+        this.FILE_PATH = path + this.FILE_NAME;
+
+        //so new user be empty
+        user = new User(new ArrayList<>(), new ArrayList<>());
+        saveUser();
     }
 
     /**
