@@ -200,7 +200,7 @@ public class IngredientTypeOverviewCtrl {
         ingredientTypeTitleLabel.setText(ingredientType.name);
         nameLabel.setText(ingredientType.name);
         kcalLabel.setText(String.valueOf(recipeUtils
-                .getCaloriesPer100g(ingredientType)));
+                .getCaloriesPer100g(ingredientType)) + "g");
 
         proteinLabel.setText("-");
         fatLabel.setText("-");
@@ -210,13 +210,13 @@ public class IngredientTypeOverviewCtrl {
             return;
         }
         if (ingredientType.nutrition.protein != null) {
-            proteinLabel.setText(String.valueOf(ingredientType.nutrition.protein));
+            proteinLabel.setText(String.valueOf(ingredientType.nutrition.protein) + "g");
         }
         if (ingredientType.nutrition.fat != null) {
-            fatLabel.setText(String.valueOf(ingredientType.nutrition.fat));
+            fatLabel.setText(String.valueOf(ingredientType.nutrition.fat) + "g");
         }
         if (ingredientType.nutrition.carbs != null) {
-            carbsLabel.setText(String.valueOf(ingredientType.nutrition.carbs));
+            carbsLabel.setText(String.valueOf(ingredientType.nutrition.carbs) + "g");
         }
 
         int usedInRecipes = 0;
@@ -348,13 +348,16 @@ public class IngredientTypeOverviewCtrl {
             }
 
             if (!proteinLabel.getText().equals("-")) {
-                ingredientType.nutrition.protein = Double.parseDouble(proteinLabel.getText());
+                ingredientType.nutrition.protein = Double.parseDouble(proteinLabel.getText()
+                        .substring(0, proteinLabel.getText().length() - 1));
             }
             if (!fatLabel.getText().equals("-")) {
-                ingredientType.nutrition.fat = Double.parseDouble(fatLabel.getText());
+                ingredientType.nutrition.fat = Double.parseDouble(fatLabel.getText()
+                        .substring(0, fatLabel.getText().length() - 1));
             }
             if (!carbsLabel.getText().equals("-")) {
-                ingredientType.nutrition.carbs = Double.parseDouble(carbsLabel.getText());
+                ingredientType.nutrition.carbs = Double.parseDouble(carbsLabel.getText()
+                        .substring(0, carbsLabel.getText().length() - 1));
             }
         }
 
@@ -434,17 +437,17 @@ public class IngredientTypeOverviewCtrl {
     @FXML
     private void onDoneEditNutritionButton() {
         if (!proteinTextField.getText().isEmpty()) {
-            proteinLabel.setText(proteinTextField.getText());
+            proteinLabel.setText(proteinTextField.getText() + "g");
         } else {
             proteinLabel.setText("-");
         }
         if (!fatTextField.getText().isEmpty()) {
-            fatLabel.setText(fatTextField.getText());
+            fatLabel.setText(fatTextField.getText() + "g");
         } else {
             fatLabel.setText("-");
         }
         if (!carbsTextField.getText().isEmpty()) {
-            carbsLabel.setText(carbsTextField.getText());
+            carbsLabel.setText(carbsTextField.getText() + "g");
         } else {
             carbsLabel.setText("-");
         }
