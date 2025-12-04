@@ -1,6 +1,7 @@
 package client.utils;
 
 import commons.Ingredient;
+import commons.IngredientType;
 import commons.Recipe;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.ProcessingException;
@@ -8,6 +9,7 @@ import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.GenericType;
 import jakarta.ws.rs.core.Response;
+
 import java.net.ConnectException;
 import java.util.Arrays;
 import java.util.List;
@@ -20,6 +22,7 @@ import org.springframework.web.socket.messaging.WebSocketStompClient;
 
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
+
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 public class ServerUtils {
@@ -32,6 +35,7 @@ public class ServerUtils {
 
     /**
      * Constructor
+     *
      * @param client Client Object
      */
     @Inject
@@ -64,7 +68,8 @@ public class ServerUtils {
             // holds the STOMP session
             CompletableFuture<StompSession> connectFuture = stompClient.connectAsync(
                     wsUrl,
-                    new StompSessionHandlerAdapter() {}
+                    new StompSessionHandlerAdapter() {
+                    }
             );
             stompSession = connectFuture.get();
 
@@ -76,8 +81,9 @@ public class ServerUtils {
     /**
      * Establishes a subscription to receive real-time updates whenever the
      * complete list of recipes changes
+     *
      * @param listener A functional consumer that accepts the new, complete list of
-     * Recipe objects whenever an update is broadcast by the server.
+     *                 Recipe objects whenever an update is broadcast by the server.
      */
     public void subscribeToRecipeList(Consumer<List<Recipe>> listener) {
         connectWebSocketIfNeeded();
@@ -90,12 +96,14 @@ public class ServerUtils {
                 })
         );
     }
+
     /**
      * Establishes a subscription to receive real-time updates whenever
      * a specific recipe changes
-     * @param id The id of the recipe
+     *
+     * @param id       The id of the recipe
      * @param listener A functional consumer that accepts the updated Recipe
-     * whenever this specific recipe is broadcast by the server.
+     *                 whenever this specific recipe is broadcast by the server.
      */
     public void subscribeToRecipe(long id, Consumer<Recipe> listener) {
         connectWebSocketIfNeeded();
@@ -115,10 +123,11 @@ public class ServerUtils {
      * @return a List of Recipe objects returned by the server
      */
     public List<Recipe> getRecipes() {
-        try{
+        try {
             return client.target(SERVER).path("api/recipes") //
                     .request(APPLICATION_JSON) //
-                    .get(new GenericType<List<Recipe>>() {});
+                    .get(new GenericType<List<Recipe>>() {
+                    });
         } catch (ProcessingException e) {
             throw new RuntimeException("Could not reach server while loading recipes", e);
         }
@@ -145,7 +154,7 @@ public class ServerUtils {
     /**
      * Sends a PUT request to update an existing recipe at {.../api/recipes/{id}}.
      *
-     * @param id The ID of the recipe to update.
+     * @param id            The ID of the recipe to update.
      * @param updatedRecipe The recipe object with updated fields.
      * @return The updated recipe object returned by the server.
      */
@@ -178,7 +187,8 @@ public class ServerUtils {
         }
     }
 
-        //ingredients requests:
+    //ingredients requests:
+
     /**
      * Sends a GET request to {.../api/ingredients} to retrieve all ingredients
      * stored on the server.
@@ -209,14 +219,14 @@ public class ServerUtils {
                     .request(APPLICATION_JSON)
                     .post(Entity.entity(ingredient, APPLICATION_JSON), Ingredient.class);
         } catch (ProcessingException e) {
-            throw new  RuntimeException("Could not reach server while adding ingredient to recipes", e);
+            throw new RuntimeException("Could not reach server while adding ingredient to recipes", e);
         }
     }
 
     /**
      * Sends a PUT request to update an existing ingredient at {.../api/ingredients/{id}}.
      *
-     * @param id The ID of the ingredient to update.
+     * @param id                The ID of the ingredient to update.
      * @param updatedIngredient The Ingredient object with updated fields.
      * @return The updated Ingredient object returned by the server.
      */
@@ -249,7 +259,79 @@ public class ServerUtils {
         }
     }
 
-        //server availability request:
+    //IngredientType requests
+
+    /**
+     * Sends a GET request to {.../api/ingredientTypes} to retrieve all ingredientTypes
+     * stored on the server.
+     *
+     * @return a List of IngredientTypes objects returned by the server
+     */
+    public List<IngredientType> getIngredientTypes() {
+        try {
+            return client.target(SERVER).path("api/ingredientTypes") //
+                    .request(APPLICATION_JSON) //
+                    .get(new GenericType<List<IngredientType>>() {
+                    });
+        } catch (ProcessingException e) {
+            throw new RuntimeException("Could not reach server while getting ingredientTypes", e);
+        }
+    }
+
+    /**
+     * Sends a POST request to {.../api/ingredientTypes} to add an ingredientType
+     * and store it on the server.
+     *
+     * @param ingredientType the IngredientType object to add
+     * @return an IngredientType object returned by the server
+     */
+    public IngredientType addIngredientType(IngredientType ingredientType) {
+        try {
+            return client.target(SERVER).path("api/ingredientTypes")
+                    .request(APPLICATION_JSON)
+                    .post(Entity.entity(ingredientType, APPLICATION_JSON), IngredientType.class);
+        } catch (ProcessingException e) {
+            throw new RuntimeException("Could not reach server while adding ingredientType", e);
+        }
+    }
+
+    /**
+     * Sends a PUT request to update an existing ingredientType at {.../api/ingredientTypes/{id}}.
+     *
+     * @param id                The ID of the ingredientType to update.
+     * @param updatedIngredientType The IngredientType object with updated fields.
+     * @return The updated IngredientType object returned by the server.
+     */
+    public IngredientType updateIngredientType(long id, IngredientType updatedIngredientType) {
+        try {
+            return client.target(SERVER).path("api/ingredientTypes/" + id)
+                    .request(APPLICATION_JSON)
+                    .put(Entity.entity(updatedIngredientType, APPLICATION_JSON), IngredientType.class);
+        } catch (ProcessingException e) {
+            throw new RuntimeException("Could not reach server while updating ingredientType", e);
+        }
+    }
+
+    /**
+     * Sends a DELETE request to remove an ingredientType at {.../api/ingredientTypes/{id}}.
+     *
+     * @param id The ID of the ingredientType to delete.
+     * @return boolean corresponding to the server response status
+     * {204 -> request was successful and the response body is empty}
+     */
+    public boolean deleteIngredientType(long id) {
+        try {
+            Response response = client
+                    .target(SERVER).path("api/ingredientTypes/" + id)
+                    .request(APPLICATION_JSON)
+                    .delete();
+            return response.getStatus() == 204;
+        } catch (ProcessingException e) {
+            throw new RuntimeException("Could not reach server while deleting ingredientType", e);
+        }
+    }
+
+    //server availability request:
 
     /**
      * Checks whether the server is reachable by sending a simple GET request
