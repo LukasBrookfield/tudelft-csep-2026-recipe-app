@@ -26,6 +26,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ExtendWith(ApplicationExtension.class)
 public class ShoppingListCtrlTest {
 
+    static {
+        System.setProperty("java.awt.headless", "true");
+        System.setProperty("testfx.robot", "glass");
+        System.setProperty("testfx.headless", "true");
+        System.setProperty("prism.order", "sw");
+        System.setProperty("prism.text", "t2k");
+    }
+
     private Button removeIngredientButton;
     private Button addIngredientButton;
     private Button editIngredientButton;
@@ -36,7 +44,6 @@ public class ShoppingListCtrlTest {
     private ChoiceBox<String> editUnitBox;
     private Button doneEditIngredientButton;
 
-//    m
     @Start
     private void start(Stage shoppingListStage) throws IOException {
         // Load ShoppingList.fxml from the classpath
