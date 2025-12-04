@@ -14,6 +14,7 @@
 		<version.mockito>5.8.0</version.mockito>
 		<version.jersey>3.1.9</version.jersey>
 		<version.jfx>25.0.1</version.jfx>
+        <version.testfx>4.0.16-alpha</version.testfx>
         <version.monocle>21.0.2</version.monocle>
 	</properties>
 
@@ -45,7 +46,7 @@
         <dependency>
             <groupId>org.testfx</groupId>
             <artifactId>testfx-junit5</artifactId>
-            <version>4.0.16-alpha</version>
+            <version>${version.testfx}</version>
             <scope>test</scope>
         </dependency>
 
@@ -166,19 +167,10 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.5.2</version>
                 <configuration>
-                    <forkCount>1</forkCount>
-                    <reuseForks>true</reuseForks>
-                    <argLine>
-                        -Djava.awt.headless=true
-                        -Dtestfx.robot=glass
-                        -Dtestfx.headless=true
-                        -Dprism.order=sw
-                        -Dprism.text=t2k
-                        -Djava.library.path=${java.library.path}
-                    </argLine>
+                    <argLine>-Djava.awt.headless=true -Dtestfx.robot=glass
+                        -Dtestfx.headless=true -Dprism.order=sw</argLine>
                 </configuration>
             </plugin>
-
         </plugins>
 	</build>
 </project>
