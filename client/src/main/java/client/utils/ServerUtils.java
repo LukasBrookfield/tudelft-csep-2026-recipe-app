@@ -9,19 +9,104 @@ import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.GenericType;
 import jakarta.ws.rs.core.Response;
 import java.net.ConnectException;
+import java.util.Arrays;
 import java.util.List;
 
+import org.springframework.messaging.converter.MappingJackson2MessageConverter;
+import org.springframework.messaging.simp.stomp.StompSession;
+import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
+import org.springframework.web.socket.client.standard.StandardWebSocketClient;
+import org.springframework.web.socket.messaging.WebSocketStompClient;
+
+import java.util.concurrent.CompletableFuture;
+import java.util.function.Consumer;
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
 public class ServerUtils {
     private final Client client;
     private static final String SERVER = "http://localhost:8080/";
 
+
+    private WebSocketStompClient stompClient;
+    private StompSession stompSession;
+
+    /**
+     * Constructor
+     * @param client Client Object
+     */
     @Inject
     public ServerUtils(Client client) {
         this.client = client;
     }
-        //recipes requests:
+
+    /**
+     * Do nothing if client is connected to the chanel
+     * or create a websocket client and connect to a session
+     */
+    private void connectWebSocketIfNeeded() {
+
+        if (stompSession != null && stompSession.isConnected()) {
+            return;
+        }
+
+        try {
+            // handles the basic WebSocket protocol handshake, upgrading the connection from HTTP to WebSocket
+            StandardWebSocketClient webSocketClient = new StandardWebSocketClient();
+
+            // wraps the raw webSocketClient and adds the logic necessary to frame messages using the STOMP protocol
+            stompClient = new WebSocketStompClient(webSocketClient);
+
+            // automatically serialize Java objects into JSON format when sending messages,
+            // and deserialize incoming JSON back into Java objects
+            stompClient.setMessageConverter(new MappingJackson2MessageConverter());
+            String wsUrl = SERVER.replace("http", "ws") + "websocket";
+
+            // holds the STOMP session
+            CompletableFuture<StompSession> connectFuture = stompClient.connectAsync(
+                    wsUrl,
+                    new StompSessionHandlerAdapter() {}
+            );
+            stompSession = connectFuture.get();
+
+        } catch (Exception e) {
+            throw new RuntimeException("WebSocket connection failed", e);
+        }
+    }
+
+    /**
+     * Establishes a subscription to receive real-time updates whenever the
+     * complete list of recipes changes
+     * @param listener A functional consumer that accepts the new, complete list of
+     * Recipe objects whenever an update is broadcast by the server.
+     */
+    public void subscribeToRecipeList(Consumer<List<Recipe>> listener) {
+        connectWebSocketIfNeeded();
+
+        stompSession.subscribe(
+                "/topic/recipes/list",
+                new GenericStompFrameHandler<>(Recipe[].class, array -> {
+                    List<Recipe> list = Arrays.asList(array);
+                    listener.accept(list);
+                })
+        );
+    }
+    /**
+     * Establishes a subscription to receive real-time updates whenever
+     * a specific recipe changes
+     * @param id The id of the recipe
+     * @param listener A functional consumer that accepts the updated Recipe
+     * whenever this specific recipe is broadcast by the server.
+     */
+    public void subscribeToRecipe(long id, Consumer<Recipe> listener) {
+        connectWebSocketIfNeeded();
+
+        stompSession.subscribe(
+                "/topic/recipes/" + id,
+                new GenericStompFrameHandler<>(Recipe.class, listener)
+        );
+    }
+
+    //recipes requests:
 
     /**
      * Sends a GET request to {.../api/recipes} to retrieve all recipes
@@ -30,9 +115,14 @@ public class ServerUtils {
      * @return a List of Recipe objects returned by the server
      */
     public List<Recipe> getRecipes() {
-        return client.target(SERVER).path("api/recipes") //
-                .request(APPLICATION_JSON) //
-                .get(new GenericType<List<Recipe>>() {});
+        try{
+            return client.target(SERVER).path("api/recipes") //
+                    .request(APPLICATION_JSON) //
+                    .get(new GenericType<List<Recipe>>() {});
+        } catch (ProcessingException e) {
+            throw new RuntimeException("Could not reach server while loading recipes", e);
+        }
+
     }
 
     /**
@@ -43,9 +133,13 @@ public class ServerUtils {
      * @return a Recipe object returned by the server
      */
     public Recipe addRecipe(Recipe recipe) {
-        return client.target(SERVER).path("api/recipes")
-                .request(APPLICATION_JSON)
-                .post(Entity.entity(recipe, APPLICATION_JSON), Recipe.class);
+        try {
+            return client.target(SERVER).path("api/recipes")
+                    .request(APPLICATION_JSON)
+                    .post(Entity.entity(recipe, APPLICATION_JSON), Recipe.class);
+        } catch (ProcessingException e) {
+            throw new RuntimeException("Could not reach server while adding recipes", e);
+        }
     }
 
     /**
@@ -56,9 +150,13 @@ public class ServerUtils {
      * @return The updated recipe object returned by the server.
      */
     public Recipe updateRecipe(long id, Recipe updatedRecipe) {
-        return client.target(SERVER).path("api/recipes/" + id)
-                .request(APPLICATION_JSON)
-                .put(Entity.entity(updatedRecipe, APPLICATION_JSON), Recipe.class);
+        try {
+            return client.target(SERVER).path("api/recipes/" + id)
+                    .request(APPLICATION_JSON)
+                    .put(Entity.entity(updatedRecipe, APPLICATION_JSON), Recipe.class);
+        } catch (ProcessingException e) {
+            throw new RuntimeException("Could not reach server while updating recipes", e);
+        }
     }
 
     /**
@@ -69,11 +167,15 @@ public class ServerUtils {
      * {204 -> request was successful and the response body is empty}
      */
     public boolean deleteRecipe(long id) {
+        try {
             Response response = client
                     .target(SERVER).path("api/recipes/" + id)
                     .request(APPLICATION_JSON)
                     .delete();
             return response.getStatus() == 204;
+        } catch (ProcessingException e) {
+            throw new RuntimeException("Could not reach server while deleting recipes", e);
+        }
     }
 
         //ingredients requests:
@@ -84,9 +186,14 @@ public class ServerUtils {
      * @return a List of Ingredient objects returned by the server
      */
     public List<Ingredient> getIngredients() {
-        return client.target(SERVER).path("api/ingredients") //
-                .request(APPLICATION_JSON) //
-                .get(new GenericType<List<Ingredient>>() {});
+        try {
+            return client.target(SERVER).path("api/ingredients") //
+                    .request(APPLICATION_JSON) //
+                    .get(new GenericType<List<Ingredient>>() {
+                    });
+        } catch (ProcessingException e) {
+            throw new RuntimeException("Could not reach server while getting ingredients", e);
+        }
     }
 
     /**
@@ -97,9 +204,13 @@ public class ServerUtils {
      * @return an Ingredient object returned by the server
      */
     public Ingredient addIngredient(Ingredient ingredient) {
-        return client.target(SERVER).path("api/ingredients")
-                .request(APPLICATION_JSON)
-                .post(Entity.entity(ingredient, APPLICATION_JSON), Ingredient.class);
+        try {
+            return client.target(SERVER).path("api/ingredients")
+                    .request(APPLICATION_JSON)
+                    .post(Entity.entity(ingredient, APPLICATION_JSON), Ingredient.class);
+        } catch (ProcessingException e) {
+            throw new  RuntimeException("Could not reach server while adding ingredient to recipes", e);
+        }
     }
 
     /**
@@ -110,9 +221,13 @@ public class ServerUtils {
      * @return The updated Ingredient object returned by the server.
      */
     public Ingredient updateIngredient(long id, Ingredient updatedIngredient) {
-        return client.target(SERVER).path("api/ingredients/" + id)
-                .request(APPLICATION_JSON)
-                .put(Entity.entity(updatedIngredient, APPLICATION_JSON), Ingredient.class);
+        try {
+            return client.target(SERVER).path("api/ingredients/" + id)
+                    .request(APPLICATION_JSON)
+                    .put(Entity.entity(updatedIngredient, APPLICATION_JSON), Ingredient.class);
+        } catch (ProcessingException e) {
+            throw new RuntimeException("Could not reach server while updating ingredient to recipes", e);
+        }
     }
 
     /**
@@ -123,11 +238,15 @@ public class ServerUtils {
      * {204 -> request was successful and the response body is empty}
      */
     public boolean deleteIngredient(long id) {
-        Response response = client
-                .target(SERVER).path("api/ingredients/" + id)
-                .request(APPLICATION_JSON)
-                .delete();
-        return response.getStatus() == 204;
+        try {
+            Response response = client
+                    .target(SERVER).path("api/ingredients/" + id)
+                    .request(APPLICATION_JSON)
+                    .delete();
+            return response.getStatus() == 204;
+        } catch (ProcessingException e) {
+            throw new RuntimeException("Could not reach server while deleting ingredient to recipes", e);
+        }
     }
 
         //server availability request:
