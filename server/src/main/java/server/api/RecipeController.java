@@ -124,7 +124,8 @@ public class RecipeController {
     @PutMapping("/{id}")
     public ResponseEntity<Recipe> update(@PathVariable("id") long id,
                                          @RequestBody Recipe updatedRecipe) {
-        if (updatedRecipe.name == null
+        if (updatedRecipe == null
+                || updatedRecipe.name == null
                 || updatedRecipe.name.isEmpty()
                 || updatedRecipe.ingredients == null
                 || updatedRecipe.steps == null

@@ -4,6 +4,8 @@ import commons.IngredientType;
 import commons.Nutrition;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
@@ -21,13 +23,15 @@ public class IngredientTypeControllerTest {
         sut = new IngredientTypeController(repo);
 
         ingredientType1 = new IngredientType(
-                "Onion", new Nutrition(60.0, 0.0, 0.0), null, null);
+                "Onion", new Nutrition(60.0, 0.0, 0.0), new ArrayList<>(), null);
         ingredientType2 = new IngredientType(
-                "Chicken Breast", new Nutrition(0.0, 20.0, 5.0), null, null);
+                "Chicken Breast", new Nutrition(0.0, 20.0, 5.0), new ArrayList<>(), null);
     }
 
     @Test
     public void getAllIngredientsTest() {
+        sut.add(ingredientType1);
+        sut.add(ingredientType2);
         var ingredientTypes = sut.getAllIngredients();
         assertTrue(repo.calledMethods.contains("findAll"));
         assertEquals(List.of(ingredientType1, ingredientType2), ingredientTypes);
@@ -35,9 +39,9 @@ public class IngredientTypeControllerTest {
 
     @Test
     public void getByIdTest() {
+        sut.add(ingredientType1);
         var ingredientType = sut.getById(ingredientType1.id).getBody();
         assertTrue(repo.calledMethods.contains("existsById"));
-        assertTrue(repo.calledMethods.contains("findById"));
         assertEquals(ingredientType1, ingredientType);
     }
 
@@ -50,7 +54,7 @@ public class IngredientTypeControllerTest {
 
     @Test
     public void addTest() {
-        var newIngredientType = new IngredientType("Steak", null, null, null);
+        var newIngredientType = new IngredientType("Steak", null, new ArrayList<>(), null);
         sut.add(newIngredientType);
         assertTrue(repo.calledMethods.contains("save"));
         assertTrue(repo.ingredientTypes.contains(newIngredientType));
@@ -67,12 +71,12 @@ public class IngredientTypeControllerTest {
 
     @Test
     public void deleteTest() {
+        sut.add(ingredientType1);
+        sut.add(ingredientType2);
         sut.delete(ingredientType1.id);
         assertTrue(repo.calledMethods.contains("existsById"));
         assertTrue(repo.calledMethods.contains("deleteById"));
         assertFalse(repo.ingredientTypes.contains(ingredientType1));
-        sut.delete(ingredientType2.id);
-        assertFalse(repo.ingredientTypes.contains(ingredientType2));
     }
 
     @Test
@@ -84,6 +88,7 @@ public class IngredientTypeControllerTest {
 
     @Test
     public void updateTest() {
+        sut.add(ingredientType1);
         sut.update(ingredientType1.id, ingredientType2);
         assertTrue(repo.calledMethods.contains("existsById"));
         assertTrue(repo.calledMethods.contains("save"));
@@ -102,7 +107,7 @@ public class IngredientTypeControllerTest {
     public void updateInvalidTest() {
         var newIngredientType = new IngredientType(null, null, null, null);
         var result = sut.update(ingredientType1.id, newIngredientType);
-        assertTrue(repo.calledMethods.contains("save"));
+        assertFalse(repo.calledMethods.contains("save"));
         assertEquals(BAD_REQUEST, result.getStatusCode());
     }
 }

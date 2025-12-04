@@ -53,7 +53,10 @@ public class IngredientTypeController {
      */
     @PostMapping(path = { "", "/" })
     public ResponseEntity<IngredientType> add(@RequestBody IngredientType ingredientType) {
-        if (ingredientType.name == null || ingredientType.name.isEmpty()) {
+        if (ingredientType == null
+                || ingredientType.ingredients == null
+                || ingredientType.name == null
+                || ingredientType.name.isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
         IngredientType saved = repo.save(ingredientType);
@@ -95,7 +98,10 @@ public class IngredientTypeController {
     @PutMapping("/{id}")
     public ResponseEntity<IngredientType> update(@PathVariable("id") long id,
                                              @RequestBody IngredientType updatedIngredientType) {
-        if (updatedIngredientType.name == null || updatedIngredientType.name.isEmpty()
+        if (updatedIngredientType == null
+                || updatedIngredientType.ingredients == null
+                || updatedIngredientType.name == null
+                || updatedIngredientType.name.isEmpty()
                 || id < 0 || !repo.existsById(id)) {
             return ResponseEntity.badRequest().build();
         } else {

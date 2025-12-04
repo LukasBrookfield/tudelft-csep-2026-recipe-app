@@ -105,7 +105,6 @@ public class TestIngredientTypeRepository implements IngredientTypeRepository {
     public <S extends IngredientType> S save(S entity) {
         call("save");
         entity.id = (long) ingredientTypes.size() + 1;
-        call("save");
         ingredientTypes.add(entity);
         return entity;
     }
