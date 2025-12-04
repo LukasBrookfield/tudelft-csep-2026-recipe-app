@@ -43,6 +43,8 @@ import javafx.collections.transformation.FilteredList;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import static jdk.internal.org.jline.utils.AttributedStringBuilder.append;
+
 public class RecipeOverviewCtrl {
 
     private final ServerUtils server;
@@ -402,6 +404,31 @@ public class RecipeOverviewCtrl {
         // Makes it so that the 'Add Recipe' button is selected when the app gets started
         Platform.runLater(() -> addRecipeButton.requestFocus());
     }
+
+private String buildSearchText(Recipe recipe) {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(recipe.name.toLowerCase()).append(" ");
+
+        if (recipe.ingredients != null) {
+            for (Ingredient ingredient : recipe.ingredients) {
+                if (ingredient != null && ingredient.ingredientType != null && ingredient.ingredientType.name != null) {
+                    sb.append(ingredient.ingredientType.name.toLowerCase()).append(" ");
+                }
+                }
+            }
+
+        if (recipe.steps != null) {
+            for (String step : recipe.steps) {
+                if (step != null) {
+                    sb.append(step.toLowerCase()).append(" ");
+                }
+            }
+        }
+
+        return sb.toString()
+    }
+
 
     /**
      * On action method for the Refresh button
