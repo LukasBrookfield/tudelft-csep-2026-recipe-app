@@ -5,6 +5,11 @@ import java.io.IOException;
 import java.net.URL;
 
 import client.utils.UserConfig;
+import commons.Ingredient;
+import javafx.fxml.FXML;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.testfx.api.FxRobot;
@@ -16,6 +21,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(ApplicationExtension.class)
@@ -25,6 +32,13 @@ public class ShoppingListCtrlTest {
     private Button addIngredientButton;
     private Button editIngredientButton;
     private Button cancelEditIngredientButton;
+    private ListView<Ingredient> ingredientListView;
+    private TextField editIngredientNameField;
+    private TextField editIngredientAmountField;
+    private ChoiceBox<String> editUnitBox;
+
+    @FXML
+    private Button doneEditIngredientButton;
 
     @Start
     private void start(Stage shoppingListStage) throws IOException {
@@ -40,6 +54,10 @@ public class ShoppingListCtrlTest {
         addIngredientButton = lookup(scene, "#addIngredientButton");
         editIngredientButton = lookup(scene, "#editIngredientButton");
         cancelEditIngredientButton = lookup(scene, "#cancelEditIngredientButton");
+        ingredientListView = lookup(scene, "#ingredientListView");
+        editUnitBox = lookup(scene, "#editUnitBox");
+        editIngredientNameField = lookup(scene, "#editIngredientNameField");
+        editIngredientAmountField = lookup(scene, "#editIngredientAmountField");
     }
 
     private Scene getScene() throws IOException {
@@ -67,8 +85,40 @@ public class ShoppingListCtrlTest {
     }
 
     @Test
-    void testCancelEditIngredientButton(FxRobot robot) {
+    void testBeforeAddingIngredientButton(FxRobot robot) {
+        assertTrue(addIngredientButton.isVisible());
+        assertFalse(removeIngredientButton.isVisible());
+        assertFalse(editIngredientButton.isVisible());
+        assertFalse(cancelEditIngredientButton.isVisible());
+        assertFalse(editIngredientAmountField.isVisible());
+        assertFalse(editUnitBox.isVisible());
+        assertFalse(editIngredientNameField.isVisible());
+    }
+
+    @Test
+    void testAfterAddIngredientButton(FxRobot robot) {
         robot.clickOn(addIngredientButton);
+
+        assertFalse(addIngredientButton.isVisible());
+        assertFalse(removeIngredientButton.isVisible());
+        assertFalse(editIngredientButton.isVisible());
         assertTrue(cancelEditIngredientButton.isVisible());
+        assertTrue(editIngredientAmountField.isVisible());
+        assertTrue(editUnitBox.isVisible());
+        assertTrue(editIngredientNameField.isVisible());
+    }
+
+    @Test
+    void testAfterCancelEditIngredientButton(FxRobot robot) {
+        robot.clickOn(addIngredientButton);
+        robot.clickOn(cancelEditIngredientButton);
+
+        assertTrue(addIngredientButton.isVisible());
+        assertTrue(removeIngredientButton.isVisible());
+        assertTrue(editIngredientButton.isVisible());
+        assertFalse(cancelEditIngredientButton.isVisible());
+        assertFalse(editIngredientAmountField.isVisible());
+        assertFalse(editUnitBox.isVisible());
+        assertFalse(editIngredientNameField.isVisible());
     }
 }
