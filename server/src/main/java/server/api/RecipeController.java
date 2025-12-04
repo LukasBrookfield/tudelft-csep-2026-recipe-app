@@ -4,21 +4,27 @@ import java.util.ArrayList;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import commons.Recipe;
 import server.database.RecipeRepository;
+
+import static org.antlr.v4.runtime.tree.xpath.XPath.findAll;
 
 @RestController
 @RequestMapping("/api/recipes")
 public class RecipeController {
     private final RecipeRepository repo;
+    private final SimpMessagingTemplate messagingTemplate;
 
     /**
      * RecipeController constructor
      * @param repo The spring recipe repository (connects to sql database)
+     * @param messagingTemplate The messaging template
+     * sending data to the URL which the clients are subscribed to
      */
-    public RecipeController(RecipeRepository repo) {
+    public RecipeController(RecipeRepository repo, SimpMessagingTemplate messagingTemplate) {
         this.repo = repo;
+        this.messagingTemplate = messagingTemplate;
     }
 
     /**
@@ -67,6 +73,9 @@ public class RecipeController {
         }
 
         Recipe saved = repo.save(recipe);
+
+        broadcastList(); // Subscribed clients get the new updated list
+        broadcastSingle(saved); // Subscribed clients get the updated recipe
         return ResponseEntity.ok(saved);
     }
 
@@ -87,6 +96,9 @@ public class RecipeController {
         }else{
             var result = repo.findById(id).get();
             repo.deleteById(id);
+
+            broadcastList(); // Subscribed clients get the new updated list
+
             return ResponseEntity.ok(result);
         }
     }
@@ -133,7 +145,35 @@ public class RecipeController {
             recipeToUpdate.servings = updatedRecipe.servings;
 
             Recipe updated = repo.save(recipeToUpdate);
+
+            broadcastList(); // Subscribed clients get the new updated list
+            broadcastSingle(recipeToUpdate); // Subscribed clients get the new updated recipe
+
             return ResponseEntity.ok(updated);
+        }
+    }
+
+    /**
+     * Gets all the recipes from the DB,
+     * serializes the objects into a JSON format,
+     * wraps the converted payload in a STOMP MESSAGE frame and
+     * forwards it to the broker for distribution to the list URL
+     */
+    private void broadcastList() {
+        List<Recipe> all = repo.findAll();
+        // Every client that is subscribed to "/topic/recipes/list" gets the new full list
+        messagingTemplate.convertAndSend("/topic/recipes/list", all);
+    }
+    /**
+     * Uses the passed recipe,
+     * serializes the object into a JSON format,
+     * wraps the converted payload in a STOMP MESSAGE frame and
+     * forwards it to the broker for distribution to the id URL
+     */
+    private void broadcastSingle(Recipe recipe) {
+        if(recipe !=null && recipe.id > 0) {
+            // Every client that is subscribed to "/topic/recipes/{id}" gets this updated recipe
+            messagingTemplate.convertAndSend("/topic/recipes/" + recipe.id, recipe);
         }
     }
 }

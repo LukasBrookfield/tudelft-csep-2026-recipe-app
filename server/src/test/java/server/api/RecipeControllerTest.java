@@ -4,6 +4,8 @@ import commons.Recipe;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import static org.mockito.Mockito.mock;
 import java.util.ArrayList;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
@@ -17,12 +19,14 @@ public class RecipeControllerTest{
 
     private Recipe recipe1;
     private Recipe recipe2;
+    private SimpMessagingTemplate messagingTemplate;
 
     @BeforeEach
     public void setUp() {
         // for testing with TestIngredientRepository
         repo = new TestRecipeRepository();
-        sut = new RecipeController(repo);
+        messagingTemplate = mock(SimpMessagingTemplate.class);
+        sut = new RecipeController(repo, messagingTemplate);
 
         recipe1 = new Recipe("cucumber salad",
                 new ArrayList<>(),
