@@ -6,7 +6,6 @@ import java.net.URL;
 
 import client.utils.UserConfig;
 import commons.Ingredient;
-import javafx.fxml.FXML;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
@@ -36,8 +35,6 @@ public class ShoppingListCtrlTest {
     private TextField editIngredientNameField;
     private TextField editIngredientAmountField;
     private ChoiceBox<String> editUnitBox;
-
-    @FXML
     private Button doneEditIngredientButton;
 
     @Start
@@ -58,6 +55,7 @@ public class ShoppingListCtrlTest {
         editUnitBox = lookup(scene, "#editUnitBox");
         editIngredientNameField = lookup(scene, "#editIngredientNameField");
         editIngredientAmountField = lookup(scene, "#editIngredientAmountField");
+        doneEditIngredientButton =  lookup(scene, "#doneEditIngredientButton");
     }
 
     private Scene getScene() throws IOException {
@@ -92,6 +90,7 @@ public class ShoppingListCtrlTest {
         assertFalse(editIngredientAmountField.isVisible());
         assertFalse(editUnitBox.isVisible());
         assertFalse(editIngredientNameField.isVisible());
+        assertFalse(doneEditIngredientButton.isVisible());
     }
 
     @Test
@@ -105,6 +104,7 @@ public class ShoppingListCtrlTest {
         assertTrue(editIngredientAmountField.isVisible());
         assertTrue(editUnitBox.isVisible());
         assertTrue(editIngredientNameField.isVisible());
+        assertTrue(doneEditIngredientButton.isVisible());
     }
 
     @Test
@@ -119,5 +119,6 @@ public class ShoppingListCtrlTest {
         assertFalse(editIngredientAmountField.isVisible());
         assertFalse(editUnitBox.isVisible());
         assertFalse(editIngredientNameField.isVisible());
+        assertFalse(doneEditIngredientButton.isVisible());
     }
 }

@@ -166,12 +166,15 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.5.2</version>
                 <configuration>
+                    <forkCount>1</forkCount>
+                    <reuseForks>true</reuseForks>
                     <argLine>
                         -Djava.awt.headless=true
                         -Dtestfx.robot=glass
                         -Dtestfx.headless=true
                         -Dprism.order=sw
                         -Dprism.text=t2k
+                        -Djava.library.path=${java.library.path}
                     </argLine>
                 </configuration>
             </plugin>
