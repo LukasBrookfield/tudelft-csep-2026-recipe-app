@@ -39,6 +39,10 @@ import javafx.stage.Stage;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.printing.PDFPageable;
 
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
 public class RecipeOverviewCtrl {
 
     private final ServerUtils server;
@@ -48,6 +52,9 @@ public class RecipeOverviewCtrl {
     private UserConfig user;
 
     private final MainCtrl mainCtrl;
+
+    private ObservableList<Recipe> allRecipes;
+    private FilteredList<Recipe> filteredRecipes;
 
     // Root
 
@@ -348,6 +355,16 @@ public class RecipeOverviewCtrl {
 
         editUnitBox.getItems().addAll("Select a unit", "G", "ML", "TBSP", "TSP", "PINCH",
                 "HANDFUL", "TO_TASTE");
+
+        // set up "all recipes" + filtered list
+        allRecipes = FXCollections.observableArrayList();
+        // MISSING LOADING FROM SERVER (DON'T YET KNOW HOW TO DO)
+
+        // this shows a subset of the original list (the first argument) based on a filter condition (the second argument)
+        // the defuault is recipe -> true (because initially there is no filtering)
+        filteredRecipes = new FilteredList<>(allRecipes, recipe -> true);
+        // make it show the UI shows the filtered list
+        recipeListView.setItems(filteredRecipes);
 
         onRefresh();
 
