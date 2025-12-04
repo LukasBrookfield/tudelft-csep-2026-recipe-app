@@ -282,7 +282,7 @@ public class IngredientTypeOverviewCtrl {
     @FXML
     private void onAddIngredientTypeButton() {
         IngredientType ingredientType = new IngredientType(
-                "New ingredient", null, null);
+                "New ingredient", null, null, null);
 
         ingredientTypeListView.getItems().add(ingredientType);
         ingredientTypeListView.getSelectionModel().select(

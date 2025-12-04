@@ -37,9 +37,9 @@ public class IngredientControllerTest {
                 new ArrayList<>(List.of("add cucumbers")),
                 3);
         ingredient1 = new Ingredient(
-                new IngredientType("cucumber", null, new ArrayList<>()), 100.0, G, recipe1);
+                new IngredientType("cucumber", null, new ArrayList<>(), null), 100.0, G, recipe1);
         ingredient2 = new Ingredient(
-                new IngredientType("cucumber", null, new ArrayList<>()), 99.0, G, recipe2);
+                new IngredientType("cucumber", null, new ArrayList<>(), null), 99.0, G, recipe2);
     }
 
     @Test
@@ -72,7 +72,7 @@ public class IngredientControllerTest {
     @Test
     public void deleteWithWrongIdTest() {
         sut.add(ingredient1);
-        sut.add(new Ingredient(new IngredientType("cucumber", null, null), 99.0, G, null));
+        sut.add(new Ingredient(new IngredientType("cucumber", null, null, null), 99.0, G, null));
         var result = sut.delete(3);
         assertEquals(BAD_REQUEST, result.getStatusCode());
     }
@@ -80,7 +80,7 @@ public class IngredientControllerTest {
     @Test
     public void deleteAlreadyDeletedTest() {
         sut.add(ingredient1);
-        sut.add(new Ingredient(new IngredientType("cucumber", null, null), 99.0, G, null));
+        sut.add(new Ingredient(new IngredientType("cucumber", null, null, null), 99.0, G, null));
         var result = sut.delete(ingredient1.id);
         var result2 = sut.delete(ingredient1.id);
         assertEquals(OK, result.getStatusCode());

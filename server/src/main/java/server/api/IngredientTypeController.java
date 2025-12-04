@@ -106,6 +106,7 @@ public class IngredientTypeController {
             ingredientTypeToUpdate.nutrition = updatedIngredientType.nutrition;
             ingredientTypeToUpdate.ingredients.clear();
             ingredientTypeToUpdate.ingredients.addAll(updatedIngredientType.ingredients);
+            ingredientTypeToUpdate.density = updatedIngredientType.density;
 
             IngredientType updated = repo.save(ingredientTypeToUpdate);
             return ResponseEntity.ok(updated);

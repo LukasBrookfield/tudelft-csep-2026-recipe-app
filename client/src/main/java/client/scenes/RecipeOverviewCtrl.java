@@ -343,8 +343,8 @@ public class RecipeOverviewCtrl {
         // Later this choicebox should show all ingredient types in the database
         editIngredientBox.getItems().addAll(
                 new IngredientType("Create new ingredient type",
-                        null, null)
-        );;
+                        null, null, null)
+        );
 
         editUnitBox.getItems().addAll("Select a unit", "G", "ML", "TBSP", "TSP", "PINCH",
                 "HANDFUL", "TO_TASTE");
@@ -830,7 +830,7 @@ public class RecipeOverviewCtrl {
         Ingredient ingredient = ingredientListView.getItems().get(index);
 
         ingredient.ingredientType = new IngredientType(
-                editIngredientNameField.getText(), null, null);
+                editIngredientNameField.getText(), null, null, null);
         if (!editIngredientAmountField.getText().isEmpty()) {
             ingredient.amount = Double.parseDouble(editIngredientAmountField.getText());
         } else {
