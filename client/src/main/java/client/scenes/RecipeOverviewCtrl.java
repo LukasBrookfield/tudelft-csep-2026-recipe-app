@@ -43,8 +43,6 @@ import javafx.collections.transformation.FilteredList;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import static jdk.internal.org.jline.utils.AttributedStringBuilder.append;
-
 public class RecipeOverviewCtrl {
 
     private final ServerUtils server;
@@ -405,6 +403,38 @@ public class RecipeOverviewCtrl {
         Platform.runLater(() -> addRecipeButton.requestFocus());
     }
 
+
+    private void applySearchFilter(String query) {
+        if (query == null || query.isBlank()) {
+            // np search, meaning show everything
+            filteredRecipes.setPredicate(recipe -> true);
+            return;
+        }
+
+        // spilt the query into words
+        String[] words = query.toLowerCase().trim().split("\\s+");
+
+        filteredRecipes.setPredicate(recipe -> mattchesAllWords(recipe, words));
+    }
+
+    private boolean mattchesAllWords(Recipe recipe, String[] words) {
+        String searchableText = buildSearchText(recipe);
+
+        // just go over a recipe and make sure all words from the search field are there
+        for (String word : words) {
+            if (!searchableText.contains(word)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Builds a lower-cased text representation of a recipe. Built for text search.
+     * @param recipe (any)
+     * @return a single lower-cased string containing all searchable fields of the recipe (separated by spaces)
+     */
 private String buildSearchText(Recipe recipe) {
         StringBuilder sb = new StringBuilder();
 
@@ -426,7 +456,7 @@ private String buildSearchText(Recipe recipe) {
             }
         }
 
-        return sb.toString()
+        return sb.toString();
     }
 
 
