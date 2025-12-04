@@ -1,6 +1,5 @@
 package client.scenes;
 
-import commons.Ingredient;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -13,19 +12,19 @@ public class MainCtrl {
     private RecipeOverviewCtrl recipeOverviewCtrl;
     private Scene recipeOverviewScene;
 
-    private IngredientOverviewCtrl ingredientOverviewCtrl;
-    private Scene ingredientOverviewScene;
+    private IngredientTypeOverviewCtrl ingredientTypeOverviewCtrl;
+    private Scene ingredientTypeOverviewScene;
 
     public void initialize(Stage primaryStage,
                            Pair<RecipeOverviewCtrl, Parent> recipeOverview,
-                           Pair<IngredientOverviewCtrl, Parent> ingredientOverview) {
+                           Pair<IngredientTypeOverviewCtrl, Parent> ingredientOverview) {
         this.primaryStage = primaryStage;
 
         this.recipeOverviewCtrl = recipeOverview.getKey();
         this.recipeOverviewScene = new Scene(recipeOverview.getValue());
 
-        this.ingredientOverviewCtrl = ingredientOverview.getKey();
-        this.ingredientOverviewScene = new Scene(ingredientOverview.getValue());
+        this.ingredientTypeOverviewCtrl = ingredientOverview.getKey();
+        this.ingredientTypeOverviewScene = new Scene(ingredientOverview.getValue());
 
         showRecipeOverview();
         primaryStage.show();
@@ -36,8 +35,8 @@ public class MainCtrl {
         primaryStage.setScene(recipeOverviewScene);
     }
 
-    public void showIngredientOverview() {
+    public void showIngredientTypeOverview() {
         primaryStage.setTitle("FoodPal - Ingredient Overview");
-        primaryStage.setScene(ingredientOverviewScene);
+        primaryStage.setScene(ingredientTypeOverviewScene);
     }
 }

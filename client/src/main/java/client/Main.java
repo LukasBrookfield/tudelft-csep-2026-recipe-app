@@ -5,7 +5,7 @@ import static com.google.inject.Guice.createInjector;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
-import client.scenes.IngredientOverviewCtrl;
+import client.scenes.IngredientTypeOverviewCtrl;
 import com.google.inject.Injector;
 
 import client.scenes.RecipeOverviewCtrl;
@@ -35,7 +35,7 @@ public class Main extends Application {
 
         var recipeOverview = FXML.load(RecipeOverviewCtrl.class,
                 "client", "scenes", "RecipeOverview.fxml");
-        var ingredientOverview =  FXML.load(IngredientOverviewCtrl.class,
+        var ingredientOverview =  FXML.load(IngredientTypeOverviewCtrl.class,
                 "client", "scenes", "IngredientOverview.fxml");
 
         var mainCtrl = INJECTOR.getInstance(MainCtrl.class);
