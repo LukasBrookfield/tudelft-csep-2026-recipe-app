@@ -103,6 +103,7 @@ public class TestIngredientTypeRepository implements IngredientTypeRepository {
 
     @Override
     public <S extends IngredientType> S save(S entity) {
+        call("save");
         entity.id = (long) ingredientTypes.size() + 1;
         call("save");
         ingredientTypes.add(entity);
@@ -116,7 +117,7 @@ public class TestIngredientTypeRepository implements IngredientTypeRepository {
 
     @Override
     public Optional<IngredientType> findById(Long aLong) {
-        calledMethods.add("findById");
+        call("findById");
         for (IngredientType ingredientType : ingredientTypes) {
             if (ingredientType.id == aLong)
                 return Optional.of(ingredientType);
@@ -126,6 +127,7 @@ public class TestIngredientTypeRepository implements IngredientTypeRepository {
 
     @Override
     public boolean existsById(Long aLong) {
+        call("existsById");
         for (IngredientType ingredientType : ingredientTypes) {
             if (ingredientType.id == aLong) return true;
         }
@@ -134,6 +136,7 @@ public class TestIngredientTypeRepository implements IngredientTypeRepository {
 
     @Override
     public List<IngredientType> findAll() {
+        call("findAll");
         return ingredientTypes;
     }
 
@@ -149,6 +152,7 @@ public class TestIngredientTypeRepository implements IngredientTypeRepository {
 
     @Override
     public void deleteById(Long aLong) {
+        call("deleteById");
         for (IngredientType ingredientType : ingredientTypes) {
             if (ingredientType.id == aLong) ingredientTypes.remove(ingredientType);
         }
