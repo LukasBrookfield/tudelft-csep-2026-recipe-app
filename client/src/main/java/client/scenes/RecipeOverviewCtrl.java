@@ -399,11 +399,37 @@ public class RecipeOverviewCtrl {
                     moveStepDownButton.setDisable(idx == size - 1);
                 });
 
+        setupSearch();
+
         // Makes it so that the 'Add Recipe' button is selected when the app gets started
         Platform.runLater(() -> addRecipeButton.requestFocus());
     }
 
+    /**
+     * Sets up the search functionality.
+     */
+    public void setupSearch() {
+        // this listens to changes in the TextField's text
+        recipeSearchField.textProperty().addListener((observable, oldValue, newValue) -> {
+            applySearchFilter(newValue);
+        });
 
+        // This listens to key presses when the TextField is focused
+        recipeSearchField.setOnKeyReleased(e -> {
+            if (e.getCode() == javafx.scene.input.KeyCode.ESCAPE) {
+                recipeSearchField.clear(); // sets the text to ""
+                applySearchFilter(""); // clears the filter
+                recipeListView.getSelectionModel().clearSelection(); // deselects any recipe
+                onRefresh(); // re-sync
+            }
+        });
+    }
+
+    /**
+     * Applies a search filter on the recipes shown in the ListView (in the UI).
+     * It's case-insensitive, and, as instructed, uses "AND" logic (with the matchesAllWords method).
+     * @param query what the user typed in the search field
+     */
     private void applySearchFilter(String query) {
         if (query == null || query.isBlank()) {
             // np search, meaning show everything
@@ -417,6 +443,12 @@ public class RecipeOverviewCtrl {
         filteredRecipes.setPredicate(recipe -> mattchesAllWords(recipe, words));
     }
 
+    /**
+     * Checks whether a recipe contains all the words that are in the search field.
+     * @param recipe (any)
+     * @param words the user's query (split into each word)
+     * @return true if the recipe contains all the words in the search field, false otherwise
+     */
     private boolean mattchesAllWords(Recipe recipe, String[] words) {
         String searchableText = buildSearchText(recipe);
 
