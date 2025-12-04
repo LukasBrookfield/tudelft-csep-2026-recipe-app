@@ -8,6 +8,7 @@ import client.utils.ServerUtils;
 import commons.*;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -55,6 +56,7 @@ public class RecipeOverviewCtrl {
 
     private ObservableList<Recipe> allRecipes;
     private FilteredList<Recipe> filteredRecipes;
+    private SortedList<Recipe> sortedRecipes;
 
     // Root
 
@@ -189,6 +191,12 @@ public class RecipeOverviewCtrl {
 
     @FXML
     private Button doneEditStepButton;
+
+    @FXML
+    private Label searchStatusLabel;
+
+    @FXML
+    private ChoiceBox<String> sortChoiceBox;
     
     // General
 
@@ -368,11 +376,22 @@ public class RecipeOverviewCtrl {
             e.printStackTrace();
         }
 
+        recipeSearchField.setPromptText("Search by name, ingredient or step...");
+        if (searchStatusLabel != null) {
+            searchStatusLabel.setText("");
+        }
+        searchStatusLabel.setVisible(false);
+        searchStatusLabel.setManaged(false);
+
         // this shows a subset of the original list (the first argument) based on a filter condition (the second argument)
         // the defuault is recipe -> true (because initially there is no filtering)
         filteredRecipes = new FilteredList<>(allRecipes, recipe -> true);
-        // make it show the UI shows the filtered list
-        recipeListView.setItems(filteredRecipes);
+
+        sortedRecipes = new SortedList<>(filteredRecipes);
+
+        // make it show the UI shows the ordered list
+        recipeListView.setItems(sortedRecipes);
+        sortedRecipes.setComparator(null); // default is no custom order
 
         onRefresh();
 
@@ -408,10 +427,68 @@ public class RecipeOverviewCtrl {
                 });
 
         setupSearch();
+        setupSort();
 
         // Makes it so that the 'Add Recipe' button is selected when the app gets started
         Platform.runLater(() -> addRecipeButton.requestFocus());
     }
+
+
+    private void setupSort(){
+        sortChoiceBox.getItems().addAll(
+                "Order by",
+                "Name (A-Z)",
+                "Fewest steps first",
+                "Fewest ingredients first"
+        );
+
+        sortChoiceBox.getSelectionModel().select("Order by");
+
+        sortChoiceBox.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> {
+                    if ("Order by".equals(newValue)) {
+                        sortedRecipes.setComparator(null);
+                        return;
+                    }
+                    applySort(newValue);
+                }
+        );
+    }
+
+    private void applySort(String option) {
+        if (option == null){
+            sortedRecipes.setComparator(null);
+            return;
+        }
+
+        // comparator returns negative if first comes before second, positive otherwise and zero if equal
+        switch (option) {
+            case "Name (A-Z)":
+                sortedRecipes.setComparator((recipe1, recipe2) -> {
+                    String n1 = recipe1.name == null ? "" : recipe1.name.toLowerCase();
+                    String n2 = recipe2.name == null ? "" : recipe2.name.toLowerCase();
+                    return n1.compareTo(n2);
+                });
+                break;
+            case "Fewest steps first":
+                sortedRecipes.setComparator((r1, r2) -> {
+                    int s1 = r1.steps == null ? 0 : r1.steps.size();
+                    int s2 = r2.steps == null ? 0 : r2.steps.size();
+                    return Integer.compare(s1, s2);
+                });
+                break;
+            case "Fewest ingredients first":
+                sortedRecipes.setComparator((r1, r2) -> {
+                    int i1 = (r1.ingredients == null) ? 0 : r1.ingredients.size();
+                    int i2 = (r2.ingredients == null) ? 0 : r2.ingredients.size();
+                    return Integer.compare(i1, i2);
+                });
+                break;
+            default:
+                sortedRecipes.setComparator(null);
+        }
+    }
+
 
     /**
      * Sets up the search functionality.
@@ -442,13 +519,39 @@ public class RecipeOverviewCtrl {
         if (query == null || query.isBlank()) {
             // np search, meaning show everything
             filteredRecipes.setPredicate(recipe -> true);
+
+            // Hide label and give space back to the list
+            searchStatusLabel.setText("");
+            searchStatusLabel.setVisible(false);
+            searchStatusLabel.setManaged(false);
+
             return;
         }
+
+        // status text
+        int total = allRecipes == null ? 0 : allRecipes.size();
+        searchStatusLabel.setText("Showing " + total + " recipes");
 
         // spilt the query into words
         String[] words = query.toLowerCase().trim().split("\\s+");
 
         filteredRecipes.setPredicate(recipe -> mattchesAllWords(recipe, words));
+
+        String msg;
+        int matches = filteredRecipes.size();
+        if (matches == 0) {
+            msg = "No recipes match your search";
+        }
+        else if (matches == 1){
+            msg = "1 recipe found";
+        }
+        else {
+            msg = matches + " recipes found";
+        }
+
+        searchStatusLabel.setText(msg);
+        searchStatusLabel.setVisible(true);
+        searchStatusLabel.setManaged(true);
     }
 
     /**
