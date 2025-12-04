@@ -61,8 +61,7 @@ public class ShoppingListCtrlTest {
     }
 
     private Scene getScene() throws IOException {
-        File path = new File("src/main/resources/client/scenes/ShoppingList.fxml");
-        URL url = path.toURI().toURL();
+        URL url = getClass().getResource("/client/scenes/ShoppingList.fxml");
         FXMLLoader loader = new FXMLLoader(url);
 
         loader.setControllerFactory(type -> {
