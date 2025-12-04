@@ -358,7 +358,15 @@ public class RecipeOverviewCtrl {
 
         // set up "all recipes" + filtered list
         allRecipes = FXCollections.observableArrayList();
-        // MISSING LOADING FROM SERVER (DON'T YET KNOW HOW TO DO)
+
+        // load from server
+        try {
+            List<Recipe> fromServer = server.getRecipes();
+            allRecipes.setAll(fromServer);
+        } catch (Exception e) {
+            System.out.println("ERROR: Could not load recipes from server.");
+            e.printStackTrace();
+        }
 
         // this shows a subset of the original list (the first argument) based on a filter condition (the second argument)
         // the defuault is recipe -> true (because initially there is no filtering)
@@ -519,7 +527,8 @@ private String buildSearchText(Recipe recipe) {
     @FXML
     private void onRemoveRecipe() {
         Recipe recipe = recipeListView.getSelectionModel().getSelectedItem();
-        recipeListView.getItems().remove(recipe);
+
+        allRecipes.remove(recipe);
         onRefresh();
     }
 
@@ -532,10 +541,11 @@ private String buildSearchText(Recipe recipe) {
     private void onAddRecipe() {
         Recipe recipe = new Recipe("New recipe");
 
-        recipeListView.getItems().add(recipe);
-        recipeListView.getSelectionModel().select(
-                recipeListView.getItems().size() - 1
-        );
+        allRecipes.add(recipe);
+        recipeListView.getSelectionModel().select(recipe);
+//        recipeListView.getSelectionModel().select(
+//                recipeListView.getItems().size() - 1
+//        );
 
         // Now immediately enter edit mode for this recipe
         onEditRecipeButton();
