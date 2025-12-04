@@ -51,14 +51,14 @@ public class IngredientControllerTest {
     @Test
     public void getIngredientByIdTest() {
         sut.add(ingredient1);
-        var ingredient = sut.getById(0).getBody();
+        var ingredient = sut.getById(1).getBody();
         assertEquals(ingredient1, ingredient);
     }
 
     @Test
     public void getIngredientByIdContainsTest() {
         sut.add(ingredient1);
-        assertEquals(sut.getById(0), ResponseEntity.ok(ingredient1));
+        assertEquals(sut.getById(1), ResponseEntity.ok(ingredient1));
     }
 
     @Test

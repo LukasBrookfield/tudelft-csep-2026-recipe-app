@@ -105,7 +105,7 @@ public class TestRecipeRepository implements RecipeRepository {
 
     @Override
     public <S extends Recipe> S save(S entity) {
-        entity.id = (long) recipes.size();
+        entity.id = (long) recipes.size() + 1;
         call("save");
         recipes.add(entity);
         return entity;

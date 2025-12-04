@@ -54,7 +54,7 @@ public class RecipeControllerTest{
     @Test
     public void getRecipeByIdTest () {
         sut.add(recipe1);
-        assertEquals(sut.getById((long) 0), ResponseEntity.ok(recipe1));
+        assertEquals(sut.getById((long) 1), ResponseEntity.ok(recipe1));
     }
 
     @Test

@@ -109,7 +109,7 @@ public class TestIngredientRepository implements IngredientRepository {
     @Override
     public <S extends Ingredient> S save(S entity) {
         call("save");
-        entity.id = (long) ingredients.size();
+        entity.id = (long) ingredients.size() + 1;
         ingredients.add(entity);
         return entity;
     }
