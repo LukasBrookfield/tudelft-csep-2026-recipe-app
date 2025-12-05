@@ -886,7 +886,7 @@ private String buildSearchText(Recipe recipe) {
         }
         Recipe recipe = recipeListView.getSelectionModel().getSelectedItem();
         recipe.name = recipeTitleField.getText();
-         recipe.ingredients = ingredientListView.getItems().stream().toList();
+        recipe.ingredients = ingredientListView.getItems().stream().toList();
         recipe.steps = preparationStepListView.getItems().stream().toList();
 
         System.out.println(new ObjectMapper().writeValueAsString(recipe));
@@ -974,6 +974,9 @@ private String buildSearchText(Recipe recipe) {
         editIngredientBox.getSelectionModel().selectedItemProperty()
                 .addListener((observable,
                               oldValue, newValue) -> {
+                    if (newValue == null) {
+                        return;
+                    }
                     if (newValue.name.equals("Create new ingredient")) {
                         editIngredientNameField.setDisable(false);
                         editIngredientNameField.setText("");
