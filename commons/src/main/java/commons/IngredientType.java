@@ -17,7 +17,7 @@ public class IngredientType {
     @OneToOne(cascade = CascadeType.ALL)
     public Nutrition nutrition;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany
     public List<Ingredient> ingredients;
 
     public Double density;  // unit = g/mL

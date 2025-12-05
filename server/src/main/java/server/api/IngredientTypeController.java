@@ -54,7 +54,6 @@ public class IngredientTypeController {
     @PostMapping(path = { "", "/" })
     public ResponseEntity<IngredientType> add(@RequestBody IngredientType ingredientType) {
         if (ingredientType == null
-                || ingredientType.ingredients == null
                 || ingredientType.name == null
                 || ingredientType.name.isEmpty()) {
             return ResponseEntity.badRequest().build();
