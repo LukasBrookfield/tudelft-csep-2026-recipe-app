@@ -1,5 +1,6 @@
 package commons;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -10,7 +11,7 @@ public class Ingredient {
     @GeneratedValue(strategy = GenerationType.AUTO)
     public long id;
 
-    @ManyToOne(optional = false, cascade = CascadeType.PERSIST)
+    @ManyToOne(optional = false)
     public IngredientType ingredientType;
 
     public Double amount;  // can be null
@@ -18,7 +19,8 @@ public class Ingredient {
     @Enumerated(EnumType.STRING)
     public Unit unit;  // can be null
 
-    @ManyToOne(cascade = CascadeType.PERSIST, optional = false)
+    @JsonBackReference
+    @ManyToOne(optional = false)
     public Recipe recipe;
 
     /**
