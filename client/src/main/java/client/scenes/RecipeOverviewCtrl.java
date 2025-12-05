@@ -8,6 +8,7 @@ import client.utils.ServerUtils;
 import commons.*;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -39,6 +40,10 @@ import javafx.stage.Stage;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.printing.PDFPageable;
 
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
 public class RecipeOverviewCtrl {
 
     private final ServerUtils server;
@@ -48,6 +53,10 @@ public class RecipeOverviewCtrl {
     private UserConfig user;
 
     private final MainCtrl mainCtrl;
+
+    private ObservableList<Recipe> allRecipes;
+    private FilteredList<Recipe> filteredRecipes;
+    private SortedList<Recipe> sortedRecipes;
 
     // Root
 
@@ -182,6 +191,12 @@ public class RecipeOverviewCtrl {
 
     @FXML
     private Button doneEditStepButton;
+
+    @FXML
+    private Label searchStatusLabel;
+
+    @FXML
+    private ChoiceBox<String> sortChoiceBox;
     
     // General
 
@@ -349,6 +364,35 @@ public class RecipeOverviewCtrl {
         editUnitBox.getItems().addAll("Select a unit", "G", "ML", "TBSP", "TSP", "PINCH",
                 "HANDFUL", "TO_TASTE");
 
+        // set up "all recipes" + filtered list
+        allRecipes = FXCollections.observableArrayList();
+
+        // load from server
+        try {
+            List<Recipe> fromServer = server.getRecipes();
+            allRecipes.setAll(fromServer);
+        } catch (Exception e) {
+            System.out.println("ERROR: Could not load recipes from server.");
+            e.printStackTrace();
+        }
+
+        recipeSearchField.setPromptText("Search by name, ingredient or step...");
+        if (searchStatusLabel != null) {
+            searchStatusLabel.setText("");
+        }
+        searchStatusLabel.setVisible(false);
+        searchStatusLabel.setManaged(false);
+
+        // this shows a subset of the original list (the first argument) based on a filter condition (the second argument)
+        // the defuault is recipe -> true (because initially there is no filtering)
+        filteredRecipes = new FilteredList<>(allRecipes, recipe -> true);
+
+        sortedRecipes = new SortedList<>(filteredRecipes);
+
+        // make it show the UI shows the ordered list
+        recipeListView.setItems(sortedRecipes);
+        sortedRecipes.setComparator(null); // default is no custom order
+
         onRefresh();
 
         recipeListView.getSelectionModel().selectedItemProperty().addListener(
@@ -382,9 +426,182 @@ public class RecipeOverviewCtrl {
                     moveStepDownButton.setDisable(idx == size - 1);
                 });
 
+        setupSearch();
+        setupSort();
+
         // Makes it so that the 'Add Recipe' button is selected when the app gets started
         Platform.runLater(() -> addRecipeButton.requestFocus());
     }
+
+
+    private void setupSort(){
+        sortChoiceBox.getItems().addAll(
+                "Order by",
+                "Name (A-Z)",
+                "Fewest steps first",
+                "Fewest ingredients first"
+        );
+
+        sortChoiceBox.getSelectionModel().select("Order by");
+
+        sortChoiceBox.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> {
+                    if ("Order by".equals(newValue)) {
+                        sortedRecipes.setComparator(null);
+                        return;
+                    }
+                    applySort(newValue);
+                }
+        );
+    }
+
+    private void applySort(String option) {
+        if (option == null){
+            sortedRecipes.setComparator(null);
+            return;
+        }
+
+        // comparator returns negative if first comes before second, positive otherwise and zero if equal
+        switch (option) {
+            case "Name (A-Z)":
+                sortedRecipes.setComparator((recipe1, recipe2) -> {
+                    String n1 = recipe1.name == null ? "" : recipe1.name.toLowerCase();
+                    String n2 = recipe2.name == null ? "" : recipe2.name.toLowerCase();
+                    return n1.compareTo(n2);
+                });
+                break;
+            case "Fewest steps first":
+                sortedRecipes.setComparator((r1, r2) -> {
+                    int s1 = r1.steps == null ? 0 : r1.steps.size();
+                    int s2 = r2.steps == null ? 0 : r2.steps.size();
+                    return Integer.compare(s1, s2);
+                });
+                break;
+            case "Fewest ingredients first":
+                sortedRecipes.setComparator((r1, r2) -> {
+                    int i1 = (r1.ingredients == null) ? 0 : r1.ingredients.size();
+                    int i2 = (r2.ingredients == null) ? 0 : r2.ingredients.size();
+                    return Integer.compare(i1, i2);
+                });
+                break;
+            default:
+                sortedRecipes.setComparator(null);
+        }
+    }
+
+
+    /**
+     * Sets up the search functionality.
+     */
+    public void setupSearch() {
+        // this listens to changes in the TextField's text
+        recipeSearchField.textProperty().addListener((observable, oldValue, newValue) -> {
+            applySearchFilter(newValue);
+        });
+
+        // This listens to key presses when the TextField is focused
+        recipeSearchField.setOnKeyReleased(e -> {
+            if (e.getCode() == javafx.scene.input.KeyCode.ESCAPE) {
+                recipeSearchField.clear(); // sets the text to ""
+                applySearchFilter(""); // clears the filter
+                recipeListView.getSelectionModel().clearSelection(); // deselects any recipe
+                onRefresh(); // re-sync
+            }
+        });
+    }
+
+    /**
+     * Applies a search filter on the recipes shown in the ListView (in the UI).
+     * It's case-insensitive, and, as instructed, uses "AND" logic (with the matchesAllWords method).
+     * @param query what the user typed in the search field
+     */
+    private void applySearchFilter(String query) {
+        if (query == null || query.isBlank()) {
+            // np search, meaning show everything
+            filteredRecipes.setPredicate(recipe -> true);
+
+            // Hide label and give space back to the list
+            searchStatusLabel.setText("");
+            searchStatusLabel.setVisible(false);
+            searchStatusLabel.setManaged(false);
+
+            return;
+        }
+
+        // status text
+        int total = allRecipes == null ? 0 : allRecipes.size();
+        searchStatusLabel.setText("Showing " + total + " recipes");
+
+        // spilt the query into words
+        String[] words = query.toLowerCase().trim().split("\\s+");
+
+        filteredRecipes.setPredicate(recipe -> mattchesAllWords(recipe, words));
+
+        String msg;
+        int matches = filteredRecipes.size();
+        if (matches == 0) {
+            msg = "No recipes match your search";
+        }
+        else if (matches == 1){
+            msg = "1 recipe found";
+        }
+        else {
+            msg = matches + " recipes found";
+        }
+
+        searchStatusLabel.setText(msg);
+        searchStatusLabel.setVisible(true);
+        searchStatusLabel.setManaged(true);
+    }
+
+    /**
+     * Checks whether a recipe contains all the words that are in the search field.
+     * @param recipe (any)
+     * @param words the user's query (split into each word)
+     * @return true if the recipe contains all the words in the search field, false otherwise
+     */
+    private boolean mattchesAllWords(Recipe recipe, String[] words) {
+        String searchableText = buildSearchText(recipe);
+
+        // just go over a recipe and make sure all words from the search field are there
+        for (String word : words) {
+            if (!searchableText.contains(word)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Builds a lower-cased text representation of a recipe. Built for text search.
+     * @param recipe (any)
+     * @return a single lower-cased string containing all searchable fields of the recipe (separated by spaces)
+     */
+private String buildSearchText(Recipe recipe) {
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(recipe.name.toLowerCase()).append(" ");
+
+        if (recipe.ingredients != null) {
+            for (Ingredient ingredient : recipe.ingredients) {
+                if (ingredient != null && ingredient.ingredientType != null && ingredient.ingredientType.name != null) {
+                    sb.append(ingredient.ingredientType.name.toLowerCase()).append(" ");
+                }
+                }
+            }
+
+        if (recipe.steps != null) {
+            for (String step : recipe.steps) {
+                if (step != null) {
+                    sb.append(step.toLowerCase()).append(" ");
+                }
+            }
+        }
+
+        return sb.toString();
+    }
+
 
     /**
      * On action method for the Refresh button
@@ -413,7 +630,8 @@ public class RecipeOverviewCtrl {
     @FXML
     private void onRemoveRecipe() {
         Recipe recipe = recipeListView.getSelectionModel().getSelectedItem();
-        recipeListView.getItems().remove(recipe);
+
+        allRecipes.remove(recipe);
         onRefresh();
     }
 
@@ -426,10 +644,11 @@ public class RecipeOverviewCtrl {
     private void onAddRecipe() {
         Recipe recipe = new Recipe("New recipe");
 
-        recipeListView.getItems().add(recipe);
-        recipeListView.getSelectionModel().select(
-                recipeListView.getItems().size() - 1
-        );
+        allRecipes.add(recipe);
+        recipeListView.getSelectionModel().select(recipe);
+//        recipeListView.getSelectionModel().select(
+//                recipeListView.getItems().size() - 1
+//        );
 
         // Now immediately enter edit mode for this recipe
         onEditRecipeButton();

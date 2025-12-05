@@ -14,6 +14,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
+<?import javafx.collections.FXCollections?>
 <VBox prefHeight="400.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.RecipeOverviewCtrl">
     <children>
         <AnchorPane fx:id="rootPane" maxHeight="-1.0" maxWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
@@ -56,11 +57,23 @@
                                 <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
                             </padding>
                             <children>
-                                <TextField fx:id="recipeSearchField" promptText="Search recipes...">
-                           <VBox.margin>
-                              <Insets bottom="5.0" />
-                           </VBox.margin></TextField>
+                        <HBox prefHeight="19.0" prefWidth="190.0">
+                           <children>
+                                      <TextField fx:id="recipeSearchField" prefHeight="25.0" prefWidth="139.0" promptText="Search recipes...">
+                                 <opaqueInsets>
+                                    <Insets />
+                                 </opaqueInsets>
+                              </TextField>
+                              <HBox prefHeight="25.0" prefWidth="4.0" />
+                              <ChoiceBox fx:id="sortChoiceBox" prefHeight="25.0" prefWidth="50.0">
+                                 <padding>
+                                    <Insets left="10.0" />
+                                 </padding>
+                              </ChoiceBox>
+                           </children>
+                        </HBox>
                                 <ListView fx:id="recipeListView" prefHeight="294.0" prefWidth="190.0" VBox.vgrow="ALWAYS" />
+                        <Label fx:id="searchStatusLabel" text="Label" />
                                 <HBox alignment="CENTER_LEFT" prefHeight="29.0" prefWidth="190.0" spacing="5.0">
                                     <children>
                                         <Button fx:id="removeRecipeButton" mnemonicParsing="false" onAction="#onRemoveRecipe" prefHeight="25.0" prefWidth="25.0" text="✕">
