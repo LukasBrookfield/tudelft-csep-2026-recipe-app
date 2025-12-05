@@ -886,8 +886,8 @@ private String buildSearchText(Recipe recipe) {
         }
         Recipe recipe = recipeListView.getSelectionModel().getSelectedItem();
         recipe.name = recipeTitleField.getText();
-        // recipe.ingredients = ingredientListView.getItems();
-        recipe.steps = preparationStepListView.getItems();
+         recipe.ingredients = ingredientListView.getItems().stream().toList();
+        recipe.steps = preparationStepListView.getItems().stream().toList();
 
         System.out.println(new ObjectMapper().writeValueAsString(recipe));
 
