@@ -373,7 +373,6 @@ public class RecipeOverviewCtrl {
             e.printStackTrace();
         }
 
-        recipeSearchField.setPromptText("Search by name, ingredient or step...");
         if (searchStatusLabel != null) {
             searchStatusLabel.setText("");
         }
@@ -387,7 +386,7 @@ public class RecipeOverviewCtrl {
         sortedRecipes = new SortedList<>(filteredRecipes);
 
         // make it show the UI shows the ordered list
-        recipeListView.getItems().setAll(sortedRecipes);
+        recipeListView.setItems(sortedRecipes);
         sortedRecipes.setComparator(null); // default is no custom order
 
         onRefresh();
@@ -439,7 +438,7 @@ public class RecipeOverviewCtrl {
                 "Fewest ingredients first"
         );
 
-        sortChoiceBox.getSelectionModel().select("Order by");
+        sortChoiceBox.getSelectionModel().select(0);
 
         sortChoiceBox.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> {
@@ -607,10 +606,9 @@ private String buildSearchText(Recipe recipe) {
      * removed later)
      */
     @FXML
-    private void onRefresh() {
-        recipeListView.getItems().setAll(server.getRecipes());
+    public void onRefresh() {
         editIngredientBox.getItems().setAll(
-                new IngredientType("Create a new ingredient", null,
+                new IngredientType("Create new ingredient type", null,
                         null, null)
         );
         editIngredientBox.getItems().addAll(server.getIngredientTypes());
@@ -634,8 +632,9 @@ private String buildSearchText(Recipe recipe) {
      * It removes the currently selected recipe
      */
     @FXML
-    private void onRemoveRecipe() {
+    private void onRemoveRecipe() throws JsonProcessingException {
         Recipe recipe = recipeListView.getSelectionModel().getSelectedItem();
+        System.out.println(new ObjectMapper().writeValueAsString(recipe));
         server.deleteRecipe(recipe.id);
         allRecipes.remove(recipe);
         onRefresh();
@@ -647,9 +646,8 @@ private String buildSearchText(Recipe recipe) {
      * then selects this recipe
      */
     @FXML
-    private void onAddRecipe() {
-        Recipe recipe = new Recipe("New recipe");
-        server.addRecipe(recipe);
+    private void onAddRecipe() throws JsonProcessingException {
+        Recipe recipe = server.addRecipe(new Recipe("New recipe"));
 
         onRefresh();
 
@@ -891,7 +889,8 @@ private String buildSearchText(Recipe recipe) {
 
         System.out.println(new ObjectMapper().writeValueAsString(recipe));
 
-        server.updateRecipe(recipe.id, recipe);
+        allRecipes.remove(recipe);
+        allRecipes.add(server.updateRecipe(recipe.id, recipe));
 
         onRefresh();
         changeViewEditMode(false);
@@ -974,10 +973,7 @@ private String buildSearchText(Recipe recipe) {
         editIngredientBox.getSelectionModel().selectedItemProperty()
                 .addListener((observable,
                               oldValue, newValue) -> {
-                    if (newValue == null) {
-                        return;
-                    }
-                    if (newValue.name.equals("Create new ingredient")) {
+                    if (newValue.name.equals("Create new ingredient type")) {
                         editIngredientNameField.setDisable(false);
                         editIngredientNameField.setText("");
                     } else {
@@ -1065,7 +1061,7 @@ private String buildSearchText(Recipe recipe) {
         int index = ingredientListView.getSelectionModel().getSelectedIndex();
         Ingredient ingredient = ingredientListView.getItems().get(index);
 
-        if (editIngredientBox.getValue().name.equals("Create a new ingredient")) {
+        if (editIngredientBox.getValue().name.equals("Create new ingredient type")) {
             ingredient.ingredientType = server.addIngredientType(
                     new IngredientType(editIngredientNameField.getText(),
                             null, new ArrayList<>(), null)
@@ -1084,6 +1080,7 @@ private String buildSearchText(Recipe recipe) {
         } else {
             ingredient.unit = null;
         }
+        ingredientListView.getItems().set(index, ingredient);
 
         System.out.println(new ObjectMapper().writeValueAsString(ingredient));
 

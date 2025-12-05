@@ -237,7 +237,7 @@ public class IngredientTypeOverviewCtrl {
      * the labels based on that ingredient type
      */
     @FXML
-    private void onRefresh() {
+    public void onRefresh() {
         ingredientTypeListView.getItems().setAll(server.getIngredientTypes());
 
         boolean empty = ingredientTypeListView.getItems().isEmpty();

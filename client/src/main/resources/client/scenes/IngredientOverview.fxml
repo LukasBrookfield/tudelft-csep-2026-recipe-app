@@ -60,14 +60,14 @@
                            </VBox.margin>
                         </TextField>
                         <ListView fx:id="ingredientTypeListView" prefHeight="250.0" prefWidth="190.0" VBox.vgrow="ALWAYS" />
-                        <HBox prefHeight="29.0" prefWidth="190.0" spacing="5.0">
+                        <HBox alignment="CENTER_LEFT" prefHeight="29.0" prefWidth="190.0" spacing="5.0">
                            <children>
                               <Button fx:id="removeIngredientTypeButton" mnemonicParsing="false" onAction="#onRemoveIngredientTypeButton" prefHeight="25.0" prefWidth="25.0" text="✕">
                                  <font>
                                     <Font size="9.0" />
                                  </font>
                               </Button>
-                              <Button fx:id="addIngredientTypeButton" mnemonicParsing="false" onAction="#onAddIngredientTypeButton" text="+" />
+                              <Button fx:id="addIngredientTypeButton" mnemonicParsing="false" onAction="#onAddIngredientTypeButton" prefHeight="25.0" prefWidth="25.0" text="+" />
                            </children>
                            <VBox.margin>
                               <Insets top="5.0" />
