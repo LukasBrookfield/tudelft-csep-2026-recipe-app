@@ -120,6 +120,8 @@
     - No additional comments.
     - Reminder: merge request comments in reviews only count if they exceed 100 characters.
 
+---
+
 ## Sprint Week 6 – Issues (decided before the meeting, and forwarded from last week)
 
 ### Teammate 1
