@@ -2,6 +2,8 @@ package client.scenes;
 
 import client.utils.RecipeUtils;
 import client.utils.UserConfig;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 
 import client.utils.ServerUtils;
@@ -354,12 +356,7 @@ public class RecipeOverviewCtrl {
         changeStepViewEditMode(false);
         changeViewEditMode(false);
         recipeTitleField.setVisible(false);
-
-        // Later this choicebox should show all ingredient types in the database
-        editIngredientBox.getItems().addAll(
-                new IngredientType("Create new ingredient type",
-                        null, null, null)
-        );
+        onRefresh();
 
         editUnitBox.getItems().addAll("Select a unit", "G", "ML", "TBSP", "TSP", "PINCH",
                 "HANDFUL", "TO_TASTE");
@@ -376,7 +373,6 @@ public class RecipeOverviewCtrl {
             e.printStackTrace();
         }
 
-        recipeSearchField.setPromptText("Search by name, ingredient or step...");
         if (searchStatusLabel != null) {
             searchStatusLabel.setText("");
         }
@@ -442,7 +438,7 @@ public class RecipeOverviewCtrl {
                 "Fewest ingredients first"
         );
 
-        sortChoiceBox.getSelectionModel().select("Order by");
+        sortChoiceBox.getSelectionModel().select(0);
 
         sortChoiceBox.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> {
@@ -610,13 +606,21 @@ private String buildSearchText(Recipe recipe) {
      * removed later)
      */
     @FXML
-    private void onRefresh() {
-        recipeListView.refresh();
+    public void onRefresh() {
+        editIngredientBox.getItems().setAll(
+                new IngredientType("Create new ingredient type", null,
+                        null, null)
+        );
+        editIngredientBox.getItems().addAll(server.getIngredientTypes());
 
         boolean empty = recipeListView.getItems().isEmpty();
         mainSeparator.getParent().setVisible(!empty);
         downloadRecipeButton.setVisible(!empty);
         printRecipeButton.setVisible(!empty);
+
+        if (recipeListView.getSelectionModel().getSelectedIndex() == -1) {
+            recipeListView.getSelectionModel().select(0);
+        }
 
         setLabelsAndFields();
     }
@@ -628,9 +632,10 @@ private String buildSearchText(Recipe recipe) {
      * It removes the currently selected recipe
      */
     @FXML
-    private void onRemoveRecipe() {
+    private void onRemoveRecipe() throws JsonProcessingException {
         Recipe recipe = recipeListView.getSelectionModel().getSelectedItem();
-
+        System.out.println(new ObjectMapper().writeValueAsString(recipe));
+        server.deleteRecipe(recipe.id);
         allRecipes.remove(recipe);
         onRefresh();
     }
@@ -641,14 +646,16 @@ private String buildSearchText(Recipe recipe) {
      * then selects this recipe
      */
     @FXML
-    private void onAddRecipe() {
-        Recipe recipe = new Recipe("New recipe");
+    private void onAddRecipe() throws JsonProcessingException {
+        Recipe recipe = server.addRecipe(new Recipe("New recipe"));
+
+        onRefresh();
 
         allRecipes.add(recipe);
-        recipeListView.getSelectionModel().select(recipe);
-//        recipeListView.getSelectionModel().select(
-//                recipeListView.getItems().size() - 1
-//        );
+        // recipeListView.getSelectionModel().select(recipe);
+        recipeListView.getSelectionModel().select(
+                recipeListView.getItems().size() - 1
+        );
 
         // Now immediately enter edit mode for this recipe
         onEditRecipeButton();
@@ -870,15 +877,21 @@ private String buildSearchText(Recipe recipe) {
      * All the changes are added to the selected recipe
      */
     @FXML
-    private void onDoneEditButton() {
+    private void onDoneEditButton() throws JsonProcessingException {
         if (recipeTitleField.getText().isEmpty()) {
             System.out.println("The recipe needs a name");
             return;
         }
         Recipe recipe = recipeListView.getSelectionModel().getSelectedItem();
         recipe.name = recipeTitleField.getText();
-        recipe.ingredients = ingredientListView.getItems();
-        recipe.steps = preparationStepListView.getItems();
+        recipe.ingredients = ingredientListView.getItems().stream().toList();
+        recipe.steps = preparationStepListView.getItems().stream().toList();
+
+        System.out.println(new ObjectMapper().writeValueAsString(recipe));
+
+        allRecipes.remove(recipe);
+        allRecipes.add(server.updateRecipe(recipe.id, recipe));
+
         onRefresh();
         changeViewEditMode(false);
     }
@@ -1029,7 +1042,7 @@ private String buildSearchText(Recipe recipe) {
      * Note that this only changes the recipe if the user presses 'Done' later
      */
     @FXML
-    private void onDoneEditIngredientButton() {
+    private void onDoneEditIngredientButton() throws JsonProcessingException {
         if (editUnitBox.getValue().equals("Select a unit")) {
             System.out.println("Select a unit.");
             return;
@@ -1048,8 +1061,15 @@ private String buildSearchText(Recipe recipe) {
         int index = ingredientListView.getSelectionModel().getSelectedIndex();
         Ingredient ingredient = ingredientListView.getItems().get(index);
 
-        ingredient.ingredientType = new IngredientType(
-                editIngredientNameField.getText(), null, null, null);
+        if (editIngredientBox.getValue().name.equals("Create new ingredient type")) {
+            ingredient.ingredientType = server.addIngredientType(
+                    new IngredientType(editIngredientNameField.getText(),
+                            null, new ArrayList<>(), null)
+            );
+        } else {
+            ingredient.ingredientType = editIngredientBox.getValue();
+        }
+
         if (!editIngredientAmountField.getText().isEmpty()) {
             ingredient.amount = Double.parseDouble(editIngredientAmountField.getText());
         } else {
@@ -1062,16 +1082,15 @@ private String buildSearchText(Recipe recipe) {
         }
         ingredientListView.getItems().set(index, ingredient);
 
+        System.out.println(new ObjectMapper().writeValueAsString(ingredient));
+
+
         editIngredientAmountField.setText("");
         editUnitBox.getSelectionModel().select(0);
 
         changeIngredientTypeViewEditMode(0);
         cancelEditButton.setVisible(true);
         doneEditButton.setVisible(true);
-
-        if (!editIngredientBox.getItems().contains(ingredient.ingredientType)) {
-            editIngredientBox.getItems().add(ingredient.ingredientType);
-        }
     }
 
     // Edit preparation step section

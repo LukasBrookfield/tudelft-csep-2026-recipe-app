@@ -1,10 +1,13 @@
 package commons;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import java.util.ArrayList;
 import java.util.List;
+
 
 @Entity
 public class Recipe {
@@ -15,6 +18,7 @@ public class Recipe {
     @Column(nullable = false)
     public String name;
 
+    @JsonManagedReference
     @OneToMany(cascade = CascadeType.ALL)
     public List<Ingredient> ingredients;
 

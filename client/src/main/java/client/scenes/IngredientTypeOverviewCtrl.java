@@ -3,6 +3,8 @@ package client.scenes;
 import client.utils.RecipeUtils;
 import client.utils.ServerUtils;
 import client.utils.UserConfig;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import commons.Ingredient;
 import commons.IngredientType;
@@ -10,6 +12,8 @@ import commons.Nutrition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+
+import java.util.ArrayList;
 
 public class IngredientTypeOverviewCtrl {
 
@@ -233,11 +237,15 @@ public class IngredientTypeOverviewCtrl {
      * the labels based on that ingredient type
      */
     @FXML
-    private void onRefresh() {
-        ingredientTypeListView.refresh();
+    public void onRefresh() {
+        ingredientTypeListView.getItems().setAll(server.getIngredientTypes());
 
         boolean empty = ingredientTypeListView.getItems().isEmpty();
         mainSeparator.getParent().setVisible(!empty);
+
+        if (ingredientTypeListView.getSelectionModel().getSelectedIndex() == -1) {
+            ingredientTypeListView.getSelectionModel().select(0);
+        }
 
         setLabelsAndFields();
     }
@@ -250,7 +258,6 @@ public class IngredientTypeOverviewCtrl {
         changeDetailsViewEditMode(false);
         changeNutritionViewEditMode(false);
         changeViewEditMode(false);
-
         onRefresh();
 
         ingredientTypeListView.getSelectionModel().selectedItemProperty().addListener(
@@ -271,7 +278,7 @@ public class IngredientTypeOverviewCtrl {
     private void onRemoveIngredientTypeButton() {
         IngredientType ingredientType = ingredientTypeListView
                 .getSelectionModel().getSelectedItem();
-        ingredientTypeListView.getItems().remove(ingredientType);
+        server.deleteIngredientType(ingredientType.id);
         onRefresh();
     }
 
@@ -280,11 +287,14 @@ public class IngredientTypeOverviewCtrl {
      * It creates a new ingredient type and then selects this ingredient
      */
     @FXML
-    private void onAddIngredientTypeButton() {
+    private void onAddIngredientTypeButton() throws JsonProcessingException {
         IngredientType ingredientType = new IngredientType(
-                "New ingredient", null, null, null);
+                "New ingredient", null, new ArrayList<>(), null);
 
-        ingredientTypeListView.getItems().add(ingredientType);
+        System.out.println(new ObjectMapper().writeValueAsString(ingredientType));
+
+        server.addIngredientType(ingredientType);
+        onRefresh();
         ingredientTypeListView.getSelectionModel().select(
                 ingredientTypeListView.getItems().size() - 1
         );
@@ -360,6 +370,8 @@ public class IngredientTypeOverviewCtrl {
                         .substring(0, carbsLabel.getText().length() - 1));
             }
         }
+
+        server.updateIngredientType(ingredientType.id, ingredientType);
 
         onRefresh();
         changeViewEditMode(false);

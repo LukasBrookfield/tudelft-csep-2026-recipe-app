@@ -33,10 +33,12 @@ public class MainCtrl {
     public void showRecipeOverview() {
         primaryStage.setTitle("FoodPal - Recipe Overview");
         primaryStage.setScene(recipeOverviewScene);
+        recipeOverviewCtrl.onRefresh();
     }
 
     public void showIngredientTypeOverview() {
         primaryStage.setTitle("FoodPal - Ingredient Overview");
         primaryStage.setScene(ingredientTypeOverviewScene);
+        ingredientTypeOverviewCtrl.onRefresh();
     }
 }
