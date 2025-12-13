@@ -71,6 +71,7 @@
                               <Insets bottom="5.0" />
                            </VBox.margin>
                         </HBox>
+                        <ChoiceBox fx:id="favouriteRecipeFilterBox" prefHeight="25.0" prefWidth="190.0" />
                                 <ListView fx:id="recipeListView" maxHeight="268.6" prefWidth="190.0" VBox.vgrow="ALWAYS" />
                         <Label fx:id="searchStatusLabel" prefHeight="25.0" prefWidth="196.0" text="Label" />
                                 <HBox alignment="CENTER_LEFT" prefHeight="29.0" prefWidth="190.0" spacing="5.0">

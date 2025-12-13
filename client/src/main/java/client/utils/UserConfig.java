@@ -66,14 +66,27 @@ public class UserConfig {
         user.setShoppingList(shoppingList);
     }
 
+    /**
+     * Returns if the recipe is one of the user's favourite recipes
+     * @param recipe The recipe to check
+     * @return true if the recipe is a favourite, else false
+     */
     public boolean isFavouriteRecipe(Recipe recipe) {
-        return user.getFavouriteRecipes().stream().anyMatch(x -> x == recipe.id);
+        return user.getFavouriteRecipes().contains(recipe.id);
     }
 
+    /**
+     * Adds a recipe to the list of favourite recipes
+     * @param recipe The recipe to add
+     */
     public void addFavouriteRecipe(Recipe recipe) {
         user.getFavouriteRecipes().add(recipe.id);
     }
 
+    /**
+     * Removes a recipe from the list of favourite recipes
+     * @param recipe The recipe to remove
+     */
     public void removeFavouriteRecipe(Recipe recipe) {
         user.getFavouriteRecipes().remove(recipe.id);
     }
