@@ -9,6 +9,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 public class UserConfig {
@@ -89,5 +90,19 @@ public class UserConfig {
      */
     public void removeFavouriteRecipe(Recipe recipe) {
         user.getFavouriteRecipes().remove(recipe.id);
+    }
+
+    /**
+     * Removes the user's favourite recipes that have been deleted from the database and returns
+     * how many have been deleted
+     * @param recipes The list of recipes to check
+     * @return The number of recipes deleted
+     */
+    public int removeDeletedRecipes(List<Recipe> recipes) {
+        List<Long> idList = recipes.stream().map(x -> x.id).toList();
+        int oldSize = user.getFavouriteRecipes().size();
+        user.getFavouriteRecipes().retainAll(idList);
+        saveUser();
+        return oldSize - user.getFavouriteRecipes().size();
     }
 }

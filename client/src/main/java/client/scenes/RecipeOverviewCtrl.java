@@ -467,10 +467,15 @@ public class RecipeOverviewCtrl {
         setupSort();
         setupFavouriteRecipeFilter();
 
-        // Makes it so that the 'Add Recipe' button is selected when the app gets started
-        Platform.runLater(() -> addRecipeButton.requestFocus());
-    }
+        Platform.runLater(() -> {
+            // Makes it so that the 'Add Recipe' button is selected when the app gets started
+            addRecipeButton.requestFocus();
 
+            // Alerts user if any of their favourite recipes have been deleted
+            int n = user.removeDeletedRecipes(allRecipes);
+            if (n > 0) showDeletedFavouritesAlert(n);
+        });
+    }
 
     private void setupSort() {
         sortChoiceBox.getItems().addAll(
@@ -682,6 +687,7 @@ public class RecipeOverviewCtrl {
         System.out.println(new ObjectMapper().writeValueAsString(recipe));
         server.deleteRecipe(recipe.id);
         allRecipes.remove(recipe);
+        if (user.isFavouriteRecipe(recipe)) user.removeFavouriteRecipe(recipe);
         onRefresh();
     }
 
@@ -1310,6 +1316,15 @@ public class RecipeOverviewCtrl {
                     onRefresh();
                 }
         );
+    }
+
+    private void showDeletedFavouritesAlert(int n) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.initModality(Modality.APPLICATION_MODAL);
+        alert.setTitle("Some of your favourite recipes have been deleted");
+        alert.setHeaderText(null);
+        alert.setContentText(n + " of your favourite recipes have been deleted by others :(");
+        alert.show();
     }
 }
     // MAYBE KEEP SOMETHING LIKE THIS FROM THE PROJECT TEMPLATE:
