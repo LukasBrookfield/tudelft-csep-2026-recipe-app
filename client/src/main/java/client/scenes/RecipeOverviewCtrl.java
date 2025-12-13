@@ -43,7 +43,6 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.printing.PDFPageable;
 
 import javafx.collections.transformation.FilteredList;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 public class RecipeOverviewCtrl {
@@ -92,6 +91,9 @@ public class RecipeOverviewCtrl {
 
     @FXML
     private Button toggleOverviewButton;
+
+    @FXML
+    private Button starRecipeButton;
 
     // Recipe title row
 
@@ -235,6 +237,8 @@ public class RecipeOverviewCtrl {
         recipeSearchField.setDisable(value);
         recipeListView.setDisable(value);
 
+        starRecipeButton.setVisible(!value);
+
         // When going into edit mode, it automatically selects the
         // recipe name field
         Platform.runLater(() -> {
@@ -344,6 +348,8 @@ public class RecipeOverviewCtrl {
 
             List<String> steps = new ArrayList<>(recipe.steps);
             preparationStepListView.setItems(FXCollections.observableList(steps));
+
+            starRecipeButton.setText(user.isFavouriteRecipe(recipe) ? "★" : "☆");
         }
     }
 
@@ -378,6 +384,7 @@ public class RecipeOverviewCtrl {
         }
         searchStatusLabel.setVisible(false);
         searchStatusLabel.setManaged(false);
+
 
         // this shows a subset of the original list (the first argument) based on a filter condition (the second argument)
         // the defuault is recipe -> true (because initially there is no filtering)
@@ -617,6 +624,7 @@ private String buildSearchText(Recipe recipe) {
         mainSeparator.getParent().setVisible(!empty);
         downloadRecipeButton.setVisible(!empty);
         printRecipeButton.setVisible(!empty);
+        starRecipeButton.setVisible(!empty);
 
         if (recipeListView.getSelectionModel().getSelectedIndex() == -1) {
             recipeListView.getSelectionModel().select(0);
@@ -1214,6 +1222,15 @@ private String buildSearchText(Recipe recipe) {
         stage.setTitle("Shopping List");
         stage.initModality(Modality.APPLICATION_MODAL); //forbids to close the parent window before this one
         stage.show();
+    }
+
+    /**
+     * Adds/removes a recipe to the user's favourite recipes when the star button is clicked
+     */
+    @FXML
+    private void onStarRecipe() {
+        Recipe recipe = recipeListView.getSelectionModel().getSelectedItem();
+        starRecipeButton.setText(user.isFavouriteRecipe(recipe) ? "★" : "☆");
     }
 
     // MAYBE KEEP SOMETHING LIKE THIS FROM THE PROJECT TEMPLATE:

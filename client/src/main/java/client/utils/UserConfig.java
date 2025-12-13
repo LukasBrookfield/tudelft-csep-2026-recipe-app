@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import commons.Ingredient;
 import commons.User;
+import commons.Recipe;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -64,5 +65,9 @@ public class UserConfig {
 
     public void setShoppingList(List<Ingredient> shoppingList) {
         user.setShoppingList(shoppingList);
+    }
+
+    public boolean isFavouriteRecipe(Recipe recipe) {
+        return user.getFavouriteRecipes().stream().anyMatch(x -> x == recipe.id);
     }
 }
