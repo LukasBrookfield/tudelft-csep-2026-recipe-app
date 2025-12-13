@@ -25,8 +25,8 @@ public class UserConfig {
 
     /**
      * Reads all the user data from the UserConfig.json file. If the file doesn't exist, a new
-     * file is created and an empty User object is saved. If an error occurs, null is returned.
-     * @return A new User object representing the contents of the file read
+     * file is created and an empty User object is saved. If an error occurs, an empty user is
+     * created but not saved.
      */
     public void readUser() {
         try {
@@ -37,8 +37,7 @@ public class UserConfig {
             }
             user = new ObjectMapper().readValue(new File(FILE_PATH), User.class);
         } catch (IOException e) {
-            e.printStackTrace();
-            user = null;
+            user = new User(new ArrayList<>(), new ArrayList<>());
         }
     }
 
@@ -69,5 +68,13 @@ public class UserConfig {
 
     public boolean isFavouriteRecipe(Recipe recipe) {
         return user.getFavouriteRecipes().stream().anyMatch(x -> x == recipe.id);
+    }
+
+    public void addFavouriteRecipe(Recipe recipe) {
+        user.getFavouriteRecipes().add(recipe.id);
+    }
+
+    public void removeFavouriteRecipe(Recipe recipe) {
+        user.getFavouriteRecipes().remove(recipe.id);
     }
 }

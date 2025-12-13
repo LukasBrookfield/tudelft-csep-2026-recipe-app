@@ -1225,11 +1225,17 @@ private String buildSearchText(Recipe recipe) {
     }
 
     /**
-     * Adds/removes a recipe to the user's favourite recipes when the star button is clicked
+     * Adds/removes a recipe to the user's favourite recipes when the star recipe button is clicked
      */
     @FXML
     private void onStarRecipe() {
         Recipe recipe = recipeListView.getSelectionModel().getSelectedItem();
+        if (user.isFavouriteRecipe(recipe)) {
+            user.removeFavouriteRecipe(recipe);
+        } else {
+            user.addFavouriteRecipe(recipe);
+        }
+        user.saveUser();
         starRecipeButton.setText(user.isFavouriteRecipe(recipe) ? "★" : "☆");
     }
 
