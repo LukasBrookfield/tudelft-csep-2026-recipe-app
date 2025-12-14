@@ -48,6 +48,10 @@ public class UserConfig {
         user.setShoppingList(shoppingList);
     }
 
+    public void setFavouriteRecipes(List<Long> favouriteRecipes) {
+        user.setFavouriteRecipes(favouriteRecipes);
+    }
+
     /**
      * Returns if the recipe is one of the user's favourite recipes
      * @param recipe The recipe to check
@@ -83,7 +87,6 @@ public class UserConfig {
         List<Long> idList = recipes.stream().map(x -> x.id).toList();
         int oldSize = user.getFavouriteRecipes().size();
         user.getFavouriteRecipes().retainAll(idList);
-        saveUser();
         return oldSize - user.getFavouriteRecipes().size();
     }
 }
