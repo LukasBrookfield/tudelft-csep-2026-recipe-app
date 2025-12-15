@@ -57,8 +57,9 @@
                                        <children>
                                           <HBox fx:id="editIngredientBox" prefHeight="25.0" prefWidth="457.0" spacing="5.0">
                                              <children>
-                                                <TextField fx:id="editIngredientAmountField" prefHeight="25.0" prefWidth="263.0" promptText="Amount" />
+                                                <TextField fx:id="editIngredientAmountField" prefHeight="25.0" prefWidth="217.0" promptText="Amount" />
                                                 <ChoiceBox fx:id="editUnitBox" prefHeight="25.0" prefWidth="47.0" />
+                                                <Button mnemonicParsing="false" onAction="#onBackEditIngredientButton" text="Back" />
                                                 <Button fx:id="doneEditIngredientButton" mnemonicParsing="false" onAction="#onDoneEditIngredientButton" prefHeight="25.0" prefWidth="53.0" text="Done" />
                                              </children>
                                           </HBox>

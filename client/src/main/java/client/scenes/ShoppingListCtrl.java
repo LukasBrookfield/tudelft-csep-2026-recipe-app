@@ -114,6 +114,7 @@ public class ShoppingListCtrl {
         editPane.setVisible(value);
         removeIngredientButton.getParent().setMouseTransparent(value);
         changeIngredientTypeViewEditMode(false);
+        ingredientListView.setDisable(value);
     }
 
     /**
@@ -317,5 +318,15 @@ public class ShoppingListCtrl {
         if (editUnitBox.getValue() == null || editUnitBox.getValue().isEmpty()) {
             editUnitBox.getSelectionModel().select(0);
         }
+    }
+
+    /**
+     * On action method for the Back Edit Ingredient button
+     * Switches the scene back to edit ingredient part 1 (which is where the user
+     * enters the name of the ingredient type
+     */
+    @FXML
+    private void onBackEditIngredientButton() {
+        changeIngredientTypeViewEditMode(false);
     }
 }
