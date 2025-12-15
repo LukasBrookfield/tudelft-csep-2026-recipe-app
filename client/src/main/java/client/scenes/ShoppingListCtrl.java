@@ -9,6 +9,8 @@ import commons.Unit;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 
 public class ShoppingListCtrl {
 
@@ -43,6 +45,18 @@ public class ShoppingListCtrl {
     @FXML
     private Button doneEditIngredientButton;
 
+    @FXML
+    private StackPane editPane;
+
+    @FXML
+    private HBox editIngredientBox;
+
+    @FXML
+    private HBox editIngredientTypeBox;
+
+    @FXML
+    private ChoiceBox<IngredientType> editIngredientChoiceBox;
+
     @Inject
     public ShoppingListCtrl(ServerUtils server, UserConfig user) {
         this.server = server;
@@ -56,6 +70,12 @@ public class ShoppingListCtrl {
      */
     @FXML
     private void onRefresh() {
+        editIngredientChoiceBox.getItems().setAll(
+                new IngredientType("Create new ingredient type", null,
+                        null, null)
+        );
+        editIngredientChoiceBox.getItems().addAll(server.getIngredientTypes());
+
         ingredientListView.refresh();
         if(ingredientListView.getSelectionModel().getSelectedItem() != null) {
             editIngredientButton.setVisible(true);
@@ -68,19 +88,25 @@ public class ShoppingListCtrl {
 
     /**
      * Changes the scene between viewing and editing the ingredients
-     * @param value false vor viewing mode, true for editing mode
+     * @param value false for viewing mode, true for editing mode
      */
     private void changeIngredientViewEditMode(boolean value) {
         removeIngredientButton.setVisible(!value);
         addIngredientButton.setVisible(!value);
         editIngredientButton.setVisible(!value);
-        editIngredientNameField.setVisible(value);
-        editIngredientAmountField.setVisible(value);
-        editUnitBox.setVisible(value);
-        cancelEditIngredientButton.setVisible(value);
-        doneEditIngredientButton.setVisible(value);
-
+        editPane.setVisible(value);
         removeIngredientButton.getParent().setMouseTransparent(value);
+        changeIngredientTypeViewEditMode(false);
+    }
+
+    /**
+     * Changes the scene between editing ingredient and ingredient type
+     * @param value false for type mode, true for ingredient mode
+     */
+    private void changeIngredientTypeViewEditMode(boolean value) {
+        editIngredientTypeBox.setVisible(!value);
+        editIngredientBox.setVisible(value);
+        editIngredientTypeBox.setManaged(value);
     }
 
     /**
