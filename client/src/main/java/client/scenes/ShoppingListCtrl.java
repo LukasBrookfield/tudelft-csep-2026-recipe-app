@@ -57,6 +57,9 @@ public class ShoppingListCtrl {
     @FXML
     private ChoiceBox<IngredientType> editIngredientChoiceBox;
 
+    @FXML
+    private Button nextButton;
+
     @Inject
     public ShoppingListCtrl(ServerUtils server, UserConfig user) {
         this.server = server;
@@ -186,17 +189,30 @@ public class ShoppingListCtrl {
         changeIngredientViewEditMode(true);
 
         Ingredient ingredient = ingredientListView.getSelectionModel().getSelectedItem();
-        editIngredientNameField.setText(ingredient.ingredientType.name);
-        if (ingredient.amount != null) {
-            editIngredientAmountField.setText(String.valueOf(ingredient.amount));
+
+        if (ingredient.ingredientType != null) {
+            editIngredientChoiceBox.setValue(ingredient.ingredientType);
+            editIngredientNameField.setText(ingredient.ingredientType.name);
         } else {
-            editIngredientAmountField.setText("");
+            editIngredientChoiceBox.getSelectionModel().select(0);
+            editIngredientNameField.setText("");
         }
-        if (ingredient.unit != null) {
-            editUnitBox.setValue(ingredient.unit.name());
-        } else {
-            editUnitBox.setValue("");
-        }
+
+        editIngredientChoiceBox.getSelectionModel().selectedItemProperty()
+                .addListener((observable,
+                              oldValue, newValue) -> {
+                    if (newValue.name.equals("Create new ingredient type")) {
+                        editIngredientNameField.setDisable(false);
+                        editIngredientNameField.setText("");
+                    } else {
+                        editIngredientNameField.setDisable(true);
+                        editIngredientNameField.setText(editIngredientChoiceBox
+                                .getValue().name);
+                    }
+                });
+
+        // Force focus into the IngredientType name box
+        Platform.runLater(() -> editIngredientBox.requestFocus());
     }
 
     /**
@@ -249,5 +265,26 @@ public class ShoppingListCtrl {
 
         user.setShoppingList(ingredientListView.getItems());
         user.saveUser();
+    }
+
+    public void onNext(){
+        if (editIngredientNameField.getText().isEmpty()) {
+            System.out.println("The ingredient type needs a name.");
+            return;
+        }
+
+        changeIngredientTypeViewEditMode(true);
+
+        Ingredient ingredient = ingredientListView.getSelectionModel()
+                .getSelectedItem();
+        if (ingredient.amount != null) {
+            editIngredientAmountField.setText(String.valueOf(ingredient.amount));
+        }
+        if (ingredient.unit != null) {
+            editUnitBox.setValue(ingredient.unit.name());
+        }
+        if (editUnitBox.getValue() == null || editUnitBox.getValue().isEmpty()) {
+            editUnitBox.getSelectionModel().select(0);
+        }
     }
 }
