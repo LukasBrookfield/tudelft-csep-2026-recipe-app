@@ -193,6 +193,12 @@ public class ShoppingListCtrl {
      */
     @FXML
     private void onEditIngredientButton() {
+        //we remove the listener so there would be no errors while updating the ingredient type choice box
+        editIngredientChoiceBox
+                .getSelectionModel()
+                .selectedItemProperty()
+                .removeListener(ingredientListener);
+
         //sets the values to the ingredient type choice box
         editIngredientChoiceBox.getItems().setAll(
                 new IngredientType("Create new ingredient type", null,
@@ -291,12 +297,6 @@ public class ShoppingListCtrl {
 
         user.setShoppingList(ingredientListView.getItems());
         user.saveUser();
-
-        //we remove the listener so there would be no errors while updating the ingredient type choice box
-        editIngredientChoiceBox
-                .getSelectionModel()
-                .selectedItemProperty()
-                .removeListener(ingredientListener);
     }
 
     public void onNext(){
