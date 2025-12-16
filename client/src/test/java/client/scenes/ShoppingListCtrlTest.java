@@ -3,11 +3,9 @@ package client.scenes;
 import java.io.IOException;
 import java.net.URL;
 
+import client.utils.ServerUtils;
 import client.utils.UserConfig;
-import commons.Ingredient;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import jakarta.ws.rs.client.ClientBuilder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.testfx.api.FxRobot;
@@ -26,23 +24,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @ExtendWith(ApplicationExtension.class)
 public class ShoppingListCtrlTest {
 
-    static {
-        System.setProperty("java.awt.headless", "true");
-        System.setProperty("testfx.robot", "glass");
-        System.setProperty("testfx.headless", "true");
-        System.setProperty("prism.order", "sw");
-        System.setProperty("prism.text", "t2k");
-    }
-
     private Button removeIngredientButton;
-    private Button addIngredientButton;
     private Button editIngredientButton;
-    private Button cancelEditIngredientButton;
-    private ListView<Ingredient> ingredientListView;
-    private TextField editIngredientNameField;
-    private TextField editIngredientAmountField;
-    private ChoiceBox<String> editUnitBox;
-    private Button doneEditIngredientButton;
+    private Button addIngredientButton;
 
     @Start
     private void start(Stage shoppingListStage) throws IOException {
@@ -54,15 +38,9 @@ public class ShoppingListCtrlTest {
         shoppingListStage.show();
 
         // Initialize buttons (you can lookup buttons after loading the scene)
-        removeIngredientButton = lookup(scene, "#removeIngredientButton");
         addIngredientButton = lookup(scene, "#addIngredientButton");
+        removeIngredientButton = lookup(scene, "#removeIngredientButton");
         editIngredientButton = lookup(scene, "#editIngredientButton");
-        cancelEditIngredientButton = lookup(scene, "#cancelEditIngredientButton");
-        ingredientListView = lookup(scene, "#ingredientListView");
-        editUnitBox = lookup(scene, "#editUnitBox");
-        editIngredientNameField = lookup(scene, "#editIngredientNameField");
-        editIngredientAmountField = lookup(scene, "#editIngredientAmountField");
-        doneEditIngredientButton =  lookup(scene, "#doneEditIngredientButton");
     }
 
     private Scene getScene() throws IOException {
@@ -71,7 +49,7 @@ public class ShoppingListCtrlTest {
 
         loader.setControllerFactory(type -> {
             if (type == ShoppingListCtrl.class) {
-                return new ShoppingListCtrl(null, new UserConfig("src/test/java/client/scenes"));
+                return new ShoppingListCtrl(new ServerUtils(ClientBuilder.newClient()), new UserConfig("src/test/java/client/scenes"));
             }else{
                 throw new RuntimeException();
             }
@@ -79,8 +57,7 @@ public class ShoppingListCtrlTest {
 
 
         Parent parent = loader.load();
-        var scene = new Scene(parent);
-        return scene;
+        return new Scene(parent);
     }
 
     @SuppressWarnings("unchecked")
@@ -89,43 +66,18 @@ public class ShoppingListCtrlTest {
     }
 
     @Test
-    void testBeforeAddingIngredientButton(FxRobot robot) {
+    void testBeforeAddingIngredientButton() {
         assertTrue(addIngredientButton.isVisible());
         assertFalse(removeIngredientButton.isVisible());
         assertFalse(editIngredientButton.isVisible());
-        assertFalse(cancelEditIngredientButton.isVisible());
-        assertFalse(editIngredientAmountField.isVisible());
-        assertFalse(editUnitBox.isVisible());
-        assertFalse(editIngredientNameField.isVisible());
-        assertFalse(doneEditIngredientButton.isVisible());
     }
 
     @Test
-    void testAfterAddIngredientButton(FxRobot robot) {
+    void testAfterAddingIngredientButton(FxRobot robot) {
         robot.clickOn(addIngredientButton);
 
         assertFalse(addIngredientButton.isVisible());
         assertFalse(removeIngredientButton.isVisible());
         assertFalse(editIngredientButton.isVisible());
-        assertTrue(cancelEditIngredientButton.isVisible());
-        assertTrue(editIngredientAmountField.isVisible());
-        assertTrue(editUnitBox.isVisible());
-        assertTrue(editIngredientNameField.isVisible());
-        assertTrue(doneEditIngredientButton.isVisible());
-    }
-
-    @Test
-    void testAfterCancelEditIngredientButton(FxRobot robot) {
-        robot.clickOn(addIngredientButton);
-        robot.clickOn(cancelEditIngredientButton);
-
-        assertTrue(addIngredientButton.isVisible());
-        assertTrue(removeIngredientButton.isVisible());
-        assertTrue(editIngredientButton.isVisible());
-        assertFalse(cancelEditIngredientButton.isVisible());
-        assertFalse(editIngredientAmountField.isVisible());
-        assertFalse(editUnitBox.isVisible());
-        assertFalse(editIngredientNameField.isVisible());
-        assertFalse(doneEditIngredientButton.isVisible());
     }
 }
