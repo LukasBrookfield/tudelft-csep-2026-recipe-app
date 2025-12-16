@@ -971,18 +971,20 @@ public class RecipeOverviewCtrl {
      */
     @FXML
     private void onDoneEditButton() throws JsonProcessingException {
-        if (recipeTitleField.getText().isEmpty()) {
+        if (recipeTitleField.getText().isBlank()) {
             System.out.println("The recipe needs a name");
             return;
         }
-        Recipe recipe = recipeListView.getSelectionModel().getSelectedItem();
+        int index = recipeListView.getSelectionModel().getSelectedIndex();
+        Recipe recipe = recipeListView.getItems().get(index);
+
         recipe.name = recipeTitleField.getText();
         recipe.ingredients = ingredientListView.getItems().stream().toList();
         recipe.steps = preparationStepListView.getItems().stream().toList();
 
         System.out.println(new ObjectMapper().writeValueAsString(recipe));
 
-        allRecipes.set(allRecipes.indexOf(recipe), server.updateRecipe(recipe.id, recipe));
+        allRecipes.set(index, server.updateRecipe(recipe.id, recipe));
 
         onRefresh();
         changeViewEditMode(false);
@@ -1176,7 +1178,6 @@ public class RecipeOverviewCtrl {
         ingredientListView.getItems().set(index, ingredient);
 
         System.out.println(new ObjectMapper().writeValueAsString(ingredient));
-
 
         editIngredientAmountField.setText("");
         editUnitBox.getSelectionModel().select(0);
