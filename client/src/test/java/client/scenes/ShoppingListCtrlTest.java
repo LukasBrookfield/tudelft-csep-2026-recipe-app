@@ -2,9 +2,15 @@ package client.scenes;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import client.utils.ServerUtils;
+import client.utils.TestUserStorage;
 import client.utils.UserConfig;
+import client.utils.UserStorage;
+import commons.Ingredient;
+import commons.User;
 import jakarta.ws.rs.client.ClientBuilder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,6 +32,11 @@ public class ShoppingListCtrlTest {
     private Button removeIngredientButton;
     private Button editIngredientButton;
     private Button addIngredientButton;
+    private final List<Ingredient> shoppingList = new ArrayList<>();
+    private final List<Long> favouriteRecipes = new ArrayList<>();
+    private final User user = new User(favouriteRecipes, shoppingList);
+    private final UserStorage userStorage = new TestUserStorage(user);
+    private final UserConfig userConfig = new UserConfig(userStorage, user);
 
     @Start
     private void start(Stage shoppingListStage) throws IOException {
@@ -48,7 +59,7 @@ public class ShoppingListCtrlTest {
 
         loader.setControllerFactory(type -> {
             if (type == ShoppingListCtrl.class) {
-                return new ShoppingListCtrl(new ServerUtils(ClientBuilder.newClient()), new UserConfig("src/test/java/client/scenes"));
+                return new ShoppingListCtrl(new ServerUtils(ClientBuilder.newClient()), new UserConfig(userStorage, user));
             }else{
                 throw new RuntimeException();
             }
