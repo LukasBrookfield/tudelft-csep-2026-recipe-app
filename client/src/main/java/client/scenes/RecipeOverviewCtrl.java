@@ -473,6 +473,7 @@ public class RecipeOverviewCtrl {
 
             // Alerts user if any of their favourite recipes have been deleted
             int n = user.removeDeletedRecipes(allRecipes);
+            user.saveUser();
             if (n > 0) showDeletedFavouritesAlert(n);
         });
     }
