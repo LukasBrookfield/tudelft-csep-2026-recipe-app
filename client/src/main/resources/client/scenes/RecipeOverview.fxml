@@ -80,9 +80,14 @@
                                             </font>
                                         </Button>
                                         <Button fx:id="addRecipeButton" minWidth="-Infinity" mnemonicParsing="false" onAction="#onAddRecipe" prefHeight="25.0" prefWidth="25.0" text="+" />
+                              <Button fx:id="cloneRecipeButton" minWidth="-Infinity" mnemonicParsing="false" onAction="#onCloneRecipe" prefHeight="25.0" prefWidth="25.0" text="⧉">
+                                 <font>
+                                    <Font size="10.0" />
+                                 </font>
+                              </Button>
                               <HBox alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="131.0">
                                  <children>
-                                    <Button fx:id="shoppingListButton" mnemonicParsing="false" onAction="#onShoppingListButton" prefHeight="25.0" prefWidth="91.0" text="Shopping list" />
+                                    <Button fx:id="shoppingListButton" contentDisplay="CENTER" mnemonicParsing="false" onAction="#onShoppingListButton" prefHeight="25.0" prefWidth="121.0" text="Shopping list" />
                                  </children>
                               </HBox>
                                     </children>

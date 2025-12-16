@@ -80,6 +80,9 @@ public class RecipeOverviewCtrl {
     private Button addRecipeButton;
 
     @FXML
+    private Button cloneRecipeButton;
+
+    @FXML
     private Button shoppingListButton;
 
     // Top right
@@ -230,10 +233,15 @@ public class RecipeOverviewCtrl {
 
         addRecipeButton.setVisible(!value);
         removeRecipeButton.setVisible(!value);
+        cloneRecipeButton.setVisible(!value);
         shoppingListButton.setVisible(!value);
 
         recipeSearchField.setDisable(value);
         recipeListView.setDisable(value);
+
+        downloadRecipeButton.setVisible(!value);
+        printRecipeButton.setVisible(!value);
+        toggleOverviewButton.setVisible(!value);
 
         // When going into edit mode, it automatically selects the
         // recipe name field
@@ -647,7 +655,30 @@ private String buildSearchText(Recipe recipe) {
      */
     @FXML
     private void onAddRecipe() throws JsonProcessingException {
-        Recipe recipe = server.addRecipe(new Recipe("New recipe"));
+        addRecipeToServer(new Recipe("New recipe"));
+    }
+
+    @FXML
+    private void onCloneRecipe() {
+        Recipe recipe = recipeListView.getSelectionModel().getSelectedItem();
+        if (recipe == null) {
+            System.out.println("No recipe selected.");
+            return;
+        }
+
+        Recipe clonedRecipe = new Recipe(recipe.name + " [clone]");
+        for (Ingredient ingredient :  recipe.ingredients) {
+            Ingredient clonedIngredient = new Ingredient(ingredient.ingredientType,
+                    ingredient.amount, ingredient.unit, null);
+            clonedRecipe.ingredients.add(clonedIngredient);
+        }
+        clonedRecipe.steps = new ArrayList<>(recipe.steps);
+
+        addRecipeToServer(clonedRecipe);
+    }
+
+    private void addRecipeToServer(Recipe recipe) {
+        recipe = server.addRecipe(recipe);
 
         onRefresh();
 
@@ -889,8 +920,7 @@ private String buildSearchText(Recipe recipe) {
 
         System.out.println(new ObjectMapper().writeValueAsString(recipe));
 
-        allRecipes.remove(recipe);
-        allRecipes.add(server.updateRecipe(recipe.id, recipe));
+        allRecipes.set(allRecipes.indexOf(recipe), server.updateRecipe(recipe.id, recipe));
 
         onRefresh();
         changeViewEditMode(false);
