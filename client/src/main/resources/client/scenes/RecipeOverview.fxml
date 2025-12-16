@@ -36,6 +36,7 @@
                         <HBox prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
                                 <HBox alignment="CENTER_RIGHT" prefHeight="33.0" prefWidth="375.0" spacing="5.0">
                                     <children>
+                              <Button fx:id="starRecipeButton" mnemonicParsing="false" onAction="#onStarRecipe" text="☆" />
                               <Button fx:id="downloadRecipeButton" alignment="CENTER_RIGHT" cacheShape="false" mnemonicParsing="false" onAction="#onDownloadRecipe" prefHeight="25.0" prefWidth="71.0" text="Download" />
                               <Button fx:id="printRecipeButton" alignment="CENTER_RIGHT" cacheShape="false" mnemonicParsing="false" onAction="#onPrintRecipe" prefHeight="25.0" prefWidth="42.0" text="Print" />
                               <Button fx:id="toggleOverviewButton" mnemonicParsing="false" onAction="#onToggleOverviewButton" text="View ingredient overview" />
@@ -70,6 +71,7 @@
                               <Insets bottom="5.0" />
                            </VBox.margin>
                         </HBox>
+                        <ChoiceBox fx:id="favouriteRecipeFilterBox" prefHeight="25.0" prefWidth="190.0" />
                                 <ListView fx:id="recipeListView" maxHeight="268.6" prefWidth="190.0" VBox.vgrow="ALWAYS" />
                         <Label fx:id="searchStatusLabel" prefHeight="25.0" prefWidth="196.0" text="Label" />
                                 <HBox alignment="CENTER_LEFT" prefHeight="29.0" prefWidth="190.0" spacing="5.0">
