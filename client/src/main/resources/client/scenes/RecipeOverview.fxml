@@ -133,6 +133,12 @@
                            </VBox.margin>
                                 </HBox>
                                 <Separator fx:id="mainSeparator" prefWidth="200.0" />
+                        <StackPane prefHeight="150.0" prefWidth="200.0">
+                           <children>
+                              <TextField fx:id="recipeServingsField" promptText="Enter number of servings" />
+                              <Label fx:id="recipeServingsLabel" text="Number of servings: 1" StackPane.alignment="CENTER_LEFT" />
+                           </children>
+                        </StackPane>
                                 <Label fx:id="ingredientsHeaderLabel" text="Ingredients">
                                     <font>
                                         <Font name="System Bold" size="13.0" />

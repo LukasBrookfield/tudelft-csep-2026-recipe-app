@@ -113,6 +113,12 @@ public class RecipeOverviewCtrl {
     private TextField recipeTitleField;
 
     @FXML
+    private TextField recipeServingsField;
+
+    @FXML
+    private Label recipeServingsLabel;
+
+    @FXML
     private Button editRecipeButton;
 
     @FXML
@@ -232,6 +238,9 @@ public class RecipeOverviewCtrl {
     private void changeViewEditMode(boolean value) {
         recipeTitleLabel.setVisible(!value);
         recipeTitleField.setVisible(value);
+        recipeServingsLabel.setVisible(!value);
+        recipeServingsField.setVisible(value);
+
         editRecipeButton.setVisible(!value);
 
         removeIngredientButton.getParent().setVisible(value);
@@ -356,6 +365,7 @@ public class RecipeOverviewCtrl {
         Recipe recipe = recipeListView.getSelectionModel().getSelectedItem();
         if (recipe != null) {
             recipeTitleLabel.setText(recipe.name);
+            recipeServingsLabel.setText("Number of servings: " + recipe.servings);
 
             List<Ingredient> ingredients = new ArrayList<>(recipe.ingredients);
             ingredientListView.setItems(FXCollections.observableList(ingredients));
@@ -720,6 +730,7 @@ public class RecipeOverviewCtrl {
 
         // Also clear the placeholder so the user doesn't have to delete "New recipe"
         recipeTitleField.clear();
+        recipeServingsField.clear();
         recipeTitleField.requestFocus(); // Tells JavaFX to put the cursor inside that text field
     }
 
@@ -732,11 +743,13 @@ public class RecipeOverviewCtrl {
      * @param title       the title of the recipe
      * @param ingredients the list of ingredients belonging to the recipe
      * @param steps       the ordered list of preparation steps
+     * @param servings    the number of servings in the recipe
      * @throws Exception if the content cannot be added to the document
      */
     private void addRecipeContentToDocument(Document doc,
                                             String title, List<Ingredient> ingredients,
-                                            List<String> steps) throws Exception {
+                                            List<String> steps,
+                                            String servings) throws Exception {
 
         // Define fonts
         Font titleFont = FontFactory.getFont(FontFactory.HELVETICA, 18, Font.BOLD);
@@ -746,6 +759,7 @@ public class RecipeOverviewCtrl {
         doc.open();
         doc.add(new Paragraph("Recipe: " + title, titleFont));
         doc.add(new Paragraph(" "));
+        doc.add(new Paragraph(servings));
         doc.add(new Paragraph("Ingredients:", sectinFont));
         for (Ingredient i : ingredients) {
             doc.add(new Paragraph(" • " + i, bodyFont));
@@ -765,10 +779,14 @@ public class RecipeOverviewCtrl {
      * @param title       the title of the recipe
      * @param ingredients the list of ingredients belonging to the recipe
      * @param steps       the ordered list of preparation steps
+     * @param servings    the number of servings of the recipe
      * @throws Exception if the PDF cannot be created
      */
-    private void writeRecipePDF(File file, String title,
-                                List<Ingredient> ingredients, List<String> steps) throws Exception {
+    private void writeRecipePDF(File file,
+                                String title,
+                                List<Ingredient> ingredients,
+                                List<String> steps,
+                                String servings) throws Exception {
 
         Document doc = new Document();
 
@@ -776,7 +794,7 @@ public class RecipeOverviewCtrl {
         PdfWriter.getInstance(doc, new FileOutputStream(file));
 
         doc.open();
-        addRecipeContentToDocument(doc, title, ingredients, steps);
+        addRecipeContentToDocument(doc, title, ingredients, steps, servings);
         doc.close();
     }
 
@@ -822,6 +840,7 @@ public class RecipeOverviewCtrl {
 
         var ingredients = ingredientListView.getItems();
         var steps = preparationStepListView.getItems();
+        var servings = recipeServingsLabel.getText();
 
         // FileChooser is a JavaFX helper that opens a normal "Save as" dialog
         FileChooser chooser = new FileChooser();
@@ -846,7 +865,7 @@ public class RecipeOverviewCtrl {
         ;
 
         try {
-            writeRecipePDF(file, title, ingredients, steps);
+            writeRecipePDF(file, title, ingredients, steps, servings);
             System.out.println("Recipe saved as PDF" + file.getAbsolutePath());
 
             openPdfInViewer(file);
@@ -870,6 +889,7 @@ public class RecipeOverviewCtrl {
 
         var ingredients = ingredientListView.getItems();
         var steps = preparationStepListView.getItems();
+        var servings = recipeServingsLabel.getText();
 
         File tempFile;
 
@@ -877,7 +897,7 @@ public class RecipeOverviewCtrl {
             // Create a temporary PDF file
             tempFile = File.createTempFile("recipe", ".pdf");
 
-            writeRecipePDF(tempFile, title, ingredients, steps);
+            writeRecipePDF(tempFile, title, ingredients, steps, servings);
             System.out.println("Temporary recipe PDF for printing:" + tempFile.getAbsolutePath());
         } catch (Exception e) {
             System.out.println("ERROR: Could not create PDF for printing.");
@@ -922,6 +942,8 @@ public class RecipeOverviewCtrl {
     private void onEditRecipeButton() {
         changeViewEditMode(true);
         recipeTitleField.setText(recipeTitleLabel.getText());
+        int servings = Integer.parseInt(recipeServingsLabel.getText().split(" ")[3]);
+        if (servings != -1) recipeServingsField.setText(String.valueOf(servings));
     }
 
     /**
@@ -944,8 +966,17 @@ public class RecipeOverviewCtrl {
             System.out.println("The recipe needs a name");
             return;
         }
+        int servings;
+        try {
+            servings = Integer.parseInt(recipeServingsField.getText());
+            if (servings <= 0) throw new NumberFormatException();
+        } catch (NumberFormatException e) {
+            System.out.println("The number of servings must be a positive integer");
+            return;
+        }
         Recipe recipe = recipeListView.getSelectionModel().getSelectedItem();
         recipe.name = recipeTitleField.getText();
+        recipe.servings = servings;
         recipe.ingredients = ingredientListView.getItems().stream().toList();
         recipe.steps = preparationStepListView.getItems().stream().toList();
 
@@ -1319,6 +1350,10 @@ public class RecipeOverviewCtrl {
         );
     }
 
+    /**
+     * Show alert if some of user's favourite recipes have been deleted
+     * @param n Number of favourite recipes deleted
+     */
     private void showDeletedFavouritesAlert(int n) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.initModality(Modality.APPLICATION_MODAL);
