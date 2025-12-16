@@ -36,17 +36,21 @@ import com.lowagie.text.Paragraph;
 import com.lowagie.text.Font;
 import com.lowagie.text.FontFactory;
 import java.awt.print.PrinterJob;
+import java.util.function.Predicate;
 
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.printing.PDFPageable;
 
 import javafx.collections.transformation.FilteredList;
-import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 public class RecipeOverviewCtrl {
+    // Constants
+    private static final String EMPTY_STAR = "☆";
+    private static final String FULL_STAR = "★";
 
     private final ServerUtils server;
 
@@ -56,6 +60,7 @@ public class RecipeOverviewCtrl {
 
     private final MainCtrl mainCtrl;
 
+    private Predicate<Recipe> currentPredicate = recipe -> true;
     private ObservableList<Recipe> allRecipes;
     private FilteredList<Recipe> filteredRecipes;
     private SortedList<Recipe> sortedRecipes;
@@ -69,6 +74,9 @@ public class RecipeOverviewCtrl {
 
     @FXML
     private TextField recipeSearchField;
+
+    @FXML
+    private ChoiceBox<String> favouriteRecipeFilterBox;
 
     @FXML
     private ListView<Recipe> recipeListView;
@@ -95,6 +103,9 @@ public class RecipeOverviewCtrl {
 
     @FXML
     private Button toggleOverviewButton;
+
+    @FXML
+    private Button starRecipeButton;
 
     // Recipe title row
 
@@ -202,14 +213,14 @@ public class RecipeOverviewCtrl {
 
     @FXML
     private ChoiceBox<String> sortChoiceBox;
-    
+
     // General
 
     @Inject
     public RecipeOverviewCtrl(ServerUtils server,
-                    RecipeUtils recipeUtils,
-                    UserConfig user,
-                    MainCtrl mainCtrl) {
+                              RecipeUtils recipeUtils,
+                              UserConfig user,
+                              MainCtrl mainCtrl) {
         this.server = server;
         this.recipeUtils = recipeUtils;
         this.user = user;
@@ -218,6 +229,7 @@ public class RecipeOverviewCtrl {
 
     /**
      * Changes the scene between viewing and editing a recipe
+     *
      * @param value false for viewing mode, true for editing mode
      */
     private void changeViewEditMode(boolean value) {
@@ -243,6 +255,9 @@ public class RecipeOverviewCtrl {
         printRecipeButton.setVisible(!value);
         toggleOverviewButton.setVisible(!value);
 
+        starRecipeButton.setVisible(!value);
+        favouriteRecipeFilterBox.setDisable(value);
+
         // When going into edit mode, it automatically selects the
         // recipe name field
         Platform.runLater(() -> {
@@ -253,6 +268,7 @@ public class RecipeOverviewCtrl {
 
     /**
      * Changes the scene between viewing and editing the preparation steps
+     *
      * @param value false for viewing mode, true for editing mode
      */
     private void changeStepViewEditMode(boolean value) {
@@ -272,9 +288,10 @@ public class RecipeOverviewCtrl {
 
     /**
      * Changes the scene between viewing and editing the ingredients
+     *
      * @param value 0 for viewing mode, 1 for editing part 1, 2 for editing part 2
-     * Basically part 1 is where the user inputs the name of the ingredient type
-     * and part 2 is where the user inputs the unit and amount of the ingredient
+     *              Basically part 1 is where the user inputs the name of the ingredient type
+     *              and part 2 is where the user inputs the unit and amount of the ingredient
      */
     private void changeIngredientTypeViewEditMode(int value) {
         removeIngredientButton.getParent().setVisible(value == 0);
@@ -297,7 +314,7 @@ public class RecipeOverviewCtrl {
      * On action method for the Move Step Up button
      */
     @FXML
-    private void onMoveStepUpButton(){
+    private void onMoveStepUpButton() {
         moveSelectedStep(-1);
     }
 
@@ -305,15 +322,16 @@ public class RecipeOverviewCtrl {
      * On action method for the Move Step Down button
      */
     @FXML
-    private void onMoveStepDownButton(){
+    private void onMoveStepDownButton() {
         moveSelectedStep(1);
     }
 
     /**
      * Moves the selected preparation step up or down one step (in the UI and in the actual recipe).
+     *
      * @param offset can be -1 or 1, moving, respectively, up or down one step.
      */
-    private void moveSelectedStep(int offset){
+    private void moveSelectedStep(int offset) {
         int index = preparationStepListView.getSelectionModel().getSelectedIndex();
         var items = preparationStepListView.getItems();
 
@@ -352,6 +370,8 @@ public class RecipeOverviewCtrl {
 
             List<String> steps = new ArrayList<>(recipe.steps);
             preparationStepListView.setItems(FXCollections.observableList(steps));
+
+            starRecipeButton.setText(user.isFavouriteRecipe(recipe) ? FULL_STAR : EMPTY_STAR);
         }
     }
 
@@ -387,6 +407,7 @@ public class RecipeOverviewCtrl {
         searchStatusLabel.setVisible(false);
         searchStatusLabel.setManaged(false);
 
+
         // this shows a subset of the original list (the first argument) based on a filter condition (the second argument)
         // the defuault is recipe -> true (because initially there is no filtering)
         filteredRecipes = new FilteredList<>(allRecipes, recipe -> true);
@@ -397,6 +418,27 @@ public class RecipeOverviewCtrl {
         recipeListView.setItems(sortedRecipes);
         sortedRecipes.setComparator(null); // default is no custom order
 
+        // combines the Recipe toString method with a star if it is in the user's favourite recipes
+        recipeListView.setCellFactory(new Callback<>() {
+            @Override
+            public ListCell<Recipe> call(ListView<Recipe> param) {
+                return new ListCell<>() {
+                    @Override
+                    protected void updateItem(Recipe recipe, boolean empty) {
+                        super.updateItem(recipe, empty);
+                        if (empty || recipe == null) {
+                            setText(null);
+                            setGraphic(null);
+                        } else {
+                            String displayText = recipe.toString();
+                            if (user.isFavouriteRecipe(recipe)) displayText += "   " + FULL_STAR;
+                            setText(displayText);
+                        }
+                    }
+                };
+            }
+        });
+
         onRefresh();
 
         recipeListView.getSelectionModel().selectedItemProperty().addListener(
@@ -404,7 +446,6 @@ public class RecipeOverviewCtrl {
                     onRefresh();
                 }
         );
-
         moveStepUpButton.setVisible(false);
         moveStepDownButton.setVisible(false);
 
@@ -432,13 +473,20 @@ public class RecipeOverviewCtrl {
 
         setupSearch();
         setupSort();
+        setupFavouriteRecipeFilter();
 
-        // Makes it so that the 'Add Recipe' button is selected when the app gets started
-        Platform.runLater(() -> addRecipeButton.requestFocus());
+        Platform.runLater(() -> {
+            // Makes it so that the 'Add Recipe' button is selected when the app gets started
+            addRecipeButton.requestFocus();
+
+            // Alerts user if any of their favourite recipes have been deleted
+            int n = user.removeDeletedRecipes(allRecipes);
+            user.saveUser();
+            if (n > 0) showDeletedFavouritesAlert(n);
+        });
     }
 
-
-    private void setupSort(){
+    private void setupSort() {
         sortChoiceBox.getItems().addAll(
                 "Order by",
                 "Name (A-Z)",
@@ -460,7 +508,7 @@ public class RecipeOverviewCtrl {
     }
 
     private void applySort(String option) {
-        if (option == null){
+        if (option == null) {
             sortedRecipes.setComparator(null);
             return;
         }
@@ -517,12 +565,13 @@ public class RecipeOverviewCtrl {
     /**
      * Applies a search filter on the recipes shown in the ListView (in the UI).
      * It's case-insensitive, and, as instructed, uses "AND" logic (with the matchesAllWords method).
+     *
      * @param query what the user typed in the search field
      */
     private void applySearchFilter(String query) {
         if (query == null || query.isBlank()) {
             // np search, meaning show everything
-            filteredRecipes.setPredicate(recipe -> true);
+            filteredRecipes.setPredicate(currentPredicate);
 
             // Hide label and give space back to the list
             searchStatusLabel.setText("");
@@ -539,17 +588,15 @@ public class RecipeOverviewCtrl {
         // spilt the query into words
         String[] words = query.toLowerCase().trim().split("\\s+");
 
-        filteredRecipes.setPredicate(recipe -> mattchesAllWords(recipe, words));
+        filteredRecipes.setPredicate(currentPredicate.and(recipe -> mattchesAllWords(recipe, words)));
 
         String msg;
         int matches = filteredRecipes.size();
         if (matches == 0) {
             msg = "No recipes match your search";
-        }
-        else if (matches == 1){
+        } else if (matches == 1) {
             msg = "1 recipe found";
-        }
-        else {
+        } else {
             msg = matches + " recipes found";
         }
 
@@ -560,8 +607,9 @@ public class RecipeOverviewCtrl {
 
     /**
      * Checks whether a recipe contains all the words that are in the search field.
+     *
      * @param recipe (any)
-     * @param words the user's query (split into each word)
+     * @param words  the user's query (split into each word)
      * @return true if the recipe contains all the words in the search field, false otherwise
      */
     private boolean mattchesAllWords(Recipe recipe, String[] words) {
@@ -579,10 +627,11 @@ public class RecipeOverviewCtrl {
 
     /**
      * Builds a lower-cased text representation of a recipe. Built for text search.
+     *
      * @param recipe (any)
      * @return a single lower-cased string containing all searchable fields of the recipe (separated by spaces)
      */
-private String buildSearchText(Recipe recipe) {
+    private String buildSearchText(Recipe recipe) {
         StringBuilder sb = new StringBuilder();
 
         sb.append(recipe.name.toLowerCase()).append(" ");
@@ -592,8 +641,8 @@ private String buildSearchText(Recipe recipe) {
                 if (ingredient != null && ingredient.ingredientType != null && ingredient.ingredientType.name != null) {
                     sb.append(ingredient.ingredientType.name.toLowerCase()).append(" ");
                 }
-                }
             }
+        }
 
         if (recipe.steps != null) {
             for (String step : recipe.steps) {
@@ -625,6 +674,7 @@ private String buildSearchText(Recipe recipe) {
         mainSeparator.getParent().setVisible(!empty);
         downloadRecipeButton.setVisible(!empty);
         printRecipeButton.setVisible(!empty);
+        starRecipeButton.setVisible(!empty);
 
         if (recipeListView.getSelectionModel().getSelectedIndex() == -1) {
             recipeListView.getSelectionModel().select(0);
@@ -642,9 +692,11 @@ private String buildSearchText(Recipe recipe) {
     @FXML
     private void onRemoveRecipe() throws JsonProcessingException {
         Recipe recipe = recipeListView.getSelectionModel().getSelectedItem();
+        if (recipe == null) return;
         System.out.println(new ObjectMapper().writeValueAsString(recipe));
         server.deleteRecipe(recipe.id);
         allRecipes.remove(recipe);
+        if (user.isFavouriteRecipe(recipe)) user.removeFavouriteRecipe(recipe);
         onRefresh();
     }
 
@@ -680,6 +732,12 @@ private String buildSearchText(Recipe recipe) {
     private void addRecipeToServer(Recipe recipe) {
         recipe = server.addRecipe(recipe);
 
+        // if user has filtered by favourite recipes, automatically make the new recipe a favourite
+        if (favouriteRecipeFilterBox.getSelectionModel().getSelectedItem().equals("Favourites")) {
+            user.addFavouriteRecipe(recipe);
+            user.saveUser();
+        }
+
         onRefresh();
 
         allRecipes.add(recipe);
@@ -700,10 +758,11 @@ private String buildSearchText(Recipe recipe) {
 
     /**
      * Generates a PDF file from the recipe information.
-     * @param doc the document to write to
-     * @param title the title of the recipe
+     *
+     * @param doc         the document to write to
+     * @param title       the title of the recipe
      * @param ingredients the list of ingredients belonging to the recipe
-     * @param steps the ordered list of preparation steps
+     * @param steps       the ordered list of preparation steps
      * @throws Exception if the content cannot be added to the document
      */
     private void addRecipeContentToDocument(Document doc,
@@ -719,7 +778,7 @@ private String buildSearchText(Recipe recipe) {
         doc.add(new Paragraph("Recipe: " + title, titleFont));
         doc.add(new Paragraph(" "));
         doc.add(new Paragraph("Ingredients:", sectinFont));
-        for (Ingredient i : ingredients){
+        for (Ingredient i : ingredients) {
             doc.add(new Paragraph(" • " + i, bodyFont));
         }
         doc.add(new Paragraph(" "));
@@ -732,10 +791,11 @@ private String buildSearchText(Recipe recipe) {
 
     /**
      * Generates a PDF file from the previously created doc (with the recipe content).
-     * @param file the PDF to write to
-     * @param title the title of the recipe
+     *
+     * @param file        the PDF to write to
+     * @param title       the title of the recipe
      * @param ingredients the list of ingredients belonging to the recipe
-     * @param steps the ordered list of preparation steps
+     * @param steps       the ordered list of preparation steps
      * @throws Exception if the PDF cannot be created
      */
     private void writeRecipePDF(File file, String title,
@@ -753,10 +813,11 @@ private String buildSearchText(Recipe recipe) {
 
     /**
      * Tries to open the PDF file in the default PDF viewer.
+     *
      * @param file to be opened
      */
     private void openPdfInViewer(File file) {
-        if (file == null){
+        if (file == null) {
             return;
         }
         try {
@@ -786,7 +847,7 @@ private String buildSearchText(Recipe recipe) {
     private void onDownloadRecipe() {
         String title = recipeTitleLabel.getText();
 
-        if (title == null || title.isBlank()){
+        if (title == null || title.isBlank()) {
             throw new IllegalStateException("ERROR: No recipe selected. Cannot save PDF.");
         }
 
@@ -802,7 +863,7 @@ private String buildSearchText(Recipe recipe) {
                 "PDF files (*.pdf)", "*.pdf"));
 
         // Suggest a default filename based on the recipe title
-        String safeName = title.replaceAll("\\s+","_").toLowerCase();
+        String safeName = title.replaceAll("\\s+", "_").toLowerCase();
         chooser.setInitialFileName(safeName + ".pdf");
 
         // Show the dialog
@@ -812,14 +873,15 @@ private String buildSearchText(Recipe recipe) {
         if (file == null) {
             System.out.println("PDF not saved.");
             return;
-        };
+        }
+        ;
 
-        try{
+        try {
             writeRecipePDF(file, title, ingredients, steps);
             System.out.println("Recipe saved as PDF" + file.getAbsolutePath());
 
             openPdfInViewer(file);
-        } catch (Exception e){
+        } catch (Exception e) {
             System.out.println("ERROR: Could not save recipe PDF.");
             e.printStackTrace();
         }
@@ -985,7 +1047,7 @@ private String buildSearchText(Recipe recipe) {
         }
         if (ingredientListView.getSelectionModel().getSelectedItem() == null) {
             System.out.println("There is no ingredient selected.");
-
+            return;
         }
 
         changeIngredientTypeViewEditMode(1);
@@ -1003,6 +1065,7 @@ private String buildSearchText(Recipe recipe) {
         editIngredientBox.getSelectionModel().selectedItemProperty()
                 .addListener((observable,
                               oldValue, newValue) -> {
+                    if (newValue == null) return;
                     if (newValue.name.equals("Create new ingredient type")) {
                         editIngredientNameField.setDisable(false);
                         editIngredientNameField.setText("");
@@ -1219,7 +1282,7 @@ private String buildSearchText(Recipe recipe) {
      * A new window with shopping list is opened
      */
     @FXML
-    private void onShoppingListButton(){
+    private void onShoppingListButton() {
         Parent root;
         try {
 
@@ -1227,13 +1290,13 @@ private String buildSearchText(Recipe recipe) {
             loader.setControllerFactory(type -> {
                 if (type == ShoppingListCtrl.class) {
                     return new ShoppingListCtrl(server, user);
-                }else{
+                } else {
                     throw new RuntimeException();
                 }
             });
 
             root = loader.load();
-        }catch(Exception e){
+        } catch (Exception e) {
             System.out.println("Error loading ShoppingList.fxml");
             return;
         }
@@ -1246,6 +1309,55 @@ private String buildSearchText(Recipe recipe) {
         stage.show();
     }
 
+    /**
+     * On action method for the star recipe button
+     * Adds to/removes a recipe from the user's favourite recipes when the star recipe button is clicked
+     */
+    @FXML
+    private void onStarRecipe() {
+        Recipe recipe = recipeListView.getSelectionModel().getSelectedItem();
+        if (user.isFavouriteRecipe(recipe)) {
+            user.removeFavouriteRecipe(recipe);
+        } else {
+            user.addFavouriteRecipe(recipe);
+        }
+        user.saveUser();
+        starRecipeButton.setText(user.isFavouriteRecipe(recipe) ? FULL_STAR : EMPTY_STAR);
+        recipeListView.refresh();
+    }
+
+    /**
+     * Sets up the favourite recipe filter choice box
+     */
+    private void setupFavouriteRecipeFilter() {
+        favouriteRecipeFilterBox.getItems().addAll("All recipes", "Favourites");
+        favouriteRecipeFilterBox.getSelectionModel().select(0);
+        favouriteRecipeFilterBox.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> {
+                    recipeSearchField.clear();
+                    applySearchFilter("");
+                    if (newValue.equals("All recipes")) {
+                        currentPredicate = recipe -> true;
+                        filteredRecipes.setPredicate(currentPredicate);
+                    } else if (newValue.equals("Favourites")) {
+                        currentPredicate = recipe -> user.isFavouriteRecipe(recipe);
+                        filteredRecipes.setPredicate(currentPredicate);
+                    }
+                    recipeListView.getSelectionModel().clearSelection();
+                    onRefresh();
+                }
+        );
+    }
+
+    private void showDeletedFavouritesAlert(int n) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.initModality(Modality.APPLICATION_MODAL);
+        alert.setTitle("Some of your favourite recipes have been deleted");
+        alert.setHeaderText(null);
+        alert.setContentText(n + " of your favourite recipes have been deleted by others :(");
+        alert.show();
+    }
+}
     // MAYBE KEEP SOMETHING LIKE THIS FROM THE PROJECT TEMPLATE:
 //    public void keyPressed(KeyEvent e) {
 //        switch (e.getCode()) {
@@ -1259,4 +1371,3 @@ private String buildSearchText(Recipe recipe) {
 //                break;
 //        }
 //    }
-}
