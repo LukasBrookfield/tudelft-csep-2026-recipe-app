@@ -2,6 +2,8 @@ package commons;
 
 public enum Unit {
     G,        // grams
+    KG,       // kilograms
+    L,        // liters
     ML,       // millilitres
     TBSP,     // tablespoons
     TSP,      // teaspoons

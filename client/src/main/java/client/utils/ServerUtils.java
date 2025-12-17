@@ -10,11 +10,13 @@ import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.GenericType;
 import jakarta.ws.rs.core.Response;
 
+import java.lang.reflect.Type;
 import java.net.ConnectException;
-import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
+import org.springframework.messaging.simp.stomp.StompFrameHandler;
+import org.springframework.messaging.simp.stomp.StompHeaders;
 import org.springframework.messaging.simp.stomp.StompSession;
 import org.springframework.messaging.simp.stomp.StompSessionHandlerAdapter;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
@@ -88,13 +90,18 @@ public class ServerUtils {
     public void subscribeToRecipeList(Consumer<List<Recipe>> listener) {
         connectWebSocketIfNeeded();
 
-        stompSession.subscribe(
-                "/topic/recipes/list",
-                new GenericStompFrameHandler<>(Recipe[].class, array -> {
-                    List<Recipe> list = Arrays.asList(array);
-                    listener.accept(list);
-                })
-        );
+        stompSession.subscribe("/topic/recipes/list", new StompFrameHandler() {
+            @Override
+            public Type getPayloadType(StompHeaders headers) {
+                return Recipe[].class;
+            }
+
+            @Override
+            public void handleFrame(StompHeaders headers, Object payload) {
+                Recipe[] array = (Recipe[]) payload;
+                listener.accept(List.of(array));
+            }
+        });
     }
 
     /**
@@ -108,10 +115,17 @@ public class ServerUtils {
     public void subscribeToRecipe(long id, Consumer<Recipe> listener) {
         connectWebSocketIfNeeded();
 
-        stompSession.subscribe(
-                "/topic/recipes/" + id,
-                new GenericStompFrameHandler<>(Recipe.class, listener)
-        );
+        stompSession.subscribe("/topic/recipes/" + id, new StompFrameHandler() {
+            @Override
+            public Type getPayloadType(StompHeaders headers) {
+                return Recipe.class;
+            }
+
+            @Override
+            public void handleFrame(StompHeaders headers, Object payload) {
+                listener.accept((Recipe) payload);
+            }
+        });
     }
 
     //recipes requests:

@@ -46,7 +46,6 @@ import org.apache.pdfbox.printing.PDFPageable;
 
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.ObservableList;
-
 public class RecipeOverviewCtrl {
     // Constants
     private static final String EMPTY_STAR = "☆";
@@ -426,6 +425,14 @@ public class RecipeOverviewCtrl {
 
         // make it show the UI shows the ordered list
         recipeListView.setItems(sortedRecipes);
+
+        // subscribe to the websocket URL
+        server.subscribeToRecipeList(list -> Platform.runLater(() -> {
+            allRecipes.setAll(list);
+            recipeListView.refresh();
+            setLabelsAndFields();
+        }));
+
         sortedRecipes.setComparator(null); // default is no custom order
 
         // combines the Recipe toString method with a star if it is in the user's favourite recipes
@@ -454,6 +461,29 @@ public class RecipeOverviewCtrl {
         recipeListView.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldRecipe, newRecipe) -> {
                     onRefresh();
+
+                    if (newRecipe == null) return;
+
+                    // subscribe to updates for the selected recipe
+                    server.subscribeToRecipe(newRecipe.id, updatedRecipe -> Platform.runLater(() -> {
+
+                        // update the selected recipe in the UI + model
+                        // replace it inside allRecipes so the sidebar list stays correct
+                        for (int i = 0; i < allRecipes.size(); i++) {
+                            if (allRecipes.get(i).id == updatedRecipe.id) {
+                                allRecipes.set(i, updatedRecipe);
+                                break;
+                            }
+                        }
+
+                        // if the user is still viewing that same recipe, refresh right pane
+                        Recipe current = recipeListView.getSelectionModel().getSelectedItem();
+                        if (current != null && current.id == updatedRecipe.id) {
+                            setLabelsAndFields();
+                        }
+
+                        recipeListView.refresh();
+                    }));
                 }
         );
         moveStepUpButton.setVisible(false);
@@ -1011,6 +1041,8 @@ public class RecipeOverviewCtrl {
         recipe.name = recipeTitleField.getText();
         recipe.servings = servings;
         recipe.ingredients = ingredientListView.getItems().stream().toList();
+        recipeUtils.normalizeIngredients(recipe.ingredients);
+        recipeUtils.commitLocalIngredientTypes(recipe, server);
         recipe.steps = preparationStepListView.getItems().stream().toList();
 
         System.out.println(new ObjectMapper().writeValueAsString(recipe));
@@ -1188,9 +1220,10 @@ public class RecipeOverviewCtrl {
         Ingredient ingredient = ingredientListView.getItems().get(index);
 
         if (editIngredientBox.getValue().name.equals("Create new ingredient type")) {
-            ingredient.ingredientType = server.addIngredientType(
-                    new IngredientType(editIngredientNameField.getText(),
-                            null, new ArrayList<>(), null)
+            // Create a LOCAL type only (id stays 0 / null)
+            ingredient.ingredientType = new IngredientType(
+                    editIngredientNameField.getText(),
+                    null, new ArrayList<>(), null
             );
         } else {
             ingredient.ingredientType = editIngredientBox.getValue();
