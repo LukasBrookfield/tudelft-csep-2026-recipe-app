@@ -943,7 +943,7 @@ public class RecipeOverviewCtrl {
         changeViewEditMode(true);
         recipeTitleField.setText(recipeTitleLabel.getText());
         int servings = Integer.parseInt(recipeServingsLabel.getText().split(" ")[3]);
-        if (servings != -1) recipeServingsField.setText(String.valueOf(servings));
+        if (servings != 0) recipeServingsField.setText(String.valueOf(servings));
     }
 
     /**

@@ -80,6 +80,23 @@ public class IngredientTypeOverviewCtrl {
     @FXML
     private Button doneEditDetailsButton;
 
+    // edit density section
+
+    @FXML
+    private Button editDensityButton;
+
+    @FXML
+    private TextField editDensityField;
+
+    @FXML
+    private Button cancelEditDensityButton;
+
+    @FXML
+    private Button doneEditDensityButton;
+
+    @FXML
+    private Label densityLabel;
+
     // Nutritional values
 
     @FXML
@@ -140,6 +157,7 @@ public class IngredientTypeOverviewCtrl {
         editIngredientTypeButton.setVisible(!value);
         cancelEditButton.getParent().setVisible(value);
         editDetailsButton.getParent().getParent().getParent().setVisible(value);
+        editDensityButton.setVisible(value);
         editNutritionButton.getParent().getParent().getParent().setVisible(value);
 
         // While in edit mode, the user can't change to a different ingredient
@@ -169,6 +187,7 @@ public class IngredientTypeOverviewCtrl {
         cancelEditButton.setVisible(!value);
         doneEditButton.setVisible(!value);
         editNutritionButton.setVisible(!value);
+        editDensityButton.setVisible(!value);
     }
 
     /**
@@ -189,6 +208,7 @@ public class IngredientTypeOverviewCtrl {
         cancelEditButton.setVisible(!value);
         doneEditButton.setVisible(!value);
         editDetailsButton.setVisible(!value);
+        editDensityButton.setVisible(!value);
     }
 
     /**
@@ -251,11 +271,30 @@ public class IngredientTypeOverviewCtrl {
     }
 
     /**
+     *
+     * @param value true for edit mode, false for viewing mode
+     */
+    public void changeDensityViewEditMode(boolean value) {
+        editDensityButton.setVisible(!value);
+        doneEditDensityButton.setVisible(value);
+        cancelEditDensityButton.setVisible(value);
+        editDensityField.getParent().setVisible(value);
+
+        cancelEditButton.setVisible(!value);
+        doneEditButton.setVisible(!value);
+        editDetailsButton.setVisible(!value);
+        editNutritionButton.setVisible(!value);
+
+        editDetailsButton.getParent().setMouseTransparent(value);
+    }
+
+    /**
      * Initializes the ingredient type overview with default values
      */
     @FXML
     private void initialize() {
         changeDetailsViewEditMode(false);
+        changeDensityViewEditMode(false);
         changeNutritionViewEditMode(false);
         changeViewEditMode(false);
         onRefresh();
@@ -421,6 +460,29 @@ public class IngredientTypeOverviewCtrl {
         nameLabel.setText(editNameField.getText());
 
         changeDetailsViewEditMode(false);
+    }
+
+    @FXML
+    private void onEditDensityButton() {
+        changeDensityViewEditMode(true);
+    }
+
+    @FXML
+    private void onCancelEditDensityButton() {
+        changeDensityViewEditMode(false);
+    }
+
+    @FXML
+    private void onDoneEditDensityButton() {
+        if (editDensityField.getText().isBlank()) changeDetailsViewEditMode(false);
+        double density;
+        try {
+            density = Double.parseDouble(editDensityField.getText());
+        } catch (NumberFormatException e) {
+            System.out.println("Density must be a double");
+            return;
+        }
+        densityLabel.setText(String.valueOf(density));
     }
 
     // Edit nutrition section
