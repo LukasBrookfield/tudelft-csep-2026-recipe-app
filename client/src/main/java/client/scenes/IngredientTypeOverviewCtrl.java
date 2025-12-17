@@ -275,7 +275,7 @@ public class IngredientTypeOverviewCtrl {
     }
 
     /**
-     *
+     * Changes between viewing and editing density
      * @param value true for edit mode, false for viewing mode
      */
     public void changeDensityViewEditMode(boolean value) {
@@ -473,16 +473,25 @@ public class IngredientTypeOverviewCtrl {
         changeDetailsViewEditMode(false);
     }
 
+    /**
+     * On action method for edit density button
+     */
     @FXML
     private void onEditDensityButton() {
         changeDensityViewEditMode(true);
     }
 
+    /**
+     * On action method for cancel edit density button
+     */
     @FXML
     private void onCancelEditDensityButton() {
         changeDensityViewEditMode(false);
     }
 
+    /**
+     * On action method for done edit density button
+     */
     @FXML
     private void onDoneEditDensityButton() {
         if (editDensityField.getText().isBlank()) {
