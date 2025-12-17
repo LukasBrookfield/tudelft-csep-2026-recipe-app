@@ -408,6 +408,14 @@ public class RecipeOverviewCtrl {
 
         // make it show the UI shows the ordered list
         recipeListView.setItems(sortedRecipes);
+
+        // subscribe to the websocket URL
+        server.subscribeToRecipeList(list -> Platform.runLater(() -> {
+            allRecipes.setAll(list);
+            recipeListView.refresh();
+            setLabelsAndFields();
+        }));
+
         sortedRecipes.setComparator(null); // default is no custom order
 
         // combines the Recipe toString method with a star if it is in the user's favourite recipes
@@ -436,6 +444,29 @@ public class RecipeOverviewCtrl {
         recipeListView.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldRecipe, newRecipe) -> {
                     onRefresh();
+
+                    if (newRecipe == null) return;
+
+                    // subscribe to updates for the selected recipe
+                    server.subscribeToRecipe(newRecipe.id, updatedRecipe -> Platform.runLater(() -> {
+
+                        // update the selected recipe in the UI + model
+                        // replace it inside allRecipes so the sidebar list stays correct
+                        for (int i = 0; i < allRecipes.size(); i++) {
+                            if (allRecipes.get(i).id == updatedRecipe.id) {
+                                allRecipes.set(i, updatedRecipe);
+                                break;
+                            }
+                        }
+
+                        // if the user is still viewing that same recipe, refresh right pane
+                        Recipe current = recipeListView.getSelectionModel().getSelectedItem();
+                        if (current != null && current.id == updatedRecipe.id) {
+                            setLabelsAndFields();
+                        }
+
+                        recipeListView.refresh();
+                    }));
                 }
         );
         moveStepUpButton.setVisible(false);
