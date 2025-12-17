@@ -157,7 +157,8 @@ public class IngredientTypeOverviewCtrl {
         editIngredientTypeButton.setVisible(!value);
         cancelEditButton.getParent().setVisible(value);
         editDetailsButton.getParent().getParent().getParent().setVisible(value);
-        editDensityButton.setVisible(value);
+
+        editDensityButton.getParent().getParent().getParent().setVisible(value);
         editNutritionButton.getParent().getParent().getParent().setVisible(value);
 
         // While in edit mode, the user can't change to a different ingredient

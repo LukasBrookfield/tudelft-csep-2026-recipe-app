@@ -88,6 +88,9 @@ public class RecipeOverviewCtrl {
     private Button addRecipeButton;
 
     @FXML
+    private Button cloneRecipeButton;
+
+    @FXML
     private Button shoppingListButton;
 
     // Top right
@@ -251,10 +254,15 @@ public class RecipeOverviewCtrl {
 
         addRecipeButton.setVisible(!value);
         removeRecipeButton.setVisible(!value);
+        cloneRecipeButton.setVisible(!value);
         shoppingListButton.setVisible(!value);
 
         recipeSearchField.setDisable(value);
         recipeListView.setDisable(value);
+
+        downloadRecipeButton.setVisible(!value);
+        printRecipeButton.setVisible(!value);
+        toggleOverviewButton.setVisible(!value);
 
         starRecipeButton.setVisible(!value);
         favouriteRecipeFilterBox.setDisable(value);
@@ -709,7 +717,30 @@ public class RecipeOverviewCtrl {
      */
     @FXML
     private void onAddRecipe() throws JsonProcessingException {
-        Recipe recipe = server.addRecipe(new Recipe("New recipe"));
+        addRecipeToServer(new Recipe("New recipe"));
+    }
+
+    @FXML
+    private void onCloneRecipe() {
+        Recipe recipe = recipeListView.getSelectionModel().getSelectedItem();
+        if (recipe == null) {
+            System.out.println("No recipe selected.");
+            return;
+        }
+
+        Recipe clonedRecipe = new Recipe(recipe.name + " [clone]");
+        for (Ingredient ingredient :  recipe.ingredients) {
+            Ingredient clonedIngredient = new Ingredient(ingredient.ingredientType,
+                    ingredient.amount, ingredient.unit, null);
+            clonedRecipe.ingredients.add(clonedIngredient);
+        }
+        clonedRecipe.steps = new ArrayList<>(recipe.steps);
+
+        addRecipeToServer(clonedRecipe);
+    }
+
+    private void addRecipeToServer(Recipe recipe) {
+        recipe = server.addRecipe(recipe);
 
         // if user has filtered by favourite recipes, automatically make the new recipe a favourite
         if (favouriteRecipeFilterBox.getSelectionModel().getSelectedItem().equals("Favourites")) {
@@ -962,7 +993,7 @@ public class RecipeOverviewCtrl {
      */
     @FXML
     private void onDoneEditButton() throws JsonProcessingException {
-        if (recipeTitleField.getText().isEmpty()) {
+        if (recipeTitleField.getText().isBlank()) {
             System.out.println("The recipe needs a name");
             return;
         }
@@ -974,7 +1005,9 @@ public class RecipeOverviewCtrl {
             System.out.println("The number of servings must be a positive integer");
             return;
         }
-        Recipe recipe = recipeListView.getSelectionModel().getSelectedItem();
+        int index = recipeListView.getSelectionModel().getSelectedIndex();
+        Recipe recipe = recipeListView.getItems().get(index);
+
         recipe.name = recipeTitleField.getText();
         recipe.servings = servings;
         recipe.ingredients = ingredientListView.getItems().stream().toList();
@@ -982,8 +1015,7 @@ public class RecipeOverviewCtrl {
 
         System.out.println(new ObjectMapper().writeValueAsString(recipe));
 
-        allRecipes.remove(recipe);
-        allRecipes.add(server.updateRecipe(recipe.id, recipe));
+        allRecipes.set(index, server.updateRecipe(recipe.id, recipe));
 
         onRefresh();
         changeViewEditMode(false);
@@ -1177,7 +1209,6 @@ public class RecipeOverviewCtrl {
         ingredientListView.getItems().set(index, ingredient);
 
         System.out.println(new ObjectMapper().writeValueAsString(ingredient));
-
 
         editIngredientAmountField.setText("");
         editUnitBox.getSelectionModel().select(0);
