@@ -15,9 +15,13 @@ public class MainCtrl {
     private IngredientTypeOverviewCtrl ingredientTypeOverviewCtrl;
     private Scene ingredientTypeOverviewScene;
 
+    private HomeScreenCtrl homeScreenCtrl;
+    private Scene homeScreenScene;
+
     public void initialize(Stage primaryStage,
                            Pair<RecipeOverviewCtrl, Parent> recipeOverview,
-                           Pair<IngredientTypeOverviewCtrl, Parent> ingredientOverview) {
+                           Pair<IngredientTypeOverviewCtrl, Parent> ingredientOverview,
+                           Pair<HomeScreenCtrl, Parent> homeScreen) {
         this.primaryStage = primaryStage;
 
         this.recipeOverviewCtrl = recipeOverview.getKey();
@@ -26,8 +30,16 @@ public class MainCtrl {
         this.ingredientTypeOverviewCtrl = ingredientOverview.getKey();
         this.ingredientTypeOverviewScene = new Scene(ingredientOverview.getValue());
 
-        showRecipeOverview();
+        this.homeScreenCtrl = homeScreen.getKey();
+        this.homeScreenScene = new Scene(homeScreen.getValue());
+
+        showHomeScreen();
         primaryStage.show();
+    }
+
+    public void showHomeScreen() {
+        primaryStage.setTitle("FoodPal - Home Screen");
+        primaryStage.setScene(homeScreenScene);
     }
 
     public void showRecipeOverview() {
