@@ -2,4 +2,7 @@ image: maven:3.9.11-amazoncorretto-25
 
 build:
   script:
+    # A headless TestFX needs some dependencies ...
+    - yum update -y && yum install -y libXxf86vm libXrender libXtst libXi glib2 gtk3 alsa-lib && yum clean all
+    # ... then TestFX can run from a regular Maven build
     - mvn -B -ntp clean verify

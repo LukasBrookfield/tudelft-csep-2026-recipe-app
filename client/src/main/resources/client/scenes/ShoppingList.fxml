@@ -14,7 +14,6 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.ShoppingListCtrl">
    <children>
       <AnchorPane prefHeight="200.0" prefWidth="200.0">
@@ -52,24 +51,31 @@
                         <ListView fx:id="ingredientListView" prefHeight="355.0" prefWidth="570.0" />
                         <HBox alignment="CENTER_LEFT" prefHeight="0.0" prefWidth="395.0" spacing="5.0">
                            <children>
-                              <StackPane prefHeight="25.0" prefWidth="411.0">
+                              <StackPane prefHeight="25.0" prefWidth="437.0">
                                  <children>
-                                    <HBox prefHeight="25.0" prefWidth="307.0" spacing="5.0">
+                                    <StackPane fx:id="editPane" prefHeight="25.0" prefWidth="455.0">
                                        <children>
-                                          <TextField fx:id="editIngredientNameField" prefHeight="25.0" prefWidth="265.0" promptText="Enter an ingredient name" />
-                                          <TextField fx:id="editIngredientAmountField" prefHeight="25.0" prefWidth="163.0" promptText="Amount" />
-                                          <ChoiceBox fx:id="editUnitBox" prefWidth="150.0" />
-                                          <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                                          <HBox fx:id="editIngredientBox" prefHeight="25.0" prefWidth="457.0" spacing="5.0">
                                              <children>
-                                                <Button fx:id="cancelEditIngredientButton" mnemonicParsing="false" onAction="#onCancelEditIngredientButton" text="Cancel" />
-                                                <Button fx:id="doneEditIngredientButton" mnemonicParsing="false" onAction="#onDoneEditIngredientButton" text="Done" />
+                                                <TextField fx:id="editIngredientAmountField" prefHeight="25.0" prefWidth="217.0" promptText="Amount" />
+                                                <ChoiceBox fx:id="editUnitBox" prefHeight="25.0" prefWidth="47.0" />
+                                                <Button mnemonicParsing="false" onAction="#onBackEditIngredientButton" text="Back" />
+                                                <Button fx:id="doneEditIngredientButton" mnemonicParsing="false" onAction="#onDoneEditIngredientButton" prefHeight="25.0" prefWidth="53.0" text="Done" />
                                              </children>
                                           </HBox>
+                                          <HBox fx:id="editIngredientTypeBox" prefHeight="25.0" prefWidth="454.0" spacing="5.0">
+                                             <children>
+                                                <ChoiceBox fx:id="editIngredientChoiceBox" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="209.0" />
+                                                <TextField fx:id="editIngredientNameField" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="101.0" promptText="Ingredient type" />
+                                                <Button fx:id="nextButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onNext" prefHeight="25.0" prefWidth="53.0" text="Next" />
+                                             </children>
+                                          </HBox>
+                                          <Button fx:id="cancelEditIngredientButton" alignment="CENTER" mnemonicParsing="false" onAction="#onCancelEditIngredientButton" prefHeight="25.0" prefWidth="58.0" text="Cancel" textAlignment="CENTER" StackPane.alignment="TOP_RIGHT" />
                                        </children>
-                                    </HBox>
-                                    <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                                    </StackPane>
+                                    <HBox prefHeight="25.0" prefWidth="441.0" spacing="5.0">
                                        <children>
-                                          <Button fx:id="addIngredientButton" mnemonicParsing="false" onAction="#onAddIngredientButton" prefHeight="25.0" prefWidth="25.0" text="+">
+                                          <Button fx:id="addIngredientButton" alignment="TOP_CENTER" contentDisplay="TOP" mnemonicParsing="false" onAction="#onAddIngredientButton" prefHeight="25.0" prefWidth="25.0" text="+">
                                              <HBox.margin>
                                                 <Insets />
                                              </HBox.margin>

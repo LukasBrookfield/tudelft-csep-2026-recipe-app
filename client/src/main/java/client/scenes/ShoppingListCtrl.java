@@ -7,14 +7,19 @@ import commons.Ingredient;
 import commons.IngredientType;
 import commons.Unit;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+
+import java.util.ArrayList;
 
 public class ShoppingListCtrl {
 
     private final ServerUtils server;
 
-    private UserConfig user;
+    private final UserConfig user;
 
     @FXML
     private ListView<Ingredient> ingredientListView;
@@ -43,6 +48,35 @@ public class ShoppingListCtrl {
     @FXML
     private Button doneEditIngredientButton;
 
+    @FXML
+    private StackPane editPane;
+
+    @FXML
+    private HBox editIngredientBox;
+
+    @FXML
+    private HBox editIngredientTypeBox;
+
+    @FXML
+    private ChoiceBox<IngredientType> editIngredientChoiceBox;
+
+    @FXML
+    private Button nextButton;
+
+    //the listener for ingredient type choice box so the fields change
+    private final ChangeListener<IngredientType> ingredientListener =
+            (observable, oldValue, newValue) -> {
+                if (newValue != null &&
+                        "Create new ingredient type".equals(newValue.name)) {
+
+                    editIngredientNameField.setDisable(false);
+                    editIngredientNameField.clear();
+                } else if (newValue != null) {
+                    editIngredientNameField.setDisable(true);
+                    editIngredientNameField.setText(newValue.name);
+                }
+            };
+
     @Inject
     public ShoppingListCtrl(ServerUtils server, UserConfig user) {
         this.server = server;
@@ -56,6 +90,9 @@ public class ShoppingListCtrl {
      */
     @FXML
     private void onRefresh() {
+        editIngredientAmountField.clear();
+        editIngredientNameField.clear();
+
         ingredientListView.refresh();
         if(ingredientListView.getSelectionModel().getSelectedItem() != null) {
             editIngredientButton.setVisible(true);
@@ -68,19 +105,26 @@ public class ShoppingListCtrl {
 
     /**
      * Changes the scene between viewing and editing the ingredients
-     * @param value false vor viewing mode, true for editing mode
+     * @param value false for viewing mode, true for editing mode
      */
     private void changeIngredientViewEditMode(boolean value) {
         removeIngredientButton.setVisible(!value);
         addIngredientButton.setVisible(!value);
         editIngredientButton.setVisible(!value);
-        editIngredientNameField.setVisible(value);
-        editIngredientAmountField.setVisible(value);
-        editUnitBox.setVisible(value);
-        cancelEditIngredientButton.setVisible(value);
-        doneEditIngredientButton.setVisible(value);
-
+        editPane.setVisible(value);
         removeIngredientButton.getParent().setMouseTransparent(value);
+        changeIngredientTypeViewEditMode(false);
+        ingredientListView.setDisable(value);
+    }
+
+    /**
+     * Changes the scene between editing ingredient and ingredient type
+     * @param value false for type mode, true for ingredient mode
+     */
+    private void changeIngredientTypeViewEditMode(boolean value) {
+        editIngredientTypeBox.setVisible(!value);
+        editIngredientBox.setVisible(value);
+        editIngredientTypeBox.setManaged(value);
     }
 
     /**
@@ -134,7 +178,7 @@ public class ShoppingListCtrl {
      */
     @FXML
     private void onAddIngredientButton() {
-        ingredientListView.getItems().add(new Ingredient(new IngredientType("New Ingredient", null, null, null), null, null, null));
+        ingredientListView.getItems().add(new Ingredient(null, null, null, null));
         ingredientListView.getSelectionModel().select(
                 ingredientListView.getItems().size() - 1
         );
@@ -149,6 +193,20 @@ public class ShoppingListCtrl {
      */
     @FXML
     private void onEditIngredientButton() {
+        //we remove the listener so there would be no errors while updating the ingredient type choice box
+        editIngredientChoiceBox
+                .getSelectionModel()
+                .selectedItemProperty()
+                .removeListener(ingredientListener);
+
+        //sets the values to the ingredient type choice box
+        editIngredientChoiceBox.getItems().setAll(
+                new IngredientType("Create new ingredient type", null,
+                        null, null)
+        );
+        editIngredientChoiceBox.getSelectionModel().select(0);
+        editIngredientChoiceBox.getItems().addAll(server.getIngredientTypes());
+
         if(ingredientListView.getItems().isEmpty()){
             System.out.println("There is no ingredient to edit.");
             return;
@@ -160,17 +218,23 @@ public class ShoppingListCtrl {
         changeIngredientViewEditMode(true);
 
         Ingredient ingredient = ingredientListView.getSelectionModel().getSelectedItem();
-        editIngredientNameField.setText(ingredient.ingredientType.name);
-        if (ingredient.amount != null) {
-            editIngredientAmountField.setText(String.valueOf(ingredient.amount));
+
+        if (ingredient.ingredientType != null) {
+            editIngredientChoiceBox.setValue(ingredient.ingredientType);
+            editIngredientNameField.setText(ingredient.ingredientType.name);
         } else {
-            editIngredientAmountField.setText("");
+            editIngredientChoiceBox.getSelectionModel().select(0);
+            editIngredientNameField.setText("");
         }
-        if (ingredient.unit != null) {
-            editUnitBox.setValue(ingredient.unit.name());
-        } else {
-            editUnitBox.setValue("");
-        }
+
+        //adds the listener to the ingredient choice box
+        editIngredientChoiceBox
+                .getSelectionModel()
+                .selectedItemProperty()
+                .addListener(ingredientListener);
+
+        // Force focus into the IngredientType name box
+        Platform.runLater(() -> editIngredientChoiceBox.requestFocus());
     }
 
     /**
@@ -206,6 +270,16 @@ public class ShoppingListCtrl {
         int index = ingredientListView.getSelectionModel().getSelectedIndex();
         Ingredient ingredient = ingredientListView.getItems().get(index);
 
+        //we create a new ingredient type
+        if (editIngredientChoiceBox.getValue().name.equals("Create new ingredient type")) {
+            ingredient.ingredientType = server.addIngredientType(
+                    new IngredientType(editIngredientNameField.getText(),
+                            null, new ArrayList<>(), null)
+            );
+        } else {
+            ingredient.ingredientType = editIngredientChoiceBox.getValue();
+        }
+
         ingredient.ingredientType.name = editIngredientNameField.getText();
         if (!editIngredientAmountField.getText().isEmpty()) {
             ingredient.amount = Double.parseDouble(editIngredientAmountField.getText());
@@ -223,5 +297,36 @@ public class ShoppingListCtrl {
 
         user.setShoppingList(ingredientListView.getItems());
         user.saveUser();
+    }
+
+    public void onNext(){
+        if (editIngredientNameField.getText().isEmpty()) {
+            System.out.println("The ingredient type needs a name.");
+            return;
+        }
+
+        changeIngredientTypeViewEditMode(true);
+
+        Ingredient ingredient = ingredientListView.getSelectionModel()
+                .getSelectedItem();
+        if (ingredient.amount != null) {
+            editIngredientAmountField.setText(String.valueOf(ingredient.amount));
+        }
+        if (ingredient.unit != null) {
+            editUnitBox.setValue(ingredient.unit.name());
+        }
+        if (editUnitBox.getValue() == null || editUnitBox.getValue().isEmpty()) {
+            editUnitBox.getSelectionModel().select(0);
+        }
+    }
+
+    /**
+     * On action method for the Back Edit Ingredient button
+     * Switches the scene back to edit ingredient part 1 (which is where the user
+     * enters the name of the ingredient type
+     */
+    @FXML
+    private void onBackEditIngredientButton() {
+        changeIngredientTypeViewEditMode(false);
     }
 }
