@@ -396,7 +396,7 @@ public class IngredientTypeOverviewCtrl {
         ingredientType.name = nameLabel.getText();
 
         String densityText = densityLabel.getText();
-        if (densityText.isBlank()) {
+        if (densityText.isBlank() || densityText.equals("-")) {
             ingredientType.density = null;
         } else {
             ingredientType.density = Double.parseDouble(densityText);
