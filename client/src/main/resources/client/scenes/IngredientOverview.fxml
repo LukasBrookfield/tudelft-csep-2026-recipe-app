@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox prefHeight="400.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.IngredientTypeOverviewCtrl">
+<VBox maxHeight="-Infinity" prefHeight="478.67" prefWidth="640.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.IngredientTypeOverviewCtrl">
    <children>
       <AnchorPane fx:id="rootPane" VBox.vgrow="ALWAYS">
          <children>
@@ -59,7 +59,7 @@
                               <Insets bottom="5.0" />
                            </VBox.margin>
                         </TextField>
-                        <ListView fx:id="ingredientTypeListView" prefHeight="250.0" prefWidth="190.0" VBox.vgrow="ALWAYS" />
+                        <ListView fx:id="ingredientTypeListView" minHeight="-Infinity" prefHeight="352.0" prefWidth="190.0" VBox.vgrow="ALWAYS" />
                         <HBox alignment="CENTER_LEFT" prefHeight="29.0" prefWidth="190.0" spacing="5.0">
                            <children>
                               <Button fx:id="removeIngredientTypeButton" mnemonicParsing="false" onAction="#onRemoveIngredientTypeButton" prefHeight="25.0" prefWidth="25.0" text="✕">
@@ -83,11 +83,11 @@
                   </VBox>
                </left>
                <center>
-                  <VBox prefHeight="200.0" prefWidth="100.0" spacing="3.0" BorderPane.alignment="TOP_LEFT">
+                  <VBox prefHeight="200.0" prefWidth="100.0" spacing="8.0" BorderPane.alignment="TOP_LEFT">
                      <children>
                         <HBox alignment="CENTER" prefHeight="25.0" prefWidth="410.0" spacing="2.5">
                            <VBox.margin>
-                              <Insets bottom="5.0" />
+                              <Insets />
                            </VBox.margin>
                            <children>
                               <StackPane alignment="TOP_LEFT" prefHeight="25.0" prefWidth="390.0" HBox.hgrow="ALWAYS">
@@ -117,10 +117,13 @@
                            <font>
                               <Font name="System Bold" size="13.0" />
                            </font>
+                           <VBox.margin>
+                              <Insets />
+                           </VBox.margin>
                         </Label>
                         <HBox alignment="CENTER_LEFT" prefHeight="25.0" prefWidth="437.0" spacing="5.0">
                            <children>
-                              <HBox alignment="CENTER_LEFT" prefHeight="25.0" prefWidth="181.0" spacing="5.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
+                              <HBox alignment="CENTER_LEFT" minHeight="-Infinity" prefHeight="25.0" prefWidth="181.0" spacing="5.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
                                  <children>
                                     <Label text="Name:">
                                        <HBox.margin>
@@ -170,12 +173,12 @@
                               </StackPane>
                            </children>
                            <VBox.margin>
-                              <Insets top="5.0" />
+                              <Insets />
                            </VBox.margin>
                         </HBox>
                         <HBox alignment="CENTER_LEFT" prefHeight="25.0" prefWidth="437.0" spacing="5.0">
                            <children>
-                              <HBox alignment="CENTER_LEFT" prefHeight="25.0" prefWidth="181.0" spacing="5.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
+                              <HBox alignment="CENTER_LEFT" minHeight="-Infinity" prefHeight="25.0" prefWidth="181.0" spacing="5.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
                                  <children>
                                     <Label prefHeight="17.0" prefWidth="128.0" text="Density (g/ml):">
                                        <HBox.margin>
@@ -198,7 +201,7 @@
                            <children>
                               <HBox alignment="CENTER_LEFT" prefHeight="25.0" prefWidth="307.0" spacing="5.0">
                                  <children>
-                                    <TextField fx:id="editDensityField" prefHeight="25.0" prefWidth="267.0" promptText="Enter ingredient density" />
+                                    <TextField fx:id="editDensityField" prefHeight="25.0" prefWidth="267.0" promptText="Enter the ingredient's density" />
                                     <HBox prefHeight="25.0" prefWidth="185.0" HBox.hgrow="ALWAYS" />
                                     <HBox alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="187.0" spacing="5.0">
                                        <children>
@@ -223,7 +226,7 @@
                               <Font name="System Bold" size="13.0" />
                            </font>
                            <VBox.margin>
-                              <Insets top="3.0" />
+                              <Insets />
                            </VBox.margin>
                         </Label>
                         <HBox prefHeight="121.0" prefWidth="298.0">
@@ -314,7 +317,7 @@
                               </StackPane>
                            </children>
                            <VBox.margin>
-                              <Insets top="5.0" />
+                              <Insets />
                            </VBox.margin>
                         </HBox>
                         <HBox alignment="CENTER" prefHeight="25.0" prefWidth="200.0">

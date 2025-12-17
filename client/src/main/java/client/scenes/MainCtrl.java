@@ -9,20 +9,27 @@ public class MainCtrl {
 
     private Stage primaryStage;
 
+    private HomeScreenCtrl homeScreenCtrl;
+    private Scene homeScreenScene;
+
     private RecipeOverviewCtrl recipeOverviewCtrl;
     private Scene recipeOverviewScene;
 
     private IngredientTypeOverviewCtrl ingredientTypeOverviewCtrl;
     private Scene ingredientTypeOverviewScene;
 
-    private HomeScreenCtrl homeScreenCtrl;
-    private Scene homeScreenScene;
+    private ShoppingListCtrl shoppingListCtrl;
+    private Scene shoppingListScene;
 
     public void initialize(Stage primaryStage,
+                           Pair<HomeScreenCtrl, Parent> homeScreen,
                            Pair<RecipeOverviewCtrl, Parent> recipeOverview,
                            Pair<IngredientTypeOverviewCtrl, Parent> ingredientOverview,
-                           Pair<HomeScreenCtrl, Parent> homeScreen) {
+                           Pair<ShoppingListCtrl, Parent> shoppingList) {
         this.primaryStage = primaryStage;
+
+        this.homeScreenCtrl = homeScreen.getKey();
+        this.homeScreenScene = new Scene(homeScreen.getValue());
 
         this.recipeOverviewCtrl = recipeOverview.getKey();
         this.recipeOverviewScene = new Scene(recipeOverview.getValue());
@@ -30,8 +37,8 @@ public class MainCtrl {
         this.ingredientTypeOverviewCtrl = ingredientOverview.getKey();
         this.ingredientTypeOverviewScene = new Scene(ingredientOverview.getValue());
 
-        this.homeScreenCtrl = homeScreen.getKey();
-        this.homeScreenScene = new Scene(homeScreen.getValue());
+        this.shoppingListCtrl = shoppingList.getKey();
+        this.shoppingListScene = new Scene(shoppingList.getValue());
 
         showHomeScreen();
         primaryStage.show();
@@ -52,5 +59,12 @@ public class MainCtrl {
         primaryStage.setTitle("FoodPal - Ingredient Overview");
         primaryStage.setScene(ingredientTypeOverviewScene);
         ingredientTypeOverviewCtrl.onRefresh();
+    }
+
+    public void showShoppingList(boolean currentScene) {
+        primaryStage.setTitle("FoodPal - Shopping List");
+        primaryStage.setScene(shoppingListScene);
+
+        shoppingListCtrl.lastScene = currentScene;
     }
 }

@@ -33,5 +33,6 @@ public class HomeScreenCtrl {
 
     @FXML
     private void onShoppingListButton() {
+        mainCtrl.showShoppingList(false);
     }
 }
