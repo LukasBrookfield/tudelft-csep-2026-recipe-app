@@ -4,7 +4,10 @@ import commons.Ingredient;
 import commons.IngredientType;
 import commons.Unit;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 public class RecipeUtils {
     public static final double CAL_PER_GRAM_CARB = 4.0;
@@ -52,12 +55,24 @@ public class RecipeUtils {
      * @param server ServerUtils object for http requests
      */
     public void commitLocalIngredientTypes(Recipe recipe, ServerUtils server) {
+        Map<String, IngredientType> savedTypes = new HashMap<>();
+
         for (Ingredient ing : recipe.ingredients) {
             if (ing == null || ing.ingredientType == null) continue;
 
-            if (ing.ingredientType.id == 0) {
-                IngredientType savedType = server.addIngredientType(ing.ingredientType);
-                ing.ingredientType = savedType;
+            IngredientType type = ing.ingredientType;
+
+            if (savedTypes.containsKey(type.name)) {
+                ing.ingredientType = savedTypes.get(type.name);
+                continue;
+            }
+
+            if (type.id == 0) {
+                IngredientType saved = server.addIngredientType(type);
+                savedTypes.put(saved.name, saved);
+                ing.ingredientType = saved;
+            } else {
+                savedTypes.put(type.name, type);
             }
         }
     }
