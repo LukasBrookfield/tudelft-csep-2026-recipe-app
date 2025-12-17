@@ -978,6 +978,7 @@ public class RecipeOverviewCtrl {
         recipe.name = recipeTitleField.getText();
         recipe.ingredients = ingredientListView.getItems().stream().toList();
         recipeUtils.normalizeIngredients(recipe.ingredients);
+        recipeUtils.commitLocalIngredientTypes(recipe, server);
         recipe.steps = preparationStepListView.getItems().stream().toList();
 
         System.out.println(new ObjectMapper().writeValueAsString(recipe));
@@ -1156,9 +1157,10 @@ public class RecipeOverviewCtrl {
         Ingredient ingredient = ingredientListView.getItems().get(index);
 
         if (editIngredientBox.getValue().name.equals("Create new ingredient type")) {
-            ingredient.ingredientType = server.addIngredientType(
-                    new IngredientType(editIngredientNameField.getText(),
-                            null, new ArrayList<>(), null)
+            // Create a LOCAL type only (id stays 0 / null)
+            ingredient.ingredientType = new IngredientType(
+                    editIngredientNameField.getText(),
+                    null, new ArrayList<>(), null
             );
         } else {
             ingredient.ingredientType = editIngredientBox.getValue();

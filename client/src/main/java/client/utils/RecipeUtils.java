@@ -1,5 +1,5 @@
 package client.utils;
-
+import commons.Recipe;
 import commons.Ingredient;
 import commons.IngredientType;
 import commons.Unit;
@@ -42,6 +42,22 @@ public class RecipeUtils {
                         ing.unit = Unit.KG;
                     }
                 }
+            }
+        }
+    }
+
+    /**
+     * Adds all ingredient types from the recipe to the Database
+     * @param recipe The recipe being edited
+     * @param server ServerUtils object for http requests
+     */
+    public void commitLocalIngredientTypes(Recipe recipe, ServerUtils server) {
+        for (Ingredient ing : recipe.ingredients) {
+            if (ing == null || ing.ingredientType == null) continue;
+
+            if (ing.ingredientType.id == 0) {
+                IngredientType savedType = server.addIngredientType(ing.ingredientType);
+                ing.ingredientType = savedType;
             }
         }
     }
