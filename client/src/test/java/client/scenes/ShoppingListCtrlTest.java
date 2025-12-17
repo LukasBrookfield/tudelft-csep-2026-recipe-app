@@ -1,19 +1,19 @@
 package client.scenes;
 
+import java.awt.*;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import client.utils.ServerUtils;
 import client.utils.TestUserStorage;
 import client.utils.UserConfig;
 import client.utils.UserStorage;
 import commons.Ingredient;
 import commons.User;
-import jakarta.ws.rs.client.ClientBuilder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.testfx.api.FxRobot;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
 
@@ -59,7 +59,7 @@ public class ShoppingListCtrlTest {
 
         loader.setControllerFactory(type -> {
             if (type == ShoppingListCtrl.class) {
-                return new ShoppingListCtrl(new ServerUtils(ClientBuilder.newClient()), new UserConfig(userStorage, user));
+                return new ShoppingListCtrl(new TestServerUtils(), userConfig);
             }else{
                 throw new RuntimeException();
             }
@@ -78,6 +78,15 @@ public class ShoppingListCtrlTest {
     @Test
     void testBeforeAddingIngredientButton() {
         assertTrue(addIngredientButton.isVisible());
+        assertFalse(removeIngredientButton.isVisible());
+        assertFalse(editIngredientButton.isVisible());
+    }
+
+    @Test
+    void testAfterAddingIngredientButton(FxRobot robot) {
+        robot.clickOn(addIngredientButton);
+
+        assertFalse(addIngredientButton.isVisible());
         assertFalse(removeIngredientButton.isVisible());
         assertFalse(editIngredientButton.isVisible());
     }
