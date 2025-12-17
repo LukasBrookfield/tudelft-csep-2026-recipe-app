@@ -80,6 +80,23 @@ public class IngredientTypeOverviewCtrl {
     @FXML
     private Button doneEditDetailsButton;
 
+    // edit density section
+
+    @FXML
+    private Button editDensityButton;
+
+    @FXML
+    private TextField editDensityField;
+
+    @FXML
+    private Button cancelEditDensityButton;
+
+    @FXML
+    private Button doneEditDensityButton;
+
+    @FXML
+    private Label densityLabel;
+
     // Nutritional values
 
     @FXML
@@ -140,6 +157,8 @@ public class IngredientTypeOverviewCtrl {
         editIngredientTypeButton.setVisible(!value);
         cancelEditButton.getParent().setVisible(value);
         editDetailsButton.getParent().getParent().getParent().setVisible(value);
+
+        editDensityButton.setVisible(value);
         editNutritionButton.getParent().getParent().getParent().setVisible(value);
 
         // While in edit mode, the user can't change to a different ingredient
@@ -169,6 +188,7 @@ public class IngredientTypeOverviewCtrl {
         cancelEditButton.setVisible(!value);
         doneEditButton.setVisible(!value);
         editNutritionButton.setVisible(!value);
+        editDensityButton.setVisible(!value);
     }
 
     /**
@@ -189,6 +209,7 @@ public class IngredientTypeOverviewCtrl {
         cancelEditButton.setVisible(!value);
         doneEditButton.setVisible(!value);
         editDetailsButton.setVisible(!value);
+        editDensityButton.setVisible(!value);
     }
 
     /**
@@ -203,6 +224,9 @@ public class IngredientTypeOverviewCtrl {
 
         ingredientTypeTitleLabel.setText(ingredientType.name);
         nameLabel.setText(ingredientType.name);
+        if (ingredientType.density != null) {
+            densityLabel.setText(String.valueOf(ingredientType.density));
+        }
         kcalLabel.setText(String.valueOf(recipeUtils
                 .getCaloriesPer100g(ingredientType)) + "g");
 
@@ -251,11 +275,30 @@ public class IngredientTypeOverviewCtrl {
     }
 
     /**
+     * Changes between viewing and editing density
+     * @param value true for edit mode, false for viewing mode
+     */
+    public void changeDensityViewEditMode(boolean value) {
+        editDensityButton.setVisible(!value);
+        doneEditDensityButton.setVisible(value);
+        cancelEditDensityButton.setVisible(value);
+        editDensityField.getParent().setVisible(value);
+
+        cancelEditButton.setVisible(!value);
+        doneEditButton.setVisible(!value);
+        editDetailsButton.setVisible(!value);
+        editNutritionButton.setVisible(!value);
+
+        editDensityButton.getParent().setMouseTransparent(value);
+    }
+
+    /**
      * Initializes the ingredient type overview with default values
      */
     @FXML
     private void initialize() {
         changeDetailsViewEditMode(false);
+        changeDensityViewEditMode(false);
         changeNutritionViewEditMode(false);
         changeViewEditMode(false);
         onRefresh();
@@ -350,6 +393,13 @@ public class IngredientTypeOverviewCtrl {
                 .getSelectionModel().getSelectedItem();
         ingredientType.name = nameLabel.getText();
 
+        String densityText = densityLabel.getText();
+        if (densityText.isBlank()) {
+            ingredientType.density = null;
+        } else {
+            ingredientType.density = Double.parseDouble(densityText);
+        }
+
         if (!proteinLabel.getText().equals("-") || !fatLabel.getText().equals("-")
                 || !carbsLabel.getText().equals("-")) {
             if (ingredientType.nutrition == null) {
@@ -421,6 +471,43 @@ public class IngredientTypeOverviewCtrl {
         nameLabel.setText(editNameField.getText());
 
         changeDetailsViewEditMode(false);
+    }
+
+    /**
+     * On action method for edit density button
+     */
+    @FXML
+    private void onEditDensityButton() {
+        changeDensityViewEditMode(true);
+    }
+
+    /**
+     * On action method for cancel edit density button
+     */
+    @FXML
+    private void onCancelEditDensityButton() {
+        changeDensityViewEditMode(false);
+    }
+
+    /**
+     * On action method for done edit density button
+     */
+    @FXML
+    private void onDoneEditDensityButton() {
+        if (editDensityField.getText().isBlank()) {
+            densityLabel.setText("");
+            changeDensityViewEditMode(false);
+            return;
+        }
+        double density;
+        try {
+            density = Double.parseDouble(editDensityField.getText());
+        } catch (NumberFormatException e) {
+            System.out.println("Density must be a double");
+            return;
+        }
+        densityLabel.setText(String.valueOf(density));
+        changeDensityViewEditMode(false);
     }
 
     // Edit nutrition section

@@ -173,6 +173,51 @@
                               <Insets top="5.0" />
                            </VBox.margin>
                         </HBox>
+                        <HBox alignment="CENTER_LEFT" prefHeight="25.0" prefWidth="437.0" spacing="5.0">
+                           <children>
+                              <HBox alignment="CENTER_LEFT" prefHeight="25.0" prefWidth="181.0" spacing="5.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
+                                 <children>
+                                    <Label prefHeight="17.0" prefWidth="128.0" text="Density (g/ml):">
+                                       <HBox.margin>
+                                          <Insets left="5.0" />
+                                       </HBox.margin>
+                                    </Label>
+                                    <Label fx:id="densityLabel" alignment="CENTER_RIGHT" prefHeight="17.0" prefWidth="128.0">
+                                       <HBox.margin>
+                                          <Insets right="5.0" />
+                                       </HBox.margin>
+                                    </Label>
+                                 </children>
+                                 <HBox.margin>
+                                    <Insets />
+                                 </HBox.margin>
+                              </HBox>
+                           </children>
+                        </HBox>
+                        <StackPane prefHeight="25.0" prefWidth="411.0">
+                           <children>
+                              <HBox alignment="CENTER_LEFT" prefHeight="25.0" prefWidth="307.0" spacing="5.0">
+                                 <children>
+                                    <TextField fx:id="editDensityField" prefHeight="25.0" prefWidth="267.0" promptText="Enter ingredient density" />
+                                    <HBox prefHeight="25.0" prefWidth="185.0" HBox.hgrow="ALWAYS" />
+                                    <HBox alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="187.0" spacing="5.0">
+                                       <children>
+                                          <Button fx:id="cancelEditDensityButton" mnemonicParsing="false" onAction="#onCancelEditDensityButton" prefHeight="25.0" prefWidth="55.0" text="Cancel" />
+                                          <Button fx:id="doneEditDensityButton" mnemonicParsing="false" onAction="#onDoneEditDensityButton" prefHeight="25.0" prefWidth="50.0" text="Done" />
+                                       </children>
+                                    </HBox>
+                                 </children>
+                              </HBox>
+                              <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                                 <children>
+                                    <Button fx:id="editDensityButton" mnemonicParsing="false" onAction="#onEditDensityButton" prefHeight="25.0" prefWidth="28.0" text="✎" />
+                                 </children>
+                                 <StackPane.margin>
+                                    <Insets />
+                                 </StackPane.margin>
+                              </HBox>
+                           </children>
+                        </StackPane>
                         <Label text="Nutritional values (per 100g)">
                            <font>
                               <Font name="System Bold" size="13.0" />
