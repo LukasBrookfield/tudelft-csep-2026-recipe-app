@@ -46,7 +46,6 @@ import org.apache.pdfbox.printing.PDFPageable;
 
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.ObservableList;
-
 public class RecipeOverviewCtrl {
     // Constants
     private static final String EMPTY_STAR = "☆";
@@ -978,6 +977,7 @@ public class RecipeOverviewCtrl {
         Recipe recipe = recipeListView.getSelectionModel().getSelectedItem();
         recipe.name = recipeTitleField.getText();
         recipe.ingredients = ingredientListView.getItems().stream().toList();
+        recipeUtils.normalizeIngredients(recipe.ingredients);
         recipe.steps = preparationStepListView.getItems().stream().toList();
 
         System.out.println(new ObjectMapper().writeValueAsString(recipe));

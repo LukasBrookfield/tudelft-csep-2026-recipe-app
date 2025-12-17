@@ -69,6 +69,8 @@ public class Ingredient {
         switch (unit.name()) {
             case "G":
             case "ML":
+            case "KG":
+            case "L":
                 return amount + unit.name() + " " + ingredientType.name;
             case "TBSP":
                 if (amount == 1) {

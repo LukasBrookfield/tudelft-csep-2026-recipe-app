@@ -1,6 +1,10 @@
 package client.utils;
 
+import commons.Ingredient;
 import commons.IngredientType;
+import commons.Unit;
+
+import java.util.List;
 
 public class RecipeUtils {
     public static final double CAL_PER_GRAM_CARB = 4.0;
@@ -20,5 +24,25 @@ public class RecipeUtils {
         if (i.nutrition.protein != null) calories += CAL_PER_GRAM_PROTEIN * i.nutrition.protein;
         if (i.nutrition.fat != null) calories += CAL_PER_GRAM_FAT * i.nutrition.fat;
         return calories;
+    }
+
+    /**
+     * Normalize the amount and the unit of ingredients exceeding 1000 units for G and ML
+     * @param ingredients The list of ingredients
+     */
+    public void normalizeIngredients(List<Ingredient> ingredients) {
+        for (Ingredient ing : ingredients) {
+            if (!(ing == null || ing.amount == null || ing.unit == null)) {
+                if (ing.amount >= 1000) {
+                    if (ing.unit == Unit.ML) {
+                        ing.amount /= 1000.0;
+                        ing.unit = Unit.L;
+                    } else if (ing.unit == Unit.G) {
+                        ing.amount /= 1000.0;
+                        ing.unit = Unit.KG;
+                    }
+                }
+            }
+        }
     }
 }
