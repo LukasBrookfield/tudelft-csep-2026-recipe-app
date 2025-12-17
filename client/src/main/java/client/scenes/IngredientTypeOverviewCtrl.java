@@ -158,7 +158,7 @@ public class IngredientTypeOverviewCtrl {
         cancelEditButton.getParent().setVisible(value);
         editDetailsButton.getParent().getParent().getParent().setVisible(value);
 
-        editDensityButton.getParent().getParent().getParent().setVisible(value);
+        editDensityButton.setVisible(value);
         editNutritionButton.getParent().getParent().getParent().setVisible(value);
 
         // While in edit mode, the user can't change to a different ingredient
@@ -224,6 +224,9 @@ public class IngredientTypeOverviewCtrl {
 
         ingredientTypeTitleLabel.setText(ingredientType.name);
         nameLabel.setText(ingredientType.name);
+        if (ingredientType.density != null) {
+            densityLabel.setText(String.valueOf(ingredientType.density));
+        }
         kcalLabel.setText(String.valueOf(recipeUtils
                 .getCaloriesPer100g(ingredientType)) + "g");
 
@@ -286,7 +289,7 @@ public class IngredientTypeOverviewCtrl {
         editDetailsButton.setVisible(!value);
         editNutritionButton.setVisible(!value);
 
-        editDetailsButton.getParent().setMouseTransparent(value);
+        editDensityButton.getParent().setMouseTransparent(value);
     }
 
     /**
@@ -390,6 +393,13 @@ public class IngredientTypeOverviewCtrl {
                 .getSelectionModel().getSelectedItem();
         ingredientType.name = nameLabel.getText();
 
+        String densityText = densityLabel.getText();
+        if (densityText.isBlank()) {
+            ingredientType.density = null;
+        } else {
+            ingredientType.density = Double.parseDouble(densityText);
+        }
+
         if (!proteinLabel.getText().equals("-") || !fatLabel.getText().equals("-")
                 || !carbsLabel.getText().equals("-")) {
             if (ingredientType.nutrition == null) {
@@ -475,7 +485,11 @@ public class IngredientTypeOverviewCtrl {
 
     @FXML
     private void onDoneEditDensityButton() {
-        if (editDensityField.getText().isBlank()) changeDetailsViewEditMode(false);
+        if (editDensityField.getText().isBlank()) {
+            densityLabel.setText("");
+            changeDensityViewEditMode(false);
+            return;
+        }
         double density;
         try {
             density = Double.parseDouble(editDensityField.getText());
@@ -484,6 +498,7 @@ public class IngredientTypeOverviewCtrl {
             return;
         }
         densityLabel.setText(String.valueOf(density));
+        changeDensityViewEditMode(false);
     }
 
     // Edit nutrition section
