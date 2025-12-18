@@ -64,6 +64,8 @@ public class UnitConversionService {
     // just used as a return type for toBase
     public record NormalizedQuantity(double amount, Unit unit) {}
 
+    // Note that the two methods below essentially do the same as the one above
+    // (I wrote them before, it might be redundant, but it also might be useful, so I kept them for now)
     /**
      * Converts a numeric value from a unit to grams.
      * @param unit to convert from
