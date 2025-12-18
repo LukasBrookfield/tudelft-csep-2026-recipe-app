@@ -238,12 +238,9 @@ public class IngredientTypeOverviewCtrl {
         }
 
         int usedInRecipes = 0;
-        System.out.println("Here");
         for (Recipe recipe : server.getRecipes()) {
             boolean ok = false;
             for (Ingredient ingredient : recipe.ingredients) {
-                System.out.println(ingredient.id);
-                System.out.println(ingredient.ingredientType.id);
                 if (ingredient.ingredientType.id == ingredientType.id) {
                     ok = true;
                     break;
@@ -252,9 +249,6 @@ public class IngredientTypeOverviewCtrl {
             if (ok) {
                 usedInRecipes++;
             }
-        }
-        if (ingredientType.ingredients != null) {
-            usedInRecipes = ingredientType.ingredients.size();
         }
         usedInRecipesLabel.setText("This ingredient type is used in "
                 + usedInRecipes + " recipe" + (usedInRecipes == 1 ? "" : "s"));
