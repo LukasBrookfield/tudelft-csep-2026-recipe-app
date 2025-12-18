@@ -789,6 +789,7 @@ public class RecipeOverviewCtrl {
         }
 
         Recipe clonedRecipe = new Recipe(recipe.name + " [clone]");
+        clonedRecipe.servings = recipe.servings;
         for (Ingredient ingredient :  recipe.ingredients) {
             Ingredient clonedIngredient = new Ingredient(ingredient.ingredientType,
                     ingredient.amount, ingredient.unit, null);
