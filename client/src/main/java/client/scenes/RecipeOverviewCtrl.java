@@ -1124,7 +1124,7 @@ public class RecipeOverviewCtrl {
      * this only affects the recipe if the user presses 'Done' later
      */
     @FXML
-    private void onRemoveIngredientButton() {
+    private void onRemoveIngredientButton() throws JsonProcessingException {
         if (ingredientListView.getItems().isEmpty()) {
             System.out.println("There is no ingredient to remove.");
             return;
@@ -1133,8 +1133,10 @@ public class RecipeOverviewCtrl {
             System.out.println("There is no ingredient selected.");
             return;
         }
-        int index = ingredientListView.getSelectionModel().getSelectedIndex();
-        ingredientListView.getItems().remove(index);
+        Recipe recipe = recipeListView.getSelectionModel().getSelectedItem();
+        Ingredient ingredient = ingredientListView.getSelectionModel().getSelectedItem();
+        recipe.ingredients.remove(ingredient);
+        server.updateRecipe(recipe.id, recipe);
     }
 
     /**

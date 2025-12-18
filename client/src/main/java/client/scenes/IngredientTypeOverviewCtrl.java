@@ -9,6 +9,7 @@ import com.google.inject.Inject;
 import commons.Ingredient;
 import commons.IngredientType;
 import commons.Nutrition;
+import commons.Recipe;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -235,6 +236,23 @@ public class IngredientTypeOverviewCtrl {
         } else {
             densityLabel.setText("-");
         }
+
+        int usedInRecipes = 0;
+        for (Recipe recipe : server.getRecipes()) {
+            boolean ok = false;
+            for (Ingredient ingredient : recipe.ingredients) {
+                if (ingredient.ingredientType.id == ingredientType.id) {
+                    ok = true;
+                    break;
+                }
+            }
+            if (ok) {
+                usedInRecipes++;
+            }
+        }
+        usedInRecipesLabel.setText("This ingredient type is used in "
+                + usedInRecipes + " recipe" + (usedInRecipes == 1 ? "" : "s"));
+
         kcalLabel.setText(String.valueOf(recipeUtils
                 .getCaloriesPer100g(ingredientType)));
 
@@ -254,13 +272,6 @@ public class IngredientTypeOverviewCtrl {
         if (ingredientType.nutrition.carbs != null) {
             carbsLabel.setText(String.valueOf(ingredientType.nutrition.carbs) + "g");
         }
-
-        int usedInRecipes = 0;
-        if (ingredientType.ingredients != null) {
-            usedInRecipes = ingredientType.ingredients.size();
-        }
-        usedInRecipesLabel.setText("This ingredient type is used in "
-        + usedInRecipes + " recipe" + (usedInRecipes == 1 ? "" : "s"));
     }
 
     /**
