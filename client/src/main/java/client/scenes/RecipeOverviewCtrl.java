@@ -95,6 +95,9 @@ public class RecipeOverviewCtrl {
     // Top right
 
     @FXML
+    private Button starRecipeButton;
+
+    @FXML
     private Button downloadRecipeButton;
 
     @FXML
@@ -104,7 +107,7 @@ public class RecipeOverviewCtrl {
     private Button toggleOverviewButton;
 
     @FXML
-    private Button starRecipeButton;
+    private Button homeButton;
 
     // Recipe title row
 
@@ -267,13 +270,15 @@ public class RecipeOverviewCtrl {
         shoppingListButton.setVisible(!value);
 
         recipeSearchField.setDisable(value);
+        sortChoiceBox.setDisable(value);
         recipeListView.setDisable(value);
 
+        starRecipeButton.setVisible(!value);
         downloadRecipeButton.setVisible(!value);
         printRecipeButton.setVisible(!value);
         toggleOverviewButton.setVisible(!value);
+        homeButton.setVisible(!value);
 
-        starRecipeButton.setVisible(!value);
         favouriteRecipeFilterBox.setDisable(value);
 
         // When going into edit mode, it automatically selects the
@@ -1007,6 +1012,11 @@ public class RecipeOverviewCtrl {
     @FXML
     private void onToggleOverviewButton() {
         mainCtrl.showIngredientTypeOverview();
+    }
+
+    @FXML
+    private void onHomeButton() {
+        mainCtrl.showHomeScreen();
     }
 
     // Recipe title row

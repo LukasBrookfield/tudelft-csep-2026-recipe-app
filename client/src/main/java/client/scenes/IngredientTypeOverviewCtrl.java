@@ -44,6 +44,9 @@ public class IngredientTypeOverviewCtrl {
     @FXML
     private Button toggleOverviewButton;
 
+    @FXML
+    private Button homeButton;
+
     // Ingredient title row
 
     @FXML
@@ -169,6 +172,9 @@ public class IngredientTypeOverviewCtrl {
         // or add a new one
         addIngredientTypeButton.setVisible(!value);
         removeIngredientTypeButton.setVisible(!value);
+
+        toggleOverviewButton.setVisible(!value);
+        homeButton.setVisible(!value);
     }
 
     /**
@@ -357,6 +363,11 @@ public class IngredientTypeOverviewCtrl {
     @FXML
     private void onToggleOverviewButton() {
         mainCtrl.showRecipeOverview();
+    }
+
+    @FXML
+    private void onHomeButton() {
+        mainCtrl.showHomeScreen();
     }
 
     // Ingredient title row
