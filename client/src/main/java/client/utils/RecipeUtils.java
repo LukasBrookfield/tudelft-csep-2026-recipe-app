@@ -54,7 +54,7 @@ public class RecipeUtils {
      * @param recipe The recipe being edited
      * @param server ServerUtils object for http requests
      */
-    public void commitLocalIngredientTypes(Recipe recipe, ServerUtils server) {
+    public void commitLocalIngredientTypes(Recipe recipe, ServerUtility server) {
         Map<String, IngredientType> savedTypes = new HashMap<>();
 
         for (Ingredient ing : recipe.ingredients) {

@@ -27,7 +27,7 @@ import java.util.function.Consumer;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
-public class ServerUtils {
+public class ServerUtils implements ServerUtility{
     private final Client client;
     private static final String SERVER = "http://localhost:8080/";
 
@@ -49,7 +49,7 @@ public class ServerUtils {
      * Do nothing if client is connected to the chanel
      * or create a websocket client and connect to a session
      */
-    private void connectWebSocketIfNeeded() {
+    public void connectWebSocketIfNeeded() {
 
         if (stompSession != null && stompSession.isConnected()) {
             return;

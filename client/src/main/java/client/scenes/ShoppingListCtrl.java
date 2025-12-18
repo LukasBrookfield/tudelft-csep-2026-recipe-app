@@ -1,5 +1,6 @@
 package client.scenes;
 
+import client.utils.ServerUtility;
 import client.utils.ServerUtils;
 import client.utils.UserConfig;
 import com.google.inject.Inject;
@@ -17,7 +18,7 @@ import java.util.ArrayList;
 
 public class ShoppingListCtrl {
 
-    private final ServerUtils server;
+    private final ServerUtility server;
 
     private final UserConfig user;
 
@@ -78,7 +79,7 @@ public class ShoppingListCtrl {
             };
 
     @Inject
-    public ShoppingListCtrl(ServerUtils server, UserConfig user) {
+    public ShoppingListCtrl(ServerUtility server, UserConfig user) {
         this.server = server;
         this.user = user;
     }
