@@ -1099,6 +1099,11 @@ public class RecipeOverviewCtrl {
             System.out.println("Enter a valid amount.");
             return;
         }
+        if (Integer.parseInt(editServingsField.getText()) <= 0) {
+            System.out.println("The amount of servings needs to " +
+                    "be a positive integer.");
+            return;
+        }
 
         try {
             Integer.parseInt(editServingsField.getText());
