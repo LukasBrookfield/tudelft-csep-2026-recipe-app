@@ -37,6 +37,7 @@ public class ShoppingListCtrlTest {
     private final User user = new User(favouriteRecipes, shoppingList);
     private final UserStorage userStorage = new TestUserStorage(user);
     private final UserConfig userConfig = new UserConfig(userStorage, user);
+    private final MainCtrl mainCtrl = new MainCtrl();
 
     @Start
     private void start(Stage shoppingListStage) throws IOException {
@@ -59,7 +60,7 @@ public class ShoppingListCtrlTest {
 
         loader.setControllerFactory(type -> {
             if (type == ShoppingListCtrl.class) {
-                return new ShoppingListCtrl(new TestServerUtils(), userConfig);
+                return new ShoppingListCtrl(new TestServerUtils(), userConfig, mainCtrl);
             }else{
                 throw new RuntimeException();
             }
@@ -78,8 +79,8 @@ public class ShoppingListCtrlTest {
     @Test
     void testBeforeAddingIngredientButton() {
         assertTrue(addIngredientButton.isVisible());
-        assertFalse(removeIngredientButton.isVisible());
-        assertFalse(editIngredientButton.isVisible());
+        assertTrue(removeIngredientButton.isVisible());
+        assertTrue(editIngredientButton.isVisible());
     }
 
     @Test

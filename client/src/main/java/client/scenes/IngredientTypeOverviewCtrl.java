@@ -44,6 +44,9 @@ public class IngredientTypeOverviewCtrl {
     @FXML
     private Button toggleOverviewButton;
 
+    @FXML
+    private Button homeButton;
+
     // Ingredient title row
 
     @FXML
@@ -169,6 +172,9 @@ public class IngredientTypeOverviewCtrl {
         // or add a new one
         addIngredientTypeButton.setVisible(!value);
         removeIngredientTypeButton.setVisible(!value);
+
+        toggleOverviewButton.setVisible(!value);
+        homeButton.setVisible(!value);
     }
 
     /**
@@ -226,9 +232,11 @@ public class IngredientTypeOverviewCtrl {
         nameLabel.setText(ingredientType.name);
         if (ingredientType.density != null) {
             densityLabel.setText(String.valueOf(ingredientType.density));
+        } else {
+            densityLabel.setText("-");
         }
         kcalLabel.setText(String.valueOf(recipeUtils
-                .getCaloriesPer100g(ingredientType)) + "g");
+                .getCaloriesPer100g(ingredientType)));
 
         proteinLabel.setText("-");
         fatLabel.setText("-");
@@ -357,6 +365,11 @@ public class IngredientTypeOverviewCtrl {
         mainCtrl.showRecipeOverview();
     }
 
+    @FXML
+    private void onHomeButton() {
+        mainCtrl.showHomeScreen();
+    }
+
     // Ingredient title row
 
     /**
@@ -394,7 +407,7 @@ public class IngredientTypeOverviewCtrl {
         ingredientType.name = nameLabel.getText();
 
         String densityText = densityLabel.getText();
-        if (densityText.isBlank()) {
+        if (densityText.isBlank() || densityText.equals("-")) {
             ingredientType.density = null;
         } else {
             ingredientType.density = Double.parseDouble(densityText);
@@ -463,7 +476,7 @@ public class IngredientTypeOverviewCtrl {
      */
     @FXML
     private void onDoneEditDetailsButton() {
-        if (editNameField.getText().isEmpty()) {
+        if (editNameField.getText().isBlank()) {
             System.out.println("The ingredient type needs a name.");
             return;
         }

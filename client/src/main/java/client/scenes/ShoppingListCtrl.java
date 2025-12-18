@@ -21,6 +21,10 @@ public class ShoppingListCtrl {
 
     private final UserConfig user;
 
+    private final MainCtrl mainCtrl;
+
+    public boolean lastScene;
+
     @FXML
     private ListView<Ingredient> ingredientListView;
 
@@ -63,6 +67,9 @@ public class ShoppingListCtrl {
     @FXML
     private Button nextButton;
 
+    @FXML
+    private Button exitButton;
+
     //the listener for ingredient type choice box so the fields change
     private final ChangeListener<IngredientType> ingredientListener =
             (observable, oldValue, newValue) -> {
@@ -78,9 +85,12 @@ public class ShoppingListCtrl {
             };
 
     @Inject
-    public ShoppingListCtrl(ServerUtils server, UserConfig user) {
+    public ShoppingListCtrl(ServerUtils server,
+                            UserConfig user,
+                            MainCtrl mainCtrl) {
         this.server = server;
         this.user = user;
+        this.mainCtrl = mainCtrl;
     }
 
     /**
@@ -94,13 +104,6 @@ public class ShoppingListCtrl {
         editIngredientNameField.clear();
 
         ingredientListView.refresh();
-        if(ingredientListView.getSelectionModel().getSelectedItem() != null) {
-            editIngredientButton.setVisible(true);
-            removeIngredientButton.setVisible(true);
-        }else{
-            editIngredientButton.setVisible(false);
-            removeIngredientButton.setVisible(false);
-        }
     }
 
     /**
@@ -133,8 +136,6 @@ public class ShoppingListCtrl {
     @FXML
     private void initialize() {
         changeIngredientViewEditMode(false);
-        editIngredientButton.setVisible(false);
-        removeIngredientButton.setVisible(false);
         editUnitBox.getItems().addAll("", "G", "ML", "TBSP", "TSP", "PINCH",
                 "HANDFUL", "TO_TASTE");
 
@@ -328,5 +329,14 @@ public class ShoppingListCtrl {
     @FXML
     private void onBackEditIngredientButton() {
         changeIngredientTypeViewEditMode(false);
+    }
+
+    @FXML
+    private void onExitButton() {
+        if (lastScene == false) {
+            mainCtrl.showHomeScreen();
+        } else {
+            mainCtrl.showRecipeOverview();
+        }
     }
 }
