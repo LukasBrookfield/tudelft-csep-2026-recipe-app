@@ -7,6 +7,7 @@
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
@@ -88,13 +89,34 @@
                                              <font>
                                                 <Font size="9.0" />
                                              </font>
+                                             <tooltip>
+                                                <Tooltip text="Remove ingredient">
+                                                   <font>
+                                                      <Font size="13.0" />
+                                                   </font>
+                                                </Tooltip>
+                                             </tooltip>
                                           </Button>
                                           <Button fx:id="addIngredientButton" alignment="TOP_CENTER" contentDisplay="TOP" mnemonicParsing="false" onAction="#onAddIngredientButton" prefHeight="25.0" prefWidth="25.0" text="+">
                                              <HBox.margin>
                                                 <Insets />
                                              </HBox.margin>
+                                             <tooltip>
+                                                <Tooltip text="Add ingredient">
+                                                   <font>
+                                                      <Font size="13.0" />
+                                                   </font>
+                                                </Tooltip>
+                                             </tooltip>
                                           </Button>
-                                          <Button fx:id="editIngredientButton" mnemonicParsing="false" onAction="#onEditIngredientButton" prefHeight="25.0" prefWidth="28.0" text="✎" />
+                                          <Button fx:id="editIngredientButton" mnemonicParsing="false" onAction="#onEditIngredientButton" prefHeight="25.0" prefWidth="28.0" text="✎">
+                                             <tooltip>
+                                                <Tooltip text="Edit ingredient">
+                                                   <font>
+                                                      <Font size="13.0" />
+                                                   </font>
+                                                </Tooltip>
+                                             </tooltip></Button>
                                        </children>
                                     </HBox>
                                  </children>

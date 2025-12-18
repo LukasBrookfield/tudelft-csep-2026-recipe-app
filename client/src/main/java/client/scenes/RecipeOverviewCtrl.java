@@ -98,6 +98,9 @@ public class RecipeOverviewCtrl {
     private Button starRecipeButton;
 
     @FXML
+    private Tooltip starTooltip;
+
+    @FXML
     private Button downloadRecipeButton;
 
     @FXML
@@ -400,7 +403,13 @@ public class RecipeOverviewCtrl {
             List<String> steps = new ArrayList<>(recipe.steps);
             preparationStepListView.setItems(FXCollections.observableList(steps));
 
-            starRecipeButton.setText(user.isFavouriteRecipe(recipe) ? FULL_STAR : EMPTY_STAR);
+            if (user.isFavouriteRecipe(recipe)) {
+                starRecipeButton.setText(FULL_STAR);
+                starTooltip.setText("Remove recipe from favorites");
+            } else {
+                starRecipeButton.setText(EMPTY_STAR);
+                starTooltip.setText("Add recipe to favorites");
+            }
         }
     }
 
@@ -1412,8 +1421,8 @@ public class RecipeOverviewCtrl {
             user.addFavouriteRecipe(recipe);
         }
         user.saveUser();
-        starRecipeButton.setText(user.isFavouriteRecipe(recipe) ? FULL_STAR : EMPTY_STAR);
         recipeListView.refresh();
+        onRefresh();
     }
 
     /**

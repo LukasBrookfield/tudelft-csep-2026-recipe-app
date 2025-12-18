@@ -6,6 +6,7 @@
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
@@ -50,6 +51,13 @@
                                  <font>
                                     <Font name="Segoe UI Emoji" size="10.0" />
                                  </font>
+                                 <tooltip>
+                                    <Tooltip text="View home screen">
+                                       <font>
+                                          <Font size="13.0" />
+                                       </font>
+                                    </Tooltip>
+                                 </tooltip>
                               </Button>
                            </children>
                         </HBox>
@@ -74,8 +82,22 @@
                                  <font>
                                     <Font size="9.0" />
                                  </font>
+                                 <tooltip>
+                                    <Tooltip text="Remove ingredient">
+                                       <font>
+                                          <Font size="13.0" />
+                                       </font>
+                                    </Tooltip>
+                                 </tooltip>
                               </Button>
-                              <Button fx:id="addIngredientTypeButton" mnemonicParsing="false" onAction="#onAddIngredientTypeButton" prefHeight="25.0" prefWidth="25.0" text="+" />
+                              <Button fx:id="addIngredientTypeButton" mnemonicParsing="false" onAction="#onAddIngredientTypeButton" prefHeight="25.0" prefWidth="25.0" text="+">
+                                 <tooltip>
+                                    <Tooltip text="Add ingredient">
+                                       <font>
+                                          <Font size="13.0" />
+                                       </font>
+                                    </Tooltip>
+                                 </tooltip></Button>
                            </children>
                            <VBox.margin>
                               <Insets top="5.0" />
@@ -115,7 +137,14 @@
                                           <Button fx:id="doneEditButton" mnemonicParsing="false" onAction="#onDoneEditButton" prefHeight="25.0" prefWidth="57.0" text="Done" />
                                        </children>
                                     </HBox>
-                                    <Button fx:id="editIngredientTypeButton" mnemonicParsing="false" onAction="#onEditIngredientTypeButton" text="✎" />
+                                    <Button fx:id="editIngredientTypeButton" mnemonicParsing="false" onAction="#onEditIngredientTypeButton" text="✎">
+                                       <tooltip>
+                                          <Tooltip text="Edit ingredient">
+                                             <font>
+                                                <Font size="13.0" />
+                                             </font>
+                                          </Tooltip>
+                                       </tooltip></Button>
                                  </children>
                               </StackPane>
                            </children>
@@ -168,7 +197,14 @@
                                     </HBox>
                                     <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
                                        <children>
-                                          <Button fx:id="editDetailsButton" mnemonicParsing="false" onAction="#onEditDetailsButton" prefHeight="25.0" prefWidth="28.0" text="✎" />
+                                          <Button fx:id="editDetailsButton" mnemonicParsing="false" onAction="#onEditDetailsButton" prefHeight="25.0" prefWidth="28.0" text="✎">
+                                             <tooltip>
+                                                <Tooltip text="Edit name">
+                                                   <font>
+                                                      <Font size="13.0" />
+                                                   </font>
+                                                </Tooltip>
+                                             </tooltip></Button>
                                        </children>
                                        <StackPane.margin>
                                           <Insets />
@@ -221,7 +257,14 @@
                               </HBox>
                               <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
                                  <children>
-                                    <Button fx:id="editDensityButton" mnemonicParsing="false" onAction="#onEditDensityButton" prefHeight="25.0" prefWidth="28.0" text="✎" />
+                                    <Button fx:id="editDensityButton" mnemonicParsing="false" onAction="#onEditDensityButton" prefHeight="25.0" prefWidth="28.0" text="✎">
+                                       <tooltip>
+                                          <Tooltip text="Edit density">
+                                             <font>
+                                                <Font size="13.0" />
+                                             </font>
+                                          </Tooltip>
+                                       </tooltip></Button>
                                  </children>
                                  <StackPane.margin>
                                     <Insets />
@@ -315,7 +358,14 @@
                                     </HBox>
                                     <HBox prefHeight="25.0" prefWidth="380.0" spacing="5.0">
                                        <children>
-                                          <Button fx:id="editNutritionButton" mnemonicParsing="false" onAction="#onEditNutritionButton" prefHeight="25.0" prefWidth="28.0" text="✎" />
+                                          <Button fx:id="editNutritionButton" mnemonicParsing="false" onAction="#onEditNutritionButton" prefHeight="25.0" prefWidth="28.0" text="✎">
+                                             <tooltip>
+                                                <Tooltip text="Edit nutritional values">
+                                                   <font>
+                                                      <Font size="13.0" />
+                                                   </font>
+                                                </Tooltip>
+                                             </tooltip></Button>
                                        </children>
                                        <StackPane.margin>
                                           <Insets />
