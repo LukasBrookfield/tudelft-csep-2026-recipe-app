@@ -19,7 +19,7 @@ public class Recipe {
     public String name;
 
     @JsonManagedReference
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     public List<Ingredient> ingredients;
 
     @ElementCollection
