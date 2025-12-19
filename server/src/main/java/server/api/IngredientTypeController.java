@@ -98,7 +98,6 @@ public class IngredientTypeController {
     public ResponseEntity<IngredientType> update(@PathVariable("id") long id,
                                              @RequestBody IngredientType updatedIngredientType) {
         if (updatedIngredientType == null
-                || updatedIngredientType.ingredients == null
                 || updatedIngredientType.name == null
                 || updatedIngredientType.name.isEmpty()
                 || id < 0 || !repo.existsById(id)) {
@@ -109,8 +108,6 @@ public class IngredientTypeController {
             // update fields
             ingredientTypeToUpdate.name = updatedIngredientType.name;
             ingredientTypeToUpdate.nutrition = updatedIngredientType.nutrition;
-            ingredientTypeToUpdate.ingredients.clear();
-            ingredientTypeToUpdate.ingredients.addAll(updatedIngredientType.ingredients);
             ingredientTypeToUpdate.density = updatedIngredientType.density;
 
             IngredientType updated = repo.save(ingredientTypeToUpdate);
