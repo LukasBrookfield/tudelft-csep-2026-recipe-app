@@ -26,7 +26,7 @@ public class RecipeControllerTest{
         // for testing with TestIngredientRepository
         repo = new TestRecipeRepository();
         messagingTemplate = mock(SimpMessagingTemplate.class);
-        sut = new RecipeController(repo, messagingTemplate);
+        sut = new RecipeController(repo, messagingTemplate, null);
 
         recipe1 = new Recipe("cucumber salad",
                 new ArrayList<>(),

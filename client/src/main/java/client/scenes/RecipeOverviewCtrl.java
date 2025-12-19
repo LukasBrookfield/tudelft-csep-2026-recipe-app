@@ -236,6 +236,9 @@ public class RecipeOverviewCtrl {
     @FXML
     private ChoiceBox<String> sortChoiceBox;
 
+    @FXML
+    private Label recipeKcalPer100gLabel;
+
     // General
 
     @Inject
@@ -411,8 +414,55 @@ public class RecipeOverviewCtrl {
                 starTooltip.setText("Add recipe to favorites");
             }
         }
+
+        this.updateNutritionLabels(recipe);
     }
 
+    /**
+     * Updates the UI label that shows the Kcals per 100g of a recipe.
+     * @param recipe selected (for which the nutrition will be shown).
+     */
+    private void updateNutritionLabels(Recipe recipe) {
+        if (recipe == null) {
+            System.out.println("[nutrition] recipe is null");
+            recipeKcalPer100gLabel.setText("-");
+            return;
+        }
+
+        long requestedId = recipe.id;
+        System.out.println("[nutrition] requesting for recipe id =" + requestedId);
+        recipeKcalPer100gLabel.setText("...");
+
+        new Thread(() -> {  // Start a new thread because the UI thread would freeze due to the server call being slow
+            try {
+                var n = server.getRecipeNutrition(requestedId); // server call
+
+                System.out.println("[nutrition] got response: totalGrams = " + n.totalGrams() + ", kcalPer100g = "
+                        + n.kcalPer100g() + ", ignored = " + n.ignoredIngredients());
+
+
+                Platform.runLater(() -> {   // Update the UI on the main thread once possible
+                    // Just check that the intended recipe is the one being selected
+                    // (so we don't update the wrong recipe in the UI)
+                    Recipe current = recipeListView.getSelectionModel().getSelectedItem();
+                    if (current != null && current.id == requestedId) return;
+
+                    if (n.totalGrams() <= 0) {
+                        recipeKcalPer100gLabel.setText("-");
+                    } else {
+                        recipeKcalPer100gLabel.setText(String.valueOf(Math.round(n.kcalPer100g())));
+                    }
+                });
+            } catch (Exception e) {
+                System.out.println("[nutrition] ERROR while loading nutrition:");
+                e.printStackTrace();
+                Platform.runLater(() -> {
+                    recipeKcalPer100gLabel.setText("-");
+                });
+            }
+
+        }).start();
+    }
     /**
      * Initializes the home screen with default values
      */

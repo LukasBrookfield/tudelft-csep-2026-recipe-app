@@ -407,7 +407,7 @@ public class IngredientTypeOverviewCtrl {
      * All the changes are added to the selected ingredient type
      */
     @FXML
-    private void onDoneEditButton() {
+    private void onDoneEditButton() throws JsonProcessingException {
         if (nameLabel.getText().equals("-")) {
             System.out.println("The ingredient needs a name.");
             return;
@@ -445,6 +445,8 @@ public class IngredientTypeOverviewCtrl {
             }
         }
 
+        System.out.println("Ingredient type to be updated: " +
+                new ObjectMapper().writeValueAsString(ingredientType));
         server.updateIngredientType(ingredientType.id, ingredientType);
 
         onRefresh();

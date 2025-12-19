@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import commons.Recipe;
 import server.database.RecipeRepository;
+import server.services.RecipeNutritionService;
 
 import static org.antlr.v4.runtime.tree.xpath.XPath.findAll;
 
@@ -15,6 +16,7 @@ import static org.antlr.v4.runtime.tree.xpath.XPath.findAll;
 public class RecipeController {
     private final RecipeRepository repo;
     private final SimpMessagingTemplate messagingTemplate;
+    private final RecipeNutritionService recipeNutritionService;
 
     /**
      * RecipeController constructor
@@ -22,9 +24,10 @@ public class RecipeController {
      * @param messagingTemplate The messaging template
      * sending data to the URL which the clients are subscribed to
      */
-    public RecipeController(RecipeRepository repo, SimpMessagingTemplate messagingTemplate) {
+    public RecipeController(RecipeRepository repo, SimpMessagingTemplate messagingTemplate, RecipeNutritionService recipeNutritionService) {
         this.repo = repo;
         this.messagingTemplate = messagingTemplate;
+        this.recipeNutritionService = recipeNutritionService;
     }
 
     /**
@@ -47,6 +50,20 @@ public class RecipeController {
             return ResponseEntity.badRequest().build();
         }
         return ResponseEntity.ok(repo.findById(id).get());
+    }
+
+    /**
+     * Inputs a numeric id and returns the recipe in the database that has that id
+     * @param id The id of the recipe to get
+     * @return The recipe with the corresponding id
+     */
+    @GetMapping("/{id}/Nutrition")
+    public ResponseEntity<commons.RecipeNutrition> getNutrition(@PathVariable("id") long id) {
+        if (id < 0 || !repo.existsById(id)) {
+            return ResponseEntity.badRequest().build();
+        }
+        var recipe = repo.findById(id).get();
+        return ResponseEntity.ok(recipeNutritionService.compute(recipe));
     }
 
     /**
