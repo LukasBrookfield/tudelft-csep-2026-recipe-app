@@ -53,7 +53,7 @@ class UserTest {
 //        assertEquals(testUser, user2);
 
         // with different shopping list
-        otherList = createShoppingList(RECIPE_A_NAME, ING_TYPE_A, ING_TYPE_C);
+        List<Ingredient> otherList = createShoppingList(RECIPE_A_NAME, ING_TYPE_A, ING_TYPE_C);
         user2 = new User(FAVOURITE_RECIPES, otherList);
         assertNotEquals(testUser, user2);
     }
