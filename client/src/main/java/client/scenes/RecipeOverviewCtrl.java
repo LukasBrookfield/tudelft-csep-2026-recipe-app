@@ -95,6 +95,12 @@ public class RecipeOverviewCtrl {
     // Top right
 
     @FXML
+    private Button starRecipeButton;
+
+    @FXML
+    private Tooltip starTooltip;
+
+    @FXML
     private Button downloadRecipeButton;
 
     @FXML
@@ -104,7 +110,7 @@ public class RecipeOverviewCtrl {
     private Button toggleOverviewButton;
 
     @FXML
-    private Button starRecipeButton;
+    private Button homeButton;
 
     // Recipe title row
 
@@ -113,12 +119,6 @@ public class RecipeOverviewCtrl {
 
     @FXML
     private TextField recipeTitleField;
-
-    @FXML
-    private TextField recipeServingsField;
-
-    @FXML
-    private Label recipeServingsLabel;
 
     @FXML
     private Button editRecipeButton;
@@ -131,6 +131,23 @@ public class RecipeOverviewCtrl {
 
     @FXML
     private Separator mainSeparator;
+
+    // Servings
+
+    @FXML
+    private Label servingsLabel;
+
+    @FXML
+    private TextField editServingsField;
+
+    @FXML
+    private Button editServingsButton;
+
+    @FXML
+    private Button cancelEditServingsButton;
+
+    @FXML
+    private Button doneEditServingsButton;
 
     // Ingredients
 
@@ -243,11 +260,10 @@ public class RecipeOverviewCtrl {
     private void changeViewEditMode(boolean value) {
         recipeTitleLabel.setVisible(!value);
         recipeTitleField.setVisible(value);
-        recipeServingsLabel.setVisible(!value);
-        recipeServingsField.setVisible(value);
 
         editRecipeButton.setVisible(!value);
 
+        editServingsButton.getParent().setVisible(value);
         removeIngredientButton.getParent().setVisible(value);
         removeStepButton.getParent().setVisible(value);
 
@@ -260,13 +276,15 @@ public class RecipeOverviewCtrl {
         shoppingListButton.setVisible(!value);
 
         recipeSearchField.setDisable(value);
+        sortChoiceBox.setDisable(value);
         recipeListView.setDisable(value);
 
+        starRecipeButton.setVisible(!value);
         downloadRecipeButton.setVisible(!value);
         printRecipeButton.setVisible(!value);
         toggleOverviewButton.setVisible(!value);
+        homeButton.setVisible(!value);
 
-        starRecipeButton.setVisible(!value);
         favouriteRecipeFilterBox.setDisable(value);
 
         // When going into edit mode, it automatically selects the
@@ -275,6 +293,11 @@ public class RecipeOverviewCtrl {
             recipeTitleField.requestFocus();
             recipeTitleField.selectAll();
         });
+    }
+
+    private void changeServingsViewEditMode(boolean value) {
+        editServingsButton.getParent().setVisible(!value);
+        editServingsField.getParent().setVisible(value);
     }
 
     /**
@@ -375,7 +398,7 @@ public class RecipeOverviewCtrl {
         Recipe recipe = recipeListView.getSelectionModel().getSelectedItem();
         if (recipe != null) {
             recipeTitleLabel.setText(recipe.name);
-            recipeServingsLabel.setText("Number of servings: " + recipe.servings);
+            servingsLabel.setText(String.valueOf(recipe.servings));
 
             List<Ingredient> ingredients = new ArrayList<>(recipe.ingredients);
             ingredientListView.setItems(FXCollections.observableList(ingredients));
@@ -383,8 +406,13 @@ public class RecipeOverviewCtrl {
             List<String> steps = new ArrayList<>(recipe.steps);
             preparationStepListView.setItems(FXCollections.observableList(steps));
 
-            starRecipeButton.setText(user.isFavouriteRecipe(recipe) ? FULL_STAR : EMPTY_STAR);
-
+            if (user.isFavouriteRecipe(recipe)) {
+                starRecipeButton.setText(FULL_STAR);
+                starTooltip.setText("Remove recipe from favorites");
+            } else {
+                starRecipeButton.setText(EMPTY_STAR);
+                starTooltip.setText("Add recipe to favorites");
+            }
         }
 
         this.updateNutritionLabels(recipe);
@@ -440,6 +468,7 @@ public class RecipeOverviewCtrl {
      */
     @FXML
     private void initialize() {
+        changeServingsViewEditMode(false);
         changeIngredientTypeViewEditMode(0);
         changeStepViewEditMode(false);
         changeViewEditMode(false);
@@ -810,6 +839,7 @@ public class RecipeOverviewCtrl {
         }
 
         Recipe clonedRecipe = new Recipe(recipe.name + " [clone]");
+        clonedRecipe.servings = recipe.servings;
         for (Ingredient ingredient :  recipe.ingredients) {
             Ingredient clonedIngredient = new Ingredient(ingredient.ingredientType,
                     ingredient.amount, ingredient.unit, null);
@@ -842,7 +872,7 @@ public class RecipeOverviewCtrl {
 
         // Also clear the placeholder so the user doesn't have to delete "New recipe"
         recipeTitleField.clear();
-        recipeServingsField.clear();
+        editServingsField.clear();
         recipeTitleField.requestFocus(); // Tells JavaFX to put the cursor inside that text field
     }
 
@@ -952,7 +982,7 @@ public class RecipeOverviewCtrl {
 
         var ingredients = ingredientListView.getItems();
         var steps = preparationStepListView.getItems();
-        var servings = recipeServingsLabel.getText();
+        var servings = servingsLabel.getText();
 
         // FileChooser is a JavaFX helper that opens a normal "Save as" dialog
         FileChooser chooser = new FileChooser();
@@ -1001,7 +1031,7 @@ public class RecipeOverviewCtrl {
 
         var ingredients = ingredientListView.getItems();
         var steps = preparationStepListView.getItems();
-        var servings = recipeServingsLabel.getText();
+        var servings = servingsLabel.getText();
 
         File tempFile;
 
@@ -1044,6 +1074,11 @@ public class RecipeOverviewCtrl {
         mainCtrl.showIngredientTypeOverview();
     }
 
+    @FXML
+    private void onHomeButton() {
+        mainCtrl.showHomeScreen();
+    }
+
     // Recipe title row
 
     /**
@@ -1054,8 +1089,6 @@ public class RecipeOverviewCtrl {
     private void onEditRecipeButton() {
         changeViewEditMode(true);
         recipeTitleField.setText(recipeTitleLabel.getText());
-        int servings = Integer.parseInt(recipeServingsLabel.getText().split(" ")[3]);
-        if (servings != 0) recipeServingsField.setText(String.valueOf(servings));
     }
 
     /**
@@ -1078,19 +1111,12 @@ public class RecipeOverviewCtrl {
             System.out.println("The recipe needs a name");
             return;
         }
-        int servings;
-        try {
-            servings = Integer.parseInt(recipeServingsField.getText());
-            if (servings <= 0) throw new NumberFormatException();
-        } catch (NumberFormatException e) {
-            System.out.println("The number of servings must be a positive integer");
-            return;
-        }
+
         int index = recipeListView.getSelectionModel().getSelectedIndex();
         Recipe recipe = recipeListView.getItems().get(index);
 
         recipe.name = recipeTitleField.getText();
-        recipe.servings = servings;
+        recipe.servings = Integer.parseInt(servingsLabel.getText());
         recipe.ingredients = ingredientListView.getItems().stream().toList();
         recipeUtils.normalizeIngredients(recipe.ingredients);
         recipeUtils.commitLocalIngredientTypes(recipe, server);
@@ -1104,6 +1130,42 @@ public class RecipeOverviewCtrl {
         changeViewEditMode(false);
     }
 
+    // Servings section
+
+    @FXML
+    private void onEditServingsButton() {
+        editServingsField.setText(servingsLabel.getText());
+        changeServingsViewEditMode(true);
+    }
+
+    @FXML
+    private void onCancelEditServingsButton() {
+        changeServingsViewEditMode(false);
+    }
+
+    @FXML
+    private void onDoneEditServingsButton() {
+        if (editServingsField.getText().isBlank()) {
+            System.out.println("Enter a valid amount.");
+            return;
+        }
+        if (Integer.parseInt(editServingsField.getText()) <= 0) {
+            System.out.println("The amount of servings needs to " +
+                    "be a positive integer.");
+            return;
+        }
+
+        try {
+            Integer.parseInt(editServingsField.getText());
+            servingsLabel.setText(editServingsField.getText());
+        } catch (NumberFormatException e) {
+            System.out.println("Enter a valid number.");
+            return;
+        }
+
+        changeServingsViewEditMode(false);
+    }
+
     // Ingredient edit section
 
     /**
@@ -1112,7 +1174,7 @@ public class RecipeOverviewCtrl {
      * this only affects the recipe if the user presses 'Done' later
      */
     @FXML
-    private void onRemoveIngredientButton() {
+    private void onRemoveIngredientButton() throws JsonProcessingException {
         if (ingredientListView.getItems().isEmpty()) {
             System.out.println("There is no ingredient to remove.");
             return;
@@ -1121,8 +1183,10 @@ public class RecipeOverviewCtrl {
             System.out.println("There is no ingredient selected.");
             return;
         }
-        int index = ingredientListView.getSelectionModel().getSelectedIndex();
-        ingredientListView.getItems().remove(index);
+        Recipe recipe = recipeListView.getSelectionModel().getSelectedItem();
+        Ingredient ingredient = ingredientListView.getSelectionModel().getSelectedItem();
+        recipe.ingredients.remove(ingredient);
+        server.updateRecipe(recipe.id, recipe);
     }
 
     /**
@@ -1399,30 +1463,7 @@ public class RecipeOverviewCtrl {
      */
     @FXML
     private void onShoppingListButton() {
-        Parent root;
-        try {
-
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("ShoppingList.fxml"));
-            loader.setControllerFactory(type -> {
-                if (type == ShoppingListCtrl.class) {
-                    return new ShoppingListCtrl(server, user);
-                } else {
-                    throw new RuntimeException();
-                }
-            });
-
-            root = loader.load();
-        } catch (Exception e) {
-            System.out.println("Error loading ShoppingList.fxml");
-            return;
-        }
-
-        Stage stage = new Stage();
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.setTitle("Shopping List");
-        stage.initModality(Modality.APPLICATION_MODAL); //forbids to close the parent window before this one
-        stage.show();
+        mainCtrl.showShoppingList(true);
     }
 
     /**
@@ -1438,8 +1479,8 @@ public class RecipeOverviewCtrl {
             user.addFavouriteRecipe(recipe);
         }
         user.saveUser();
-        starRecipeButton.setText(user.isFavouriteRecipe(recipe) ? FULL_STAR : EMPTY_STAR);
         recipeListView.refresh();
+        onRefresh();
     }
 
     /**

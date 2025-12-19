@@ -9,6 +9,7 @@ import com.google.inject.Inject;
 import commons.Ingredient;
 import commons.IngredientType;
 import commons.Nutrition;
+import commons.Recipe;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -43,6 +44,9 @@ public class IngredientTypeOverviewCtrl {
 
     @FXML
     private Button toggleOverviewButton;
+
+    @FXML
+    private Button homeButton;
 
     // Ingredient title row
 
@@ -169,6 +173,9 @@ public class IngredientTypeOverviewCtrl {
         // or add a new one
         addIngredientTypeButton.setVisible(!value);
         removeIngredientTypeButton.setVisible(!value);
+
+        toggleOverviewButton.setVisible(!value);
+        homeButton.setVisible(!value);
     }
 
     /**
@@ -226,7 +233,26 @@ public class IngredientTypeOverviewCtrl {
         nameLabel.setText(ingredientType.name);
         if (ingredientType.density != null) {
             densityLabel.setText(String.valueOf(ingredientType.density));
+        } else {
+            densityLabel.setText("-");
         }
+
+        int usedInRecipes = 0;
+        for (Recipe recipe : server.getRecipes()) {
+            boolean ok = false;
+            for (Ingredient ingredient : recipe.ingredients) {
+                if (ingredient.ingredientType.id == ingredientType.id) {
+                    ok = true;
+                    break;
+                }
+            }
+            if (ok) {
+                usedInRecipes++;
+            }
+        }
+        usedInRecipesLabel.setText("This ingredient type is used in "
+                + usedInRecipes + " recipe" + (usedInRecipes == 1 ? "" : "s"));
+
         kcalLabel.setText(String.valueOf(recipeUtils
                 .getCaloriesPer100g(ingredientType)));
 
@@ -246,13 +272,6 @@ public class IngredientTypeOverviewCtrl {
         if (ingredientType.nutrition.carbs != null) {
             carbsLabel.setText(String.valueOf(ingredientType.nutrition.carbs) + "g");
         }
-
-        int usedInRecipes = 0;
-        if (ingredientType.ingredients != null) {
-            usedInRecipes = ingredientType.ingredients.size();
-        }
-        usedInRecipesLabel.setText("This ingredient type is used in "
-        + usedInRecipes + " recipe" + (usedInRecipes == 1 ? "" : "s"));
     }
 
     /**
@@ -357,6 +376,11 @@ public class IngredientTypeOverviewCtrl {
         mainCtrl.showRecipeOverview();
     }
 
+    @FXML
+    private void onHomeButton() {
+        mainCtrl.showHomeScreen();
+    }
+
     // Ingredient title row
 
     /**
@@ -394,7 +418,7 @@ public class IngredientTypeOverviewCtrl {
         ingredientType.name = nameLabel.getText();
 
         String densityText = densityLabel.getText();
-        if (densityText.isBlank()) {
+        if (densityText.isBlank() || densityText.equals("-")) {
             ingredientType.density = null;
         } else {
             ingredientType.density = Double.parseDouble(densityText);
@@ -463,7 +487,7 @@ public class IngredientTypeOverviewCtrl {
      */
     @FXML
     private void onDoneEditDetailsButton() {
-        if (editNameField.getText().isEmpty()) {
+        if (editNameField.getText().isBlank()) {
             System.out.println("The ingredient type needs a name.");
             return;
         }
