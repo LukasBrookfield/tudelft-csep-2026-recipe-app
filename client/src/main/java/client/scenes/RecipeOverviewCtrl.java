@@ -425,13 +425,13 @@ public class RecipeOverviewCtrl {
     private void updateNutritionLabels(Recipe recipe) {
         if (recipe == null) {
             System.out.println("[nutrition] recipe is null");
-            recipeKcalPer100gLabel.setText("Kcal per 100g: -");
+            recipeKcalPer100gLabel.setText("-");
             return;
         }
 
         long requestedId = recipe.id;
         System.out.println("[nutrition] requesting for recipe id =" + requestedId);
-        recipeKcalPer100gLabel.setText("Kcal per 100g: ...");
+        recipeKcalPer100gLabel.setText("...");
 
         new Thread(() -> {  // Start a new thread because the UI thread would freeze due to the server call being slow
             try {
@@ -448,16 +448,16 @@ public class RecipeOverviewCtrl {
                     if (current != null && current.id == requestedId) return;
 
                     if (n.totalGrams() <= 0) {
-                        recipeKcalPer100gLabel.setText("Kcal per 100g: -");
+                        recipeKcalPer100gLabel.setText("-");
                     } else {
-                        recipeKcalPer100gLabel.setText("Kcal per 100g: " + Math.round(n.kcalPer100g()));
+                        recipeKcalPer100gLabel.setText(String.valueOf(Math.round(n.kcalPer100g())));
                     }
                 });
             } catch (Exception e) {
                 System.out.println("[nutrition] ERROR while loading nutrition:");
                 e.printStackTrace();
                 Platform.runLater(() -> {
-                    recipeKcalPer100gLabel.setText("Kcal per 100g: -");
+                    recipeKcalPer100gLabel.setText("-");
                 });
             }
 
