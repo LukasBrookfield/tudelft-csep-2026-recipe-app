@@ -106,9 +106,11 @@ public class ServerUtils {
     }
 
     public RecipeNutrition getRecipeNutrition(long id) {
+        var target = client.target(SERVER).path("api/recipes/" + id + "/nutrition"); // Append this path to the base URL
+
+        System.out.println("[client] GET " + target.getUri());
         try{
             return client.target(SERVER)    // Start building a request aimed at 'SERVER'
-                    .path("api/recipes/" + id + "/nutrition")   // Append this path to the base URL
                     .request(new String[]{"application/json"})  // We want JSON back
                     .get(RecipeNutrition.class);    // gets info in JSON and turns into RecipeNutrition object
         } catch (ProcessingException e) {
