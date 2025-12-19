@@ -58,6 +58,7 @@ public class User {
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString (this, MULTI_LINE_STYLE);
+        return String.format("User[\n  favouriteRecipes=%s\n  shoppingList=%s\n]",
+                favouriteRecipes, shoppingList);
     }
 }

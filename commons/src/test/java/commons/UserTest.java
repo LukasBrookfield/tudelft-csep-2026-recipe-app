@@ -86,10 +86,10 @@ class UserTest {
     // We don't technically need this toString() method, and we're also not using it, so...
     @Test
     void testToString() {
-//        assertEquals("commons.User@3ba9ad43[\n" +
-//                "  favouriteRecipes=[123, 456]\n" +
-//                "  shoppingList=[1 tablespoon of A, 1 tablespoon of B]\n" +
-//                "]", testUser.toString());
+        assertEquals("User[\n" +
+                "  favouriteRecipes=[123, 456]\n" +
+                "  shoppingList=[1 tablespoon of A, 1 tablespoon of B]\n" +
+                "]", testUser.toString());
     }
 
 
