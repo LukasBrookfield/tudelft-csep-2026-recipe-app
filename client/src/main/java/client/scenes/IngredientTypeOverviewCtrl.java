@@ -228,7 +228,7 @@ public class IngredientTypeOverviewCtrl {
             densityLabel.setText(String.valueOf(ingredientType.density));
         }
         kcalLabel.setText(String.valueOf(recipeUtils
-                .getCaloriesPer100g(ingredientType)) + "g");
+                .getCaloriesPer100g(ingredientType)));
 
         proteinLabel.setText("-");
         fatLabel.setText("-");

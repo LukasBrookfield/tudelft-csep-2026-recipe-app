@@ -138,17 +138,25 @@
                            </VBox.margin>
                                 </HBox>
                                 <Separator fx:id="mainSeparator" prefWidth="200.0" />
-                        <StackPane prefHeight="150.0" prefWidth="267.0">
+                        <HBox prefHeight="100.0" prefWidth="200.0">
                            <children>
-                              <TextField fx:id="recipeServingsField" prefHeight="25.0" prefWidth="297.0" promptText="Enter number of servings" />
-                              <Label fx:id="recipeServingsLabel" text="Number of servings: 1" StackPane.alignment="CENTER_LEFT" />
-                              <HBox prefHeight="100.0" prefWidth="200.0" />
+                              <StackPane prefHeight="25.0" prefWidth="289.0">
+                                 <children>
+                                    <TextField fx:id="recipeServingsField" prefHeight="25.0" prefWidth="304.0" promptText="Enter number of servings" />
+                                    <Label fx:id="recipeServingsLabel" text="Number of servings: 1" StackPane.alignment="CENTER_LEFT" />
+                                 </children>
+                              </StackPane>
+                              <Label fx:id="recipeKcalPer100gLabel" prefHeight="25.0" prefWidth="101.0" text="Kcal per 100g: -">
+                                 <HBox.margin>
+                                    <Insets left="5.0" />
+                                 </HBox.margin>
+                              </Label>
                            </children>
-                        </StackPane>
+                        </HBox>
                                 <Label fx:id="ingredientsHeaderLabel" text="Ingredients">
                                     <font>
                                         <Font name="System Bold" size="13.0" />
-                                    </font>w
+                                    </font>
                                 </Label>
                                 <ListView fx:id="ingredientListView" prefHeight="190.0" prefWidth="395.0" />
                                 <HBox alignment="CENTER_LEFT" prefHeight="0.0" prefWidth="395.0" spacing="5.0">
@@ -242,7 +250,6 @@
                                                     <Button fx:id="editStepButton" mnemonicParsing="false" onAction="#onEditStepButton" prefHeight="25.0" prefWidth="28.0" text="✎" />
                                           <Button fx:id="moveStepUpButton" mnemonicParsing="false" onAction="#onMoveStepUpButton" prefHeight="25.0" prefWidth="6.0" text="↑" />
                                           <Button fx:id="moveStepDownButton" mnemonicParsing="false" onAction="#onMoveStepDownButton" prefHeight="25.0" prefWidth="6.0" text="↓" />
-                                          <Label fx:id="recipeKcalPer100gLabel" prefHeight="65.0" prefWidth="83.0" text="Kcal per 100g: -" />
                                        </children>
                                        <StackPane.margin>
                                           <Insets />
