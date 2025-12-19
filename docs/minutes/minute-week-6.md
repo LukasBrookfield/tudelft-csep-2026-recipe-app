@@ -14,7 +14,7 @@
   * **Teammate 4:** Completed all his issues including web sockets for auto-synchronization of database changes, normalization for units e.g. 1000g = 1kg
   * **Lukas:** Completed all his issues including added way to favourite recipes on frontend and added tests for user config
   * **Teammate 2:** Completed some of his issues including cloning recipes, home scene and UI bug fixes. Didn't do his issue for testing for recipe/ingredient overview
-  * **Teammate 1:** Completed all his Basic shopping list, testing shopping list with fake server hasn't tested everything
+  * **Teammate 1:** Completed all his issues including a basic shopping list and some basic tests for the shopping list
   * **Teammate 3:** Hasn't contributed as of Thursday but will do his issues before Friday midnight
   * **Teammate 5:** Hasn't contributed as of Thursday but will do his issues before Friday midnight
 ### Discuss the action list of last week
@@ -44,14 +44,14 @@
 ## Talking Points: (est. 13-17 min) - Actual duration: 22 min
 ### Warnings and client-side validation for ingredient amount:
   * Teammate 4: There should be a warning when an invalid amount is entered on the frontend, he has created an issue for this
-  * Teammate 5: There should be a warning when shopping list ingredient doesn't exist in database
+  * Teammate 5: There should be a warning when a shopping list ingredient doesn't exist in database
   * Teammate 1: There should be a warning if an ingredient type is added without density or nutritional values
   * Teammate 3: There should be an additional warning when nutritional values aren't added to an ingredient type, stating that the calories per 100g can't be calculated for that ingredient type
   * **Final decision:** New issues will be created regarding these warnings
 ### Data propagation via websockets for the shopping list and favourite recipes:
   * Teammate 4: When a new ingredient type is added in the ingredient/recipe overview or shopping list it should also be saved using web sockets (currently this is not happening)
-    * Everyone agrees this would be a good feature to have
-    * **Final decision:** Teammate 4 will implement this next week or at a later date
+  * Everyone agrees this would be a good feature to have
+  * **Final decision:** Teammate 4 will implement this next week or at a later date
 ### Does everybody agree with the current database structure:
   * Teammate 2: The structure is not bad, but the implementation of certain classes is wrong and causes bugs. He has changed it so that it works for now
   * Teammate 5: Ingredient could be a composite attribute of Recipe
@@ -63,14 +63,13 @@
   * Teammate 3: Thinks there should be discrete values at intervals e.g. 0.5x, 1x, 1.5x, etc.
   * Teammate 3: Has seen the design below online which he will try to emulate
   * ![img.png](img.png)
-  * Teammate 2: Thinks slider is a good option
   * **Final decision:** Teammate 3 will do this as part of his issues for the week, or will postpone it to next week depending on how much he can get done
 ### Should we start implementing the live language switch in week 7, and how are we going to do it:
   * Teammate 4: It will need a large amount of refactoring so we should start early 
-  * Teammate 3: Agrees that we should do it next week
-  * Final decision: Teammate 5 will start on this next week
+  * Teammate 3: Agreed that we should do it next week
+  * **Final decision:** Teammate 5 will start on this next week
   * Teammate 4: How are we going to store the languages and flags?
-  * TA: Adds that flags can't be stored as emojis on windows
+  * TA: Added that flags can't be stored as emojis on windows
   * Lukas and Teammate 4: Suggested to store them client-side as images
   * Teammate 4: Suggested making a hash map containing the language names with their image locations
   * **Final decision:** We should store the language icons as images on the client side
