@@ -236,7 +236,7 @@
                                  </children>
                               </HBox>
                            </children>
-                        </HBox>
+                        </StackPane>
                                 <Label fx:id="ingredientsHeaderLabel" text="Ingredients">
                                     <font>
                                         <Font name="System Bold" size="13.0" />
