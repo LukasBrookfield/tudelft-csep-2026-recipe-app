@@ -11,10 +11,18 @@ import commons.IngredientType;
 import commons.Nutrition;
 import commons.Recipe;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 public class IngredientTypeOverviewCtrl {
 
@@ -222,6 +230,25 @@ public class IngredientTypeOverviewCtrl {
     }
 
     /**
+     * Counts in how many recipes an ingredient type is used
+     * @param ingredientType the ingredient type to count for
+     * @return the amount of recipes the ingredient type is used in
+     */
+    private List<Recipe> getUsedInRecipes(IngredientType ingredientType) {
+        List<Recipe> res = new ArrayList<>();
+
+        for (Recipe recipe : server.getRecipes()) {
+            for (Ingredient ingredient : recipe.ingredients) {
+                if (ingredient.ingredientType.id == ingredientType.id) {
+                    res.add(recipe);
+                    break;
+                }
+            }
+        }
+        return res;
+    }
+
+    /**
      * Sets all labels based on which ingredient type is selected
      */
     private void setLabelsAndFields() {
@@ -239,19 +266,7 @@ public class IngredientTypeOverviewCtrl {
             densityLabel.setText("-");
         }
 
-        int usedInRecipes = 0;
-        for (Recipe recipe : server.getRecipes()) {
-            boolean ok = false;
-            for (Ingredient ingredient : recipe.ingredients) {
-                if (ingredient.ingredientType.id == ingredientType.id) {
-                    ok = true;
-                    break;
-                }
-            }
-            if (ok) {
-                usedInRecipes++;
-            }
-        }
+        int usedInRecipes = getUsedInRecipes(ingredientType).size();
         usedInRecipesLabel.setText("This ingredient type is used in "
                 + usedInRecipes + " recipe" + (usedInRecipes == 1 ? "" : "s"));
 
@@ -342,8 +357,57 @@ public class IngredientTypeOverviewCtrl {
     private void onRemoveIngredientTypeButton() {
         IngredientType ingredientType = ingredientTypeListView
                 .getSelectionModel().getSelectedItem();
-        server.deleteIngredientType(ingredientType.id);
-        onRefresh();
+
+        List<Recipe> usedInRecipes = getUsedInRecipes(ingredientType);
+
+        if (usedInRecipes.isEmpty()) {
+            server.deleteIngredientType(ingredientType.id);
+            onRefresh();
+            return;
+        }
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.initModality(Modality.APPLICATION_MODAL);
+        alert.setTitle("FoodPal - Warning");
+        alert.setHeaderText(null);
+
+        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+        stage.getIcons().add(new Image(Objects.requireNonNull(
+                getClass().getResourceAsStream("/FoodPalLogo.png"))));
+
+        Label content = new Label("This ingredient is used in " + usedInRecipes.size() + " " +
+                (usedInRecipes.size() == 1 ? "recipe" : "different recipes") + ". Removing " +
+                "it will remove it from the following recipe" + (usedInRecipes.size() == 1
+                ? ":" : "s:"));
+        content.setWrapText(true);
+        content.setMinHeight(50);
+
+        ListView<Recipe> recipeListView = new ListView<>(FXCollections.observableList(usedInRecipes));
+
+        VBox vbox = new VBox();
+        vbox.getChildren().addAll(content, recipeListView);
+
+        vbox.setPrefWidth(400);
+        vbox.setPrefHeight(200);
+        vbox.setSpacing(5);
+        alert.getDialogPane().setContent(vbox);
+
+        ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+        ButtonType okButton = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
+        alert.getDialogPane().getButtonTypes().setAll(cancelButton, okButton);
+
+        Optional<ButtonType> res = alert.showAndWait();
+
+        if (res.isPresent() && res.get() == okButton) {
+            for (Recipe recipe : usedInRecipes) {
+                if (recipe.ingredients.removeIf(ingredient ->
+                        ingredient.ingredientType.id == ingredientType.id)) {
+                    server.updateRecipe(recipe.id, recipe);
+                }
+            }
+            server.deleteIngredientType(ingredientType.id);
+            onRefresh();
+        }
     }
 
     /**
