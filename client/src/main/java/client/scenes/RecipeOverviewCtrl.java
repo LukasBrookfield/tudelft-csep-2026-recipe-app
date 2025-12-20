@@ -449,7 +449,8 @@ public class RecipeOverviewCtrl {
                     // Just check that the intended recipe is the one being selected
                     // (so we don't update the wrong recipe in the UI)
                     Recipe current = recipeListView.getSelectionModel().getSelectedItem();
-                    if (current != null && current.id == requestedId) return;
+
+                    if (current == null || current.id != requestedId) return;
 
                     if (n.totalGrams() <= 0) {
                         recipeKcalPer100gLabel.setText("-");
