@@ -26,6 +26,8 @@ public class IngredientTypeOverviewCtrl {
 
     private final MainCtrl mainCtrl;
 
+    boolean newIngredientType = false;
+
     // Left sidebar
 
     @FXML
@@ -361,6 +363,7 @@ public class IngredientTypeOverviewCtrl {
                 ingredientTypeListView.getItems().size() - 1
         );
 
+        newIngredientType = true;
         onEditIngredientTypeButton();
         nameLabel.setText("-");
         editDetailsButton.requestFocus();
@@ -398,8 +401,13 @@ public class IngredientTypeOverviewCtrl {
      */
     @FXML
     private void onCancelEditButton() {
+        if (newIngredientType) {
+            IngredientType ingredientType = ingredientTypeListView.getSelectionModel().getSelectedItem();
+            server.deleteIngredientType(ingredientType.id);
+        }
         onRefresh();
         changeViewEditMode(false);
+        newIngredientType = false;
     }
 
     /**
@@ -451,6 +459,7 @@ public class IngredientTypeOverviewCtrl {
 
         onRefresh();
         changeViewEditMode(false);
+        newIngredientType = false;
     }
 
     // Edit details section

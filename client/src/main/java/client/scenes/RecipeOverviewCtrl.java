@@ -64,6 +64,10 @@ public class RecipeOverviewCtrl {
     private FilteredList<Recipe> filteredRecipes;
     private SortedList<Recipe> sortedRecipes;
 
+    boolean newRecipe = false;
+    boolean newIngredient = false;
+    boolean newStep = false;
+
     // Root
 
     @FXML
@@ -867,6 +871,7 @@ public class RecipeOverviewCtrl {
                 recipeListView.getItems().size() - 1
         );
 
+        newRecipe = true;
         // Now immediately enter edit mode for this recipe
         onEditRecipeButton();
 
@@ -1097,8 +1102,13 @@ public class RecipeOverviewCtrl {
      */
     @FXML
     private void onCancelEditButton() {
+        if (newRecipe) {
+            Recipe recipe = recipeListView.getSelectionModel().getSelectedItem();
+            server.deleteRecipe(recipe.id);
+        }
         onRefresh();
         changeViewEditMode(false);
+        newRecipe = false;
     }
 
     /**
@@ -1128,6 +1138,7 @@ public class RecipeOverviewCtrl {
 
         onRefresh();
         changeViewEditMode(false);
+        newRecipe = false;
     }
 
     // Servings section
@@ -1204,6 +1215,7 @@ public class RecipeOverviewCtrl {
                 ingredientListView.getItems().size() - 1
         );
 
+        newIngredient = true;
         // Immediately open ingredient edit mode
         onEditIngredientButton();
 
@@ -1268,9 +1280,13 @@ public class RecipeOverviewCtrl {
      */
     @FXML
     private void onCancelEditIngredientButton() {
+        if (newIngredient) {
+            ingredientListView.getItems().removeLast();
+        }
         changeIngredientTypeViewEditMode(0);
         cancelEditButton.setVisible(true);
         doneEditButton.setVisible(true);
+        newIngredient = false;
     }
 
     /**
@@ -1364,6 +1380,7 @@ public class RecipeOverviewCtrl {
         changeIngredientTypeViewEditMode(0);
         cancelEditButton.setVisible(true);
         doneEditButton.setVisible(true);
+        newIngredient = false;
     }
 
     // Edit preparation step section
@@ -1397,6 +1414,7 @@ public class RecipeOverviewCtrl {
                 preparationStepListView.getItems().size() - 1
         );
 
+        newStep = true;
         // Immediately open step edit mode
         onEditStepButton();
 
@@ -1435,9 +1453,13 @@ public class RecipeOverviewCtrl {
      */
     @FXML
     private void onCancelEditStepButton() {
+        if (newStep) {
+            preparationStepListView.getItems().removeLast();
+        }
         changeStepViewEditMode(false);
         cancelEditButton.setVisible(true);
         doneEditButton.setVisible(true);
+        newStep = false;
     }
 
     /**
@@ -1455,6 +1477,7 @@ public class RecipeOverviewCtrl {
         changeStepViewEditMode(false);
         cancelEditButton.setVisible(true);
         doneEditButton.setVisible(true);
+        newStep = false;
     }
 
     /**
