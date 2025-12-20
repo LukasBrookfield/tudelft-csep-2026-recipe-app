@@ -367,7 +367,7 @@ public class IngredientTypeOverviewCtrl {
         }
 
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.initModality(Modality.APPLICATION_MODAL);
+        alert.initModality(Modality.APPLICATION_MODAL); // disables the main stage
         alert.setTitle("FoodPal - Warning");
         alert.setHeaderText(null);
 
@@ -386,7 +386,6 @@ public class IngredientTypeOverviewCtrl {
 
         VBox vbox = new VBox();
         vbox.getChildren().addAll(content, recipeListView);
-
         vbox.setPrefWidth(400);
         vbox.setPrefHeight(200);
         vbox.setSpacing(5);
@@ -523,6 +522,12 @@ public class IngredientTypeOverviewCtrl {
 
         onRefresh();
         changeViewEditMode(false);
+
+        // Update all recipes that use this ingredient type
+        for (Recipe recipe : getUsedInRecipes(ingredientType)) {
+            server.updateRecipe(recipe.id, recipe);
+        }
+
         newIngredientType = false;
     }
 
