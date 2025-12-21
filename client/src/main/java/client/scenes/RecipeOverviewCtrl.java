@@ -817,12 +817,20 @@ public class RecipeOverviewCtrl {
     @FXML
     private void onRemoveRecipe() throws JsonProcessingException {
         Recipe recipe = recipeListView.getSelectionModel().getSelectedItem();
-        if (recipe == null) return;
+        if (recipe == null) {
+            return;
+        }
         System.out.println(new ObjectMapper().writeValueAsString(recipe));
         server.deleteRecipe(recipe.id);
         allRecipes.remove(recipe);
-        if (user.isFavouriteRecipe(recipe)) user.removeFavouriteRecipe(recipe);
+        if (user.isFavouriteRecipe(recipe)) {
+            user.removeFavouriteRecipe(recipe);
+        }
         onRefresh();
+
+        // apply the search filter again, because the counter might
+        // need to be decreased by 1
+        applySearchFilter(recipeSearchField.getText());
     }
 
     /**
@@ -832,6 +840,11 @@ public class RecipeOverviewCtrl {
      */
     @FXML
     private void onAddRecipe() throws JsonProcessingException {
+        // reset the search query, otherwise 'new recipe' might not show, and it will break the app
+        recipeSearchField.clear();
+        applySearchFilter("");
+        onRefresh();
+
         addRecipeToServer(new Recipe("New recipe"));
     }
 
@@ -1140,6 +1153,10 @@ public class RecipeOverviewCtrl {
         onRefresh();
         changeViewEditMode(false);
         newRecipe = false;
+
+        // apply the search filter again, because the recipe might not
+        // match anymore after a name change
+        applySearchFilter(recipeSearchField.getText());
     }
 
     // Servings section
