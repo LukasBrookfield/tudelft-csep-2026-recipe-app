@@ -105,8 +105,11 @@ public class RecipeOverviewCtrl {
     private Tooltip starTooltip;
 
     @FXML
-    private Button downloadRecipeButton;
+    private Button addToShoppingListButton;
 
+    @FXML
+    private Button downloadRecipeButton;
+git 
     @FXML
     private Button printRecipeButton;
 
@@ -284,6 +287,7 @@ public class RecipeOverviewCtrl {
         recipeListView.setDisable(value);
 
         starRecipeButton.setVisible(!value);
+        addToShoppingListButton.setVisible(!value);
         downloadRecipeButton.setVisible(!value);
         printRecipeButton.setVisible(!value);
         toggleOverviewButton.setVisible(!value);
@@ -797,6 +801,7 @@ public class RecipeOverviewCtrl {
 
         boolean empty = recipeListView.getItems().isEmpty();
         mainSeparator.getParent().setVisible(!empty);
+        addToShoppingListButton.setVisible(!empty);
         downloadRecipeButton.setVisible(!empty);
         printRecipeButton.setVisible(!empty);
         starRecipeButton.setVisible(!empty);
@@ -1499,12 +1504,21 @@ public class RecipeOverviewCtrl {
     }
 
     /**
-     * On action method for the Bag button
-     * A new window with shopping list is opened
+     * On action method for the Shopping List button
+     * A new scene with shopping list is opened
      */
     @FXML
     private void onShoppingListButton() {
         mainCtrl.showShoppingList(true);
+    }
+
+    /**
+     * On action method for the Add to Shopping List button
+     * A new scene with AddToShoppingList overview is opened
+     */
+    @FXML
+    private void onAddToShoppingList() {
+        mainCtrl.showAddToShoppingList();
     }
 
     /**
