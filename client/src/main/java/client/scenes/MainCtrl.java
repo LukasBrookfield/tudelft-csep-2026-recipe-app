@@ -1,5 +1,6 @@
 package client.scenes;
 
+import commons.Recipe;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -83,9 +84,9 @@ public class MainCtrl {
         shoppingListCtrl.lastScene = currentScene;
     }
 
-    public void showAddToShoppingList() {
+    public void showAddToShoppingList(Recipe recipe) {
         primaryStage.setTitle("FoodPal - Add to Shopping List");
         primaryStage.setScene(addToShoppingListScene);
-        addToShoppingListCtrl.onRefresh();
+        addToShoppingListCtrl.setFields(recipe);
     }
 }

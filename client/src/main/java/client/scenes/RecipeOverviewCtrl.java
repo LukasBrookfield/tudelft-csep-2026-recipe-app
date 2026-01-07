@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.lowagie.text.Document;
@@ -109,7 +110,7 @@ public class RecipeOverviewCtrl {
 
     @FXML
     private Button downloadRecipeButton;
-git 
+
     @FXML
     private Button printRecipeButton;
 
@@ -1518,7 +1519,7 @@ git
      */
     @FXML
     private void onAddToShoppingList() {
-        mainCtrl.showAddToShoppingList();
+        mainCtrl.showAddToShoppingList(recipeListView.getSelectionModel().getSelectedItem());
     }
 
     /**
