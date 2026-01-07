@@ -47,7 +47,7 @@ public class Ingredient {
      * @return a copy of ingredient
      */
     public Ingredient copy() {
-        return new Ingredient(ingredientType, amount, unit, recipe);
+        return new Ingredient(ingredientType.copy(), amount, unit, recipe);
     }
 
     @Override
