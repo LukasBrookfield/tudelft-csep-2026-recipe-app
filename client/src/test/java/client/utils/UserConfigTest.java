@@ -15,6 +15,7 @@ public class UserConfigTest {
     private List<Long> favouriteRecipes;
     private User user;
     private UserStorage userStorage;
+    private Ingredient ingredient;
 
     @BeforeEach
     public void setUp() {
@@ -25,11 +26,12 @@ public class UserConfigTest {
             allRecipes.get(i).id = i + 1;
         }
         IngredientType t = new IngredientType("Potato", null, null, null);
-        shoppingList = List.of(
+        ingredient = new Ingredient(t, 1.0, Unit.TO_TASTE, null);
+        shoppingList = new ArrayList<>(List.of(
             new Ingredient(t, 1.0, Unit.G, allRecipes.get(0)),
             new Ingredient(t, 2.0, Unit.ML, allRecipes.get(1)),
             new Ingredient(t, 3.0, Unit.HANDFUL, allRecipes.get(2))
-        );
+        ));
         favouriteRecipes = new ArrayList<>(List.of(1L, 2L));
         user = new User(favouriteRecipes, shoppingList);
         userStorage = new TestUserStorage(user);
@@ -97,5 +99,13 @@ public class UserConfigTest {
         List<Ingredient> shoppingList = List.of();
         userConfig.setShoppingList(shoppingList);
         assertEquals(shoppingList, userConfig.getShoppingList());
+    }
+
+    @Test
+    public void addToShoppingListTest(){
+        int count = userConfig.getShoppingList().size();
+        userConfig.addShoppingListItem(ingredient);
+        assertEquals(count + 1, userConfig.getShoppingList().size());
+        assertEquals(ingredient, userConfig.getShoppingList().get(count));
     }
 }

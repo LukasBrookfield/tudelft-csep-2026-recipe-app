@@ -46,6 +46,17 @@ public class User {
         this.shoppingList = shoppingList;
     }
 
+    /**
+     * Adds an ingredient to shopping list
+     * @param ingredient The ingredient
+     */
+    public void addShoppingListItem(Ingredient ingredient){
+        if(shoppingList == null){
+            shoppingList = new ArrayList<>();
+        }
+        shoppingList.add(ingredient);
+    }
+
     @Override
     public boolean equals(Object obj) {
         return EqualsBuilder.reflectionEquals (this, obj);
