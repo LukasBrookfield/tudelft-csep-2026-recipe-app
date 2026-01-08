@@ -1142,10 +1142,10 @@ public class RecipeOverviewCtrl {
 
         recipe.name = recipeTitleField.getText();
         recipe.servings = Integer.parseInt(servingsLabel.getText());
-        recipe.ingredients = ingredientListView.getItems().stream().toList();
+        recipe.ingredients = new ArrayList<>(ingredientListView.getItems().stream().toList());
         recipeUtils.normalizeIngredients(recipe.ingredients);
         recipeUtils.commitLocalIngredientTypes(recipe, server);
-        recipe.steps = preparationStepListView.getItems().stream().toList();
+        recipe.steps = new ArrayList<>(preparationStepListView.getItems().stream().toList());
 
         System.out.println(new ObjectMapper().writeValueAsString(recipe));
 
