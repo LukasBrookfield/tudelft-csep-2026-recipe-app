@@ -86,7 +86,7 @@ public class ShoppingListCtrl {
             };
 
     @Inject
-    public ShoppingListCtrl(ServerUtils server,
+    public ShoppingListCtrl(ServerUtility server,
                             UserConfig user,
                             MainCtrl mainCtrl) {
         this.server = server;
