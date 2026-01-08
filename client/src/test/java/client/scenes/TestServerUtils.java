@@ -49,9 +49,7 @@ public class TestServerUtils implements ServerUtility {
     @Override
     public Recipe addRecipe(Recipe recipe) {
         if (recipe == null) return null;
-        if (recipe.id == 0) {
-            recipe.id = recipes.size() + 1;
-        }
+        recipe.id = recipes.size() + 1;
         recipes.add(recipe);
         return recipe;
     }
@@ -112,9 +110,7 @@ public class TestServerUtils implements ServerUtility {
     @Override
     public IngredientType addIngredientType(IngredientType ingredientType) {
         if (ingredientType == null) return null;
-        if (ingredientType.id == 0) {
-            ingredientType.id = recipes.size() + 1;
-        }
+        ingredientType.id = recipes.size() + 1;
         ingredientTypes.add(ingredientType);
         return ingredientType;
     }

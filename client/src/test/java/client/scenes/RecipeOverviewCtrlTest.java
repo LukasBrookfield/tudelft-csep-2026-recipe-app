@@ -5,11 +5,13 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import client.MyFXML;
 import client.utils.RecipeUtils;
 import client.utils.ServerUtility;
 import client.utils.UserConfig;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Injector;
 import commons.Ingredient;
 import commons.IngredientType;
@@ -181,7 +183,7 @@ public class RecipeOverviewCtrlTest {
 
     private void addStep(FxRobot robot, String step) {
         robot.clickOn(addStepButton);
-        robot.write("Test step");
+        robot.write(step);
         robot.clickOn(doneEditStepButton);
     }
 
@@ -358,5 +360,124 @@ public class RecipeOverviewCtrlTest {
 
         // check if ingredient has been removed from list view
         assertTrue(ingredientListView.getItems().isEmpty());
+    }
+
+    @Test
+    void editServingsButtonTest(FxRobot robot) {
+        addRecipe(robot, "Test recipe", 2);
+        robot.clickOn(editServingsButton);
+        robot.clickOn(editServingsField);
+        robot.eraseText(1);
+        robot.write("6");
+        robot.clickOn(doneEditServingsButton);
+
+        // check if servings have been edited
+        assertEquals("6", servingsLabel.getText());
+    }
+
+    @Test
+    void cancelEditServingsButtonTest(FxRobot robot) {
+        addRecipe(robot, "Test recipe", 2);
+        robot.clickOn(editServingsButton);
+        robot.clickOn(editServingsField);
+        robot.eraseText(1);
+        robot.write("6");
+        robot.clickOn(cancelEditServingsButton);
+
+        // check that servings haven't been changed
+        assertEquals("2", servingsLabel.getText());
+    }
+
+    @Test
+    void starRecipeButtonTest(FxRobot robot) {
+        addRecipe(robot, "Test recipe", 2);
+        robot.clickOn(doneEditButton);
+        robot.clickOn(starRecipeButton);
+
+        // check if recipe is now part of user's favourite recipes
+        assertTrue(user.isFavouriteRecipe(recipeListView.getSelectionModel().getSelectedItem()));
+
+        // now unstar recipe
+        robot.clickOn(starRecipeButton);
+
+        // check if recipe is now not a favourite
+        assertFalse(user.isFavouriteRecipe(recipeListView.getSelectionModel().getSelectedItem()));
+    }
+
+    @Test
+    void searchRecipesTest(FxRobot robot) {
+        addRecipe(robot, "abc 123", 2);
+        robot.clickOn(doneEditButton);
+        addRecipe(robot, "123abc456", 3);
+        robot.clickOn(doneEditButton);
+        addRecipe(robot, "ab1c", 2);
+        robot.clickOn(doneEditButton);
+        robot.clickOn(recipeSearchField);
+        robot.write("abc");
+
+        // check if the right recipes show up after searching
+        List<Recipe> recipes = recipeListView.getItems();
+        Recipe recipe1 = new Recipe("abc 123", new ArrayList<>(), new ArrayList<>(), 2);
+        assertTrue(recipes.contains(recipe1));
+        Recipe recipe2 = new Recipe("123abc456", new ArrayList<>(), new ArrayList<>(), 3);
+        assertTrue(recipes.contains(recipe2));
+        Recipe recipe3 = new Recipe("ab1c", new ArrayList<>(), new ArrayList<>(), 2);
+        assertFalse(recipes.contains(recipe3));
+    }
+
+    @Test
+    void sortRecipesTest(FxRobot robot) {
+        addRecipe(robot, "bbb", 3);
+        robot.clickOn(doneEditButton);
+        addRecipe(robot, "bbz", 2);
+        robot.clickOn(doneEditButton);
+        addRecipe(robot, "aaa", 2);
+        robot.clickOn(doneEditButton);
+        robot.interact(() -> sortChoiceBox.getSelectionModel().select("Name (A-Z)"));
+
+        // check if the recipes are in the right order (alphabetical order in this case)
+        List<Recipe> recipes = recipeListView.getItems();
+        Recipe recipe1 = new Recipe("aaa", new ArrayList<>(), new ArrayList<>(), 2);
+        assertEquals(recipe1, recipes.getFirst());
+        Recipe recipe2 = new Recipe("bbb", new ArrayList<>(), new ArrayList<>(), 3);
+        assertEquals(recipe2, recipes.get(1));
+        Recipe recipe3 = new Recipe("bbz", new ArrayList<>(), new ArrayList<>(), 2);
+        assertEquals(recipe3, recipes.get(2));
+    }
+
+    @Test
+    void filterFavouriteRecipesTest(FxRobot robot) {
+        addRecipe(robot, "Test recipe 1", 3);
+        robot.clickOn(doneEditButton);
+        robot.clickOn(starRecipeButton);
+        addRecipe(robot, "Test recipe 2", 5);
+        robot.clickOn(doneEditButton);
+        robot.interact(() -> favouriteRecipeFilterBox.getSelectionModel().select("Favourites"));
+
+        // check that the favourite recipes have been correctly filtered
+        List<Recipe> recipes = recipeListView.getItems();
+        Recipe recipe1 = new Recipe("Test recipe 1", new ArrayList<>(), new ArrayList<>(), 3);
+        assertTrue(recipes.contains(recipe1));
+        Recipe recipe2 = new Recipe("Test recipe 2", new ArrayList<>(), new ArrayList<>(), 5);
+        assertFalse(recipes.contains(recipe2));
+    }
+
+    @Test
+    void moveStepsTest(FxRobot robot) {
+        addRecipe(robot, "Test recipe", 2);
+        addStep(robot, "Step 1");
+        addStep(robot, "Step 2");
+
+        // test moving step up
+        robot.clickOn(moveStepUpButton);
+        List<String> steps = preparationStepListView.getItems();
+        assertEquals("Step 2", steps.getFirst());
+        assertEquals("Step 1", steps.getLast());
+
+        // test moving step down
+        robot.clickOn(moveStepDownButton);
+        steps = preparationStepListView.getItems();
+        assertEquals("Step 1", steps.getFirst());
+        assertEquals("Step 2", steps.getLast());
     }
 }

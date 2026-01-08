@@ -1213,10 +1213,8 @@ public class RecipeOverviewCtrl {
             System.out.println("There is no ingredient selected.");
             return;
         }
-        Recipe recipe = recipeListView.getSelectionModel().getSelectedItem();
         Ingredient ingredient = ingredientListView.getSelectionModel().getSelectedItem();
-        recipe.ingredients.remove(ingredient);
-        server.updateRecipe(recipe.id, recipe);
+        ingredientListView.getItems().remove(ingredient);
     }
 
     /**
