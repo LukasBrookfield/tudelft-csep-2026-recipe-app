@@ -4,7 +4,6 @@ import commons.Ingredient;
 import commons.IngredientType;
 import commons.Recipe;
 import commons.RecipeNutrition;
-
 import java.util.List;
 import java.util.function.Consumer;
 

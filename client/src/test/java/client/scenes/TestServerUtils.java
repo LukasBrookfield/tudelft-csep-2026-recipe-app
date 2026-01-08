@@ -1,7 +1,6 @@
 package client.scenes;
 
 import client.utils.ServerUtility;
-import client.utils.ServerUtils;
 import commons.Ingredient;
 import commons.IngredientType;
 import commons.Recipe;
