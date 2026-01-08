@@ -1102,6 +1102,7 @@ public class RecipeOverviewCtrl {
                 (obs, oldValue, newValue) -> {
                     mainCtrl.showScene(sceneBox.getItems().indexOf(newValue));
                 });
+        activateButtons(EditMode.NO_EDIT);
     }
 
     private void updateNutriScoreLabel(RecipeNutrition recipeNutrition) {
@@ -1114,7 +1115,6 @@ public class RecipeOverviewCtrl {
         String colour = COLOURS.get(recipeNutrition.nutriScore());
         nutriScoreLabel.setTextFill(Color.web(colour));
         nutriScoreLabel.setFont(javafx.scene.text.Font.font("Arial", FontWeight.BOLD, 14));
-
     }
 
     private void initializeScaleFactorUI() {
@@ -1573,7 +1573,7 @@ public class RecipeOverviewCtrl {
         Recipe clonedRecipe = new Recipe(recipe.name + " [clone]");
         clonedRecipe.servings = recipe.servings;
         clonedRecipe.language = recipe.language;
-        for (Ingredient ingredient :  recipe.ingredients) {
+        for (Ingredient ingredient : recipe.ingredients) {
             Ingredient clonedIngredient = new Ingredient(ingredient.ingredientType,
                     ingredient.amount, ingredient.unit, null);
             clonedRecipe.ingredients.add(clonedIngredient);
@@ -2051,6 +2051,9 @@ public class RecipeOverviewCtrl {
         cancelEditButton.setVisible(true);
         doneEditButton.setVisible(true);
         newIngredient = false;
+
+        // activate button behaviour
+        activateButtons(EditMode.NO_EDIT);
     }
 
     /**
@@ -2099,6 +2102,9 @@ public class RecipeOverviewCtrl {
         if (editUnitBox.getValue().isEmpty()) {
             editUnitBox.getSelectionModel().select(0);
         }
+
+        // activate button behaviour
+        activateButtons(EditMode.EDIT_INGREDIENT_2);
     }
 
     /**
@@ -2189,6 +2195,9 @@ public class RecipeOverviewCtrl {
         cancelEditButton.setVisible(true);
         doneEditButton.setVisible(true);
         newIngredient = false;
+
+        // activate button behaviour
+        activateButtons(EditMode.NO_EDIT);
     }
 
     // Edit preparation step section
@@ -2251,6 +2260,8 @@ public class RecipeOverviewCtrl {
 
         // Force focus into the step field
         editStepField.requestFocus();
+
+        activateButtons(EditMode.EDIT_PREPARATION);
     }
 
     /**
@@ -2265,6 +2276,8 @@ public class RecipeOverviewCtrl {
         cancelEditButton.setVisible(true);
         doneEditButton.setVisible(true);
         newStep = false;
+
+        activateButtons(EditMode.NO_EDIT);
     }
 
     /**
@@ -2325,6 +2338,7 @@ public class RecipeOverviewCtrl {
 
     /**
      * Show alert if some of user's favourite recipes have been deleted
+     *
      * @param n Number of favourite recipes deleted
      */
     private void showDeletedFavouritesAlert(int n) {
@@ -2342,5 +2356,71 @@ public class RecipeOverviewCtrl {
 //        alert.setContentText(n + " of your favourite recipes have been deleted by others :(");
         alert.setContentText(MessageFormat.format(b.getString("recipe.alert.favDeleted.content"), n));
         alert.show();
+    }
+
+
+    // possible ingredient edit states
+    private enum EditMode {
+        NO_EDIT,
+        EDIT_INGREDIENT_1,
+        EDIT_INGREDIENT_2,
+        EDIT_PREPARATION,
+    }
+
+    private void activateButtons(EditMode mode) {
+        switch (mode) {
+            case NO_EDIT -> {
+                // exit form
+                cancelEditButton.setCancelButton(true);
+                // edit ingredient - first step
+                cancelEditIngredientButton.setCancelButton(false);
+                nextEditIngredientButton.setDefaultButton(false);
+                // edit preparation
+                cancelEditStepButton.setCancelButton(false);
+                doneEditStepButton.setDefaultButton(false);
+                // edit ingredient - second step
+                doneEditIngredientButton.setCancelButton(false);
+                onBackEditIngredientButton.setDefaultButton(false);
+            }
+            case EDIT_INGREDIENT_1 -> {
+                // exit form
+                cancelEditButton.setCancelButton(false);
+                // edit ingredient - first step
+                cancelEditIngredientButton.setCancelButton(true);
+                nextEditIngredientButton.setDefaultButton(true);
+                // edit preparation
+                cancelEditStepButton.setCancelButton(false);
+                doneEditStepButton.setDefaultButton(false);
+                // edit ingredient - second step
+                doneEditIngredientButton.setCancelButton(false);
+                onBackEditIngredientButton.setDefaultButton(false);
+            }
+            case EDIT_INGREDIENT_2 -> {
+                // exit form
+                cancelEditButton.setCancelButton(false);
+                // edit ingredient - first step
+                cancelEditIngredientButton.setCancelButton(false);
+                nextEditIngredientButton.setDefaultButton(false);
+                // edit preparation
+                cancelEditStepButton.setCancelButton(false);
+                doneEditStepButton.setDefaultButton(false);
+                // edit ingredient - second step
+                doneEditIngredientButton.setCancelButton(true);
+                onBackEditIngredientButton.setDefaultButton(true);
+            }
+            case EDIT_PREPARATION -> {
+                // exit form
+                cancelEditButton.setCancelButton(false);
+                // edit ingredient - first step
+                cancelEditIngredientButton.setCancelButton(false);
+                nextEditIngredientButton.setDefaultButton(false);
+                // edit preparation
+                cancelEditStepButton.setCancelButton(true);
+                doneEditStepButton.setDefaultButton(true);
+                // edit ingredient - second step
+                doneEditIngredientButton.setCancelButton(false);
+                onBackEditIngredientButton.setDefaultButton(false);
+            }
+        }
     }
 }
