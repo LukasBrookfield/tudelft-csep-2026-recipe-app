@@ -68,6 +68,9 @@ public class ShoppingListCtrl {
     private Button cancelEditIngredientButton;
 
     @FXML
+    private Button backEditIngredientButton;
+
+    @FXML
     private Button doneEditIngredientButton;
 
     @FXML
@@ -87,9 +90,6 @@ public class ShoppingListCtrl {
 
     @FXML
     private Label shoppingListHeaderLabel;
-
-    @FXML
-    private Button backEditIngredientButton;
 
     @FXML
     private Button printButton;
@@ -349,6 +349,9 @@ public class ShoppingListCtrl {
             String n2 = obj2.name == null ? "" : obj2.name.toLowerCase();
             return n1.compareTo(n2);
         });
+
+        // activate buttons
+        activateButtons(EditMode.NO_EDIT);
     }
 
     /**
@@ -474,6 +477,9 @@ public class ShoppingListCtrl {
         }
 
         changeIngredientViewEditMode(true);
+
+        // activate buttons
+        activateButtons(EditMode.EDIT_1);
     }
 
     /**
@@ -488,6 +494,9 @@ public class ShoppingListCtrl {
         changeIngredientViewEditMode(false);
         editIngredientTypeBox.hide();
         onRefresh();
+
+        // change button behaviour for edit state
+        activateButtons(EditMode.NO_EDIT);
     }
 
     /**
@@ -526,6 +535,9 @@ public class ShoppingListCtrl {
         user.saveUser();
         applySort();
         onRefresh();
+
+        // change button behaviour for edit state
+        activateButtons(EditMode.NO_EDIT);
     }
 
     /**
@@ -555,6 +567,9 @@ public class ShoppingListCtrl {
         if (editUnitBox.getValue() == null || editUnitBox.getValue().isEmpty()) {
             editUnitBox.getSelectionModel().select(0);
         }
+
+        // change button behaviour
+        activateButtons(EditMode.EDIT_2);
     }
 
     /**
@@ -565,5 +580,45 @@ public class ShoppingListCtrl {
     @FXML
     private void onBackEditIngredientButton() {
         changeIngredientTypeViewEditMode(false);
+
+        // change button behaviour
+        activateButtons(EditMode.EDIT_1);
+    }
+
+    // possible ingredient edit states
+    private enum EditMode {
+        NO_EDIT,
+        EDIT_1,
+        EDIT_2,
+    }
+
+    private void activateButtons(EditMode mode) {
+        switch (mode) {
+            case NO_EDIT -> {
+                // edit ingredient - first step
+                cancelEditIngredientButton.setCancelButton(false);
+                nextButton.setDefaultButton(false);
+                // edit ingredient - second step
+                backEditIngredientButton.setCancelButton(false);
+                doneEditIngredientButton.setDefaultButton(false);
+            }
+            case EDIT_1 -> {
+                // edit ingredient - first step
+                cancelEditIngredientButton.setCancelButton(true);
+                nextButton.setDefaultButton(true);
+                // edit ingredient - second step
+                backEditIngredientButton.setCancelButton(false);
+                doneEditIngredientButton.setDefaultButton(false);
+            }
+            case EDIT_2 -> {
+                // edit ingredient - first step
+                cancelEditIngredientButton.setCancelButton(false);
+                nextButton.setDefaultButton(false);
+                // edit ingredient - second step
+                backEditIngredientButton.setCancelButton(true);
+                doneEditIngredientButton.setDefaultButton(true);
+            }
+        }
     }
 }
+
