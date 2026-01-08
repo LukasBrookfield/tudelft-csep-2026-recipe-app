@@ -1,6 +1,7 @@
 package client.scenes;
 
 import client.utils.RecipeUtils;
+import client.utils.ServerUtility;
 import client.utils.UserConfig;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -51,7 +52,7 @@ public class RecipeOverviewCtrl {
     private static final String EMPTY_STAR = "☆";
     private static final String FULL_STAR = "★";
 
-    private final ServerUtils server;
+    private final ServerUtility server;
 
     private final RecipeUtils recipeUtils;
 
@@ -242,7 +243,7 @@ public class RecipeOverviewCtrl {
     // General
 
     @Inject
-    public RecipeOverviewCtrl(ServerUtils server,
+    public RecipeOverviewCtrl(ServerUtility server,
                               RecipeUtils recipeUtils,
                               UserConfig user,
                               MainCtrl mainCtrl) {
