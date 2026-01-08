@@ -1,6 +1,7 @@
 package client.scenes;
 
 import client.utils.ServerUtils;
+import client.utils.ShoppingListService;
 import client.utils.UserConfig;
 import com.google.inject.Inject;
 import commons.Ingredient;
@@ -121,8 +122,7 @@ public class AddToShoppingListCtrl {
     public void setFields(Recipe recipe){
         this.recipe = recipe;
         if(recipe != null && recipe.ingredients != null){
-            ingredientListView.getItems().addAll(recipe.ingredients.stream().
-                    map(Ingredient::copy).toList());
+            ShoppingListService.addIngredientsToListView(recipe, ingredientListView.getItems());
         }
         if(recipe != null && recipe.name != null){
             label.setText("Add to Shopping List - " + recipe.name);
@@ -266,19 +266,9 @@ public class AddToShoppingListCtrl {
      */
     @FXML
     private void onDoneEditIngredientButton() {
-        if(editIngredientNameField.getText().isEmpty()){
-            System.out.println("A name is required.");
-            return;
-        }
-
-        if (!editUnitBox.getValue().equals("TO_TASTE")
-                && editIngredientAmountField.getText().isEmpty()) {
-            System.out.println("This unit needs an amount.");
-            return;
-        }
-        if (editUnitBox.getValue().equals("TO_TASTE")
-                && !editIngredientAmountField.getText().isEmpty()) {
-            System.out.println("This unit cannot have an amount.");
+        if(!ShoppingListService.ingredientValidation(editIngredientNameField.getText(),
+                editIngredientAmountField.getText(),
+                editUnitBox.getValue())){
             return;
         }
 
@@ -297,17 +287,11 @@ public class AddToShoppingListCtrl {
             ingredient.ingredientType = editIngredientChoiceBox.getValue();
         }
 
-        ingredient.ingredientType.name = editIngredientNameField.getText();
-        if (!editIngredientAmountField.getText().isEmpty()) {
-            ingredient.amount = Double.parseDouble(editIngredientAmountField.getText());
-        } else {
-            ingredient.amount = null;
-        }
-        if (!editUnitBox.getValue().isEmpty()) {
-            ingredient.unit = Unit.valueOf(editUnitBox.getValue());
-        } else {
-            ingredient.unit = null;
-        }
+        ShoppingListService.applyEditsToIngredient(ingredient,
+                editIngredientNameField.getText(),
+                editIngredientAmountField.getText(),
+                editUnitBox.getValue());
+
         ingredientListView.getItems().set(index, ingredient);
 
         changeIngredientViewEditMode(false);
@@ -364,11 +348,7 @@ public class AddToShoppingListCtrl {
      */
     @FXML
     private void onConfirmationButton(){
-        ingredientListView.getItems().forEach(ingredient -> {
-            ingredient.ingredientType.name = ingredient.ingredientType.name + " (" + recipe.name + ")";
-            user.addShoppingListItem(ingredient);
-        });
-        user.saveUser();
+        ShoppingListService.confirmAddingIngredients(ingredientListView.getItems(), recipe, user);
         onExitButton();
     }
 }

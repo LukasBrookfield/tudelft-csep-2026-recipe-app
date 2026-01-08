@@ -1,6 +1,7 @@
 package client.scenes;
 
 import client.utils.ServerUtils;
+import client.utils.ShoppingListService;
 import client.utils.UserConfig;
 import com.google.inject.Inject;
 import commons.Ingredient;
@@ -252,19 +253,9 @@ public class ShoppingListCtrl {
      */
     @FXML
     private void onDoneEditIngredientButton() {
-        if(editIngredientNameField.getText().isEmpty()){
-            System.out.println("A name is required.");
-            return;
-        }
-
-        if (!editUnitBox.getValue().equals("TO_TASTE")
-                && editIngredientAmountField.getText().isEmpty()) {
-            System.out.println("This unit needs an amount.");
-            return;
-        }
-        if (editUnitBox.getValue().equals("TO_TASTE")
-                && !editIngredientAmountField.getText().isEmpty()) {
-            System.out.println("This unit cannot have an amount.");
+        if(!ShoppingListService.ingredientValidation(editIngredientNameField.getText(),
+                editIngredientAmountField.getText(),
+                editUnitBox.getValue())){
             return;
         }
 
@@ -281,17 +272,11 @@ public class ShoppingListCtrl {
             ingredient.ingredientType = editIngredientChoiceBox.getValue();
         }
 
-        ingredient.ingredientType.name = editIngredientNameField.getText();
-        if (!editIngredientAmountField.getText().isEmpty()) {
-            ingredient.amount = Double.parseDouble(editIngredientAmountField.getText());
-        } else {
-            ingredient.amount = null;
-        }
-        if (!editUnitBox.getValue().isEmpty()) {
-            ingredient.unit = Unit.valueOf(editUnitBox.getValue());
-        } else {
-            ingredient.unit = null;
-        }
+        ShoppingListService.applyEditsToIngredient(ingredient,
+                editIngredientNameField.getText(),
+                editIngredientAmountField.getText(),
+                editUnitBox.getValue());
+
         ingredientListView.getItems().set(index, ingredient);
 
         changeIngredientViewEditMode(false);
@@ -333,7 +318,7 @@ public class ShoppingListCtrl {
 
     @FXML
     private void onExitButton() {
-        if (lastScene == false) {
+        if(lastScene == false) {
             mainCtrl.showHomeScreen();
         } else {
             mainCtrl.showRecipeOverview();
