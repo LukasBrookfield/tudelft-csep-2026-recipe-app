@@ -35,7 +35,7 @@
                            </padding>
                         </Label>
                         <HBox prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
-                        <Button fx:id="exitButton" mnemonicParsing="false" onAction="#onExitButton" text="Exit shopping list">
+                        <Button fx:id="exitButton" cancelButton="true" mnemonicParsing="false" onAction="#onExitButton" text="Exit shopping list">
                            <HBox.margin>
                               <Insets right="6.5" />
                            </HBox.margin>
@@ -69,8 +69,8 @@
                                              <children>
                                                 <ChoiceBox fx:id="editUnitBox" prefHeight="25.0" prefWidth="218.0" />
                                                 <TextField fx:id="editIngredientAmountField" prefHeight="25.0" prefWidth="217.0" promptText="Amount" />
-                                                <Button mnemonicParsing="false" onAction="#onBackEditIngredientButton" prefHeight="25.0" prefWidth="75.0" text="Back" />
-                                                <Button fx:id="doneEditIngredientButton" mnemonicParsing="false" onAction="#onDoneEditIngredientButton" prefHeight="25.0" prefWidth="75.0" text="Done" />
+                                                <Button fx:id="backEditIngredientButton" cancelButton="true" mnemonicParsing="false" onAction="#onBackEditIngredientButton" prefHeight="25.0" prefWidth="75.0" text="Back" />
+                                                <Button fx:id="doneEditIngredientButton" defaultButton="true" mnemonicParsing="false" onAction="#onDoneEditIngredientButton" prefHeight="25.0" prefWidth="75.0" text="Done" />
                                              </children>
                                           </HBox>
                                           <HBox fx:id="editIngredientTypeBox" prefHeight="25.0" prefWidth="454.0" spacing="5.0">

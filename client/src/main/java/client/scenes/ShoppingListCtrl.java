@@ -50,6 +50,9 @@ public class ShoppingListCtrl {
     private Button cancelEditIngredientButton;
 
     @FXML
+    private Button backEditIngredientButton;
+
+    @FXML
     private Button doneEditIngredientButton;
 
     @FXML
@@ -148,6 +151,9 @@ public class ShoppingListCtrl {
         Platform.runLater(() -> addIngredientButton.requestFocus());
 
         ingredientListView.getItems().addAll(user.getShoppingList());
+
+        // activate buttons
+        activateButtons(EditMode.NO_EDIT);
     }
 
     /**
@@ -236,6 +242,9 @@ public class ShoppingListCtrl {
 
         // Force focus into the IngredientType name box
         Platform.runLater(() -> editIngredientChoiceBox.requestFocus());
+
+        // activate buttons
+        activateButtons(EditMode.EDIT_1);
     }
 
     /**
@@ -244,6 +253,9 @@ public class ShoppingListCtrl {
     @FXML
     private void onCancelEditIngredientButton() {
         changeIngredientViewEditMode(false);
+
+        // change button behaviour for edit state
+        activateButtons(EditMode.NO_EDIT);
     }
 
     /**
@@ -298,6 +310,9 @@ public class ShoppingListCtrl {
 
         user.setShoppingList(ingredientListView.getItems());
         user.saveUser();
+
+        // change button behaviour for edit state
+        activateButtons(EditMode.NO_EDIT);
     }
 
     public void onNext(){
@@ -319,6 +334,9 @@ public class ShoppingListCtrl {
         if (editUnitBox.getValue() == null || editUnitBox.getValue().isEmpty()) {
             editUnitBox.getSelectionModel().select(0);
         }
+
+        // change button behaviour
+        activateButtons(EditMode.EDIT_2);
     }
 
     /**
@@ -329,6 +347,9 @@ public class ShoppingListCtrl {
     @FXML
     private void onBackEditIngredientButton() {
         changeIngredientTypeViewEditMode(false);
+
+        // change button behaviour
+        activateButtons(EditMode.EDIT_1);
     }
 
     @FXML
@@ -337,6 +358,48 @@ public class ShoppingListCtrl {
             mainCtrl.showHomeScreen();
         } else {
             mainCtrl.showRecipeOverview();
+        }
+    }
+
+    // possible ingredient edit states
+    private enum EditMode {
+        NO_EDIT,
+        EDIT_1,
+        EDIT_2,
+    }
+
+    private void activateButtons(EditMode mode) {
+        switch (mode) {
+            case NO_EDIT -> {
+                // exit form
+                exitButton.setCancelButton(true);
+                // edit ingredient - first step
+                cancelEditIngredientButton.setCancelButton(false);
+                nextButton.setDefaultButton(false);
+                // edit ingredient - second step
+                backEditIngredientButton.setCancelButton(false);
+                doneEditIngredientButton.setDefaultButton(false);
+            }
+            case EDIT_1 -> {
+                // exit form
+                exitButton.setCancelButton(false);
+                // edit ingredient - first step
+                cancelEditIngredientButton.setCancelButton(true);
+                nextButton.setDefaultButton(true);
+                // edit ingredient - second step
+                backEditIngredientButton.setCancelButton(false);
+                doneEditIngredientButton.setDefaultButton(false);
+            }
+            case EDIT_2 -> {
+                // exit form
+                exitButton.setCancelButton(false);
+                // edit ingredient - first step
+                cancelEditIngredientButton.setCancelButton(false);
+                nextButton.setDefaultButton(false);
+                // edit ingredient - second step
+                backEditIngredientButton.setCancelButton(true);
+                doneEditIngredientButton.setDefaultButton(true);
+            }
         }
     }
 }
