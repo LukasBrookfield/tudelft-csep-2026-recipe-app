@@ -4,6 +4,10 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.util.Pair;
+import javafx.scene.image.Image;
+
+import java.awt.*;
+import java.util.Objects;
 
 public class MainCtrl {
 
@@ -39,6 +43,9 @@ public class MainCtrl {
 
         this.shoppingListCtrl = shoppingList.getKey();
         this.shoppingListScene = new Scene(shoppingList.getValue());
+
+        primaryStage.getIcons().add(new Image(Objects.requireNonNull(
+                getClass().getResourceAsStream("/FoodPalLogo.png"))));
 
         showHomeScreen();
         primaryStage.show();

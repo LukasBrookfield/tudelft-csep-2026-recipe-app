@@ -65,6 +65,10 @@ public class RecipeOverviewCtrl {
     private FilteredList<Recipe> filteredRecipes;
     private SortedList<Recipe> sortedRecipes;
 
+    boolean newRecipe = false;
+    boolean newIngredient = false;
+    boolean newStep = false;
+
     // Root
 
     @FXML
@@ -446,7 +450,8 @@ public class RecipeOverviewCtrl {
                     // Just check that the intended recipe is the one being selected
                     // (so we don't update the wrong recipe in the UI)
                     Recipe current = recipeListView.getSelectionModel().getSelectedItem();
-                    if (current != null && current.id == requestedId) return;
+
+                    if (current == null || current.id != requestedId) return;
 
                     if (n.totalGrams() <= 0) {
                         recipeKcalPer100gLabel.setText("-");
@@ -813,12 +818,20 @@ public class RecipeOverviewCtrl {
     @FXML
     private void onRemoveRecipe() throws JsonProcessingException {
         Recipe recipe = recipeListView.getSelectionModel().getSelectedItem();
-        if (recipe == null) return;
+        if (recipe == null) {
+            return;
+        }
         System.out.println(new ObjectMapper().writeValueAsString(recipe));
         server.deleteRecipe(recipe.id);
         allRecipes.remove(recipe);
-        if (user.isFavouriteRecipe(recipe)) user.removeFavouriteRecipe(recipe);
+        if (user.isFavouriteRecipe(recipe)) {
+            user.removeFavouriteRecipe(recipe);
+        }
         onRefresh();
+
+        // apply the search filter again, because the counter might
+        // need to be decreased by 1
+        applySearchFilter(recipeSearchField.getText());
     }
 
     /**
@@ -828,6 +841,11 @@ public class RecipeOverviewCtrl {
      */
     @FXML
     private void onAddRecipe() throws JsonProcessingException {
+        // reset the search query, otherwise 'new recipe' might not show, and it will break the app
+        recipeSearchField.clear();
+        applySearchFilter("");
+        onRefresh();
+
         addRecipeToServer(new Recipe("New recipe"));
     }
 
@@ -868,6 +886,7 @@ public class RecipeOverviewCtrl {
                 recipeListView.getItems().size() - 1
         );
 
+        newRecipe = true;
         // Now immediately enter edit mode for this recipe
         onEditRecipeButton();
 
@@ -1098,8 +1117,13 @@ public class RecipeOverviewCtrl {
      */
     @FXML
     private void onCancelEditButton() {
+        if (newRecipe) {
+            Recipe recipe = recipeListView.getSelectionModel().getSelectedItem();
+            server.deleteRecipe(recipe.id);
+        }
         onRefresh();
         changeViewEditMode(false);
+        newRecipe = false;
     }
 
     /**
@@ -1129,6 +1153,11 @@ public class RecipeOverviewCtrl {
 
         onRefresh();
         changeViewEditMode(false);
+        newRecipe = false;
+
+        // apply the search filter again, because the recipe might not
+        // match anymore after a name change
+        applySearchFilter(recipeSearchField.getText());
     }
 
     // Servings section
@@ -1205,6 +1234,7 @@ public class RecipeOverviewCtrl {
                 ingredientListView.getItems().size() - 1
         );
 
+        newIngredient = true;
         // Immediately open ingredient edit mode
         onEditIngredientButton();
 
@@ -1269,9 +1299,13 @@ public class RecipeOverviewCtrl {
      */
     @FXML
     private void onCancelEditIngredientButton() {
+        if (newIngredient) {
+            ingredientListView.getItems().removeLast();
+        }
         changeIngredientTypeViewEditMode(0);
         cancelEditButton.setVisible(true);
         doneEditButton.setVisible(true);
+        newIngredient = false;
     }
 
     /**
@@ -1365,6 +1399,7 @@ public class RecipeOverviewCtrl {
         changeIngredientTypeViewEditMode(0);
         cancelEditButton.setVisible(true);
         doneEditButton.setVisible(true);
+        newIngredient = false;
     }
 
     // Edit preparation step section
@@ -1398,6 +1433,7 @@ public class RecipeOverviewCtrl {
                 preparationStepListView.getItems().size() - 1
         );
 
+        newStep = true;
         // Immediately open step edit mode
         onEditStepButton();
 
@@ -1436,9 +1472,13 @@ public class RecipeOverviewCtrl {
      */
     @FXML
     private void onCancelEditStepButton() {
+        if (newStep) {
+            preparationStepListView.getItems().removeLast();
+        }
         changeStepViewEditMode(false);
         cancelEditButton.setVisible(true);
         doneEditButton.setVisible(true);
+        newStep = false;
     }
 
     /**
@@ -1456,6 +1496,7 @@ public class RecipeOverviewCtrl {
         changeStepViewEditMode(false);
         cancelEditButton.setVisible(true);
         doneEditButton.setVisible(true);
+        newStep = false;
     }
 
     /**

@@ -110,7 +110,7 @@ public class ServerUtils implements ServerUtility {
 
         System.out.println("[client] GET " + target.getUri());
         try{
-            return client.target(SERVER)    // Start building a request aimed at 'SERVER'
+            return target    // Start building a request aimed at 'SERVER'
                     .request(new String[]{"application/json"})  // We want JSON back
                     .get(RecipeNutrition.class);    // gets info in JSON and turns into RecipeNutrition object
         } catch (ProcessingException e) {

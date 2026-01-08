@@ -57,7 +57,7 @@ public class RecipeController {
      * @param id The id of the recipe to get
      * @return The recipe with the corresponding id
      */
-    @GetMapping("/{id}/Nutrition")
+    @GetMapping("/{id}/nutrition")
     public ResponseEntity<commons.RecipeNutrition> getNutrition(@PathVariable("id") long id) {
         if (id < 0 || !repo.existsById(id)) {
             return ResponseEntity.badRequest().build();
