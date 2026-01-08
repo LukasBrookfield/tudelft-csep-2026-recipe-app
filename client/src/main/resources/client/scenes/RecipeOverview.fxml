@@ -35,9 +35,9 @@
                                     </padding>
                                 </Label>
                         <HBox prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
-                                <HBox alignment="CENTER_RIGHT" prefHeight="33.0" prefWidth="375.0" spacing="5.0">
+                                <HBox alignment="CENTER_RIGHT" prefHeight="33.0" prefWidth="471.0" spacing="5.0">
                                     <children>
-                              <Button fx:id="starRecipeButton" mnemonicParsing="false" onAction="#onStarRecipe" text="☆">
+                              <Button fx:id="starRecipeButton" mnemonicParsing="false" onAction="#onStarRecipe" prefHeight="26.0" prefWidth="32.0" text="☆">
                                  <tooltip>
                                     <Tooltip fx:id="starTooltip" text="Empty Tooltip">
                                        <font>
@@ -45,8 +45,8 @@
                                        </font>
                                     </Tooltip>
                                  </tooltip></Button>
-                              <Button fx:id="downloadRecipeButton" alignment="CENTER_RIGHT" cacheShape="false" mnemonicParsing="false" onAction="#onDownloadRecipe" prefHeight="25.0" prefWidth="71.0" text="Download" />
-                              <Button fx:id="printRecipeButton" alignment="CENTER_RIGHT" cacheShape="false" mnemonicParsing="false" onAction="#onPrintRecipe" prefHeight="25.0" prefWidth="42.0" text="Print" />
+                              <Button fx:id="downloadRecipeButton" alignment="CENTER_RIGHT" cacheShape="false" mnemonicParsing="false" onAction="#onDownloadRecipe" prefHeight="26.0" prefWidth="89.0" text="Download" />
+                              <Button fx:id="printRecipeButton" alignment="CENTER_RIGHT" cacheShape="false" mnemonicParsing="false" onAction="#onPrintRecipe" prefHeight="26.0" prefWidth="51.0" text="Print" />
                               <Button fx:id="toggleOverviewButton" mnemonicParsing="false" onAction="#onToggleOverviewButton" text="View ingredient overview" />
                               <Button fx:id="homeButton" mnemonicParsing="false" onAction="#onHomeButton" prefHeight="25.0" prefWidth="28.0" text="🏠">
                                  <font>
@@ -226,17 +226,16 @@
                            <children>
                               <HBox alignment="CENTER_LEFT" prefHeight="25.0" prefWidth="307.0" spacing="5.0">
                                  <children>
-                                    <TextField fx:id="editServingsField" prefHeight="25.0" prefWidth="302.0" promptText="Enter the amount of servings" />
-                                    <HBox prefHeight="25.0" prefWidth="185.0" HBox.hgrow="ALWAYS" />
+                                    <TextField fx:id="editServingsField" prefHeight="26.0" prefWidth="232.0" promptText="Enter the amount of servings" />
                                     <HBox alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="232.0" spacing="5.0">
                                        <children>
-                                          <Button fx:id="cancelEditServingsButton" mnemonicParsing="false" onAction="#onCancelEditServingsButton" prefHeight="25.0" prefWidth="51.0" text="Cancel" />
-                                          <Button fx:id="doneEditServingsButton" mnemonicParsing="false" onAction="#onDoneEditServingsButton" prefHeight="25.0" prefWidth="45.0" text="Done" />
+                                          <Button fx:id="cancelEditServingsButton" mnemonicParsing="false" onAction="#onCancelEditServingsButton" prefHeight="26.0" prefWidth="76.0" text="Cancel" />
+                                          <Button fx:id="doneEditServingsButton" mnemonicParsing="false" onAction="#onDoneEditServingsButton" prefHeight="26.0" prefWidth="58.0" text="Done" />
                                        </children>
                                     </HBox>
                                  </children>
                               </HBox>
-                              <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                              <HBox alignment="CENTER_LEFT" spacing="5.0">
                                  <children>
                                     <Button fx:id="editServingsButton" mnemonicParsing="false" onAction="#onEditServingsButton" prefHeight="25.0" prefWidth="28.0" text="✎">
                                        <tooltip>
@@ -245,7 +244,8 @@
                                                 <Font size="13.0" />
                                              </font>
                                           </Tooltip>
-                                       </tooltip></Button>
+                                       </tooltip>
+                                    </Button>
                                  </children>
                               </HBox>
                            </children>
@@ -302,8 +302,8 @@
                                           <TextField fx:id="editIngredientNameField" prefHeight="25.0" prefWidth="208.0" promptText="Ingredient type" />
                                           <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
                                              <children>
-                                                <Button fx:id="cancelEditIngredientButton" mnemonicParsing="false" onAction="#onCancelEditIngredientButton" prefHeight="25.0" prefWidth="56.0" text="Cancel" />
-                                                <Button fx:id="nextEditIngredientButton" mnemonicParsing="false" onAction="#onNextEditIngredientButton" prefHeight="25.0" prefWidth="43.0" text="Next" />
+                                                <Button fx:id="cancelEditIngredientButton" mnemonicParsing="false" onAction="#onCancelEditIngredientButton" prefHeight="26.0" prefWidth="71.0" text="Cancel" />
+                                                <Button fx:id="nextEditIngredientButton" mnemonicParsing="false" onAction="#onNextEditIngredientButton" prefHeight="26.0" prefWidth="65.0" text="Next" />
                                              </children>
                                           </HBox>
                                        </children>
@@ -311,7 +311,7 @@
                                     <HBox layoutX="10.0" layoutY="10.0" prefHeight="25.0" prefWidth="307.0" spacing="5.0">
                                        <children>
                                           <ChoiceBox fx:id="editUnitBox" prefHeight="25.0" prefWidth="203.0" />
-                                          <TextField fx:id="editIngredientAmountField" prefHeight="25.0" prefWidth="191.0" promptText="Amount" />
+                                          <TextField fx:id="editIngredientAmountField" prefHeight="26.0" prefWidth="88.0" promptText="Amount" />
                                           <HBox alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="149.0" spacing="5.0">
                                              <children>
                                                 <Button fx:id="backEditIngredientButton1" mnemonicParsing="false" onAction="#onBackEditIngredientButton" prefHeight="25.0" prefWidth="48.0" text="Back" />
@@ -345,11 +345,11 @@
                                  <children>
                                     <HBox alignment="TOP_RIGHT" prefHeight="25.0" prefWidth="220.0" spacing="5.0" StackPane.alignment="CENTER_RIGHT">
                                        <children>
-                                          <TextField fx:id="editStepField" prefHeight="25.0" prefWidth="385.0" promptText="Enter an instruction" />
+                                          <TextField fx:id="editStepField" prefHeight="26.0" prefWidth="358.0" promptText="Enter an instruction" />
                                           <HBox alignment="TOP_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
                                              <children>
-                                                <Button fx:id="cancelEditStepButton" alignment="TOP_RIGHT" contentDisplay="CENTER" mnemonicParsing="false" onAction="#onCancelEditStepButton" prefHeight="25.0" prefWidth="57.0" text="Cancel" />
-                                                <Button fx:id="doneEditStepButton" alignment="TOP_RIGHT" mnemonicParsing="false" onAction="#onDoneEditStepButton" prefHeight="25.0" prefWidth="49.0" text="Done" />
+                                                <Button fx:id="cancelEditStepButton" alignment="TOP_RIGHT" contentDisplay="CENTER" mnemonicParsing="false" onAction="#onCancelEditStepButton" prefHeight="26.0" prefWidth="59.0" text="Cancel" />
+                                                <Button fx:id="doneEditStepButton" alignment="TOP_RIGHT" mnemonicParsing="false" onAction="#onDoneEditStepButton" prefHeight="26.0" prefWidth="52.0" text="Done" />
                                              </children>
                                              <HBox.margin>
                                                 <Insets />
@@ -381,7 +381,8 @@
                                                       <Font size="13.0" />
                                                    </font>
                                                 </Tooltip>
-                                             </tooltip></Button>
+                                             </tooltip>
+                                          </Button>
                                                     <Button fx:id="editStepButton" mnemonicParsing="false" onAction="#onEditStepButton" prefHeight="25.0" prefWidth="28.0" text="✎">
                                              <tooltip>
                                                 <Tooltip text="Edit step">
@@ -389,7 +390,8 @@
                                                       <Font size="13.0" />
                                                    </font>
                                                 </Tooltip>
-                                             </tooltip></Button>
+                                             </tooltip>
+                                          </Button>
                                           <Button fx:id="moveStepUpButton" mnemonicParsing="false" onAction="#onMoveStepUpButton" prefHeight="25.0" prefWidth="6.0" text="↑">
                                              <tooltip>
                                                 <Tooltip text="Move up">
@@ -397,7 +399,8 @@
                                                       <Font size="13.0" />
                                                    </font>
                                                 </Tooltip>
-                                             </tooltip></Button>
+                                             </tooltip>
+                                          </Button>
                                           <Button fx:id="moveStepDownButton" mnemonicParsing="false" onAction="#onMoveStepDownButton" prefHeight="25.0" prefWidth="6.0" text="↓">
                                              <tooltip>
                                                 <Tooltip text="Move down">
@@ -405,7 +408,8 @@
                                                       <Font size="13.0" />
                                                    </font>
                                                 </Tooltip>
-                                             </tooltip></Button>
+                                             </tooltip>
+                                          </Button>
                                        </children>
                                        <StackPane.margin>
                                           <Insets />
