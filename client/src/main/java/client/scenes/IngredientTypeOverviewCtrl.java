@@ -9,11 +9,20 @@ import com.google.inject.Inject;
 import commons.Ingredient;
 import commons.IngredientType;
 import commons.Nutrition;
+import commons.Recipe;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 public class IngredientTypeOverviewCtrl {
 
@@ -24,6 +33,8 @@ public class IngredientTypeOverviewCtrl {
     private UserConfig user;
 
     private final MainCtrl mainCtrl;
+
+    boolean newIngredientType = false;
 
     // Left sidebar
 
@@ -43,6 +54,9 @@ public class IngredientTypeOverviewCtrl {
 
     @FXML
     private Button toggleOverviewButton;
+
+    @FXML
+    private Button homeButton;
 
     // Ingredient title row
 
@@ -169,6 +183,9 @@ public class IngredientTypeOverviewCtrl {
         // or add a new one
         addIngredientTypeButton.setVisible(!value);
         removeIngredientTypeButton.setVisible(!value);
+
+        toggleOverviewButton.setVisible(!value);
+        homeButton.setVisible(!value);
     }
 
     /**
@@ -213,6 +230,25 @@ public class IngredientTypeOverviewCtrl {
     }
 
     /**
+     * Counts in how many recipes an ingredient type is used
+     * @param ingredientType the ingredient type to count for
+     * @return the amount of recipes the ingredient type is used in
+     */
+    private List<Recipe> getUsedInRecipes(IngredientType ingredientType) {
+        List<Recipe> res = new ArrayList<>();
+
+        for (Recipe recipe : server.getRecipes()) {
+            for (Ingredient ingredient : recipe.ingredients) {
+                if (ingredient.ingredientType.id == ingredientType.id) {
+                    res.add(recipe);
+                    break;
+                }
+            }
+        }
+        return res;
+    }
+
+    /**
      * Sets all labels based on which ingredient type is selected
      */
     private void setLabelsAndFields() {
@@ -226,9 +262,16 @@ public class IngredientTypeOverviewCtrl {
         nameLabel.setText(ingredientType.name);
         if (ingredientType.density != null) {
             densityLabel.setText(String.valueOf(ingredientType.density));
+        } else {
+            densityLabel.setText("-");
         }
+
+        int usedInRecipes = getUsedInRecipes(ingredientType).size();
+        usedInRecipesLabel.setText("This ingredient type is used in "
+                + usedInRecipes + " recipe" + (usedInRecipes == 1 ? "" : "s"));
+
         kcalLabel.setText(String.valueOf(recipeUtils
-                .getCaloriesPer100g(ingredientType)) + "g");
+                .getCaloriesPer100g(ingredientType)));
 
         proteinLabel.setText("-");
         fatLabel.setText("-");
@@ -246,13 +289,6 @@ public class IngredientTypeOverviewCtrl {
         if (ingredientType.nutrition.carbs != null) {
             carbsLabel.setText(String.valueOf(ingredientType.nutrition.carbs) + "g");
         }
-
-        int usedInRecipes = 0;
-        if (ingredientType.ingredients != null) {
-            usedInRecipes = ingredientType.ingredients.size();
-        }
-        usedInRecipesLabel.setText("This ingredient type is used in "
-        + usedInRecipes + " recipe" + (usedInRecipes == 1 ? "" : "s"));
     }
 
     /**
@@ -321,8 +357,56 @@ public class IngredientTypeOverviewCtrl {
     private void onRemoveIngredientTypeButton() {
         IngredientType ingredientType = ingredientTypeListView
                 .getSelectionModel().getSelectedItem();
-        server.deleteIngredientType(ingredientType.id);
-        onRefresh();
+
+        List<Recipe> usedInRecipes = getUsedInRecipes(ingredientType);
+
+        if (usedInRecipes.isEmpty()) {
+            server.deleteIngredientType(ingredientType.id);
+            onRefresh();
+            return;
+        }
+
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.initModality(Modality.APPLICATION_MODAL); // disables the main stage
+        alert.setTitle("FoodPal - Warning");
+        alert.setHeaderText(null);
+
+        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+        stage.getIcons().add(new Image(Objects.requireNonNull(
+                getClass().getResourceAsStream("/FoodPalLogo.png"))));
+
+        Label content = new Label("This ingredient is used in " + usedInRecipes.size() + " " +
+                (usedInRecipes.size() == 1 ? "recipe" : "different recipes") + ". Removing " +
+                "it will remove it from the following recipe" + (usedInRecipes.size() == 1
+                ? ":" : "s:"));
+        content.setWrapText(true);
+        content.setMinHeight(50);
+
+        ListView<Recipe> recipeListView = new ListView<>(FXCollections.observableList(usedInRecipes));
+
+        VBox vbox = new VBox();
+        vbox.getChildren().addAll(content, recipeListView);
+        vbox.setPrefWidth(400);
+        vbox.setPrefHeight(200);
+        vbox.setSpacing(5);
+        alert.getDialogPane().setContent(vbox);
+
+        ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
+        ButtonType okButton = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
+        alert.getDialogPane().getButtonTypes().setAll(cancelButton, okButton);
+
+        Optional<ButtonType> res = alert.showAndWait();
+
+        if (res.isPresent() && res.get() == okButton) {
+            for (Recipe recipe : usedInRecipes) {
+                if (recipe.ingredients.removeIf(ingredient ->
+                        ingredient.ingredientType.id == ingredientType.id)) {
+                    server.updateRecipe(recipe.id, recipe);
+                }
+            }
+            server.deleteIngredientType(ingredientType.id);
+            onRefresh();
+        }
     }
 
     /**
@@ -342,6 +426,7 @@ public class IngredientTypeOverviewCtrl {
                 ingredientTypeListView.getItems().size() - 1
         );
 
+        newIngredientType = true;
         onEditIngredientTypeButton();
         nameLabel.setText("-");
         editDetailsButton.requestFocus();
@@ -355,6 +440,11 @@ public class IngredientTypeOverviewCtrl {
     @FXML
     private void onToggleOverviewButton() {
         mainCtrl.showRecipeOverview();
+    }
+
+    @FXML
+    private void onHomeButton() {
+        mainCtrl.showHomeScreen();
     }
 
     // Ingredient title row
@@ -374,8 +464,13 @@ public class IngredientTypeOverviewCtrl {
      */
     @FXML
     private void onCancelEditButton() {
+        if (newIngredientType) {
+            IngredientType ingredientType = ingredientTypeListView.getSelectionModel().getSelectedItem();
+            server.deleteIngredientType(ingredientType.id);
+        }
         onRefresh();
         changeViewEditMode(false);
+        newIngredientType = false;
     }
 
     /**
@@ -383,7 +478,7 @@ public class IngredientTypeOverviewCtrl {
      * All the changes are added to the selected ingredient type
      */
     @FXML
-    private void onDoneEditButton() {
+    private void onDoneEditButton() throws JsonProcessingException {
         if (nameLabel.getText().equals("-")) {
             System.out.println("The ingredient needs a name.");
             return;
@@ -394,7 +489,7 @@ public class IngredientTypeOverviewCtrl {
         ingredientType.name = nameLabel.getText();
 
         String densityText = densityLabel.getText();
-        if (densityText.isBlank()) {
+        if (densityText.isBlank() || densityText.equals("-")) {
             ingredientType.density = null;
         } else {
             ingredientType.density = Double.parseDouble(densityText);
@@ -421,10 +516,19 @@ public class IngredientTypeOverviewCtrl {
             }
         }
 
+        System.out.println("Ingredient type to be updated: " +
+                new ObjectMapper().writeValueAsString(ingredientType));
         server.updateIngredientType(ingredientType.id, ingredientType);
 
         onRefresh();
         changeViewEditMode(false);
+
+        // Update all recipes that use this ingredient type
+        for (Recipe recipe : getUsedInRecipes(ingredientType)) {
+            server.updateRecipe(recipe.id, recipe);
+        }
+
+        newIngredientType = false;
     }
 
     // Edit details section
@@ -463,7 +567,7 @@ public class IngredientTypeOverviewCtrl {
      */
     @FXML
     private void onDoneEditDetailsButton() {
-        if (editNameField.getText().isEmpty()) {
+        if (editNameField.getText().isBlank()) {
             System.out.println("The ingredient type needs a name.");
             return;
         }

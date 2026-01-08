@@ -19,7 +19,7 @@ public class Recipe {
     public String name;
 
     @JsonManagedReference
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     public List<Ingredient> ingredients;
 
     @ElementCollection
@@ -35,7 +35,7 @@ public class Recipe {
         this.name = name;
         this.ingredients = new ArrayList<>();
         this.steps = new ArrayList<>();
-        this.servings = 0;
+        this.servings = 1;
     }
 
     /**

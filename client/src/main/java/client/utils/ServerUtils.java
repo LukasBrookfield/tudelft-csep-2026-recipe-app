@@ -3,6 +3,7 @@ package client.utils;
 import commons.Ingredient;
 import commons.IngredientType;
 import commons.Recipe;
+import commons.RecipeNutrition;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.client.Client;
@@ -102,6 +103,19 @@ public class ServerUtils implements ServerUtility{
                 listener.accept(List.of(array));
             }
         });
+    }
+
+    public RecipeNutrition getRecipeNutrition(long id) {
+        var target = client.target(SERVER).path("api/recipes/" + id + "/nutrition"); // Append this path to the base URL
+
+        System.out.println("[client] GET " + target.getUri());
+        try{
+            return target    // Start building a request aimed at 'SERVER'
+                    .request(new String[]{"application/json"})  // We want JSON back
+                    .get(RecipeNutrition.class);    // gets info in JSON and turns into RecipeNutrition object
+        } catch (ProcessingException e) {
+            throw new RuntimeException("Could not reach server while getting recipe nutrition", e);
+        }
     }
 
     /**

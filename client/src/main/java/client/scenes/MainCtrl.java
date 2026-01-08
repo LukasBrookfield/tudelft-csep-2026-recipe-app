@@ -4,10 +4,17 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.util.Pair;
+import javafx.scene.image.Image;
+
+import java.awt.*;
+import java.util.Objects;
 
 public class MainCtrl {
 
     private Stage primaryStage;
+
+    private HomeScreenCtrl homeScreenCtrl;
+    private Scene homeScreenScene;
 
     private RecipeOverviewCtrl recipeOverviewCtrl;
     private Scene recipeOverviewScene;
@@ -15,10 +22,18 @@ public class MainCtrl {
     private IngredientTypeOverviewCtrl ingredientTypeOverviewCtrl;
     private Scene ingredientTypeOverviewScene;
 
+    private ShoppingListCtrl shoppingListCtrl;
+    private Scene shoppingListScene;
+
     public void initialize(Stage primaryStage,
+                           Pair<HomeScreenCtrl, Parent> homeScreen,
                            Pair<RecipeOverviewCtrl, Parent> recipeOverview,
-                           Pair<IngredientTypeOverviewCtrl, Parent> ingredientOverview) {
+                           Pair<IngredientTypeOverviewCtrl, Parent> ingredientOverview,
+                           Pair<ShoppingListCtrl, Parent> shoppingList) {
         this.primaryStage = primaryStage;
+
+        this.homeScreenCtrl = homeScreen.getKey();
+        this.homeScreenScene = new Scene(homeScreen.getValue());
 
         this.recipeOverviewCtrl = recipeOverview.getKey();
         this.recipeOverviewScene = new Scene(recipeOverview.getValue());
@@ -26,8 +41,19 @@ public class MainCtrl {
         this.ingredientTypeOverviewCtrl = ingredientOverview.getKey();
         this.ingredientTypeOverviewScene = new Scene(ingredientOverview.getValue());
 
-        showRecipeOverview();
+        this.shoppingListCtrl = shoppingList.getKey();
+        this.shoppingListScene = new Scene(shoppingList.getValue());
+
+        primaryStage.getIcons().add(new Image(Objects.requireNonNull(
+                getClass().getResourceAsStream("/FoodPalLogo.png"))));
+
+        showHomeScreen();
         primaryStage.show();
+    }
+
+    public void showHomeScreen() {
+        primaryStage.setTitle("FoodPal - Home Screen");
+        primaryStage.setScene(homeScreenScene);
     }
 
     public void showRecipeOverview() {
@@ -40,5 +66,12 @@ public class MainCtrl {
         primaryStage.setTitle("FoodPal - Ingredient Overview");
         primaryStage.setScene(ingredientTypeOverviewScene);
         ingredientTypeOverviewCtrl.onRefresh();
+    }
+
+    public void showShoppingList(boolean currentScene) {
+        primaryStage.setTitle("FoodPal - Shopping List");
+        primaryStage.setScene(shoppingListScene);
+
+        shoppingListCtrl.lastScene = currentScene;
     }
 }
