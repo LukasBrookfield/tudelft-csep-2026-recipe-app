@@ -287,12 +287,12 @@ public class AddToShoppingListCtrl {
 
         //we create a new ingredient type
         if (editIngredientChoiceBox.getValue().name.equals("Create new ingredient type")) {
-//            ingredient.ingredientType = server.addIngredientType(
-//                    new IngredientType(editIngredientNameField.getText(),
-//                            null, new ArrayList<>(), null)
-//            );
-            ingredient.ingredientType = new IngredientType(editIngredientNameField.getText(),
-                            null, new ArrayList<>(), null);
+            ingredient.ingredientType = server.addIngredientType(
+                    new IngredientType(editIngredientNameField.getText(),
+                            null, new ArrayList<>(), null)
+            ).copy();   //the ingredient has a copy of this type so
+                        //the change of its name while saving it to shopping list
+                        //would not affect the ingredient type on the server
         } else {
             ingredient.ingredientType = editIngredientChoiceBox.getValue();
         }
@@ -364,7 +364,7 @@ public class AddToShoppingListCtrl {
      */
     @FXML
     private void onConfirmationButton(){
-        ingredientListView.getItems().stream().forEach(ingredient -> {
+        ingredientListView.getItems().forEach(ingredient -> {
             ingredient.ingredientType.name = ingredient.ingredientType.name + " (" + recipe.name + ")";
             user.addShoppingListItem(ingredient);
         });
