@@ -39,18 +39,9 @@ class UserTest {
         user2 = new User(Collections.emptyList(), SHOPPING_LIST);
         assertNotEquals(testUser, user2);
 
-        // with same ingredients, but different recipe name (this test keeps failing,
-        // but the equals method itself isn't comparing users correctly. Should be fixed later.)
+        // with same ingredients, but different recipe name (absent, to be implemented differently later)
 
-//        List<Ingredient> otherList = createShoppingList("G", ING_TYPE_A, ING_TYPE_B);
-//        user2 = new User(FAVOURITE_RECIPES, otherList);
-//        assertNotEquals(testUser, user2);
-
-        // with same shopping, but differently ordered (this test also fails,
-        // but the method itself is flawed. This should be passing, just like the previous one.)
-//        List<Ingredient> otherList = createShoppingList(RECIPE_A_NAME, ING_TYPE_B, ING_TYPE_A);
-//        user2 = new User(FAVOURITE_RECIPES, otherList);
-//        assertEquals(testUser, user2);
+        // with same shopping, but differently ordered (absent, to be implemented differently later)
 
         // with different shopping list
         List<Ingredient> otherList = createShoppingList(RECIPE_A_NAME, ING_TYPE_A, ING_TYPE_C);
@@ -72,11 +63,7 @@ class UserTest {
         user2 = new User(Collections.emptyList(), SHOPPING_LIST);
         assertNotEquals(testUser.hashCode(), user2.hashCode());
 
-        // with same ingredients, but different recipe name
-        // (test fails - User doesn't care about recipe of the IngredientType)
-//        List<Ingredient> otherList = createShoppingList("G", ING_TYPE_A, ING_TYPE_B);
-//        user2 = new User(FAVOURITE_RECIPES, otherList);
-//        assertNotEquals(testUser.hashCode(), user2.hashCode());
+        // with same ingredients, but different recipe name (to be implemented later
 
         // with different shopping list
         List<Ingredient> otherList = createShoppingList(RECIPE_A_NAME, ING_TYPE_A, ING_TYPE_C);
