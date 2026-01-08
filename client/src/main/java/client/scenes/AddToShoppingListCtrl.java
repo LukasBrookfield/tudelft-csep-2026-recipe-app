@@ -7,7 +7,6 @@ import com.google.inject.Inject;
 import commons.Ingredient;
 import commons.IngredientType;
 import commons.Recipe;
-import commons.Unit;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
