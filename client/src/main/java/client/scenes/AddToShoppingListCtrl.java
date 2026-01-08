@@ -78,6 +78,8 @@ public class AddToShoppingListCtrl {
     @FXML
     private Label label;
 
+    private boolean newIngredientType = false;
+
     //the listener for ingredient type choice box so the fields change
     private final ChangeListener<IngredientType> ingredientListener =
             (observable, oldValue, newValue) -> {
@@ -119,6 +121,7 @@ public class AddToShoppingListCtrl {
      * @param recipe The recipe
      */
     public void setFields(Recipe recipe){
+        newIngredientType = false;
         this.recipe = recipe;
         if(recipe != null && recipe.ingredients != null){
             ShoppingListService.addIngredientsToListView(recipe, ingredientListView.getItems());
@@ -193,6 +196,7 @@ public class AddToShoppingListCtrl {
      */
     @FXML
     private void onAddIngredientButton() {
+        newIngredientType = true;
         ingredientListView.getItems().add(new Ingredient(null, null, null, null));
         ingredientListView.getSelectionModel().select(
                 ingredientListView.getItems().size() - 1
@@ -257,6 +261,10 @@ public class AddToShoppingListCtrl {
      */
     @FXML
     private void onCancelEditIngredientButton() {
+        if(newIngredientType){
+            onRemoveIngredientButton();
+        }
+        newIngredientType = false;
         changeIngredientViewEditMode(false);
     }
 
@@ -265,6 +273,7 @@ public class AddToShoppingListCtrl {
      */
     @FXML
     private void onDoneEditIngredientButton() {
+        newIngredientType = false;
         if(!ShoppingListService.ingredientValidation(editIngredientNameField.getText(),
                 editIngredientAmountField.getText(),
                 editUnitBox.getValue())){
