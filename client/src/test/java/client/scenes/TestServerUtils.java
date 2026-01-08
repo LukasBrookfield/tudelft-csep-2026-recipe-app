@@ -33,7 +33,7 @@ public class TestServerUtils implements ServerUtility {
 
     @Override
     public RecipeNutrition getRecipeNutrition(long id) {
-        return null;
+        return new RecipeNutrition(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0);
     }
 
     @Override

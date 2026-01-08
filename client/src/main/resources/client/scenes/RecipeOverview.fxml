@@ -314,8 +314,8 @@
                                           <TextField fx:id="editIngredientAmountField" prefHeight="25.0" prefWidth="191.0" promptText="Amount" />
                                           <HBox alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="149.0" spacing="5.0">
                                              <children>
-                                                <Button fx:id="backEditIngredientButton1" mnemonicParsing="false" onAction="#onBackEditIngredientButton" prefHeight="25.0" prefWidth="48.0" text="Back" />
-                                                <Button fx:id="doneEditIngredientButton1" mnemonicParsing="false" onAction="#onDoneEditIngredientButton" text="Done" />
+                                                <Button fx:id="onBackEditIngredientButton" mnemonicParsing="false" onAction="#onBackEditIngredientButton" prefHeight="25.0" prefWidth="48.0" text="Back" />
+                                                <Button fx:id="doneEditIngredientButton" mnemonicParsing="false" onAction="#onDoneEditIngredientButton" text="Done" />
                                              </children>
                                           </HBox>
                                        </children>

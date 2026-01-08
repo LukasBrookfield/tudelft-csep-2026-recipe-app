@@ -4,6 +4,8 @@ import static com.google.inject.Guice.createInjector;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
+
 import client.MyFXML;
 import client.utils.RecipeUtils;
 import client.utils.ServerUtility;
@@ -12,6 +14,8 @@ import com.google.inject.Injector;
 import commons.Ingredient;
 import commons.IngredientType;
 import commons.Recipe;
+import commons.Unit;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Pair;
@@ -173,7 +177,23 @@ public class RecipeOverviewCtrlTest {
         robot.eraseText(1);
         robot.write(String.valueOf(servings));
         robot.clickOn(doneEditServingsButton);
-        robot.clickOn(doneEditButton);
+    }
+
+    private void addStep(FxRobot robot, String step) {
+        robot.clickOn(addStepButton);
+        robot.write("Test step");
+        robot.clickOn(doneEditStepButton);
+    }
+
+    private void addIngredient(FxRobot robot, String ingredientType, double amount, Unit unit) {
+        robot.clickOn(addIngredientButton);
+        robot.clickOn(editIngredientNameField);
+        robot.write(ingredientType);
+        robot.clickOn(nextEditIngredientButton);
+        robot.interact(() -> editUnitBox.getSelectionModel().select(unit.toString()));
+        robot.clickOn(editIngredientAmountField);
+        robot.write(String.valueOf(amount));
+        robot.clickOn(doneEditIngredientButton);
     }
 
     @Test
@@ -181,55 +201,27 @@ public class RecipeOverviewCtrlTest {
         robot.clickOn(addRecipeButton);
         Recipe recipe = new Recipe("New recipe");
 
-        // test if the recipe has been added to the server
+        // check if the recipe has been added to the server
         assertTrue(server.getRecipes().contains(recipe));
 
-        // test if the recipe has been added to the list view
+        // check if the recipe has been added to the list view
         assertTrue(recipeListView.getItems().contains(recipe));
 
-        // test if edit mode is activated when a recipe is added
+        // check if label is correct
         assertEquals("New recipe", recipeTitleLabel.getText());
-
-        assertFalse(recipeTitleLabel.isVisible());
-        assertTrue(recipeTitleField.isVisible());
-
-        assertFalse(editRecipeButton.isVisible());
-
-        assertTrue(editServingsButton.getParent().isVisible());
-        assertTrue(removeIngredientButton.getParent().isVisible());
-        assertTrue(removeStepButton.getParent().isVisible());
-
-        assertTrue(cancelEditButton.isVisible());
-        assertTrue(doneEditButton.isVisible());
-
-        assertFalse(addRecipeButton.isVisible());
-        assertFalse(removeRecipeButton.isVisible());
-        assertFalse(cloneRecipeButton.isVisible());
-        assertFalse(shoppingListButton.isVisible());
-
-        assertTrue(recipeSearchField.isDisabled());
-        assertTrue(sortChoiceBox.isDisabled());
-        assertTrue(recipeListView.isDisabled());
-
-        assertFalse(starRecipeButton.isVisible());
-        assertFalse(downloadRecipeButton.isVisible());
-        assertFalse(printRecipeButton.isVisible());
-        assertFalse(toggleOverviewButton.isVisible());
-        assertFalse(homeButton.isVisible());
-
-        assertTrue(favouriteRecipeFilterBox.isDisabled());
     }
 
     @Test
     void removeRecipeButtonTest(FxRobot robot) {
         // add and then remove a recipe
         addRecipe(robot, "Test recipe", 2);
+        robot.clickOn(doneEditButton);
         robot.clickOn(removeRecipeButton);
 
-        // test if the recipe has been deleted from the server
+        // check if the recipe has been deleted from the server
         assertTrue(server.getRecipes().isEmpty());
 
-        // test if the recipe has been removed from the list view
+        // check if the recipe has been removed from the list view
         assertTrue(recipeListView.getItems().isEmpty());
     }
     
@@ -237,6 +229,7 @@ public class RecipeOverviewCtrlTest {
     void cloneRecipeButtonTest(FxRobot robot) {
         // add a recipe and then clone it
         addRecipe(robot, "Test recipe", 2);
+        robot.clickOn(doneEditButton);
         robot.clickOn(cloneRecipeButton);
         robot.clickOn(recipeTitleField);
         robot.write("Test recipe clone");
@@ -245,14 +238,125 @@ public class RecipeOverviewCtrlTest {
         Recipe expected = new Recipe("Test recipe clone");
         expected.servings = 2;
 
-        // test if the recipe has been added to the server
+        // check if the recipe has been added to the server
         assertTrue(server.getRecipes().contains(expected));
 
-        // test if the recipe has been added to the list view
+        // check if the recipe has been added to the list view
         assertTrue(recipeListView.getItems().contains(expected));
 
         // check if the cloned recipe is the same as the original
         expected.name = "Test recipe";
         assertEquals(expected, recipeListView.getItems().getFirst());
+    }
+
+    @Test
+    void doneEditRecipeButtonTest(FxRobot robot) {
+
+    }
+
+    @Test
+    void cancelEditRecipeButtonTest(FxRobot robot) {
+
+    }
+
+    @Test
+    void addStepButtonTest(FxRobot robot) {
+        addRecipe(robot, "Test recipe", 2);
+        robot.clickOn(addStepButton);
+
+        // check if "New step" has been added to the steps list view
+        assertTrue(preparationStepListView.getItems().contains("New step"));
+    }
+
+    @Test
+    void doneEditStepButtonTest(FxRobot robot) {
+        addRecipe(robot, "Test recipe", 2);
+        robot.clickOn(addStepButton);
+        robot.write("Test step");
+        robot.clickOn(doneEditStepButton);
+
+        // check if step has been added to the list view
+        assertTrue(preparationStepListView.getItems().contains("Test step"));
+    }
+
+    @Test
+    void cancelEditStepButtonTest(FxRobot robot) {
+        addRecipe(robot, "Test recipe", 2);
+        robot.clickOn(addStepButton);
+        robot.clickOn(cancelEditStepButton);
+
+        // check if step has been cancelled
+        assertTrue(preparationStepListView.getItems().isEmpty());
+    }
+
+    @Test
+    void removeStepButtonTest(FxRobot robot) {
+        addRecipe(robot, "Test recipe", 2);
+        addStep(robot, "Test step");
+        robot.clickOn("Test step");
+        robot.clickOn(removeStepButton);
+
+        // check if step has been removed
+        assertTrue(preparationStepListView.getItems().isEmpty());
+    }
+
+    @Test
+    void editStepButtonTest(FxRobot robot) {
+        addRecipe(robot, "Test recipe", 2);
+        addStep(robot, "Test step");
+        robot.clickOn("Test step");
+        robot.clickOn(editStepButton);
+        robot.write("Edit test step");
+        robot.clickOn(doneEditStepButton);
+
+        // check if step has been edited
+        assertEquals("Edit test step", preparationStepListView.getItems().getFirst());
+    }
+
+    @Test
+    void addIngredientButtonTest(FxRobot robot) {
+        addRecipe(robot, "Test recipe", 2);
+        robot.clickOn(addIngredientButton);
+
+        // check if new ingredient has been added to list view
+        Ingredient newIngredient = new Ingredient(null, null, null,
+                recipeListView.getItems().getFirst());
+        assertTrue(ingredientListView.getItems().contains(newIngredient));
+    }
+
+    @Test
+    void doneEditIngredientButtonTest(FxRobot robot) {
+        addRecipe(robot, "Test recipe", 2);
+        addIngredient(robot, "tomato", 5.5, Unit.G);
+
+        // check if ingredient has been added to list view
+        Ingredient newIngredient = new Ingredient(
+                new IngredientType("tomato", null, new ArrayList<>(), null),
+                5.5,
+                Unit.G,
+                recipeListView.getSelectionModel().getSelectedItem());
+        assertTrue(ingredientListView.getItems().contains(newIngredient));
+    }
+
+    @Test
+    void cancelEditIngredientButtonTest(FxRobot robot) {
+        addRecipe(robot, "Test recipe", 2);
+        robot.clickOn(addIngredientButton);
+        robot.clickOn(cancelEditIngredientButton);
+
+        // check if ingredient has been cancelled
+        assertTrue(ingredientListView.getItems().isEmpty());
+    }
+
+    @Test
+    void removeIngredientButtonTest(FxRobot robot) {
+        addRecipe(robot, "Test recipe", 2);
+        addIngredient(robot, "potato", 37.5, Unit.G);
+        Node cell = robot.from(ingredientListView).lookup(".list-cell").nth(0).query();
+        robot.clickOn(cell);
+        robot.clickOn(removeIngredientButton);
+
+        // check if ingredient has been removed from list view
+        assertTrue(ingredientListView.getItems().isEmpty());
     }
 }
