@@ -117,7 +117,7 @@
                                                    </font>
                                                 </Tooltip>
                                              </tooltip></Button>
-                                          <Button fx:id="confirmation" mnemonicParsing="false" text="Confirm and add to Shopping List" />
+                                          <Button fx:id="confirmation" mnemonicParsing="false" onAction="#onConfirmationButton" text="Confirm and add to Shopping List" />
                                        </children>
                                     </HBox>
                                  </children>

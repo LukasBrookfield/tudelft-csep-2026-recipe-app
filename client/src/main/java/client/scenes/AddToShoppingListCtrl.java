@@ -22,6 +22,7 @@ public class AddToShoppingListCtrl {
     private final ServerUtils server;
     private final UserConfig user;
     private final MainCtrl controller;
+    private Recipe recipe;
 
     @FXML
     private ListView<Ingredient> ingredientListView;
@@ -118,6 +119,7 @@ public class AddToShoppingListCtrl {
      * @param recipe The recipe
      */
     public void setFields(Recipe recipe){
+        this.recipe = recipe;
         if(recipe != null && recipe.ingredients != null){
             ingredientListView.getItems().addAll(recipe.ingredients.stream().
                     map(Ingredient::copy).toList());
@@ -285,10 +287,12 @@ public class AddToShoppingListCtrl {
 
         //we create a new ingredient type
         if (editIngredientChoiceBox.getValue().name.equals("Create new ingredient type")) {
-            ingredient.ingredientType = server.addIngredientType(
-                    new IngredientType(editIngredientNameField.getText(),
-                            null, new ArrayList<>(), null)
-            );
+//            ingredient.ingredientType = server.addIngredientType(
+//                    new IngredientType(editIngredientNameField.getText(),
+//                            null, new ArrayList<>(), null)
+//            );
+            ingredient.ingredientType = new IngredientType(editIngredientNameField.getText(),
+                            null, new ArrayList<>(), null);
         } else {
             ingredient.ingredientType = editIngredientChoiceBox.getValue();
         }
@@ -352,5 +356,19 @@ public class AddToShoppingListCtrl {
     private void onExitButton(){
         ingredientListView.getItems().clear();
         controller.showRecipeOverview();
+    }
+
+    /**
+     * On action method for the confirm button
+     * Adds ingredients to Shopping List and closes the overview
+     */
+    @FXML
+    private void onConfirmationButton(){
+        ingredientListView.getItems().stream().forEach(ingredient -> {
+            ingredient.ingredientType.name = ingredient.ingredientType.name + " (" + recipe.name + ")";
+            user.addShoppingListItem(ingredient);
+        });
+        user.saveUser();
+        onExitButton();
     }
 }
