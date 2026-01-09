@@ -3,7 +3,7 @@ package client.utils;
 import commons.Ingredient;
 import commons.IngredientType;
 import commons.Recipe;
-
+import commons.RecipeNutrition;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -24,6 +24,8 @@ public interface ServerUtility {
      *                 Recipe objects whenever an update is broadcast by the server.
      */
     public void subscribeToRecipeList(Consumer<List<Recipe>> listener);
+
+    public RecipeNutrition getRecipeNutrition(long id);
 
     /**
      * Establishes a subscription to receive real-time updates whenever

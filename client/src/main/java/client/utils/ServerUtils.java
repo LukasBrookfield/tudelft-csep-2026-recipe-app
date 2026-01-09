@@ -28,7 +28,7 @@ import java.util.function.Consumer;
 
 import static jakarta.ws.rs.core.MediaType.APPLICATION_JSON;
 
-public class ServerUtils implements ServerUtility{
+public class ServerUtils implements ServerUtility {
     private final Client client;
     private static final String SERVER = "http://localhost:8080/";
 
