@@ -1,5 +1,7 @@
 package client.utils;
 
+import java.util.Locale;
+
 public class ScaleFactorParser {
 
     public double parse(String raw) {
@@ -46,5 +48,22 @@ public class ScaleFactorParser {
         } catch (NumberFormatException e) {
             return 1.0;
         }
+    }
+
+    public double parseOrDefault(String raw, double fallback) {
+        try {
+            return parse(raw);
+        } catch (Exception e) {
+            return fallback;
+        }
+    }
+
+    public String formatForField(double value) {
+        // integer if basically an integer, else show up to 1 decimal
+        if (Math.abs(value - Math.round(value)) < 0.000001) {
+            return Long.toString(Math.round(value));
+        }
+        String s = String.format(Locale.getDefault(), "%.1f", value);
+        return s.trim();
     }
 }

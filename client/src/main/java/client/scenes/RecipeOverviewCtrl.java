@@ -1,12 +1,10 @@
 package client.scenes;
 
-import client.utils.RecipeUtils;
-import client.utils.UserConfig;
+import client.utils.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 
-import client.utils.ServerUtils;
 import commons.*;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -46,6 +44,8 @@ import org.apache.pdfbox.printing.PDFPageable;
 
 import javafx.collections.transformation.FilteredList;
 import javafx.collections.ObservableList;
+import javafx.scene.control.Tooltip;
+
 public class RecipeOverviewCtrl {
     // Constants
     private static final String EMPTY_STAR = "☆";
@@ -67,6 +67,14 @@ public class RecipeOverviewCtrl {
     boolean newRecipe = false;
     boolean newIngredient = false;
     boolean newStep = false;
+
+    private final IngredientScaling ingredientScaling = new IngredientScaling();
+    private final ScaleFactorParser scaleFactorParser = new ScaleFactorParser();
+    private final QuantityFormatter servingsFormatter = new QuantityFormatter();
+
+    private double scaleFactor = 1.0;
+
+    private commons.RecipeNutrition lastNutrition = null;
 
     // Root
 
@@ -246,6 +254,10 @@ public class RecipeOverviewCtrl {
     @FXML
     private TextField scaleFactorField;
 
+    private final Tooltip nutritionTooltip = new Tooltip();
+
+    private int baseServings = 1;
+
     // General
 
     @Inject
@@ -405,7 +417,8 @@ public class RecipeOverviewCtrl {
         Recipe recipe = recipeListView.getSelectionModel().getSelectedItem();
         if (recipe != null) {
             recipeTitleLabel.setText(recipe.name);
-            servingsLabel.setText(String.valueOf(recipe.servings));
+            baseServings = recipe.servings;
+            updateServingsLabel(baseServings);
 
             List<Ingredient> ingredients = new ArrayList<>(recipe.ingredients);
             ingredientListView.setItems(FXCollections.observableList(ingredients));
@@ -521,7 +534,12 @@ public class RecipeOverviewCtrl {
             setLabelsAndFields();
         }));
 
+
         sortedRecipes.setComparator(null); // default is no custom order
+
+        initializeScaleFactorUI();
+        initializeIngredientRendering();
+        recipeKcalPer100gLabel.setTooltip(nutritionTooltip);
 
         // combines the Recipe toString method with a star if it is in the user's favourite recipes
         recipeListView.setCellFactory(new Callback<>() {
@@ -613,6 +631,104 @@ public class RecipeOverviewCtrl {
             if (n > 0) showDeletedFavouritesAlert(n);
         });
     }
+
+    private void initializeScaleFactorUI() {
+        scaleFactorField.setText("1");
+        scaleFactorField.setPromptText("1");
+
+        scaleFactorField.setOnAction(e -> applyScaleFromField());
+
+        scaleFactorField.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue) applyScaleFromField();
+        });
+    }
+
+    private void initializeIngredientRendering(){
+        ingredientListView.setCellFactory(listview -> new ListCell<>() {
+            @Override
+            protected void updateItem(Ingredient item, boolean empty){
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                    return;
+                }
+                setText(ingredientScaling.format(item, scaleFactor));
+            }
+        });
+    }
+
+    private int getBaseServingsFromLabel() {
+        String txt = servingsLabel.getText();
+
+        if (txt == null || txt.isBlank()) return 1;
+
+        int space = txt.indexOf(' ');
+
+        String base = (space >= 0) ? txt.substring(0, space) : txt;
+
+        return Integer.parseInt(base.trim());
+    }
+
+    private void applyScaleFromField(){
+        String raw = scaleFactorField.getText();
+        double parsed = scaleFactorParser.parseOrDefault(raw, scaleFactor);
+
+        if (!(parsed> 0)) parsed = 1.0;
+
+        scaleFactor = parsed;
+        scaleFactorField.setText(scaleFactorParser.formatForField(scaleFactor));
+
+        refreshScaledViewOnly();
+    }
+
+    private void updateServingsLabel(int baseServings) {
+        if (scaleFactor == 1.0){
+            servingsLabel.setText(Integer.toString(baseServings));
+            return;
+        }
+
+        double scaled = baseServings * scaleFactor;
+
+        String scaledText = servingsFormatter.format(scaled);
+
+        servingsLabel.setText(baseServings + " (" + scaledText + ")");
+    }
+
+    private void refreshScaledViewOnly() {
+        commons.Recipe r = recipeListView.getSelectionModel().getSelectedItem();
+        if (r != null) updateServingsLabel(r.servings);
+
+        ingredientListView.refresh();
+
+        updateNutritionTooltip();
+
+    }
+
+    private void updateNutritionTooltip(){
+        double baseKcal = lastNutrition.totalKcal();
+        double baseGrams = lastNutrition.totalGrams();
+
+        double scaledKcal = baseKcal * scaleFactor;
+        double scaledGrams = baseGrams * scaleFactor;
+
+        long ingored = lastNutrition.ignoredIngredients();
+
+        String text =
+                "Base totals:\n " + Math.round(baseKcal) + " kcal, "
+                        + Math.round(baseGrams) + " grams\n\n" +
+                        "Scaled (x" + scaleFactorParser.formatForField(scaleFactor) + "):\n "
+                + Math.round(scaledKcal) + " kcal, " + Math.round(scaledGrams) + " grams\n\n" +
+                        "Ignored (informal) ingredients: " + ingored;
+
+        Tooltip t = recipeKcalPer100gLabel.getTooltip();
+        if (t == null) {
+            recipeKcalPer100gLabel.setTooltip(new Tooltip(text));
+        }
+        else {
+            t.setText(text);
+        }
+    }
+
 
     private void setupSort() {
         sortChoiceBox.getItems().addAll(
@@ -926,7 +1042,7 @@ public class RecipeOverviewCtrl {
         doc.add(new Paragraph(servings));
         doc.add(new Paragraph("Ingredients:", sectinFont));
         for (Ingredient i : ingredients) {
-            doc.add(new Paragraph(" • " + i, bodyFont));
+            doc.add(new Paragraph(" • " + ingredientScaling.format(i, scaleFactor), bodyFont));
         }
         doc.add(new Paragraph(" "));
         doc.add(new Paragraph("Preparation:", sectinFont));
@@ -1143,7 +1259,7 @@ public class RecipeOverviewCtrl {
         Recipe recipe = recipeListView.getItems().get(index);
 
         recipe.name = recipeTitleField.getText();
-        recipe.servings = Integer.parseInt(servingsLabel.getText());
+        recipe.servings = baseServings;
         recipe.ingredients = ingredientListView.getItems().stream().toList();
         recipeUtils.normalizeIngredients(recipe.ingredients);
         recipeUtils.commitLocalIngredientTypes(recipe, server);
@@ -1166,7 +1282,7 @@ public class RecipeOverviewCtrl {
 
     @FXML
     private void onEditServingsButton() {
-        editServingsField.setText(servingsLabel.getText());
+        editServingsField.setText(Integer.toString(getBaseServingsFromLabel()));
         changeServingsViewEditMode(true);
     }
 
