@@ -1956,7 +1956,7 @@ public class RecipeOverviewCtrl {
     }
 
     /**
-     * A flexible helper method that clears any number of provided fields.
+     * Clear any number of provided fields.
      * @param fields One or more TextFields/TextAreas to clear
      */
     private void clearFields(List<TextInputControl> fields) {

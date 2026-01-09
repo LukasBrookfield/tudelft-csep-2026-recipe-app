@@ -11,10 +11,12 @@ import commons.Ingredient;
 import commons.IngredientType;
 import commons.Nutrition;
 import commons.Recipe;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -160,6 +162,17 @@ public class IngredientTypeOverviewCtrl {
 
     @FXML
     private Label usedInRecipesLabel;
+
+    @FXML
+    private StackPane warningOverlay;
+
+    @FXML
+    private Label warningLabel;
+
+    @FXML
+    private VBox warningBox;
+
+    private List<TextInputControl> activeFieldsToClear = new ArrayList<>();
 
     private void setTooltip(Control c, String key){
         ResourceBundle b = languages.bundle();
@@ -408,6 +421,10 @@ public class IngredientTypeOverviewCtrl {
         changeDensityViewEditMode(false);
         changeNutritionViewEditMode(false);
         changeViewEditMode(false);
+
+        if (warningOverlay != null) {
+            warningOverlay.setVisible(false);
+        }
         applyTranslations();
         onRefresh();
 
@@ -646,13 +663,21 @@ public class IngredientTypeOverviewCtrl {
      */
     @FXML
     private void onDoneEditDetailsButton() {
-        if (editNameField.getText().isBlank()) {
+        String inputName = editNameField.getText();
+
+        if (inputName == null || inputName.isBlank()) {
             System.out.println("The ingredient type needs a name.");
+            showWarning("The ingredient type name cannot be empty!", List.of(editNameField));
             return;
         }
 
-        nameLabel.setText(editNameField.getText());
+        if (Character.isDigit(inputName.trim().charAt(0))) {
+            System.out.println("The ingredient type name cannot start with a digit.");
+            showWarning("Ingredient names cannot start with a number!", List.of(editNameField));
+            return;
+        }
 
+        nameLabel.setText(inputName.trim());
         changeDetailsViewEditMode(false);
     }
 
@@ -743,5 +768,36 @@ public class IngredientTypeOverviewCtrl {
 
         kcalLabel.setText("-");
         changeNutritionViewEditMode(false);
+    }
+    @FXML
+    private void onCloseWarning() {
+        warningOverlay.setVisible(false);
+        System.out.println("Warning closed and fields reset.");
+    }
+
+    /**
+     * Set the message to a warning and makes it visible
+     * @param message String of warning message
+     * @param fields One or more TextFields/TextAreas to clear
+     */
+    private void showWarning(String message, List<TextInputControl> fields) {
+        warningLabel.setText(message);
+        warningOverlay.setVisible(true);
+        if(fields!=null && !fields.isEmpty()) {
+            clearFields(fields);
+        }
+    }
+
+    /**
+     * Clear any number of provided fields.
+     * @param fields One or more TextFields/TextAreas to clear
+     */
+    private void clearFields(List<TextInputControl> fields) {
+        for (TextInputControl field : fields) {
+            if (field != null) {
+                field.clear();
+                field.setText("");
+            }
+        }
     }
 }
