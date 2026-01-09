@@ -2,7 +2,7 @@
 | --- | --- |
 | Date | 09/01/2026 |
 | Time | 16:45 - 17:30 |
-| Location | Flux Hall D |
+| Location | Drebbelweg PC Hall 2 |
 | Chair | Teammate 3 |
 | Minute Taker | Teammate 5 |
 | Attendees: | Teammate 2, Teammate 1, Teammate 4, Lukas Brookfield, Teammate 5, Teammate 3 |
