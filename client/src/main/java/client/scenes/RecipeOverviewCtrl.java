@@ -243,6 +243,9 @@ public class RecipeOverviewCtrl {
     @FXML
     private Label recipeKcalPer100gLabel;
 
+    @FXML
+    private TextField scaleFactorField;
+
     // General
 
     @Inject
