@@ -3,8 +3,6 @@ package commons;
 import jakarta.persistence.*;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
 @Entity
 public class Nutrition {
@@ -47,6 +45,11 @@ public class Nutrition {
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString(this, MULTI_LINE_STYLE);
+        return String.format("Nutrition[\n" +
+                "  id=%d\n" +
+                "  carbs=%.1f\n" +
+                "  protein=%.1f\n" +
+                "  fat=%.1f\n]", id, carbs, protein, fat);
+        // return ToStringBuilder.reflectionToString(this, MULTI_LINE_STYLE);
     }
 }

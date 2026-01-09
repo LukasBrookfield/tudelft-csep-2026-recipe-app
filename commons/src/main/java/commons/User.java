@@ -2,11 +2,9 @@ package commons;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
-import static org.apache.commons.lang3.builder.ToStringStyle.MULTI_LINE_STYLE;
 
 public class User {
     private List<Long> favouriteRecipes;
@@ -58,6 +56,7 @@ public class User {
 
     @Override
     public String toString() {
-        return ToStringBuilder.reflectionToString (this, MULTI_LINE_STYLE);
+        return String.format("User[\n  favouriteRecipes=%s\n  shoppingList=%s\n]",
+                favouriteRecipes, shoppingList);
     }
 }
