@@ -42,6 +42,14 @@ public class Ingredient {
 
     private Ingredient() {}  // for object mapper
 
+    /**
+     * Copy an ingredient
+     * @return a copy of ingredient
+     */
+    public Ingredient copy() {
+        return new Ingredient(ingredientType.copy(), amount, unit, recipe);
+    }
+
     @Override
     public boolean equals(Object obj) {
         return EqualsBuilder.reflectionEquals(this, obj,

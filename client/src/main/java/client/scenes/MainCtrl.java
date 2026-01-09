@@ -1,5 +1,6 @@
 package client.scenes;
 
+import commons.Recipe;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -25,11 +26,16 @@ public class MainCtrl {
     private ShoppingListCtrl shoppingListCtrl;
     private Scene shoppingListScene;
 
+    private AddToShoppingListCtrl addToShoppingListCtrl;
+    private Scene addToShoppingListScene;
+
     public void initialize(Stage primaryStage,
                            Pair<HomeScreenCtrl, Parent> homeScreen,
                            Pair<RecipeOverviewCtrl, Parent> recipeOverview,
                            Pair<IngredientTypeOverviewCtrl, Parent> ingredientOverview,
-                           Pair<ShoppingListCtrl, Parent> shoppingList) {
+                           Pair<ShoppingListCtrl, Parent> shoppingList,
+                           Pair<AddToShoppingListCtrl, Parent> addToShoppingList) {
+
         this.primaryStage = primaryStage;
 
         this.homeScreenCtrl = homeScreen.getKey();
@@ -43,6 +49,9 @@ public class MainCtrl {
 
         this.shoppingListCtrl = shoppingList.getKey();
         this.shoppingListScene = new Scene(shoppingList.getValue());
+
+        this.addToShoppingListCtrl = addToShoppingList.getKey();
+        this.addToShoppingListScene = new Scene(addToShoppingList.getValue());
 
         primaryStage.getIcons().add(new Image(Objects.requireNonNull(
                 getClass().getResourceAsStream("/FoodPalLogo.png"))));
@@ -72,6 +81,13 @@ public class MainCtrl {
         primaryStage.setTitle("FoodPal - Shopping List");
         primaryStage.setScene(shoppingListScene);
 
+        shoppingListCtrl.set();
         shoppingListCtrl.lastScene = currentScene;
+    }
+
+    public void showAddToShoppingList(Recipe recipe) {
+        primaryStage.setTitle("FoodPal - Add to Shopping List");
+        primaryStage.setScene(addToShoppingListScene);
+        addToShoppingListCtrl.setFields(recipe);
     }
 }

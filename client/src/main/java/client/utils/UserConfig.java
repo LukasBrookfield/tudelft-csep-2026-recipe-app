@@ -5,6 +5,7 @@ import commons.Ingredient;
 import commons.User;
 import commons.Recipe;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class UserConfig {
@@ -50,6 +51,14 @@ public class UserConfig {
 
     public void setFavouriteRecipes(List<Long> favouriteRecipes) {
         user.setFavouriteRecipes(favouriteRecipes);
+    }
+
+    /**
+     * Adds an ingredient to shopping list
+     * @param ingredient The ingredient
+     */
+    public void addShoppingListItem(Ingredient ingredient){
+        user.addShoppingListItem(ingredient);
     }
 
     /**
