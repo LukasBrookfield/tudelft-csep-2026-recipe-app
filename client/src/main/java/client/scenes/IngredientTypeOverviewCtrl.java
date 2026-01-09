@@ -702,8 +702,11 @@ public class IngredientTypeOverviewCtrl {
      */
     @FXML
     private void onDoneEditDensityButton() {
+        List<TextInputControl> fields = new ArrayList<>();
+        fields.add(editDensityField);
         if (editDensityField.getText().isBlank()) {
             densityLabel.setText("");
+            showWarning("The ingredient type density cannot be empty!", null);
             changeDensityViewEditMode(false);
             return;
         }
@@ -712,6 +715,7 @@ public class IngredientTypeOverviewCtrl {
             density = Double.parseDouble(editDensityField.getText());
         } catch (NumberFormatException e) {
             System.out.println("Density must be a double");
+            showWarning("Density must be a double!", fields);
             return;
         }
         densityLabel.setText(String.valueOf(density));
@@ -750,22 +754,44 @@ public class IngredientTypeOverviewCtrl {
      */
     @FXML
     private void onDoneEditNutritionButton() {
-        if (!proteinTextField.getText().isEmpty()) {
-            proteinLabel.setText(proteinTextField.getText() + "g");
-        } else {
-            proteinLabel.setText("-");
-        }
-        if (!fatTextField.getText().isEmpty()) {
-            fatLabel.setText(fatTextField.getText() + "g");
-        } else {
-            fatLabel.setText("-");
-        }
-        if (!carbsTextField.getText().isEmpty()) {
-            carbsLabel.setText(carbsTextField.getText() + "g");
-        } else {
-            carbsLabel.setText("-");
+        List<TextInputControl> invalidFields = new ArrayList<>();
+
+        String pText = proteinTextField.getText().trim();
+        if (!pText.isEmpty()) {
+            try {
+                if (Double.parseDouble(pText) < 0) throw new NumberFormatException();
+            } catch (NumberFormatException e) {
+                invalidFields.add(proteinTextField);
+            }
         }
 
+        String fText = fatTextField.getText().trim();
+        if (!fText.isEmpty()) {
+            try {
+                if (Double.parseDouble(fText) < 0) throw new NumberFormatException();
+            } catch (NumberFormatException e) {
+                invalidFields.add(fatTextField);
+            }
+        }
+
+        String cText = carbsTextField.getText().trim();
+        if (!cText.isEmpty()) {
+            try {
+                if (Double.parseDouble(cText) < 0) throw new NumberFormatException();
+            } catch (NumberFormatException e) {
+                invalidFields.add(carbsTextField);
+            }
+        }
+
+        if (!invalidFields.isEmpty()) {
+            showWarning("Nutritional values must be valid positive numbers!", invalidFields);
+            System.out.println("Invalid nutritional input detected in specific fields.");
+            return;
+        }
+
+        proteinLabel.setText(pText.isEmpty() ? "-" : pText + "g");
+        fatLabel.setText(fText.isEmpty() ? "-" : fText + "g");
+        carbsLabel.setText(cText.isEmpty() ? "-" : cText + "g");
         kcalLabel.setText("-");
         changeNutritionViewEditMode(false);
     }
