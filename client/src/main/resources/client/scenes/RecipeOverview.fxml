@@ -17,196 +17,201 @@
 
 <VBox maxHeight="-Infinity" prefHeight="478.67" prefWidth="640.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.RecipeOverviewCtrl">
     <children>
-        <AnchorPane fx:id="rootPane" maxHeight="-1.0" maxWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
-            <children>
-                <BorderPane layoutX="194.0" layoutY="39.0" prefHeight="375.0" prefWidth="640.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-                    <top>
-                        <HBox alignment="CENTER" prefHeight="33.0" prefWidth="518.0" BorderPane.alignment="CENTER">
-                            <padding>
-                                <Insets left="10.0" right="10.0" />
-                            </padding>
-                            <children>
-                                <Label alignment="BOTTOM_LEFT" prefHeight="25.0" prefWidth="161.0" text="🍽 FoodPal" textFill="#589ed5">
-                                    <font>
-                                        <Font name="System Bold" size="16.0" />
-                                    </font>
-                                    <padding>
-                                        <Insets left="5.0" />
-                                    </padding>
-                                </Label>
-                                <HBox alignment="CENTER_RIGHT" prefHeight="33.0" prefWidth="504.0" spacing="5.0">
-                                    <children>
-                              <Button fx:id="starRecipeButton" mnemonicParsing="false" onAction="#onStarRecipe" text="☆">
-                                 <tooltip>
-                                    <Tooltip fx:id="starTooltip" text="Empty Tooltip">
-                                       <font>
-                                          <Font size="13.0" />
-                                       </font>
-                                    </Tooltip>
-                                 </tooltip></Button>
-                              <Button fx:id="addToShoppingListButton" mnemonicParsing="false" onAction="#onAddToShoppingList" text="Add to Shopping List" />
-                              <Button fx:id="downloadRecipeButton" alignment="CENTER_RIGHT" cacheShape="false" mnemonicParsing="false" onAction="#onDownloadRecipe" prefHeight="25.0" prefWidth="71.0" text="Download" />
-                              <Button fx:id="printRecipeButton" alignment="CENTER_RIGHT" cacheShape="false" mnemonicParsing="false" onAction="#onPrintRecipe" prefHeight="25.0" prefWidth="42.0" text="Print" />
-                              <Button fx:id="toggleOverviewButton" mnemonicParsing="false" onAction="#onToggleOverviewButton" text="View ingredient overview" />
-                              <Button fx:id="homeButton" mnemonicParsing="false" onAction="#onHomeButton" prefHeight="25.0" prefWidth="28.0" text="🏠">
-                                 <font>
-                                    <Font name="Segoe UI Emoji" size="10.0" />
-                                 </font>
-                                 <tooltip>
-                                    <Tooltip text="View home screen">
-                                       <font>
-                                          <Font size="13.0" />
-                                       </font>
-                                    </Tooltip>
-                                 </tooltip>
-                              </Button>
-                                    </children>
-                           <HBox.margin>
-                              <Insets right="10.0" />
-                           </HBox.margin>
-                                </HBox>
-                            </children>
-                     <BorderPane.margin>
-                        <Insets top="5.0" />
-                     </BorderPane.margin>
-                        </HBox>
-                    </top>
-                    <left>
-                        <VBox prefHeight="200.0" prefWidth="210.0" spacing="3.0" BorderPane.alignment="CENTER">
-                            <padding>
-                                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                            </padding>
-                            <children>
-                        <HBox prefHeight="19.0" prefWidth="190.0" spacing="2.5">
-                           <children>
-                                      <TextField fx:id="recipeSearchField" prefHeight="25.0" prefWidth="235.0" promptText="Search recipes...">
-                                 <opaqueInsets>
-                                    <Insets />
-                                 </opaqueInsets>
-                              </TextField>
-                              <HBox prefHeight="25.0" prefWidth="4.0" />
-                              <ChoiceBox fx:id="sortChoiceBox" prefHeight="25.0" prefWidth="199.0" />
-                           </children>
-                           <VBox.margin>
-                              <Insets />
-                           </VBox.margin>
-                        </HBox>
-                        <ChoiceBox fx:id="favouriteRecipeFilterBox" prefHeight="25.0" prefWidth="190.0">
-                           <VBox.margin>
-                              <Insets bottom="5.0" top="5.0" />
-                           </VBox.margin></ChoiceBox>
-                                <ListView fx:id="recipeListView" prefWidth="190.0" VBox.vgrow="ALWAYS" />
-                        <Label fx:id="searchStatusLabel" prefHeight="25.0" prefWidth="196.0" text="Label" />
-                                <HBox alignment="CENTER_LEFT" prefHeight="29.0" prefWidth="190.0" spacing="5.0">
-                                    <children>
-                                        <Button fx:id="removeRecipeButton" minWidth="-Infinity" mnemonicParsing="false" onAction="#onRemoveRecipe" prefHeight="25.0" prefWidth="25.0" text="✕">
-                                            <font>
-                                                <Font size="9.0" />
-                                            </font>
-                                 <tooltip>
-                                    <Tooltip text="Remove recipe">
-                                       <font>
-                                          <Font size="13.0" />
-                                       </font>
-                                    </Tooltip>
-                                 </tooltip>
-                                        </Button>
-                                        <Button fx:id="addRecipeButton" minWidth="-Infinity" mnemonicParsing="false" onAction="#onAddRecipe" prefHeight="25.0" prefWidth="25.0" text="+">
-                                 <tooltip>
-                                    <Tooltip text="Add recipe">
-                                       <font>
-                                          <Font size="13.0" />
-                                       </font>
-                                    </Tooltip>
-                                 </tooltip></Button>
-                              <Button fx:id="cloneRecipeButton" minWidth="-Infinity" mnemonicParsing="false" onAction="#onCloneRecipe" prefHeight="25.0" prefWidth="25.0" text="⧉">
-                                 <font>
-                                    <Font size="10.0" />
-                                 </font>
-                                 <tooltip>
-                                    <Tooltip text="Clone recipe">
-                                       <font>
-                                          <Font size="13.0" />
-                                       </font>
-                                    </Tooltip>
-                                 </tooltip>
-                              </Button>
-                              <HBox alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="131.0">
-                                 <children>
-                                    <Button fx:id="shoppingListButton" contentDisplay="CENTER" mnemonicParsing="false" onAction="#onShoppingListButton" prefHeight="25.0" prefWidth="121.0" text="Shopping list" />
-                                 </children>
-                              </HBox>
-                                    </children>
-                           <VBox.margin>
-                              <Insets top="5.0" />
-                           </VBox.margin>
-                                </HBox>
-                            </children>
-                            <BorderPane.margin>
-                                <Insets left="5.0" />
-                            </BorderPane.margin>
-                        </VBox>
-                    </left>
-                    <center>
-                        <VBox fx:id="recipeDetailsVBox" prefHeight="200.0" prefWidth="100.0" spacing="8.0" BorderPane.alignment="CENTER">
-                            <padding>
-                                <Insets bottom="10.0" left="10.0" right="20.0" top="10.0" />
-                            </padding>
-                            <children>
-                                <HBox alignment="CENTER" prefHeight="25.0" prefWidth="410.0" spacing="5.0">
-                                    <children>
-                              <StackPane alignment="CENTER_LEFT" prefHeight="25.0" prefWidth="390.0" HBox.hgrow="ALWAYS">
-                                 <children>
-                                              <Label fx:id="recipeTitleLabel" prefHeight="25.0" prefWidth="288.0" text="New recipe" StackPane.alignment="CENTER_LEFT">
-                                                  <font>
-                                                      <Font name="System Bold" size="14.0" />
-                                                  </font>
-                                              </Label>
-                                    <TextField fx:id="recipeTitleField" prefHeight="25.0" prefWidth="275.0" promptText="Enter a recipe name" StackPane.alignment="CENTER_LEFT" />
-                                 </children>
-                              </StackPane>
-                              <StackPane alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="248.0" HBox.hgrow="ALWAYS">
-                                 <children>
-                                    <HBox alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="102.0" spacing="5.0" StackPane.alignment="CENTER_RIGHT">
-                                       <children>
-                                          <Button fx:id="cancelEditButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#onCancelEditButton" prefHeight="25.0" prefWidth="67.0" text="Cancel" />
-                                          <Button fx:id="doneEditButton" alignment="CENTER" mnemonicParsing="false" onAction="#onDoneEditButton" prefHeight="25.0" prefWidth="57.0" text="Done" />
-                                       </children>
-                                    </HBox>
-                                              <Button fx:id="editRecipeButton" alignment="CENTER_RIGHT" cacheShape="false" mnemonicParsing="false" onAction="#onEditRecipeButton" prefHeight="25.0" prefWidth="28.0" text="✎" StackPane.alignment="CENTER_RIGHT">
+      <StackPane VBox.vgrow="ALWAYS">
+         <children>
+              <AnchorPane fx:id="rootPane" maxHeight="-1.0" maxWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0">
+                  <children>
+                      <BorderPane layoutX="194.0" layoutY="39.0" prefHeight="375.0" prefWidth="640.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                          <top>
+                              <HBox alignment="CENTER" prefHeight="33.0" prefWidth="518.0" BorderPane.alignment="CENTER">
+                                  <padding>
+                                      <Insets left="10.0" right="10.0" />
+                                  </padding>
+                                  <children>
+                                      <Label alignment="BOTTOM_LEFT" prefHeight="25.0" prefWidth="161.0" text="🍽 FoodPal" textFill="#589ed5">
+                                          <font>
+                                              <Font name="System Bold" size="16.0" />
+                                          </font>
+                                          <padding>
+                                              <Insets left="5.0" />
+                                          </padding>
+                                      </Label>
+                              <HBox alignment="CENTER_RIGHT" prefHeight="33.0" prefWidth="504.0" spacing="5.0">
+                                          <children>
+                                    <Button fx:id="starRecipeButton" mnemonicParsing="false" onAction="#onStarRecipe" text="☆">
                                        <tooltip>
-                                          <Tooltip text="Edit recipe">
+                                          <Tooltip fx:id="starTooltip" text="Empty Tooltip">
                                              <font>
                                                 <Font size="13.0" />
                                              </font>
                                           </Tooltip>
-                                       </tooltip></Button>
-                                 </children>
-                              </StackPane>
-                                    </children>
-                           <VBox.margin>
-                              <Insets />
-                           </VBox.margin>
-                                </HBox>
-                                <Separator fx:id="mainSeparator" prefWidth="200.0" />
-                        <HBox prefHeight="100.0" prefWidth="200.0">
-                           <children>
-                              <HBox alignment="CENTER_LEFT" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="165.0" spacing="5.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
-                                 <children>
-                                    <Label fx:id="servingsCaptionLabel" prefHeight="17.0" prefWidth="153.0" text="Servings:">
-                                       <HBox.margin>
-                                          <Insets left="5.0" />
-                                       </HBox.margin>
-                                    </Label>
-                                    <Label fx:id="servingsLabel" alignment="CENTER_RIGHT" prefHeight="17.0" prefWidth="108.0" text="-">
-                                       <HBox.margin>
-                                          <Insets right="5.0" />
-                                       </HBox.margin>
-                                    </Label>
-                                 </children>
+                                       </tooltip>
+                                    </Button><Button fx:id="addToShoppingListButton" mnemonicParsing="false" onAction="#onAddToShoppingList" text="Add to Shopping List" />
+                                    <Button fx:id="downloadRecipeButton" alignment="CENTER_RIGHT" cacheShape="false" mnemonicParsing="false" onAction="#onDownloadRecipe" prefHeight="25.0" prefWidth="71.0" text="Download" />
+                                    <Button fx:id="printRecipeButton" alignment="CENTER_RIGHT" cacheShape="false" mnemonicParsing="false" onAction="#onPrintRecipe" prefHeight="25.0" prefWidth="42.0" text="Print" />
+                                    <Button fx:id="toggleOverviewButton" mnemonicParsing="false" onAction="#onToggleOverviewButton" text="View ingredient overview" />
+                                    <Button fx:id="homeButton" mnemonicParsing="false" onAction="#onHomeButton" prefHeight="25.0" prefWidth="28.0" text="🏠">
+                                       <font>
+                                          <Font name="Segoe UI Emoji" size="10.0" />
+                                       </font>
+                                       <tooltip>
+                                          <Tooltip text="View home screen">
+                                             <font>
+                                                <Font size="13.0" />
+                                             </font>
+                                          </Tooltip>
+                                       </tooltip>
+                                    </Button>
+                                          </children>
+                                 <HBox.margin>
+                                    <Insets right="10.0" />
+                                 </HBox.margin>
+                                      </HBox>
+                                  </children>
+                           <BorderPane.margin>
+                              <Insets top="5.0" />
+                           </BorderPane.margin>
                               </HBox>
-                              <HBox prefHeight="25.0" prefWidth="72.0" HBox.hgrow="ALWAYS">
+                          </top>
+                          <left>
+                              <VBox prefHeight="200.0" prefWidth="210.0" spacing="3.0" BorderPane.alignment="CENTER">
+                                  <padding>
+                                      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                                  </padding>
+                                  <children>
+                              <HBox prefHeight="19.0" prefWidth="190.0" spacing="2.5">
                                  <children>
+                                            <TextField fx:id="recipeSearchField" prefHeight="25.0" prefWidth="235.0" promptText="Search recipes...">
+                                       <opaqueInsets>
+                                          <Insets />
+                                       </opaqueInsets>
+                                    </TextField>
+                                    <HBox prefHeight="25.0" prefWidth="4.0" />
+                                    <ChoiceBox fx:id="sortChoiceBox" prefHeight="25.0" prefWidth="199.0" />
+                                 </children>
+                                 <VBox.margin>
+                                    <Insets />
+                                 </VBox.margin>
+                              </HBox>
+                              <ChoiceBox fx:id="favouriteRecipeFilterBox" prefHeight="25.0" prefWidth="190.0">
+                                 <VBox.margin>
+                                    <Insets bottom="5.0" top="5.0" />
+                                 </VBox.margin>
+                              </ChoiceBox>
+                                      <ListView fx:id="recipeListView" prefWidth="190.0" VBox.vgrow="ALWAYS" />
+                              <Label fx:id="searchStatusLabel" prefHeight="25.0" prefWidth="196.0" text="Label" />
+                                      <HBox alignment="CENTER_LEFT" prefHeight="29.0" prefWidth="190.0" spacing="5.0">
+                                          <children>
+                                              <Button fx:id="removeRecipeButton" minWidth="-Infinity" mnemonicParsing="false" onAction="#onRemoveRecipe" prefHeight="25.0" prefWidth="25.0" text="✕">
+                                                  <font>
+                                                      <Font size="9.0" />
+                                                  </font>
+                                       <tooltip>
+                                          <Tooltip text="Remove recipe">
+                                             <font>
+                                                <Font size="13.0" />
+                                             </font>
+                                          </Tooltip>
+                                       </tooltip>
+                                              </Button>
+                                              <Button fx:id="addRecipeButton" minWidth="-Infinity" mnemonicParsing="false" onAction="#onAddRecipe" prefHeight="25.0" prefWidth="25.0" text="+">
+                                       <tooltip>
+                                          <Tooltip text="Add recipe">
+                                             <font>
+                                                <Font size="13.0" />
+                                             </font>
+                                          </Tooltip>
+                                       </tooltip>
+                                    </Button>
+                                    <Button fx:id="cloneRecipeButton" minWidth="-Infinity" mnemonicParsing="false" onAction="#onCloneRecipe" prefHeight="25.0" prefWidth="25.0" text="⧉">
+                                       <font>
+                                          <Font size="10.0" />
+                                       </font>
+                                       <tooltip>
+                                          <Tooltip text="Clone recipe">
+                                             <font>
+                                                <Font size="13.0" />
+                                             </font>
+                                          </Tooltip>
+                                       </tooltip>
+                                    </Button>
+                                    <HBox alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="131.0">
+                                       <children>
+                                          <Button fx:id="shoppingListButton" contentDisplay="CENTER" mnemonicParsing="false" onAction="#onShoppingListButton" prefHeight="25.0" prefWidth="121.0" text="Shopping list" />
+                                       </children>
+                                    </HBox>
+                                          </children>
+                                 <VBox.margin>
+                                    <Insets top="5.0" />
+                                 </VBox.margin>
+                                      </HBox>
+                                  </children>
+                                  <BorderPane.margin>
+                                      <Insets left="5.0" />
+                                  </BorderPane.margin>
+                              </VBox>
+                          </left>
+                          <center>
+                              <VBox fx:id="recipeDetailsVBox" prefHeight="200.0" prefWidth="100.0" spacing="8.0" BorderPane.alignment="CENTER">
+                                  <padding>
+                                      <Insets bottom="10.0" left="10.0" right="20.0" top="10.0" />
+                                  </padding>
+                                  <children>
+                                      <HBox alignment="CENTER" prefHeight="25.0" prefWidth="410.0" spacing="5.0">
+                                          <children>
+                                    <StackPane alignment="CENTER_LEFT" prefHeight="25.0" prefWidth="390.0" HBox.hgrow="ALWAYS">
+                                       <children>
+                                                    <Label fx:id="recipeTitleLabel" prefHeight="25.0" prefWidth="288.0" text="New recipe" StackPane.alignment="CENTER_LEFT">
+                                                        <font>
+                                                            <Font name="System Bold" size="14.0" />
+                                                        </font>
+                                                    </Label>
+                                          <TextField fx:id="recipeTitleField" prefHeight="25.0" prefWidth="275.0" promptText="Enter a recipe name" StackPane.alignment="CENTER_LEFT" />
+                                       </children>
+                                    </StackPane>
+                                    <StackPane alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="248.0" HBox.hgrow="ALWAYS">
+                                       <children>
+                                          <HBox alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="102.0" spacing="5.0" StackPane.alignment="CENTER_RIGHT">
+                                             <children>
+                                                <Button fx:id="cancelEditButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#onCancelEditButton" prefHeight="25.0" prefWidth="67.0" text="Cancel" />
+                                                <Button fx:id="doneEditButton" alignment="CENTER" mnemonicParsing="false" onAction="#onDoneEditButton" prefHeight="25.0" prefWidth="57.0" text="Done" />
+                                             </children>
+                                          </HBox>
+                                                    <Button fx:id="editRecipeButton" alignment="CENTER_RIGHT" cacheShape="false" mnemonicParsing="false" onAction="#onEditRecipeButton" prefHeight="25.0" prefWidth="28.0" text="✎" StackPane.alignment="CENTER_RIGHT">
+                                             <tooltip>
+                                                <Tooltip text="Edit recipe">
+                                                   <font>
+                                                      <Font size="13.0" />
+                                                   </font>
+                                                </Tooltip>
+                                             </tooltip>
+                                          </Button>
+                                       </children>
+                                    </StackPane>
+                                          </children>
+                                 <VBox.margin>
+                                    <Insets />
+                                 </VBox.margin>
+                                      </HBox>
+                                      <Separator fx:id="mainSeparator" prefWidth="200.0" />
+                              <HBox prefHeight="100.0" prefWidth="200.0">
+                                 <children>
+                                    <HBox alignment="CENTER_LEFT" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="165.0" spacing="5.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
+                                       <children>
+                                          <Label fx:id="servingsCaptionLabel"prefHeight="17.0" prefWidth="153.0" text="Servings:">
+                                             <HBox.margin>
+                                                <Insets left="5.0" />
+                                             </HBox.margin>
+                                          </Label>
+                                          <Label fx:id="servingsLabel" alignment="CENTER_RIGHT" prefHeight="17.0" prefWidth="108.0" text="-">
+                                             <HBox.margin>
+                                                <Insets right="5.0" />
+                                             </HBox.margin>
+                                          </Label>
+                                       </children>
+                                    </HBox>
+                                    <HBox prefHeight="25.0" prefWidth="72.0" HBox.hgrow="ALWAYS">
+                                    <children>
                                     <TextField fx:id="scaleFactorField" prefHeight="25.0" prefWidth="34.0" />
                                     <Label alignment="CENTER" prefHeight="25.0" prefWidth="17.0" text="×" textAlignment="CENTER">
                                        <HBox.margin>
@@ -218,228 +223,233 @@
                                     <Insets right="10.0" />
                                  </HBox.margin></HBox>
                               <HBox alignment="CENTER_RIGHT" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="149.0" spacing="5.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
-                                 <children>
-                                    <Label fx:id="kcalCaptionLabel" prefHeight="23.0" prefWidth="207.0" text="Kcal per 100g:">
-                                       <HBox.margin>
-                                          <Insets left="5.0" />
-                                       </HBox.margin>
-                                    </Label>
-                                    <Label fx:id="recipeKcalPer100gLabel" alignment="CENTER_RIGHT" prefHeight="17.0" prefWidth="128.0" text="-">
-                                       <HBox.margin>
-                                          <Insets right="5.0" />
-                                       </HBox.margin>
-                                    </Label>
-                                 </children>
-                              </HBox>
-                           </children>
-                        </HBox>
-                        <StackPane>
-                           <children>
-                              <HBox alignment="CENTER_LEFT" prefHeight="25.0" prefWidth="307.0" spacing="5.0">
-                                 <children>
-                                    <TextField fx:id="editServingsField" prefHeight="25.0" prefWidth="302.0" promptText="Enter the amount of servings" />
-                                    <HBox prefHeight="25.0" prefWidth="185.0" HBox.hgrow="ALWAYS" />
-                                    <HBox alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="232.0" spacing="5.0">
                                        <children>
-                                          <Button fx:id="cancelEditServingsButton" mnemonicParsing="false" onAction="#onCancelEditServingsButton" prefHeight="25.0" prefWidth="51.0" text="Cancel" />
-                                          <Button fx:id="doneEditServingsButton" mnemonicParsing="false" onAction="#onDoneEditServingsButton" prefHeight="25.0" prefWidth="45.0" text="Done" />
+                                          <Label fx:id="kcalCaptionLabel"prefHeight="23.0" prefWidth="207.0" text="Kcal per 100g:">
+                                             <HBox.margin>
+                                                <Insets left="5.0" />
+                                             </HBox.margin>
+                                          </Label>
+                                          <Label fx:id="recipeKcalPer100gLabel" alignment="CENTER_RIGHT" prefHeight="17.0" prefWidth="128.0" text="-">
+                                             <HBox.margin>
+                                                <Insets right="5.0" />
+                                             </HBox.margin>
+                                          </Label>
                                        </children>
                                     </HBox>
                                  </children>
                               </HBox>
-                              <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                              <StackPane>
                                  <children>
-                                    <Button fx:id="editServingsButton" mnemonicParsing="false" onAction="#onEditServingsButton" prefHeight="25.0" prefWidth="28.0" text="✎">
-                                       <tooltip>
-                                          <Tooltip text="Edit servings">
-                                             <font>
-                                                <Font size="13.0" />
-                                             </font>
-                                          </Tooltip>
-                                       </tooltip></Button>
-                                 </children>
-                              </HBox>
-                           </children>
-                        </StackPane>
-                                <Label fx:id="ingredientsHeaderLabel" text="Ingredients">
-                                    <font>
-                                        <Font name="System Bold" size="13.0" />
-                                    </font>
-                                </Label>
-                                <ListView fx:id="ingredientListView" prefHeight="190.0" prefWidth="395.0" />
-                                <HBox alignment="CENTER_LEFT" prefHeight="0.0" prefWidth="395.0" spacing="5.0">
-                                    <children>
-                              <StackPane prefHeight="25.0" prefWidth="411.0">
-                                 <children>
-                                    <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0" visible="false">
+                                    <HBox alignment="CENTER_LEFT" prefHeight="25.0" prefWidth="307.0" spacing="5.0">
                                        <children>
-                                                    <Button fx:id="removeIngredientButton" mnemonicParsing="false" onAction="#onRemoveIngredientButton" prefHeight="25.0" prefWidth="25.0" text="✕">
-                                                        <font>
-                                                            <Font size="9.0" />
-                                                        </font>
+                                          <TextField fx:id="editServingsField" prefHeight="25.0" prefWidth="302.0" promptText="Enter the amount of servings" />
+                                          <HBox prefHeight="25.0" prefWidth="185.0" HBox.hgrow="ALWAYS" />
+                                          <HBox alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="232.0" spacing="5.0">
+                                             <children>
+                                                <Button fx:id="cancelEditServingsButton" mnemonicParsing="false" onAction="#onCancelEditServingsButton" prefHeight="25.0" prefWidth="51.0" text="Cancel" />
+                                                <Button fx:id="doneEditServingsButton" mnemonicParsing="false" onAction="#onDoneEditServingsButton" prefHeight="25.0" prefWidth="45.0" text="Done" />
+                                             </children>
+                                          </HBox>
+                                       </children>
+                                    </HBox>
+                                    <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                                       <children>
+                                          <Button fx:id="editServingsButton" mnemonicParsing="false" onAction="#onEditServingsButton" prefHeight="25.0" prefWidth="28.0" text="✎">
                                              <tooltip>
-                                                <Tooltip text="Remove ingredient">
-                                                   <font>
-                                                      <Font size="13.0" />
-                                                   </font>
-                                                </Tooltip>
-                                             </tooltip>
-                                                    </Button>
-                                                    <Button fx:id="addIngredientButton" mnemonicParsing="false" onAction="#onAddIngredientButton" prefHeight="25.0" prefWidth="25.0" text="+">
-                                             <HBox.margin>
-                                                <Insets />
-                                             </HBox.margin>
-                                             <tooltip>
-                                                <Tooltip text="Add ingredient">
+                                                <Tooltip text="Edit servings">
                                                    <font>
                                                       <Font size="13.0" />
                                                    </font>
                                                 </Tooltip>
                                              </tooltip>
                                           </Button>
-                                                    <Button fx:id="editIngredientButton" mnemonicParsing="false" onAction="#onEditIngredientButton" prefHeight="25.0" prefWidth="28.0" text="✎">
-                                             <tooltip>
-                                                <Tooltip text="Edit ingredient">
-                                                   <font>
-                                                      <Font size="13.0" />
-                                                   </font>
-                                                </Tooltip>
-                                             </tooltip></Button>
-                                       </children>
-                                    </HBox>
-                                    <HBox prefHeight="25.0" prefWidth="307.0" spacing="5.0" visible="false">
-                                       <children>
-                                          <ChoiceBox fx:id="editIngredientBox" prefHeight="25.0" prefWidth="277.0" />
-                                          <TextField fx:id="editIngredientNameField" prefHeight="25.0" prefWidth="208.0" promptText="Ingredient type" />
-                                          <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
-                                             <children>
-                                                <Button fx:id="cancelEditIngredientButton" mnemonicParsing="false" onAction="#onCancelEditIngredientButton" prefHeight="25.0" prefWidth="56.0" text="Cancel" />
-                                                <Button fx:id="nextEditIngredientButton" mnemonicParsing="false" onAction="#onNextEditIngredientButton" prefHeight="25.0" prefWidth="43.0" text="Next" />
-                                             </children>
-                                          </HBox>
-                                       </children>
-                                    </HBox>
-                                    <HBox layoutX="10.0" layoutY="10.0" prefHeight="25.0" prefWidth="307.0" spacing="5.0">
-                                       <children>
-                                          <ChoiceBox fx:id="editUnitBox" prefHeight="25.0" prefWidth="203.0" />
-                                          <TextField fx:id="editIngredientAmountField" prefHeight="25.0" prefWidth="191.0" promptText="Amount" />
-                                          <HBox alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="149.0" spacing="5.0">
-                                             <children>
-                                                <Button fx:id="onBackEditIngredientButton" mnemonicParsing="false" onAction="#onBackEditIngredientButton" prefHeight="25.0" prefWidth="48.0" text="Back" />
-                                                <Button fx:id="doneEditIngredientButton" mnemonicParsing="false" onAction="#onDoneEditIngredientButton" text="Done" />
-                                             </children>
-                                          </HBox>
                                        </children>
                                     </HBox>
                                  </children>
-                                 <HBox.margin>
-                                    <Insets top="-5.0" />
-                                 </HBox.margin>
                               </StackPane>
-                                    </children>
-                           <VBox.margin>
-                              <Insets top="5.0" />
-                           </VBox.margin>
-                                </HBox>
-                                <Label fx:id="preparationHeaderLabel" text="Preparation">
-                                    <font>
-                                        <Font name="System Bold" size="13.0" />
-                                    </font>
-                                    <VBox.margin>
-                                        <Insets />
-                                    </VBox.margin>
-                                </Label>
-                                <ListView fx:id="preparationStepListView" prefHeight="190.0" prefWidth="200.0" />
-                        <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0">
-                           <children>
-                              <StackPane alignment="TOP_RIGHT" prefHeight="25.0" prefWidth="405.0">
+                                      <Label fx:id="ingredientsHeaderLabel" text="Ingredients">
+                                          <font>
+                                              <Font name="System Bold" size="13.0" />
+                                          </font>
+                                      </Label>
+                                      <ListView fx:id="ingredientListView" prefHeight="190.0" prefWidth="395.0" />
+                                      <HBox alignment="CENTER_LEFT" prefHeight="0.0" prefWidth="395.0" spacing="5.0">
+                                          <children>
+                                    <StackPane prefHeight="25.0" prefWidth="411.0">
+                                       <children>
+                                          <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0" visible="false">
+                                             <children>
+                                                          <Button fx:id="removeIngredientButton" mnemonicParsing="false" onAction="#onRemoveIngredientButton" prefHeight="25.0" prefWidth="25.0" text="✕">
+                                                              <font>
+                                                                  <Font size="9.0" />
+                                                              </font>
+                                                   <tooltip>
+                                                      <Tooltip text="Remove ingredient">
+                                                         <font>
+                                                            <Font size="13.0" />
+                                                         </font>
+                                                      </Tooltip>
+                                                   </tooltip>
+                                                          </Button>
+                                                          <Button fx:id="addIngredientButton" mnemonicParsing="false" onAction="#onAddIngredientButton" prefHeight="25.0" prefWidth="25.0" text="+">
+                                                   <HBox.margin>
+                                                      <Insets />
+                                                   </HBox.margin>
+                                                   <tooltip>
+                                                      <Tooltip text="Add ingredient">
+                                                         <font>
+                                                            <Font size="13.0" />
+                                                         </font>
+                                                      </Tooltip>
+                                                   </tooltip>
+                                                </Button>
+                                                          <Button fx:id="editIngredientButton" mnemonicParsing="false" onAction="#onEditIngredientButton" prefHeight="25.0" prefWidth="28.0" text="✎">
+                                                   <tooltip>
+                                                      <Tooltip text="Edit ingredient">
+                                                         <font>
+                                                            <Font size="13.0" />
+                                                         </font>
+                                                      </Tooltip>
+                                                   </tooltip>
+                                                </Button>
+                                             </children>
+                                          </HBox>
+                                          <HBox prefHeight="25.0" prefWidth="307.0" spacing="5.0" visible="false">
+                                             <children>
+                                                <ChoiceBox fx:id="editIngredientBox" prefHeight="25.0" prefWidth="277.0" />
+                                                <TextField fx:id="editIngredientNameField" prefHeight="25.0" prefWidth="208.0" promptText="Ingredient type" />
+                                                <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                                                   <children>
+                                                      <Button fx:id="cancelEditIngredientButton" mnemonicParsing="false" onAction="#onCancelEditIngredientButton" prefHeight="25.0" prefWidth="56.0" text="Cancel" />
+                                                      <Button fx:id="nextEditIngredientButton" mnemonicParsing="false" onAction="#onNextEditIngredientButton" prefHeight="25.0" prefWidth="43.0" text="Next" />
+                                                   </children>
+                                                </HBox>
+                                             </children>
+                                          </HBox>
+                                          <HBox layoutX="10.0" layoutY="10.0" prefHeight="25.0" prefWidth="307.0" spacing="5.0">
+                                             <children>
+                                                <ChoiceBox fx:id="editUnitBox" prefHeight="25.0" prefWidth="203.0" />
+                                                <TextField fx:id="editIngredientAmountField" prefHeight="25.0" prefWidth="191.0" promptText="Amount" />
+                                                <HBox alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="149.0" spacing="5.0">
+                                                   <children>
+                                                      <Button fx:id="onBackEditIngredientButton" mnemonicParsing="false" onAction="#onBackEditIngredientButton" prefHeight="25.0" prefWidth="48.0" text="Back" />
+                                                      <Button fx:id="doneEditIngredientButton" mnemonicParsing="false" onAction="#onDoneEditIngredientButton" text="Done" />
+                                                   </children>
+                                                </HBox>
+                                             </children>
+                                          </HBox>
+                                       </children>
+                                       <HBox.margin>
+                                          <Insets top="-5.0" />
+                                       </HBox.margin>
+                                    </StackPane>
+                                          </children>
+                                 <VBox.margin>
+                                    <Insets top="5.0" />
+                                 </VBox.margin>
+                                      </HBox>
+                                      <Label fx:id="preparationHeaderLabel" text="Preparation">
+                                          <font>
+                                              <Font name="System Bold" size="13.0" />
+                                          </font>
+                                          <VBox.margin>
+                                              <Insets />
+                                          </VBox.margin>
+                                      </Label>
+                                      <ListView fx:id="preparationStepListView" prefHeight="190.0" prefWidth="200.0" />
+                              <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0">
                                  <children>
-                                    <HBox alignment="TOP_RIGHT" prefHeight="25.0" prefWidth="220.0" spacing="5.0" StackPane.alignment="CENTER_RIGHT">
+                                    <StackPane alignment="TOP_RIGHT" prefHeight="25.0" prefWidth="405.0">
                                        <children>
-                                          <TextField fx:id="editStepField" prefHeight="25.0" prefWidth="385.0" promptText="Enter an instruction" />
-                                          <HBox alignment="TOP_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                                          <HBox alignment="TOP_RIGHT" prefHeight="25.0" prefWidth="220.0" spacing="5.0" StackPane.alignment="CENTER_RIGHT">
                                              <children>
-                                                <Button fx:id="cancelEditStepButton" alignment="TOP_RIGHT" contentDisplay="CENTER" mnemonicParsing="false" onAction="#onCancelEditStepButton" prefHeight="25.0" prefWidth="57.0" text="Cancel" />
-                                                <Button fx:id="doneEditStepButton" alignment="TOP_RIGHT" mnemonicParsing="false" onAction="#onDoneEditStepButton" prefHeight="25.0" prefWidth="49.0" text="Done" />
+                                                <TextField fx:id="editStepField" prefHeight="25.0" prefWidth="385.0" promptText="Enter an instruction" />
+                                                <HBox alignment="TOP_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                                                   <children>
+                                                      <Button fx:id="cancelEditStepButton" alignment="TOP_RIGHT" contentDisplay="CENTER" mnemonicParsing="false" onAction="#onCancelEditStepButton" prefHeight="25.0" prefWidth="57.0" text="Cancel" />
+                                                      <Button fx:id="doneEditStepButton" alignment="TOP_RIGHT" mnemonicParsing="false" onAction="#onDoneEditStepButton" prefHeight="25.0" prefWidth="49.0" text="Done" />
+                                                   </children>
+                                                   <HBox.margin>
+                                                      <Insets />
+                                                   </HBox.margin>
+                                                </HBox>
                                              </children>
-                                             <HBox.margin>
+                                             <StackPane.margin>
                                                 <Insets />
-                                             </HBox.margin>
+                                             </StackPane.margin>
+                                          </HBox>
+                                          <HBox prefHeight="25.0" prefWidth="380.0" spacing="5.0">
+                                             <children>
+                                                          <Button fx:id="removeStepButton" mnemonicParsing="false" onAction="#onRemoveStepButton" prefHeight="25.0" prefWidth="25.0" text="✕">
+                                                              <font>
+                                                                  <Font size="9.0" />
+                                                              </font>
+                                                   <tooltip>
+                                                      <Tooltip text="Remove step">
+                                                         <font>
+                                                            <Font size="13.0" />
+                                                         </font>
+                                                      </Tooltip>
+                                                   </tooltip>
+                                                          </Button>
+                                                          <Button fx:id="addStepButton" mnemonicParsing="false" onAction="#onAddStepButton" prefHeight="25.0" prefWidth="25.0" text="+">
+                                                   <tooltip>
+                                                      <Tooltip text="Add step">
+                                                         <font>
+                                                            <Font size="13.0" />
+                                                         </font>
+                                                      </Tooltip>
+                                                   </tooltip>
+                                                </Button>
+                                                          <Button fx:id="editStepButton" mnemonicParsing="false" onAction="#onEditStepButton" prefHeight="25.0" prefWidth="28.0" text="✎">
+                                                   <tooltip>
+                                                      <Tooltip text="Edit step">
+                                                         <font>
+                                                            <Font size="13.0" />
+                                                         </font>
+                                                      </Tooltip>
+                                                   </tooltip>
+                                                </Button>
+                                                <Button fx:id="moveStepUpButton" mnemonicParsing="false" onAction="#onMoveStepUpButton" prefHeight="25.0" prefWidth="6.0" text="↑">
+                                                   <tooltip>
+                                                      <Tooltip text="Move up">
+                                                         <font>
+                                                            <Font size="13.0" />
+                                                         </font>
+                                                      </Tooltip>
+                                                   </tooltip>
+                                                </Button>
+                                                <Button fx:id="moveStepDownButton" mnemonicParsing="false" onAction="#onMoveStepDownButton" prefHeight="25.0" prefWidth="6.0" text="↓">
+                                                   <tooltip>
+                                                      <Tooltip text="Move down">
+                                                         <font>
+                                                            <Font size="13.0" />
+                                                         </font>
+                                                      </Tooltip>
+                                                   </tooltip>
+                                                </Button>
+                                             </children>
+                                             <StackPane.margin>
+                                                <Insets />
+                                             </StackPane.margin>
                                           </HBox>
                                        </children>
-                                       <StackPane.margin>
-                                          <Insets />
-                                       </StackPane.margin>
-                                    </HBox>
-                                    <HBox prefHeight="25.0" prefWidth="380.0" spacing="5.0">
-                                       <children>
-                                                    <Button fx:id="removeStepButton" mnemonicParsing="false" onAction="#onRemoveStepButton" prefHeight="25.0" prefWidth="25.0" text="✕">
-                                                        <font>
-                                                            <Font size="9.0" />
-                                                        </font>
-                                             <tooltip>
-                                                <Tooltip text="Remove step">
-                                                   <font>
-                                                      <Font size="13.0" />
-                                                   </font>
-                                                </Tooltip>
-                                             </tooltip>
-                                                    </Button>
-                                                    <Button fx:id="addStepButton" mnemonicParsing="false" onAction="#onAddStepButton" prefHeight="25.0" prefWidth="25.0" text="+">
-                                             <tooltip>
-                                                <Tooltip text="Add step">
-                                                   <font>
-                                                      <Font size="13.0" />
-                                                   </font>
-                                                </Tooltip>
-                                             </tooltip></Button>
-                                                    <Button fx:id="editStepButton" mnemonicParsing="false" onAction="#onEditStepButton" prefHeight="25.0" prefWidth="28.0" text="✎">
-                                             <tooltip>
-                                                <Tooltip text="Edit step">
-                                                   <font>
-                                                      <Font size="13.0" />
-                                                   </font>
-                                                </Tooltip>
-                                             </tooltip></Button>
-                                          <Button fx:id="moveStepUpButton" mnemonicParsing="false" onAction="#onMoveStepUpButton" prefHeight="25.0" prefWidth="6.0" text="↑">
-                                             <tooltip>
-                                                <Tooltip text="Move up">
-                                                   <font>
-                                                      <Font size="13.0" />
-                                                   </font>
-                                                </Tooltip>
-                                             </tooltip></Button>
-                                          <Button fx:id="moveStepDownButton" mnemonicParsing="false" onAction="#onMoveStepDownButton" prefHeight="25.0" prefWidth="6.0" text="↓">
-                                             <tooltip>
-                                                <Tooltip text="Move down">
-                                                   <font>
-                                                      <Font size="13.0" />
-                                                   </font>
-                                                </Tooltip>
-                                             </tooltip></Button>
-                                       </children>
-                                       <StackPane.margin>
-                                          <Insets />
-                                       </StackPane.margin>
-                                    </HBox>
+                                       <HBox.margin>
+                                          <Insets top="-5.0" />
+                                       </HBox.margin>
+                                    </StackPane>
                                  </children>
-                                 <HBox.margin>
-                                    <Insets top="-5.0" />
-                                 </HBox.margin>
-                              </StackPane>
-                           </children>
-                           <VBox.margin>
-                              <Insets top="5.0" />
-                           </VBox.margin>
-                        </HBox>
-                            </children>
-                            <BorderPane.margin>
-                                <Insets />
-                            </BorderPane.margin>
-                        </VBox>
-                    </center>
-                </BorderPane>
-                <HBox fx:id="languagePickerContainer"
+                                 <VBox.margin>
+                                    <Insets top="5.0" />
+                                 </VBox.margin>
+                              </HBox>
+                                  </children>
+                                  <BorderPane.margin>
+                                      <Insets />
+                                  </BorderPane.margin>
+                              </VBox>
+                          </center>
+                      </BorderPane><HBox fx:id="languagePickerContainer"
                       alignment="CENTER_RIGHT"
                       pickOnBounds="false"
                       AnchorPane.bottomAnchor="0.0"
@@ -448,7 +458,33 @@
                         <fx:include source="LanguagePicker.fxml"/>
                     </children>
                 </HBox>
-            </children>
-        </AnchorPane>
+                  </children>
+              </AnchorPane>
+            <StackPane fx:id="warningPane" style="-fx-background-color: rgba(0,0,0,0.4);" StackPane.alignment="CENTER">
+               <StackPane.margin>
+                  <Insets />
+               </StackPane.margin>
+               <children>
+                  <VBox alignment="CENTER" fillWidth="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="250.0" prefWidth="350.0" spacing="20.0" style="-fx-background-color: white; -fx-border-radius: 15; -fx-background-radius: 15;">
+                     <children>
+                        <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="142.0" prefWidth="309.0" text="Warning: Invalid Input">
+                           <VBox.margin>
+                              <Insets />
+                           </VBox.margin>
+                           <font>
+                              <Font size="15.0" />
+                           </font>
+                        </Label>
+                        <Button fx:id="handleCloseWarningButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" prefHeight="45.0" prefWidth="108.0" text="OK">
+                           <VBox.margin>
+                              <Insets />
+                           </VBox.margin>
+                        </Button>
+                     </children>
+                  </VBox>
+               </children>
+            </StackPane>
+         </children>
+      </StackPane>
     </children>
 </VBox>
