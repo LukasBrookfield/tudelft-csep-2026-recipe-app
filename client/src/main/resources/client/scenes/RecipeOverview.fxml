@@ -191,22 +191,33 @@
                                 <Separator fx:id="mainSeparator" prefWidth="200.0" />
                         <HBox prefHeight="100.0" prefWidth="200.0">
                            <children>
-                              <HBox alignment="CENTER_LEFT" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="190.0" spacing="5.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
+                              <HBox alignment="CENTER_LEFT" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="165.0" spacing="5.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
                                  <children>
                                     <Label prefHeight="17.0" prefWidth="153.0" text="Servings:">
                                        <HBox.margin>
                                           <Insets left="5.0" />
                                        </HBox.margin>
                                     </Label>
-                                    <Label fx:id="servingsLabel" alignment="CENTER_RIGHT" prefHeight="17.0" prefWidth="128.0" text="-">
+                                    <Label fx:id="servingsLabel" alignment="CENTER_RIGHT" prefHeight="17.0" prefWidth="108.0" text="-">
                                        <HBox.margin>
                                           <Insets right="5.0" />
                                        </HBox.margin>
                                     </Label>
                                  </children>
                               </HBox>
-                              <HBox prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
-                              <HBox alignment="CENTER_RIGHT" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="190.0" spacing="5.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
+                              <HBox prefHeight="25.0" prefWidth="72.0" HBox.hgrow="ALWAYS">
+                                 <children>
+                                    <TextField fx:id="scaleFactorField" prefHeight="25.0" prefWidth="34.0" />
+                                    <Label alignment="CENTER" prefHeight="25.0" prefWidth="17.0" text="×" textAlignment="CENTER">
+                                       <HBox.margin>
+                                          <Insets />
+                                       </HBox.margin>
+                                    </Label>
+                                 </children>
+                                 <HBox.margin>
+                                    <Insets right="10.0" />
+                                 </HBox.margin></HBox>
+                              <HBox alignment="CENTER_RIGHT" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="149.0" spacing="5.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
                                  <children>
                                     <Label prefHeight="23.0" prefWidth="207.0" text="Kcal per 100g:">
                                        <HBox.margin>
