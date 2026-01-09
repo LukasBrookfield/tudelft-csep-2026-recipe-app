@@ -108,6 +108,17 @@ public class ShoppingListCtrl {
     }
 
     /**
+     * Public method activated each time when shopping list is accessed.
+     * It updates the shopping list and sets the fields
+     */
+    @FXML
+    public void set(){
+        ingredientListView.getItems().clear();
+        initialize();
+        onRefresh();
+    }
+
+    /**
      * Changes the scene between viewing and editing the ingredients
      * @param value false for viewing mode, true for editing mode
      */

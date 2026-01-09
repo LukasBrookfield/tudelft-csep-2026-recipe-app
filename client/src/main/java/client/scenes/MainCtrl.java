@@ -81,6 +81,7 @@ public class MainCtrl {
         primaryStage.setTitle("FoodPal - Shopping List");
         primaryStage.setScene(shoppingListScene);
 
+        shoppingListCtrl.set();
         shoppingListCtrl.lastScene = currentScene;
     }
 
