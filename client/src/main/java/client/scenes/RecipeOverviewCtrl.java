@@ -1934,7 +1934,7 @@ public class RecipeOverviewCtrl {
     }
 
     /**
-     * Remove warning after clicking the OK button and reset the input fields
+     * Close warning after clicking the OK button and reset the input fields
      */
     @FXML
     private void onCloseWarning() {

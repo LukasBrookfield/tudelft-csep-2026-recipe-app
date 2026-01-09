@@ -795,6 +795,10 @@ public class IngredientTypeOverviewCtrl {
         kcalLabel.setText("-");
         changeNutritionViewEditMode(false);
     }
+
+    /**
+     * Close warning after clicking the OK button and reset the input fields
+     */
     @FXML
     private void onCloseWarning() {
         warningOverlay.setVisible(false);
