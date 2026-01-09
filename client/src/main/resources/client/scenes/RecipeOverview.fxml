@@ -460,7 +460,7 @@
                 </HBox>
                   </children>
               </AnchorPane>
-            <StackPane fx:id="warningOverlay" style="-fx-background-color: rgba(0,0,0,0.4);" StackPane.alignment="CENTER">
+            <StackPane fx:id="warningOverlay" style="-fx-background-color: rgba(0,0,0,0.4);" visible="false" StackPane.alignment="CENTER">
                <StackPane.margin>
                   <Insets />
                </StackPane.margin>

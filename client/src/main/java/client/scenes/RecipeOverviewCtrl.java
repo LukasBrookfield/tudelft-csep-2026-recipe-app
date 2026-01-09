@@ -1433,11 +1433,20 @@ public class RecipeOverviewCtrl {
      */
     @FXML
     private void onDoneEditButton() throws JsonProcessingException {
+        // Check if the name is blank
         if (recipeTitleField.getText().isBlank()) {
             System.out.println("The recipe needs a name");
             List<TextInputControl> textFields = new ArrayList<>();
             textFields.add(recipeTitleField);
             showWarning("Please give the recipe a name!", textFields);
+            return;
+        }
+        // Check if the name starts with a digit
+        if (Character.isDigit(recipeTitleField.getText().charAt(0))) {
+            System.out.println("The recipe name cannot start with a digit");
+            List<TextInputControl> textFields = new ArrayList<>();
+            textFields.add(recipeTitleField);
+            showWarning("The recipe name cannot start with a number!", textFields);
             return;
         }
 
