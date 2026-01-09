@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 
+import client.utils.ServerUtils;
 import commons.*;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -19,6 +20,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
 
@@ -258,6 +261,15 @@ public class RecipeOverviewCtrl {
 
     @FXML
     private Label recipeKcalPer100gLabel;
+
+    @FXML
+    private StackPane warningOverlay; // The semi-transparent background pane
+
+    @FXML
+    private Label warningLabel;
+
+    @FXML
+    private VBox warningBox;
 
     @FXML
     private TextField scaleFactorField;
@@ -586,10 +598,10 @@ public class RecipeOverviewCtrl {
 
             if (user.isFavouriteRecipe(recipe)) {
                 starRecipeButton.setText(FULL_STAR);
-//                starTooltip.setText("Remove recipe from favorites");
+                starTooltip.setText("Remove recipe from favorites");
             } else {
                 starRecipeButton.setText(EMPTY_STAR);
-//                starTooltip.setText("Add recipe to favorites");
+                starTooltip.setText("Add recipe to favorites");
             }
             refreshStartTooltip();
         }
@@ -654,6 +666,7 @@ public class RecipeOverviewCtrl {
         changeViewEditMode(false);
         recipeTitleField.setVisible(false);
         applyTranslations();
+        warningOverlay.setVisible(false);       // Make the warning overlay pane invisible
         onRefresh();
 
         editUnitBox.getItems().addAll("Select a unit", "G", "ML", "TBSP", "TSP", "PINCH",
@@ -1422,6 +1435,9 @@ public class RecipeOverviewCtrl {
     private void onDoneEditButton() throws JsonProcessingException {
         if (recipeTitleField.getText().isBlank()) {
             System.out.println("The recipe needs a name");
+            List<TextInputControl> textFields = new ArrayList<>();
+            textFields.add(recipeTitleField);
+            showWarning("Please give the recipe a name!", textFields);
             return;
         }
 
@@ -1477,14 +1493,22 @@ public class RecipeOverviewCtrl {
 
     @FXML
     private void onDoneEditServingsButton() {
+        List<TextInputControl> textFields = new ArrayList<>();
+        textFields.add(editServingsField);
         if (editServingsField.getText().isBlank()) {
             System.out.println("Enter a valid amount.");
+            showWarning("The amount of servings needs can't be blank!", null);
             return;
         }
-        if (Integer.parseInt(editServingsField.getText()) <= 0) {
-            System.out.println("The amount of servings needs to " +
-                    "be a positive integer.");
-            return;
+        try {
+            if (Integer.parseInt(editServingsField.getText()) <= 0) {
+                System.out.println("The amount of servings needs to " +
+                        "be a positive integer.");
+                showWarning("The amount of servings needs to be a positive integer!", null);
+                return;
+            }
+        } catch (NumberFormatException e) {
+            showWarning("Enter a valid number.", textFields);
         }
 
         try {
@@ -1492,6 +1516,7 @@ public class RecipeOverviewCtrl {
             servingsLabel.setText(editServingsField.getText());
         } catch (NumberFormatException e) {
             System.out.println("Enter a valid number.");
+            showWarning("Enter a valid number.", textFields);
             return;
         }
 
@@ -1515,6 +1540,7 @@ public class RecipeOverviewCtrl {
             System.out.println("There is no ingredient selected.");
             return;
         }
+        Recipe recipe = recipeListView.getSelectionModel().getSelectedItem();
         Ingredient ingredient = ingredientListView.getSelectionModel().getSelectedItem();
         ingredientListView.getItems().remove(ingredient);
     }
@@ -1652,6 +1678,7 @@ public class RecipeOverviewCtrl {
     @FXML
     private void onDoneEditIngredientButton() throws JsonProcessingException {
         if (editUnitBox.getValue().equals("Select a unit")) {
+            showWarning("Please select a unit for the ingredient!", null);
             System.out.println("Select a unit.");
             return;
         }
@@ -1794,6 +1821,7 @@ public class RecipeOverviewCtrl {
     private void onDoneEditStepButton() {
         if (editStepField.getText().isEmpty()) {
             System.out.println("The step cannot be empty.");
+
             return;
         }
         int index = preparationStepListView.getSelectionModel().getSelectedIndex();
@@ -1864,6 +1892,41 @@ public class RecipeOverviewCtrl {
                     onRefresh();
                 }
         );
+    }
+
+    /**
+     * Remove warning after clicking the OK button and reset the input fields
+     */
+    @FXML
+    private void onCloseWarning() {
+        warningOverlay.setVisible(false);
+        System.out.println("Warning closed and fields reset.");
+    }
+
+    /**
+     * Set the message to a warning and makes it visible
+     * @param message String of warning message
+     * @param fields One or more TextFields/TextAreas to clear
+     */
+    private void showWarning(String message, List<TextInputControl> fields) {
+        warningLabel.setText(message);
+        warningOverlay.setVisible(true);
+        if(fields!=null && !fields.isEmpty()) {
+            clearFields(fields);
+        }
+    }
+
+    /**
+     * A flexible helper method that clears any number of provided fields.
+     * @param fields One or more TextFields/TextAreas to clear
+     */
+    private void clearFields(List<TextInputControl> fields) {
+        for (TextInputControl field : fields) {
+            if (field != null) {
+                field.clear();
+                field.setText("");
+            }
+        }
     }
 
     /**
