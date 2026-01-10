@@ -1,11 +1,14 @@
 package client.scenes;
 
+import client.utils.LanguageService;
+import com.google.inject.Inject;
 import commons.Recipe;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 import javafx.scene.image.Image;
+import org.hibernate.service.spi.InjectService;
 
 import java.awt.*;
 import java.util.Objects;
@@ -28,6 +31,13 @@ public class MainCtrl {
 
     private AddToShoppingListCtrl addToShoppingListCtrl;
     private Scene addToShoppingListScene;
+
+    private final LanguageService languages;
+
+    @Inject
+    public MainCtrl(LanguageService languages) {
+        this.languages = languages;
+    }
 
     public void initialize(Stage primaryStage,
                            Pair<HomeScreenCtrl, Parent> homeScreen,
@@ -61,24 +71,28 @@ public class MainCtrl {
     }
 
     public void showHomeScreen() {
-        primaryStage.setTitle("FoodPal - Home Screen");
+        primaryStage.setTitle(languages.bundle().getString("title.home"));
+//        primaryStage.setTitle("FoodPal - Home");
         primaryStage.setScene(homeScreenScene);
     }
 
     public void showRecipeOverview() {
-        primaryStage.setTitle("FoodPal - Recipe Overview");
+        primaryStage.setTitle(languages.bundle().getString("title.recipes"));
+//        primaryStage.setTitle("FoodPal - Recipe Overview");
         primaryStage.setScene(recipeOverviewScene);
         recipeOverviewCtrl.onRefresh();
     }
 
     public void showIngredientTypeOverview() {
-        primaryStage.setTitle("FoodPal - Ingredient Overview");
+        primaryStage.setTitle(languages.bundle().getString("title.ingredients"));
+//        primaryStage.setTitle("FoodPal - Ingredient Overview");
         primaryStage.setScene(ingredientTypeOverviewScene);
         ingredientTypeOverviewCtrl.onRefresh();
     }
 
     public void showShoppingList(boolean currentScene) {
-        primaryStage.setTitle("FoodPal - Shopping List");
+        primaryStage.setTitle(languages.bundle().getString("title.shopping"));
+//        primaryStage.setTitle("FoodPal - Shopping List");
         primaryStage.setScene(shoppingListScene);
 
         shoppingListCtrl.set();
@@ -86,7 +100,8 @@ public class MainCtrl {
     }
 
     public void showAddToShoppingList(Recipe recipe) {
-        primaryStage.setTitle("FoodPal - Add to Shopping List");
+        primaryStage.setTitle(languages.bundle().getString("title.addToShopping"));
+//        primaryStage.setTitle("FoodPal - Add to Shopping List");
         primaryStage.setScene(addToShoppingListScene);
         addToShoppingListCtrl.setFields(recipe);
     }
