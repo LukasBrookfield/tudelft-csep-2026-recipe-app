@@ -5,6 +5,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
+import client.utils.LanguageService;
 import com.google.inject.Injector;
 
 import javafx.fxml.FXMLLoader;
@@ -16,15 +17,17 @@ import javafx.util.Pair;
 
 public class MyFXML {
 
-    private Injector injector;
+    private final Injector injector;
+    private final LanguageService languages;
 
-    public MyFXML(Injector injector) {
+    public MyFXML(Injector injector, LanguageService languages) {
         this.injector = injector;
+        this.languages = languages;
     }
 
     public <T> Pair<T, Parent> load(Class<T> c, String... parts) {
         try {
-            var loader = new FXMLLoader(getLocation(parts), null, null, new MyFactory(), StandardCharsets.UTF_8);
+            var loader = new FXMLLoader(getLocation(parts), languages.bundle(), null, new MyFactory(), StandardCharsets.UTF_8);
             Parent parent = loader.load();
             T ctrl = loader.getController();
             return new Pair<>(ctrl, parent);
