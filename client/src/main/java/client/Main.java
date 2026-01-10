@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 
 import client.scenes.*;
+import client.utils.ServerUtility;
 import com.google.inject.Injector;
 
 import client.utils.ServerUtils;
@@ -15,7 +16,7 @@ import javafx.stage.Stage;
 public class Main extends Application {
 
     private static final Injector INJECTOR = createInjector(new MyModule());
-    private static final MyFXML FXML = new MyFXML(INJECTOR);
+    private static final MyFXML FXML = INJECTOR.getInstance(MyFXML.class);
 
     public static void main(String[] args) throws URISyntaxException, IOException {
         launch();
@@ -24,7 +25,7 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
 
-        var serverUtils = INJECTOR.getInstance(ServerUtils.class);
+        var serverUtils = INJECTOR.getInstance(ServerUtility.class);
         if (!serverUtils.isServerAvailable()) {
             var msg = "Server needs to be started before the client, but it does not seem to be available. Shutting down.";
             System.err.println(msg);
