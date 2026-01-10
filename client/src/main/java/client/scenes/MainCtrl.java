@@ -105,4 +105,17 @@ public class MainCtrl {
         primaryStage.setScene(addToShoppingListScene);
         addToShoppingListCtrl.setFields(recipe);
     }
+
+    public void applyTranslationsToAllScreens() {
+
+        if (primaryStage.getScene() == homeScreenScene) primaryStage.setTitle(languages.bundle().getString("title.home"));
+        if (primaryStage.getScene() == recipeOverviewScene) primaryStage.setTitle(languages.bundle().getString("title.recipes"));
+
+        homeScreenCtrl.applyTranslations();
+        recipeOverviewCtrl.applyTranslations();
+        ingredientTypeOverviewCtrl.applyTranslations();
+        shoppingListCtrl.applyTranslations();
+        addToShoppingListCtrl.applyTranslations();
+    }
+
 }

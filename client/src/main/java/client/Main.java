@@ -33,11 +33,11 @@ public class Main extends Application {
         }
 
         var homeScreen = FXML.load(HomeScreenCtrl.class,
-                "client", "scenes", "HomeScreen.fxml");
+                "client" , "scenes", "HomeScreen.fxml");
         var recipeOverview = FXML.load(RecipeOverviewCtrl.class,
-                "client", "scenes", "RecipeOverview.fxml");
+                "client" , "scenes", "RecipeOverview.fxml");
         var ingredientOverview = FXML.load(IngredientTypeOverviewCtrl.class,
-                "client", "scenes", "IngredientOverview.fxml");
+                "client" , "scenes", "IngredientOverview.fxml");
         var shoppingList = FXML.load(ShoppingListCtrl.class,
                 "client", "scenes", "ShoppingList.fxml");
         var addToShoppingList = FXML.load(AddToShoppingListCtrl.class,
