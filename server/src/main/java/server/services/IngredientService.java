@@ -1,6 +1,7 @@
 package server.services;
 
 import commons.Ingredient;
+import commons.Unit;
 import org.springframework.stereotype.Service;
 import server.database.IngredientRepository;
 
@@ -16,6 +17,16 @@ public class IngredientService {
         if (ingredient == null || ingredient.ingredientType == null) {
             return false;
         }
+
+        // All units other than 'To Taste' need an amount
+        if (ingredient.unit != Unit.TO_TASTE && ingredient.amount == null) {
+            return false;
+        }
+        // A 'To Taste' unit cannot have an amount
+        if (ingredient.unit == Unit.TO_TASTE && ingredient.amount != null) {
+            return false;
+        }
+
         return true;
     }
 
