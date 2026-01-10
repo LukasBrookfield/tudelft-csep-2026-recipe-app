@@ -10,6 +10,8 @@ public class User {
     private List<Long> favouriteRecipes;
     private List<Ingredient> shoppingList;
 
+    private String languageTag;
+
     /**
      * Constructs a new User object
      * @param favouriteRecipes A list of the ids of the user's favourite recipes
@@ -18,6 +20,8 @@ public class User {
     public User(List<Long> favouriteRecipes, List<Ingredient> shoppingList) {
         this.favouriteRecipes = favouriteRecipes;
         this.shoppingList = shoppingList;
+
+        this.languageTag = "en";    // default language - english
     }
 
     /**
@@ -26,6 +30,7 @@ public class User {
     public User() {
         this.favouriteRecipes = new ArrayList<>();
         this.shoppingList = new ArrayList<>();
+        this.languageTag = "en";
     }
 
     public List<Long> getFavouriteRecipes() {
@@ -65,9 +70,17 @@ public class User {
         return HashCodeBuilder.reflectionHashCode(this);
     }
 
+    public String getLanguageTag() {
+        return languageTag;
+    }
+
+    public void setLanguageTag(String languageTag) {
+        this.languageTag = languageTag;
+    }
+
     @Override
     public String toString() {
-        return String.format("User[\n  favouriteRecipes=%s\n  shoppingList=%s\n]",
-                favouriteRecipes, shoppingList);
+        return String.format("User[\n  favouriteRecipes=%s\n  shoppingList=%s\n languageTag%s\n]",
+                favouriteRecipes, shoppingList, languageTag);
     }
 }
