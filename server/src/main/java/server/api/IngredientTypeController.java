@@ -6,18 +6,22 @@ import commons.IngredientType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.database.IngredientTypeRepository;
+import server.services.IngredientTypeService;
 
 @RestController
 @RequestMapping("api/ingredientTypes")
 public class IngredientTypeController {
     private final IngredientTypeRepository repo;
+    private final IngredientTypeService ingredientTypeService;
 
     /**
      * IngredientTypeController constructor
      * @param repo The spring IngredientType repository (connects to sql database)
      */
-    public IngredientTypeController(IngredientTypeRepository repo) {
+    public IngredientTypeController(IngredientTypeRepository repo,
+                                    IngredientTypeService ingredientTypeService) {
         this.repo = repo;
+        this.ingredientTypeService = ingredientTypeService;
     }
 
     /**
@@ -53,9 +57,7 @@ public class IngredientTypeController {
      */
     @PostMapping(path = { "", "/" })
     public ResponseEntity<IngredientType> add(@RequestBody IngredientType ingredientType) {
-        if (ingredientType == null
-                || ingredientType.name == null
-                || ingredientType.name.isEmpty()) {
+        if (!ingredientTypeService.validateIngredientType(ingredientType)) {
             return ResponseEntity.badRequest().build();
         }
         IngredientType saved = repo.save(ingredientType);
@@ -96,22 +98,18 @@ public class IngredientTypeController {
      */
     @PutMapping("/{id}")
     public ResponseEntity<IngredientType> update(@PathVariable("id") long id,
-                                             @RequestBody IngredientType updatedIngredientType) {
-        if (updatedIngredientType == null
-                || updatedIngredientType.name == null
-                || updatedIngredientType.name.isEmpty()
-                || id < 0 || !repo.existsById(id)) {
+                                                 @RequestBody IngredientType
+                                                         updatedIngredientType) {
+        if (!ingredientTypeService.validateUpdatedIngredientType(id,
+                updatedIngredientType)) {
             return ResponseEntity.badRequest().build();
-        } else {
-            IngredientType ingredientTypeToUpdate = repo.findById(id).get();
-
-            // update fields
-            ingredientTypeToUpdate.name = updatedIngredientType.name;
-            ingredientTypeToUpdate.nutrition = updatedIngredientType.nutrition;
-            ingredientTypeToUpdate.density = updatedIngredientType.density;
-
-            IngredientType updated = repo.save(ingredientTypeToUpdate);
-            return ResponseEntity.ok(updated);
         }
+
+        IngredientType ingredientTypeToUpdate = repo.findById(id).get();
+        ingredientTypeService.transferFields(updatedIngredientType,
+                ingredientTypeToUpdate);
+
+        IngredientType updated = repo.save(ingredientTypeToUpdate);
+        return ResponseEntity.ok(updated);
     }
 }
