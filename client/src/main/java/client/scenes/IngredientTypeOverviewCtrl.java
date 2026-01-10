@@ -1,7 +1,7 @@
 package client.scenes;
 
 import client.utils.RecipeUtils;
-import client.utils.ServerUtils;
+import client.utils.ServerUtility;
 import client.utils.UserConfig;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,7 +10,6 @@ import commons.Ingredient;
 import commons.IngredientType;
 import commons.Nutrition;
 import commons.Recipe;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -26,7 +25,7 @@ import java.util.Optional;
 
 public class IngredientTypeOverviewCtrl {
 
-    private final ServerUtils server;
+    private final ServerUtility server;
 
     private final RecipeUtils recipeUtils;
 
@@ -152,7 +151,7 @@ public class IngredientTypeOverviewCtrl {
 
     // General
     @Inject
-    public IngredientTypeOverviewCtrl(ServerUtils server,
+    public IngredientTypeOverviewCtrl(ServerUtility server,
                                       RecipeUtils recipeUtils,
                                       UserConfig user,
                                       MainCtrl mainCtrl) {
