@@ -145,4 +145,188 @@ public class IngredientTypeOverviewCtrlTest {
         robot.clickOn(doneEditDetailsButton);
     }
 
+    @Test
+    void addIngredientTypeTest(FxRobot robot) {
+        robot.clickOn(addIngredientTypeButton);
+        IngredientType type = new IngredientType("New ingredient", null, new ArrayList<>(), null);
+
+        // check if ingredient type has been added to the list view
+        assertTrue(ingredientTypeListView.getItems().contains(type));
+
+        // check all labels are correct
+        assertEquals("New ingredient", ingredientTypeTitleLabel.getText());
+        assertEquals("-", nameLabel.getText());
+        assertEquals("-", densityLabel.getText());
+        assertEquals("-", proteinLabel.getText());
+        assertEquals("-", fatLabel.getText());
+        assertEquals("-", carbsLabel.getText());
+        assertEquals("0.0", kcalLabel.getText());
+        assertEquals("This ingredient type is used in 0 recipes", usedInRecipesLabel.getText());
+    }
+
+    @Test
+    void removeIngredientTypeTest(FxRobot robot) {
+        addIngredientType(robot, "Test ingredient type");
+        robot.clickOn(doneEditButton);
+        robot.clickOn(removeIngredientTypeButton);
+
+        // check if ingredient type has been removed from list view
+        assertTrue(ingredientTypeListView.getItems().isEmpty());
+    }
+
+    @Test
+    void removeIngredientUsedInRecipeTest(FxRobot robot) {
+        addIngredientType(robot, "Test ingredient type");
+        robot.clickOn(doneEditButton);
+
+        // add recipe to server that uses this ingredient type
+        Recipe recipe = new Recipe("Test recipe");
+        IngredientType type = ingredientTypeListView.getItems().getFirst();
+        recipe.ingredients.add(new Ingredient(type, 100.0, Unit.ML, recipe));
+        server.addRecipe(recipe);
+
+        // check if a warning appears if we try to remove the ingredient type
+        robot.clickOn(removeIngredientTypeButton);
+        robot.clickOn("OK");
+        assertTrue(ingredientTypeListView.getItems().isEmpty());
+    }
+
+    @Test
+    void cancelIngredientTypeTest(FxRobot robot) {
+        addIngredientType(robot, "Test ingredient type");
+        robot.clickOn(cancelEditButton);
+
+        // check if new ingredient type has been cancelled
+        assertTrue(ingredientTypeListView.getItems().isEmpty());
+    }
+
+    @Test
+    void editIngredientTypeTest(FxRobot robot) {
+        addIngredientType(robot, "Test ingredient type");
+        robot.clickOn(doneEditButton);
+        robot.clickOn(editIngredientTypeButton);
+        robot.clickOn(editDetailsButton);
+        robot.write("Edited ingredient type");
+        robot.clickOn(doneEditDetailsButton);
+        robot.clickOn(doneEditButton);
+
+        // check if ingredient type has been correctly edited
+        assertEquals("Edited ingredient type", ingredientTypeTitleLabel.getText());
+        assertEquals("Edited ingredient type", nameLabel.getText());
+    }
+
+    @Test
+    void editNameTest(FxRobot robot) {
+        addIngredientType(robot, "Test ingredient type");
+
+        // check if name label has been updated
+        assertEquals("Test ingredient type", nameLabel.getText());
+    }
+
+    @Test
+    void cancelEditNameTest(FxRobot robot) {
+        robot.clickOn(addIngredientTypeButton);
+        robot.clickOn(editDetailsButton);
+        robot.write("New ingredient type");
+        robot.clickOn(cancelEditDetailsButton);
+
+        // check if edit has been cancelled
+        assertEquals("-", nameLabel.getText());
+        assertEquals("New ingredient", ingredientTypeTitleLabel.getText());
+    }
+
+    @Test
+    void invalidNameTest(FxRobot robot) {
+        robot.clickOn(addIngredientTypeButton);
+        robot.clickOn(editDetailsButton);
+        robot.write("    ");
+        robot.clickOn(doneEditDetailsButton);
+
+        // check that edit hasn't gone through
+        assertEquals("-", nameLabel.getText());
+    }
+
+    @Test
+    void editDensityTest(FxRobot robot) {
+        robot.clickOn(addIngredientTypeButton);
+        robot.clickOn(editDensityButton);
+        robot.write("10");
+        robot.clickOn(doneEditDensityButton);
+
+        // check if density label has been updated
+        assertEquals("10.0", densityLabel.getText());
+    }
+
+    @Test
+    void cancelEditDensityTest(FxRobot robot) {
+        robot.clickOn(addIngredientTypeButton);
+        robot.clickOn(editDensityButton);
+        robot.write("10");
+        robot.clickOn(cancelEditDensityButton);
+
+        // check if edit has been cancelled
+        assertEquals("-", densityLabel.getText());
+    }
+
+    @Test
+    void invalidDensityTest(FxRobot robot) {
+        robot.clickOn(addIngredientTypeButton);
+        robot.clickOn(editDensityButton);
+        robot.write("abcdefg");
+        robot.clickOn(doneEditDensityButton);
+
+        // check that edit has not gone through
+        assertEquals("-", densityLabel.getText());
+    }
+
+    @Test
+    void blankDensityTest(FxRobot robot) {
+        robot.clickOn(addIngredientTypeButton);
+        robot.clickOn(editDensityButton);
+        robot.write("");
+        robot.clickOn(doneEditDensityButton);
+
+        // check if the app allows no density
+        assertEquals("", densityLabel.getText());
+        assertFalse(doneEditDensityButton.isVisible());
+        assertFalse(cancelEditDensityButton.isVisible());
+        assertTrue(editDensityButton.isVisible());
+    }
+
+    @Test
+    void editNutritionTest(FxRobot robot) {
+        addIngredientType(robot, "Test ingredient type");
+        robot.clickOn(editNutritionButton);
+        robot.write("15.5");
+        robot.clickOn(fatTextField);
+        robot.write("2.25");
+        robot.clickOn(carbsTextField);
+        robot.write("20");
+        robot.clickOn(doneEditNutritionButton);
+        robot.clickOn(doneEditButton);
+
+        // check if all nutrition labels have been updated
+        assertEquals("15.5g", proteinLabel.getText());
+        assertEquals("2.25g", fatLabel.getText());
+        assertEquals("20.0g", carbsLabel.getText());
+
+        Nutrition n = new Nutrition(20.0, 15.5, 2.25);
+        assertEquals(recipeUtils.getCaloriesPer100g(
+                        new IngredientType("New ingredient", n, new ArrayList<>(), null)),
+                Double.valueOf(kcalLabel.getText()));
+    }
+
+    @Test
+    void cancelEditNutritionTest(FxRobot robot) {
+        robot.clickOn(addIngredientTypeButton);
+        robot.clickOn(editNutritionButton);
+        robot.write("40.75");
+        robot.clickOn(cancelEditNutritionButton);
+
+        // check if edit has been cancelled
+        assertEquals("-", proteinLabel.getText());
+        assertEquals("-", fatLabel.getText());
+        assertEquals("-", carbsLabel.getText());
+        assertEquals("0.0", kcalLabel.getText());
+    }
 }
