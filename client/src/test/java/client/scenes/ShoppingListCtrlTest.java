@@ -2,73 +2,91 @@ package client.scenes;
 
 import java.awt.*;
 import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-
-import client.utils.TestUserStorage;
-import client.utils.UserConfig;
-import client.utils.UserStorage;
+import client.MyFXML;
+import client.utils.*;
+import com.google.inject.Injector;
 import commons.Ingredient;
-import commons.User;
+import commons.IngredientType;
+import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.util.Pair;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.testfx.api.FxRobot;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
-
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.stage.Stage;
-
+import static com.google.inject.Guice.createInjector;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(ApplicationExtension.class)
 public class ShoppingListCtrlTest {
+    // shopping list utils
+    private ShoppingListCtrl sut;
+    private ServerUtility server;
+    private UserConfig user;
 
+    // FXML components
+    private ListView<Ingredient> ingredientListView;
     private Button removeIngredientButton;
-    private Button editIngredientButton;
+    private TextField editIngredientNameField;
+    private TextField editIngredientAmountField;
+    private ChoiceBox<String> editUnitBox;
     private Button addIngredientButton;
-    private final List<Ingredient> shoppingList = new ArrayList<>();
-    private final List<Long> favouriteRecipes = new ArrayList<>();
-    private final User user = new User(favouriteRecipes, shoppingList);
-    private final UserStorage userStorage = new TestUserStorage(user);
-    private final UserConfig userConfig = new UserConfig(userStorage, user);
-    private final MainCtrl mainCtrl = new MainCtrl();
+    private Button editIngredientButton;
+    private Button cancelEditIngredientButton;
+    private Button doneEditIngredientButton;
+    private StackPane editPane;
+    private HBox editIngredientBox;
+    private HBox editIngredientTypeBox;
+    private ChoiceBox<IngredientType> editIngredientChoiceBox;
+    private Button nextButton;
+    private Button exitButton;
 
     @Start
-    private void start(Stage shoppingListStage) throws IOException {
-        // Load ShoppingList.fxml from the classpath
-        var scene = getScene();
+    private void start(Stage stage) throws IOException {
+        Injector injector = createInjector(new TestModule());
+        MyFXML fxml = new MyFXML(injector);
 
-        shoppingListStage.setTitle("Shopping List");
-        shoppingListStage.setScene(scene);
-        shoppingListStage.show();
+        Pair<ShoppingListCtrl, Parent> loaded = fxml.load(
+                ShoppingListCtrl.class,
+                "client", "scenes", "ShoppingList.fxml"
+        );
+
+        sut = loaded.getKey();
+
+        var scene = new Scene(loaded.getValue());
+        stage.setScene(scene);
+        stage.show();
+        stage.toFront();
+
+        // initialize utils using the injector
+        server = injector.getInstance(ServerUtility.class);
+        user = injector.getInstance(UserConfig.class);
 
         // Initialize buttons (you can lookup buttons after loading the scene)
-        addIngredientButton = lookup(scene, "#addIngredientButton");
+        ingredientListView = lookup(scene, "#ingredientListView");
         removeIngredientButton = lookup(scene, "#removeIngredientButton");
+        editIngredientNameField = lookup(scene, "#editIngredientNameField");
+        editIngredientAmountField = lookup(scene, "#editIngredientAmountField");
+        editUnitBox = lookup(scene, "#editUnitBox");
+        addIngredientButton = lookup(scene, "#addIngredientButton");
         editIngredientButton = lookup(scene, "#editIngredientButton");
-    }
-
-    private Scene getScene() throws IOException {
-        URL url = getClass().getResource("/client/scenes/ShoppingList.fxml");
-        FXMLLoader loader = new FXMLLoader(url);
-
-        loader.setControllerFactory(type -> {
-            if (type == ShoppingListCtrl.class) {
-                return new ShoppingListCtrl(new TestServerUtils(), userConfig, mainCtrl);
-            }else{
-                throw new RuntimeException();
-            }
-        });
-
-
-        Parent parent = loader.load();
-        return new Scene(parent);
+        cancelEditIngredientButton = lookup(scene, "#cancelEditIngredientButton");
+        doneEditIngredientButton = lookup(scene, "#doneEditIngredientButton");
+        editPane = lookup(scene, "#editPane");
+        editIngredientBox = lookup(scene, "#editIngredientBox");
+        editIngredientTypeBox = lookup(scene, "#editIngredientTypeBox");
+        editIngredientChoiceBox = lookup(scene, "#editIngredientChoiceBox");
+        nextButton = lookup(scene, "#nextButton");
+        exitButton = lookup(scene, "#exitButton");
     }
 
     @SuppressWarnings("unchecked")
