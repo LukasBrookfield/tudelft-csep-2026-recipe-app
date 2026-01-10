@@ -5,6 +5,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import server.services.RecipeService;
+
 import static org.mockito.Mockito.mock;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +18,7 @@ public class RecipeControllerTest{
     // For testing with TestRecipeRepository
     private TestRecipeRepository repo;
     private RecipeController sut;
+    private RecipeService recipeService;
 
     private Recipe recipe1;
     private Recipe recipe2;
@@ -25,8 +28,10 @@ public class RecipeControllerTest{
     public void setUp() {
         // for testing with TestIngredientRepository
         repo = new TestRecipeRepository();
+        recipeService = new RecipeService(repo);
         messagingTemplate = mock(SimpMessagingTemplate.class);
-        sut = new RecipeController(repo, messagingTemplate, null);
+        sut = new RecipeController(repo, messagingTemplate, null,
+                recipeService);
 
         recipe1 = new Recipe("cucumber salad",
                 new ArrayList<>(),
