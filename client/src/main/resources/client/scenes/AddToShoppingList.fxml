@@ -142,5 +142,9 @@
             </BorderPane>
          </children>
       </AnchorPane>
+
+       <fx:include source="LanguagePicker.fxml"
+                   AnchorPane.rightAnchor="12.0"
+                   AnchorPane.bottomAnchor="12.0"/>
    </children>
 </VBox>

@@ -31,6 +31,10 @@ public class LanguageService {
         return locale;
     }
 
+    public String getLanguageTag() {
+        return locale.toLanguageTag();
+    }
+
     public void setLanguageTag(String tag){
         if (tag == null || tag.isEmpty()) tag = "en";
         this.locale = Locale.forLanguageTag(tag);

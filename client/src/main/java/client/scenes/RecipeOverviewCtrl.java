@@ -1,11 +1,6 @@
 package client.scenes;
 
-import client.utils.RecipeUtils;
-import client.utils.ServerUtility;
-import client.utils.UserConfig;
-import client.utils.IngredientScaling;
-import client.utils.QuantityFormatter;
-import client.utils.ScaleFactorParser;
+import client.utils.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
@@ -30,6 +25,7 @@ import java.awt.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -40,11 +36,13 @@ import com.lowagie.text.Paragraph;
 import com.lowagie.text.Font;
 import com.lowagie.text.FontFactory;
 import java.awt.print.PrinterJob;
+import java.util.ResourceBundle;
 import java.util.function.Predicate;
 
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import javafx.util.StringConverter;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.printing.PDFPageable;
 
@@ -263,21 +261,152 @@ public class RecipeOverviewCtrl {
     @FXML
     private TextField scaleFactorField;
 
+    @FXML
+    private Label servingsCaptionLabel;
+
+    @FXML
+    private Label kcalCaptionLabel;
+
+    private final LanguageService languages;
+
     private final Tooltip nutritionTooltip = new Tooltip();
+
+    // created this because some parts on the code depend on the exact text these present
+    private static final String FILTER_ALL = "All recipes";
+    private static final String FILTER_FAV = "Favourites";
+
+    private static final String SORT_ORDER_BY = "Order by";
+    private static final String SORT_NAME_AZ = "Name (A-Z)";
+    private static final String SORT_FEWEST_STEPS = "Fewest steps first";
+    private static final String SORT_FEWEST_ING = "Fewest ingredients first";
+
+    private static final String CREATE_NEW_INGREDIENT_TYPE = "Create new ingredient type";
 
     private int baseServings = 1;
 
     // General
 
+    private void setTooltip(Control c, String key) {
+        ResourceBundle b = languages.bundle();
+        Tooltip t = c.getTooltip();
+        if (t == null) {
+            t = new Tooltip();
+            c.setTooltip(t);
+        }
+        t.setText(b.getString(key));
+    }
+
+    private void refreshStartTooltip() {
+        ResourceBundle b = languages.bundle();
+        Recipe selected = recipeListView.getSelectionModel().getSelectedItem();
+        if (selected == null) return;
+
+        boolean isFav = user.isFavouriteRecipe(selected);
+        starTooltip.setText(b.getString(isFav ? "recipe.tooltip.star.remove" : "recipe.tooltip.star.add"));
+
+    }
+    public void applyTranslations() {
+
+        ResourceBundle b = languages.bundle();
+
+        addToShoppingListButton.setText(b.getString("recipe.btn.addToShoppingList"));
+        downloadRecipeButton.setText(b.getString("recipe.btn.download"));
+        printRecipeButton.setText(b.getString("recipe.btn.print"));
+        toggleOverviewButton.setText(b.getString("recipe.btn.viewIngredients"));
+        shoppingListButton.setText(b.getString("recipe.btn.shoppingList"));
+
+        recipeSearchField.setPromptText(b.getString("recipe.search.prompt"));
+        recipeTitleField.setPromptText(b.getString("recipe.field.name.prompt"));
+        editServingsField.setPromptText(b.getString("recipe.field.servings.prompt"));
+
+        servingsCaptionLabel.setText(b.getString("recipe.label.servings"));
+        kcalCaptionLabel.setText(b.getString("recipe.label.kcal100"));
+
+        ingredientsHeaderLabel.setText(b.getString("recipe.header.ingredients"));
+        preparationHeaderLabel.setText(b.getString("recipe.header.preparation"));
+
+        editIngredientNameField.setPromptText(b.getString("common.field.ingredientType.prompt"));
+        editIngredientAmountField.setPromptText(b.getString("common.field.amount.prompt"));
+        editStepField.setPromptText(b.getString("recipe.field.step.prompt"));
+
+        cancelEditIngredientButton.setText(b.getString("common.btn.cancel"));
+        doneEditIngredientButton.setText(b.getString("common.btn.done"));
+        cancelEditStepButton.setText(b.getString("common.btn.cancel"));
+        doneEditStepButton.setText(b.getString("common.btn.done"));
+        cancelEditButton.setText(b.getString("common.btn.cancel"));
+        doneEditButton.setText(b.getString("common.btn.done"));
+        cancelEditServingsButton.setText(b.getString("common.btn.cancel"));
+        doneEditServingsButton.setText(b.getString("common.btn.done"));
+
+        // tooltips
+        setTooltip(homeButton, "common.tooltip.home");
+        setTooltip(removeRecipeButton, "common.tooltip.removeRecipe");
+        setTooltip(addRecipeButton, "common.tooltip.addRecipe");
+        setTooltip(cloneRecipeButton, "common.tooltip.cloneRecipe");
+        setTooltip(editRecipeButton, "common.tooltip.editRecipe");
+
+        setTooltip(removeIngredientButton, "common.tooltip.removeIngredient");
+        setTooltip(addIngredientButton, "common.tooltip.addIngredient");
+        setTooltip(editIngredientButton, "common.tooltip.editIngredient");
+
+        setTooltip(removeStepButton, "common.tooltip.removeStep");
+        setTooltip(addStepButton, "common.tooltip.addStep");
+        setTooltip(editStepButton, "common.tooltip.editStep");
+        setTooltip(moveStepUpButton, "common.tooltip.moveUp");
+        setTooltip(moveStepDownButton, "common.tooltip.moveDown");
+        setTooltip(editServingsButton, "common.tooltip.editServings");
+
+        // choiceboxs
+        favouriteRecipeFilterBox.setConverter(new StringConverter<>() {
+            // I do this so the choicebox can still store the original text internally,
+            // but display it differently
+            @Override public String toString(String value) {
+                if (value == null) return "";
+                return switch (value) {
+                    case FILTER_ALL -> b.getString("recipe.filter.all");
+                    case FILTER_FAV -> b.getString("recipe.filter.favourites");
+                    default -> value;
+                };
+            }
+                @Override public String fromString(String s) { return s; }
+        });
+
+        sortChoiceBox.setConverter(new StringConverter<>() {
+            @Override public String toString(String value) {
+                if (value == null) return "";
+                return switch (value) {
+                    case SORT_ORDER_BY -> b.getString("recipe.sort.orderBy");
+                    case SORT_NAME_AZ -> b.getString("recipe.sort.nameAZ");
+                    case SORT_FEWEST_STEPS -> b.getString("recipe.sort.fewestSteps");
+                    case SORT_FEWEST_ING -> b.getString("recipe.sort.fewestIngredients");
+                    default -> value;
+                };
+            }
+            @Override public String fromString(String s) { return s; }
+        });
+
+        editIngredientBox.setConverter(new StringConverter<>() {
+            @Override public String toString(IngredientType it) {
+                if (it == null) return "";
+                if (CREATE_NEW_INGREDIENT_TYPE.equals(it.name)) return b.getString("common.ingredientType.createNew");
+                return it.name;
+            }
+            @Override public IngredientType fromString (String s) {return null; }
+        });
+
+        refreshStartTooltip();
+    }
+
     @Inject
     public RecipeOverviewCtrl(ServerUtility server,
                               RecipeUtils recipeUtils,
                               UserConfig user,
-                              MainCtrl mainCtrl) {
+                              MainCtrl mainCtrl, LanguageService languages) {
         this.server = server;
         this.recipeUtils = recipeUtils;
         this.user = user;
         this.mainCtrl = mainCtrl;
+        this.languages = languages;
     }
 
     /**
@@ -438,11 +567,12 @@ public class RecipeOverviewCtrl {
 
             if (user.isFavouriteRecipe(recipe)) {
                 starRecipeButton.setText(FULL_STAR);
-                starTooltip.setText("Remove recipe from favorites");
+//                starTooltip.setText("Remove recipe from favorites");
             } else {
                 starRecipeButton.setText(EMPTY_STAR);
-                starTooltip.setText("Add recipe to favorites");
+//                starTooltip.setText("Add recipe to favorites");
             }
+            refreshStartTooltip();
         }
 
         this.updateNutritionLabels(recipe);
@@ -504,6 +634,7 @@ public class RecipeOverviewCtrl {
         changeStepViewEditMode(false);
         changeViewEditMode(false);
         recipeTitleField.setVisible(false);
+        applyTranslations();
         onRefresh();
 
         editUnitBox.getItems().addAll("Select a unit", "G", "ML", "TBSP", "TSP", "PINCH",
@@ -975,7 +1106,8 @@ public class RecipeOverviewCtrl {
         applySearchFilter("");
         onRefresh();
 
-        addRecipeToServer(new Recipe("New recipe"));
+//        addRecipeToServer(new Recipe("New recipe"));
+        addRecipeToServer(new Recipe(languages.bundle().getString("recipe.title.new")));
     }
 
     @FXML
@@ -1135,7 +1267,7 @@ public class RecipeOverviewCtrl {
 
         // FileChooser is a JavaFX helper that opens a normal "Save as" dialog
         FileChooser chooser = new FileChooser();
-        chooser.setTitle("Save recipe as PDF");
+        chooser.setTitle(languages.bundle().getString("recipe.fileChooser.savePdf.title"));
 
         // This limits visible file types to *.pdf
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter(
@@ -1705,9 +1837,12 @@ public class RecipeOverviewCtrl {
     private void showDeletedFavouritesAlert(int n) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.initModality(Modality.APPLICATION_MODAL);
-        alert.setTitle("Some of your favourite recipes have been deleted");
+//        alert.setTitle("Some of your favourite recipes have been deleted");
+        ResourceBundle b = languages.bundle();
+        alert.setTitle(b.getString("recipe.alert.favDeleted.title"));
         alert.setHeaderText(null);
-        alert.setContentText(n + " of your favourite recipes have been deleted by others :(");
+//        alert.setContentText(n + " of your favourite recipes have been deleted by others :(");
+        alert.setContentText(MessageFormat.format(b.getString("recipe.alert.favDeleted.content"), n));
         alert.show();
     }
 }

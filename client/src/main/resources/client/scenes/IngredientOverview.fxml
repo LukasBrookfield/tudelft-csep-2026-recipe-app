@@ -150,7 +150,7 @@
                            </children>
                         </HBox>
                         <Separator fx:id="mainSeparator" prefWidth="200.0" />
-                        <Label text="Details">
+                        <Label fx:id="detailsHeaderLabel" text="Details">
                            <font>
                               <Font name="System Bold" size="13.0" />
                            </font>
@@ -162,7 +162,7 @@
                            <children>
                               <HBox alignment="CENTER_LEFT" minHeight="-Infinity" prefHeight="25.0" prefWidth="181.0" spacing="5.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
                                  <children>
-                                    <Label text="Name:">
+                                    <Label fx:id="nameCaptionLabel" text="Name:">
                                        <HBox.margin>
                                           <Insets left="5.0" />
                                        </HBox.margin>
@@ -224,7 +224,7 @@
                            <children>
                               <HBox alignment="CENTER_LEFT" minHeight="-Infinity" prefHeight="25.0" prefWidth="181.0" spacing="5.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
                                  <children>
-                                    <Label prefHeight="17.0" prefWidth="128.0" text="Density (g/ml):">
+                                    <Label fx:id="densityCaptionLabel" prefHeight="17.0" prefWidth="128.0" text="Density (g/ml):">
                                        <HBox.margin>
                                           <Insets left="5.0" />
                                        </HBox.margin>
@@ -272,7 +272,7 @@
                               </HBox>
                            </children>
                         </StackPane>
-                        <Label text="Nutritional values (per 100g)">
+                        <Label fx:id="nutritionHeaderLabel" text="Nutritional values (per 100g)">
                            <font>
                               <Font name="System Bold" size="13.0" />
                            </font>
@@ -286,15 +286,15 @@
                                  <children>
                                     <VBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="100.0" spacing="10.0">
                                        <children>
-                                          <Label text="Protein:" />
-                                          <Label text="Fat:" />
-                                          <Label text="Carbohydrates:" />
+                                          <Label fx:id="proteinCaptionLabel" text="Protein:" />
+                                          <Label fx:id="fatCaptionLabel" text="Fat:" />
+                                          <Label fx:id="carbsCaptionLabel" text="Carbohydrates:" />
                                           <Separator prefWidth="200.0">
                                              <VBox.margin>
                                                 <Insets bottom="-5.0" />
                                              </VBox.margin>
                                           </Separator>
-                                          <Label text="Kcal:" />
+                                          <Label fx:id="kcalCaptionLabel" text="Kcal:" />
                                        </children>
                                        <HBox.margin>
                                           <Insets />
@@ -394,6 +394,7 @@
                   </VBox>
                </center>
             </BorderPane>
+             <fx:include source="LanguagePicker.fxml" AnchorPane.bottomAnchor="12.0" AnchorPane.rightAnchor="12.0" />
          </children>
       </AnchorPane>
    </children>

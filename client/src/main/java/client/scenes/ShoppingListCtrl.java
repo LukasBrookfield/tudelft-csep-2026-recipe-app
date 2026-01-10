@@ -72,6 +72,10 @@ public class ShoppingListCtrl {
     @FXML
     private Button exitButton;
 
+    public void applyTranslations() {
+        // MISSING
+    }
+
     //the listener for ingredient type choice box so the fields change
     private final ChangeListener<IngredientType> ingredientListener =
             (observable, oldValue, newValue) -> {
