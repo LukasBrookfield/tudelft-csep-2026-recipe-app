@@ -80,7 +80,11 @@ public class User {
 
     @Override
     public String toString() {
-        return String.format("User[\n  favouriteRecipes=%s\n  shoppingList=%s\n]",
-                favouriteRecipes, shoppingList);
+//        return String.format("User[\n  favouriteRecipes=%s\n  shoppingList=%s\n]",
+//                favouriteRecipes, shoppingList);
+        return "User[\n" +
+                "  favouriteRecipes=" + favouriteRecipes + "\n" +
+                "  shoppingList=" + shoppingList + "\n" +
+                "]";
     }
 }
