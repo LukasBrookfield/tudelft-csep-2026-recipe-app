@@ -317,7 +317,7 @@ public class RecipeOverviewCtrlTest {
 //
 //        // check if step has been edited
 //        assertEquals("Edit test step", preparationStepListView.getItems().getFirst());
-    }
+//    }
 
     @Test
     void addIngredientButtonTest(FxRobot robot) {
