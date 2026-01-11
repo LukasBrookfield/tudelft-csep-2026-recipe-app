@@ -4,6 +4,7 @@ import commons.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import server.services.RecipeService;
 import server.services.UnitConversionService;
 
 import java.util.ArrayList;
@@ -18,6 +19,7 @@ public class RecipeControllerNutritionTest {
 
     private TestRecipeRepository repo;
     private RecipeController controller;
+    private RecipeService recipeService;
 
     @BeforeEach
     public void setup(){
@@ -27,8 +29,10 @@ public class RecipeControllerNutritionTest {
         var unitConversion = new server.services.UnitConversionService();
         var normalizer = new server.services.QuantityNormalizationService(unitConversion);
         var nutritionService = new server.services.RecipeNutritionService(normalizer);
+        var recipeService = new server.services.RecipeService(repo);
 
-        controller = new RecipeController(repo, messagingTemplate, nutritionService);
+        controller = new RecipeController(repo, messagingTemplate, nutritionService,
+                recipeService);
     }
 
     @Test

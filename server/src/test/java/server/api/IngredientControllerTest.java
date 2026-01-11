@@ -6,6 +6,8 @@ import commons.Recipe;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
+import server.services.IngredientService;
+
 import java.util.ArrayList;
 import java.util.List;
 import static commons.Unit.G;
@@ -21,12 +23,14 @@ public class IngredientControllerTest {
 
     private TestIngredientRepository repo;
     private IngredientController sut;
+    private IngredientService ingredientService;
 
     @BeforeEach
     public void setup() {
         // for testing with TestIngredientRepository
         repo = new TestIngredientRepository();
-        sut = new IngredientController(repo);
+        ingredientService = new IngredientService(repo);
+        sut = new IngredientController(repo, ingredientService);
 
         recipe1 = new Recipe("cucumber salad",
                 new ArrayList<>(),

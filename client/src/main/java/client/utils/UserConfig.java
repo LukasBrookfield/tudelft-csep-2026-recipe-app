@@ -86,6 +86,14 @@ public class UserConfig {
         user.getFavouriteRecipes().remove(recipe.id);
     }
 
+    public String getLanguageTag() {
+        return user.getLanguageTag();
+    }
+
+    public void setLanguageTag(String languageTag) {
+        user.setLanguageTag(languageTag);
+    }
+
     /**
      * Removes the user's favourite recipes that have been deleted from the database and returns
      * how many have been deleted

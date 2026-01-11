@@ -7,18 +7,22 @@ import org.springframework.web.bind.annotation.*;
 import server.database.IngredientRepository;
 
 import commons.Ingredient;
+import server.services.IngredientService;
 
 @RestController
 @RequestMapping("api/ingredients")
 public class IngredientController {
     private final IngredientRepository repo;
+    private final IngredientService ingredientService;
 
     /**
      * IngredientController constructor
      * @param repo The spring ingredient repository (connects to sql database)
      */
-    public IngredientController(IngredientRepository repo) {
+    public IngredientController(IngredientRepository repo,
+                                IngredientService ingredientService) {
         this.repo = repo;
+        this.ingredientService = ingredientService;
     }
 
     /**
@@ -54,7 +58,7 @@ public class IngredientController {
      */
     @PostMapping(path = { "", "/" })
     public ResponseEntity<Ingredient> add(@RequestBody Ingredient ingredient) {
-        if (ingredient == null || ingredient.ingredientType == null) {
+        if (!ingredientService.validateIngredient(ingredient)) {
             return ResponseEntity.badRequest().build();
         }
         Ingredient saved = repo.save(ingredient);
@@ -97,22 +101,14 @@ public class IngredientController {
     @PutMapping("/{id}")
     public ResponseEntity<Ingredient> update(@PathVariable("id") long id,
                                              @RequestBody Ingredient updatedIngredient) {
-        if (updatedIngredient == null
-                || updatedIngredient.ingredientType == null
-                || id < 0
-                || !repo.existsById(id)) {
+        if (!ingredientService.validateUpdatedIngredient(id, updatedIngredient)) {
             return ResponseEntity.badRequest().build();
-        } else {
-            Ingredient ingredientToUpdate = repo.findById(id).get();
-
-            // update fields
-            ingredientToUpdate.ingredientType = updatedIngredient.ingredientType;
-            ingredientToUpdate.amount = updatedIngredient.amount;
-            ingredientToUpdate.unit = updatedIngredient.unit;
-            ingredientToUpdate.recipe = updatedIngredient.recipe;
-
-            Ingredient updated = repo.save(ingredientToUpdate);
-            return ResponseEntity.ok(updated);
         }
+
+        Ingredient ingredientToUpdate = repo.findById(id).get();
+        ingredientService.transferFields(updatedIngredient, ingredientToUpdate);
+
+        Ingredient updated = repo.save(ingredientToUpdate);
+        return ResponseEntity.ok(updated);
     }
 }
