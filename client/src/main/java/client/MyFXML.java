@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.util.Objects;
 
 import client.utils.LanguageService;
 import com.google.inject.Inject;
@@ -25,8 +26,12 @@ public class MyFXML {
 
     @Inject
     public MyFXML(Injector injector, LanguageService languages) {
-        this.injector = injector;
-        this.languages = languages;
+        this.injector = Objects.requireNonNull(injector);
+        this.languages = Objects.requireNonNull(languages);
+    }
+
+    public MyFXML(Injector injector) {
+        this(injector, injector.getInstance (LanguageService.class));
     }
 
     public <T> Pair<T, Parent> load(Class<T> c, String... parts) {

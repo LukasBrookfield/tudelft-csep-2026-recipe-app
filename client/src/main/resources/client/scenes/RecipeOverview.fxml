@@ -439,15 +439,8 @@
                         </VBox>
                     </center>
                 </BorderPane>
-                <HBox alignment="CENTER_RIGHT"
-                      pickOnBounds="false"
-                      AnchorPane.bottomAnchor="0.0"
-                      AnchorPane.rightAnchor="9.0">
-                    <children>
-                        <fx:include source="LanguagePicker.fxml"/>
-                    </children>
-                </HBox>
-                <HBox alignment="CENTER_RIGHT"
+                <HBox fx:id="languagePickerContainer"
+                      alignment="CENTER_RIGHT"
                       pickOnBounds="false"
                       AnchorPane.bottomAnchor="0.0"
                       AnchorPane.rightAnchor="9.0">

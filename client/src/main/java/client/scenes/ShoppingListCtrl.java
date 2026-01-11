@@ -106,6 +106,12 @@ public class ShoppingListCtrl {
         this.languages = languages;
     }
 
+    public ShoppingListCtrl(ServerUtility server,
+                            UserConfig user,
+                            MainCtrl mainCtrl) {
+        this(server, user, mainCtrl, LanguageService.defaultService());
+    }
+
     private void setTooltip(Control c, String key) {
         ResourceBundle b = languages.bundle();
         Tooltip t = c.getTooltip();
