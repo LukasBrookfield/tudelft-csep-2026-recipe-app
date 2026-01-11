@@ -306,18 +306,18 @@ public class RecipeOverviewCtrlTest {
         assertTrue(preparationStepListView.getItems().isEmpty());
     }
 
-//    @Test
-//    void editStepButtonTest(FxRobot robot) {
-//        addRecipe(robot, "Test recipe", 2);
-//        addStep(robot, "Test step");
-//        robot.clickOn("Test step");
-//        robot.clickOn(editStepButton);
-//        robot.write("Edit test step");
-//        robot.clickOn(doneEditStepButton);
-//
-//        // check if step has been edited
-//        assertEquals("Edit test step", preparationStepListView.getItems().getFirst());
-//    }
+    @Test
+    void editStepButtonTest(FxRobot robot) {
+        addRecipe(robot, "Test recipe", 2);
+        addStep(robot, "Test step");
+        robot.clickOn("Test step");
+        robot.clickOn(editStepButton);
+        robot.write("Edit test step");
+        robot.clickOn(doneEditStepButton);
+
+        // check if step has been edited
+        assertEquals("Edit test step", preparationStepListView.getItems().getFirst());
+    }
 
     @Test
     void addIngredientButtonTest(FxRobot robot) {
