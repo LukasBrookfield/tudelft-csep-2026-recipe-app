@@ -8,6 +8,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import commons.Recipe;
 import server.database.RecipeRepository;
 import server.services.RecipeNutritionService;
+import server.services.RecipeService;
 
 import static org.antlr.v4.runtime.tree.xpath.XPath.findAll;
 
@@ -17,6 +18,7 @@ public class RecipeController {
     private final RecipeRepository repo;
     private final SimpMessagingTemplate messagingTemplate;
     private final RecipeNutritionService recipeNutritionService;
+    private final RecipeService recipeService;
 
     /**
      * RecipeController constructor
@@ -24,10 +26,14 @@ public class RecipeController {
      * @param messagingTemplate The messaging template
      * sending data to the URL which the clients are subscribed to
      */
-    public RecipeController(RecipeRepository repo, SimpMessagingTemplate messagingTemplate, RecipeNutritionService recipeNutritionService) {
+    public RecipeController(RecipeRepository repo,
+                            SimpMessagingTemplate messagingTemplate,
+                            RecipeNutritionService recipeNutritionService,
+                            RecipeService recipeService) {
         this.repo = repo;
         this.messagingTemplate = messagingTemplate;
         this.recipeNutritionService = recipeNutritionService;
+        this.recipeService = recipeService;
     }
 
     /**
@@ -82,10 +88,7 @@ public class RecipeController {
      */
     @PostMapping(path = { "", "/" })
     public ResponseEntity<Recipe> add(@RequestBody Recipe recipe) {
-        if (recipe.name == null
-                || recipe.name.isEmpty()
-                || recipe.ingredients == null
-                || recipe.steps == null) {
+        if (!recipeService.validateRecipe(recipe)) {
             return ResponseEntity.badRequest().build();
         }
 
@@ -110,7 +113,7 @@ public class RecipeController {
     public ResponseEntity<Recipe> delete(@PathVariable("id") long id) {
         if (id < 0 || !repo.existsById(id)) {
             return ResponseEntity.badRequest().build();
-        }else{
+        } else {
             var result = repo.findById(id).get();
             repo.deleteById(id);
 
@@ -141,34 +144,19 @@ public class RecipeController {
     @PutMapping("/{id}")
     public ResponseEntity<Recipe> update(@PathVariable("id") long id,
                                          @RequestBody Recipe updatedRecipe) {
-        if (updatedRecipe == null
-                || updatedRecipe.name == null
-                || updatedRecipe.name.isEmpty()
-                || updatedRecipe.ingredients == null
-                || updatedRecipe.steps == null
-                || id < 0
-                || !repo.existsById(id)) {
+        if (!recipeService.validateUpdatedRecipe(id, updatedRecipe)) {
             return ResponseEntity.badRequest().build();
-        } else {
-            Recipe recipeToUpdate = repo.findById(id).get();
-            recipeToUpdate.name = updatedRecipe.name;
-
-            // Replace collections safely
-            recipeToUpdate.ingredients.clear();
-            recipeToUpdate.ingredients.addAll(updatedRecipe.ingredients);
-
-            recipeToUpdate.steps.clear();
-            recipeToUpdate.steps.addAll(updatedRecipe.steps);
-
-            recipeToUpdate.servings = updatedRecipe.servings;
-
-            Recipe updated = repo.save(recipeToUpdate);
-
-            broadcastList(); // Subscribed clients get the new updated list
-            broadcastSingle(recipeToUpdate); // Subscribed clients get the new updated recipe
-
-            return ResponseEntity.ok(updated);
         }
+
+        Recipe recipeToUpdate = repo.findById(id).get();
+        recipeService.transferFields(updatedRecipe, recipeToUpdate);
+
+        Recipe updated = repo.save(recipeToUpdate);
+
+        broadcastList(); // Subscribed clients get the new updated list
+        broadcastSingle(recipeToUpdate); // Subscribed clients get the new updated recipe
+
+        return ResponseEntity.ok(updated);
     }
 
     /**
@@ -189,7 +177,7 @@ public class RecipeController {
      * forwards it to the broker for distribution to the id URL
      */
     private void broadcastSingle(Recipe recipe) {
-        if(recipe !=null && recipe.id > 0) {
+        if (recipe != null && recipe.id > 0) {
             // Every client that is subscribed to "/topic/recipes/{id}" gets this updated recipe
             messagingTemplate.convertAndSend("/topic/recipes/" + recipe.id, recipe);
         }

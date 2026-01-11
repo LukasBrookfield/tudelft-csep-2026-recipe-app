@@ -193,7 +193,7 @@
                            <children>
                               <HBox alignment="CENTER_LEFT" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="165.0" spacing="5.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
                                  <children>
-                                    <Label prefHeight="17.0" prefWidth="153.0" text="Servings:">
+                                    <Label fx:id="servingsCaptionLabel" prefHeight="17.0" prefWidth="153.0" text="Servings:">
                                        <HBox.margin>
                                           <Insets left="5.0" />
                                        </HBox.margin>
@@ -219,7 +219,7 @@
                                  </HBox.margin></HBox>
                               <HBox alignment="CENTER_RIGHT" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="149.0" spacing="5.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
                                  <children>
-                                    <Label prefHeight="23.0" prefWidth="207.0" text="Kcal per 100g:">
+                                    <Label fx:id="kcalCaptionLabel" prefHeight="23.0" prefWidth="207.0" text="Kcal per 100g:">
                                        <HBox.margin>
                                           <Insets left="5.0" />
                                        </HBox.margin>
@@ -439,6 +439,15 @@
                         </VBox>
                     </center>
                 </BorderPane>
+                <HBox fx:id="languagePickerContainer"
+                      alignment="CENTER_RIGHT"
+                      pickOnBounds="false"
+                      AnchorPane.bottomAnchor="0.0"
+                      AnchorPane.rightAnchor="9.0">
+                    <children>
+                        <fx:include source="LanguagePicker.fxml"/>
+                    </children>
+                </HBox>
             </children>
         </AnchorPane>
     </children>
