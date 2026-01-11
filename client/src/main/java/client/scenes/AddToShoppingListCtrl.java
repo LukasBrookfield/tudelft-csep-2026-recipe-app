@@ -1,5 +1,6 @@
 package client.scenes;
 
+import client.utils.LanguageService;
 import client.utils.ServerUtils;
 import client.utils.ShoppingListService;
 import client.utils.UserConfig;
@@ -13,8 +14,10 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.util.StringConverter;
 
 import java.util.ArrayList;
+import java.util.ResourceBundle;
 
 
 public class AddToShoppingListCtrl {
@@ -78,10 +81,52 @@ public class AddToShoppingListCtrl {
     @FXML
     private Label label;
 
+    @FXML
+    private Button backEditIngredientButton;
+
+    private static final String CREATE_NEW_INGREDIENT_TYPE = "Create new ingredient type";
+
+    private final LanguageService languages;
+
     private boolean newIngredientType = false;
 
+    private void setTooltip(Control c, String key){
+        ResourceBundle b = languages.bundle();
+        Tooltip t = c.getTooltip();
+        if (t == null) {
+            t = new Tooltip();
+            c.setTooltip(t);
+        }
+        t.setText(b.getString(key));
+    }
+
     public void applyTranslations() {
-        // MISSING
+        ResourceBundle b = languages.bundle();
+
+        label.setText(b.getString("addShopping.title"));
+        exitButton.setText(b.getString("addShopping.btn.exit"));
+        confirmation.setText(b.getString("addShopping.btn.confirm"));
+
+        editIngredientNameField.setPromptText(b.getString("common.field.ingredientType.prompt"));
+        editIngredientAmountField.setPromptText(b.getString("common.field.amount.prompt"));
+
+        nextButton.setText(b.getString("common.btn.next"));
+        backEditIngredientButton.setText(b.getString("common.btn.back"));
+        cancelEditIngredientButton.setText(b.getString("common.btn.cancel"));
+        doneEditIngredientButton.setText(b.getString("common.btn.done"));
+
+        setTooltip(removeIngredientButton, "common.tooltip.removeIngredient");
+        setTooltip(addIngredientButton, "common.tooltip.addIngredient");
+        setTooltip(editIngredientButton, "common.tooltip.editIngredient");
+
+        editIngredientChoiceBox.setConverter(new StringConverter<>() {
+            @Override public String toString(IngredientType it) {
+                if (it == null) return "";
+                if (CREATE_NEW_INGREDIENT_TYPE.equals(it.name)) return b.getString("common.ingredientType.createNew");
+                return it.name;
+            }
+            @Override public IngredientType fromString(String s) { return null; }
+        });
     }
 
     //the listener for ingredient type choice box so the fields change
@@ -101,10 +146,11 @@ public class AddToShoppingListCtrl {
     @Inject
     AddToShoppingListCtrl(ServerUtils server,
                           UserConfig user,
-                          MainCtrl controller) {
+                          MainCtrl controller, LanguageService languages) {
         this.server = server;
         this.user = user;
         this.controller = controller;
+        this.languages = languages;
     }
 
     /**
@@ -173,6 +219,8 @@ public class AddToShoppingListCtrl {
         // Makes it so that the 'Add Recipe' button is selected when the app gets
         // started
         Platform.runLater(() -> addIngredientButton.requestFocus());
+
+        applyTranslations();
     }
 
     /**

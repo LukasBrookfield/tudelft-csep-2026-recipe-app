@@ -69,7 +69,7 @@
                                              <children>
                                                 <ChoiceBox fx:id="editUnitBox" prefHeight="25.0" prefWidth="218.0" />
                                                 <TextField fx:id="editIngredientAmountField" prefHeight="25.0" prefWidth="217.0" promptText="Amount" />
-                                                <Button mnemonicParsing="false" onAction="#onBackEditIngredientButton" prefHeight="25.0" prefWidth="75.0" text="Back" />
+                                                <Button fx:id="backEditIngredientButton" mnemonicParsing="false" onAction="#onBackEditIngredientButton" prefHeight="25.0" prefWidth="75.0" text="Back" />
                                                 <Button fx:id="doneEditIngredientButton" mnemonicParsing="false" onAction="#onDoneEditIngredientButton" prefHeight="25.0" prefWidth="75.0" text="Done" />
                                              </children>
                                           </HBox>
@@ -140,11 +140,16 @@
                   </VBox>
                </center>
             </BorderPane>
+             <HBox alignment="CENTER_RIGHT"
+                   pickOnBounds="false"
+                   AnchorPane.bottomAnchor="0.0"
+                   AnchorPane.rightAnchor="9.0">
+                 <children>
+                     <fx:include source="LanguagePicker.fxml"/>
+                 </children>
+             </HBox>
          </children>
+<!--          <fx:include source="LanguagePicker.fxml" AnchorPane.bottomAnchor="12.0" AnchorPane.rightAnchor="12.0" />-->
       </AnchorPane>
-
-       <fx:include source="LanguagePicker.fxml"
-                   AnchorPane.rightAnchor="12.0"
-                   AnchorPane.bottomAnchor="12.0"/>
    </children>
 </VBox>
