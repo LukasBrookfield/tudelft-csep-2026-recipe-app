@@ -31,6 +31,10 @@ public class IngredientService {
             return false;
         }
 
+        // All ingredients need a unit
+        if (ingredient.unit == null) {
+            return false;
+        }
         // All units other than 'To Taste' need an amount
         if (ingredient.unit != Unit.TO_TASTE && ingredient.amount == null) {
             return false;
