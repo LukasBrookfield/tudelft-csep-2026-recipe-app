@@ -20,6 +20,10 @@ public class ShoppingListItem {
         this.recipeName = recipeName;
     }
 
+    public String getRecipeName() {
+        return recipeName;
+    }
+
     @Override
     public boolean equals(Object obj) {
         return EqualsBuilder.reflectionEquals (this, obj);

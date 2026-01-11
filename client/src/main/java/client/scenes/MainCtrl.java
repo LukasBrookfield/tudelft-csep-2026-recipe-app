@@ -104,11 +104,11 @@ public class MainCtrl {
         shoppingListCtrl.lastScene = currentScene;
     }
 
-    public void showAddToShoppingList(Recipe recipe) {
+    public void showAddToShoppingList(Recipe recipe, double scaleFactor) {
         primaryStage.setTitle(languages.bundle().getString("title.addToShopping"));
 //        primaryStage.setTitle("FoodPal - Add to Shopping List");
         primaryStage.setScene(addToShoppingListScene);
-        addToShoppingListCtrl.setFields(recipe);
+        addToShoppingListCtrl.setFields(recipe, scaleFactor);
     }
 
     public void applyTranslationsToAllScreens() {
