@@ -189,13 +189,13 @@
                 <!-- to run the UI tests on a buildserver, it is required to
                 enable headless mode -->
                 <configuration>
-                    <argLine>
-                        -Djava.awt.headless=true
-                        -Dtestfx.robot=glass
-                        -Dtestfx.headless=true
-                        -Dprism.order=sw
-                        -Dprism.text=t2k
-                    </argLine>
+<!--                    <argLine>-->
+<!--                        -Djava.awt.headless=true-->
+<!--                        -Dtestfx.robot=glass-->
+<!--                        -Dtestfx.headless=true-->
+<!--                        -Dprism.order=sw-->
+<!--                        -Dprism.text=t2k-->
+<!--                    </argLine>-->
                 </configuration>
             </plugin>
 		</plugins>

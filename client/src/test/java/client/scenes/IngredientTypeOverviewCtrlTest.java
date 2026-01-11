@@ -9,6 +9,7 @@ import commons.*;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 import org.junit.jupiter.api.Test;
@@ -141,6 +142,7 @@ public class IngredientTypeOverviewCtrlTest {
     private void addIngredientType(FxRobot robot, String name) {
         robot.clickOn(addIngredientTypeButton);
         robot.clickOn(editDetailsButton);
+        robot.clickOn(editNameField);
         robot.write(name);
         robot.clickOn(doneEditDetailsButton);
     }
@@ -206,6 +208,8 @@ public class IngredientTypeOverviewCtrlTest {
         robot.clickOn(doneEditButton);
         robot.clickOn(editIngredientTypeButton);
         robot.clickOn(editDetailsButton);
+        robot.clickOn(editNameField).type(KeyCode.END);;
+        robot.eraseText(20);
         robot.write("Edited ingredient type");
         robot.clickOn(doneEditDetailsButton);
         robot.clickOn(doneEditButton);
@@ -227,6 +231,7 @@ public class IngredientTypeOverviewCtrlTest {
     void cancelEditNameTest(FxRobot robot) {
         robot.clickOn(addIngredientTypeButton);
         robot.clickOn(editDetailsButton);
+        robot.clickOn(editNameField);
         robot.write("New ingredient type");
         robot.clickOn(cancelEditDetailsButton);
 
@@ -239,6 +244,7 @@ public class IngredientTypeOverviewCtrlTest {
     void invalidNameTest(FxRobot robot) {
         robot.clickOn(addIngredientTypeButton);
         robot.clickOn(editDetailsButton);
+        robot.clickOn(editNameField);
         robot.write("    ");
         robot.clickOn(doneEditDetailsButton);
 
@@ -250,6 +256,7 @@ public class IngredientTypeOverviewCtrlTest {
     void editDensityTest(FxRobot robot) {
         robot.clickOn(addIngredientTypeButton);
         robot.clickOn(editDensityButton);
+        robot.clickOn(editDensityField);
         robot.write("10");
         robot.clickOn(doneEditDensityButton);
 
@@ -261,6 +268,7 @@ public class IngredientTypeOverviewCtrlTest {
     void cancelEditDensityTest(FxRobot robot) {
         robot.clickOn(addIngredientTypeButton);
         robot.clickOn(editDensityButton);
+        robot.clickOn(editDensityField);
         robot.write("10");
         robot.clickOn(cancelEditDensityButton);
 
@@ -272,6 +280,7 @@ public class IngredientTypeOverviewCtrlTest {
     void invalidDensityTest(FxRobot robot) {
         robot.clickOn(addIngredientTypeButton);
         robot.clickOn(editDensityButton);
+        robot.clickOn(editDensityField);
         robot.write("abcdefg");
         robot.clickOn(doneEditDensityButton);
 
@@ -283,6 +292,7 @@ public class IngredientTypeOverviewCtrlTest {
     void blankDensityTest(FxRobot robot) {
         robot.clickOn(addIngredientTypeButton);
         robot.clickOn(editDensityButton);
+        robot.clickOn(editDensityField);
         robot.write("");
         robot.clickOn(doneEditDensityButton);
 
@@ -297,6 +307,7 @@ public class IngredientTypeOverviewCtrlTest {
     void editNutritionTest(FxRobot robot) {
         addIngredientType(robot, "Test ingredient type");
         robot.clickOn(editNutritionButton);
+        robot.clickOn(proteinTextField);
         robot.write("15.5");
         robot.clickOn(fatTextField);
         robot.write("2.25");
@@ -320,6 +331,7 @@ public class IngredientTypeOverviewCtrlTest {
     void cancelEditNutritionTest(FxRobot robot) {
         robot.clickOn(addIngredientTypeButton);
         robot.clickOn(editNutritionButton);
+        robot.clickOn(proteinTextField);
         robot.write("40.75");
         robot.clickOn(cancelEditNutritionButton);
 
