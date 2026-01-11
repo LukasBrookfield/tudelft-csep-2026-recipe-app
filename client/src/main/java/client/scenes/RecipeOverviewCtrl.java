@@ -479,7 +479,7 @@ public class RecipeOverviewCtrl {
         preparationStepListView.setDisable(value);
         removeIngredientButton.getParent().setVisible(!value);
 
-        setLanguagePickerVisible(!(value && newStep));
+//        setLanguagePickerVisible(!(value && newStep));
 
         // When going into edit mode, it automatically selects the
         // step name field
@@ -891,18 +891,25 @@ public class RecipeOverviewCtrl {
 
 
     private void setupSort() {
-        sortChoiceBox.getItems().addAll(
-                "Order by",
-                "Name (A-Z)",
-                "Fewest steps first",
-                "Fewest ingredients first"
+//        sortChoiceBox.getItems().addAll(
+//                "Order by",
+//                "Name (A-Z)",
+//                "Fewest steps first",
+//                "Fewest ingredients first"
+//        );
+
+                sortChoiceBox.getItems().addAll(
+                SORT_ORDER_BY,
+                SORT_NAME_AZ,
+                SORT_FEWEST_STEPS,
+                SORT_FEWEST_ING
         );
 
         sortChoiceBox.getSelectionModel().select(0);
 
         sortChoiceBox.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> {
-                    if ("Order by".equals(newValue)) {
+                    if (SORT_ORDER_BY.equals(newValue)) {
                         sortedRecipes.setComparator(null);
                         return;
                     }
@@ -919,21 +926,21 @@ public class RecipeOverviewCtrl {
 
         // comparator returns negative if first comes before second, positive otherwise and zero if equal
         switch (option) {
-            case "Name (A-Z)":
+            case SORT_NAME_AZ:
                 sortedRecipes.setComparator((recipe1, recipe2) -> {
                     String n1 = recipe1.name == null ? "" : recipe1.name.toLowerCase();
                     String n2 = recipe2.name == null ? "" : recipe2.name.toLowerCase();
                     return n1.compareTo(n2);
                 });
                 break;
-            case "Fewest steps first":
+            case SORT_FEWEST_STEPS:
                 sortedRecipes.setComparator((r1, r2) -> {
                     int s1 = r1.steps == null ? 0 : r1.steps.size();
                     int s2 = r2.steps == null ? 0 : r2.steps.size();
                     return Integer.compare(s1, s2);
                 });
                 break;
-            case "Fewest ingredients first":
+            case SORT_FEWEST_ING:
                 sortedRecipes.setComparator((r1, r2) -> {
                     int i1 = (r1.ingredients == null) ? 0 : r1.ingredients.size();
                     int i2 = (r2.ingredients == null) ? 0 : r2.ingredients.size();
@@ -1069,7 +1076,7 @@ public class RecipeOverviewCtrl {
     @FXML
     public void onRefresh() {
         editIngredientBox.getItems().setAll(
-                new IngredientType("Create new ingredient type", null,
+                new IngredientType(CREATE_NEW_INGREDIENT_TYPE, null,
                         null, null)
         );
         editIngredientBox.getItems().addAll(server.getIngredientTypes());
@@ -1153,7 +1160,7 @@ public class RecipeOverviewCtrl {
         recipe = server.addRecipe(recipe);
 
         // if user has filtered by favourite recipes, automatically make the new recipe a favourite
-        if (favouriteRecipeFilterBox.getSelectionModel().getSelectedItem().equals("Favourites")) {
+        if (favouriteRecipeFilterBox.getSelectionModel().getSelectedItem().equals(FILTER_FAV)) {
             user.addFavouriteRecipe(recipe);
             user.saveUser();
         }
@@ -1404,6 +1411,7 @@ public class RecipeOverviewCtrl {
         onRefresh();
         changeViewEditMode(false);
         newRecipe = false;
+        setStepEditMode(false);
     }
 
     /**
@@ -1734,11 +1742,17 @@ public class RecipeOverviewCtrl {
         editStepField.requestFocus();
     }
 
+    private void setStepEditMode(boolean editing) {
+        languagePickerContainer.setVisible(!editing);
+        languagePickerContainer.setManaged(!editing);
+    }
+
     /**
      * On action method for the Edit Step button
      */
     @FXML
     private void onEditStepButton() {
+        setStepEditMode(true);
         if (preparationStepListView.getItems().isEmpty()) {
             System.out.println("There is no preparation step to edit.");
             return;
@@ -1789,6 +1803,8 @@ public class RecipeOverviewCtrl {
         cancelEditButton.setVisible(true);
         doneEditButton.setVisible(true);
         newStep = false;
+
+        setStepEditMode(false);
     }
 
     /**
@@ -1830,16 +1846,17 @@ public class RecipeOverviewCtrl {
      * Sets up the favourite recipe filter choice box
      */
     private void setupFavouriteRecipeFilter() {
-        favouriteRecipeFilterBox.getItems().addAll("All recipes", "Favourites");
+        favouriteRecipeFilterBox.getItems().addAll(FILTER_ALL, FILTER_FAV);
         favouriteRecipeFilterBox.getSelectionModel().select(0);
+
         favouriteRecipeFilterBox.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, newValue) -> {
                     recipeSearchField.clear();
                     applySearchFilter("");
-                    if (newValue.equals("All recipes")) {
+                    if (newValue.equals(FILTER_ALL)) {
                         currentPredicate = recipe -> true;
                         filteredRecipes.setPredicate(currentPredicate);
-                    } else if (newValue.equals("Favourites")) {
+                    } else if (newValue.equals(FILTER_FAV)) {
                         currentPredicate = recipe -> user.isFavouriteRecipe(recipe);
                         filteredRecipes.setPredicate(currentPredicate);
                     }
