@@ -305,6 +305,11 @@ public class RecipeOverviewCtrl {
         starTooltip.setText(b.getString(isFav ? "recipe.tooltip.star.remove" : "recipe.tooltip.star.add"));
 
     }
+
+    private String translate(ResourceBundle b, String key, String fallback) {
+        if (b == null) return fallback;
+        return b.containsKey(key) ? b.getString(key) : fallback;
+    }
     public void applyTranslations() {
 
         ResourceBundle b = languages.bundle();
@@ -376,7 +381,7 @@ public class RecipeOverviewCtrl {
                 if (value == null) return "";
                 return switch (value) {
                     case SORT_ORDER_BY -> b.getString("recipe.sort.orderBy");
-                    case SORT_NAME_AZ -> b.getString("recipe.sort.nameAZ");
+                    case SORT_NAME_AZ -> translate(b, "recipe.sort.nameAZ", SORT_NAME_AZ);
                     case SORT_FEWEST_STEPS -> b.getString("recipe.sort.fewestSteps");
                     case SORT_FEWEST_ING -> b.getString("recipe.sort.fewestIngredients");
                     default -> value;
