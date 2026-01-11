@@ -19,6 +19,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
 
 import java.awt.*;
@@ -267,6 +268,9 @@ public class RecipeOverviewCtrl {
     @FXML
     private Label kcalCaptionLabel;
 
+    @FXML
+    private HBox languagePickerContainer;
+
     private final LanguageService languages;
 
     private final Tooltip nutritionTooltip = new Tooltip();
@@ -475,12 +479,22 @@ public class RecipeOverviewCtrl {
         preparationStepListView.setDisable(value);
         removeIngredientButton.getParent().setVisible(!value);
 
+        setLanguagePickerVisible(!(value && newStep));
+
         // When going into edit mode, it automatically selects the
         // step name field
         Platform.runLater(() -> {
             editStepField.requestFocus();
             editStepField.selectAll();
         });
+
+    }
+
+    private void setLanguagePickerVisible(boolean visible) {
+        if (languagePickerContainer == null) return;
+
+        languagePickerContainer.setVisible(visible);
+        languagePickerContainer.setManaged(visible);
     }
 
     /**

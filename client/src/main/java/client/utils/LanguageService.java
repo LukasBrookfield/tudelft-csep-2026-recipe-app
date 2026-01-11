@@ -2,6 +2,7 @@ package client.utils;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import commons.User;
 
 import java.text.MessageFormat;
 import java.util.Locale;
@@ -47,6 +48,27 @@ public class LanguageService {
     public ResourceBundle bundle(){
         return ResourceBundle.getBundle("languages.messages", locale);
         // like java's built-in "dictionary" object
+    }
+
+    public static LanguageService defaultService() {
+        UserStorage memStorage = new UserStorage() {
+            private User user = new User();
+            @Override
+            public User load() {
+                return user;
+            }
+
+            @Override
+            public void save(User u) {
+                user = u;
+            }
+        };
+
+        UserConfig cfg = new UserConfig(memStorage);
+
+        cfg.setLanguageTag("en");
+
+        return new LanguageService(cfg);
     }
 
 

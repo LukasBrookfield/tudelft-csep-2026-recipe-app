@@ -40,6 +40,10 @@ public class MainCtrl {
         this.languages = languages;
     }
 
+    public MainCtrl() {
+        this(LanguageService.defaultService());
+    }
+
     public void initialize(Stage primaryStage,
                            Pair<HomeScreenCtrl, Parent> homeScreen,
                            Pair<RecipeOverviewCtrl, Parent> recipeOverview,
