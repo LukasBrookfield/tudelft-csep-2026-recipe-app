@@ -2,11 +2,14 @@ package client.scenes;
 
 import java.awt.*;
 import java.io.IOException;
+import java.util.ArrayList;
+
 import client.MyFXML;
 import client.utils.*;
 import com.google.inject.Injector;
 import commons.Ingredient;
 import commons.IngredientType;
+import commons.Unit;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
@@ -94,6 +97,16 @@ public class ShoppingListCtrlTest {
         return (T) scene.lookup(id);
     }
 
+    private void addIngredient(FxRobot robot, String ingredientType, Unit unit, double amount) {
+        robot.clickOn(addIngredientButton);
+        robot.clickOn(editIngredientNameField);
+        robot.write(ingredientType);
+        robot.clickOn(nextButton);
+        robot.interact(() -> editUnitBox.getSelectionModel().select(unit.toString()));
+        robot.clickOn(editIngredientAmountField);
+        robot.write(String.valueOf(amount));
+    }
+
     @Test
     void testBeforeAddingIngredientButton() {
         assertTrue(addIngredientButton.isVisible());
@@ -108,5 +121,65 @@ public class ShoppingListCtrlTest {
         assertFalse(addIngredientButton.isVisible());
         assertFalse(removeIngredientButton.isVisible());
         assertFalse(editIngredientButton.isVisible());
+    }
+
+    @Test
+    void addIngredientTest(FxRobot robot) {
+        robot.clickOn(addIngredientButton);
+
+        // check if new ingredient has been added to list view
+        assertTrue(ingredientListView.getItems().contains(
+                new Ingredient(null, null, null, null)));
+    }
+
+    @Test
+    void doneAddIngredientTest(FxRobot robot) {
+        addIngredient(robot, "Test ingredient", Unit.G, 125.5);
+        robot.clickOn(doneEditIngredientButton);
+
+        Ingredient ing = new Ingredient(
+                new IngredientType("Test ingredient", null, new ArrayList<>(), null),
+                125.5, Unit.G, null);
+
+        // check if ingredient has been edited in list view
+        assertTrue(ingredientListView.getItems().contains(ing));
+
+        // check if ingredient has been saved to the local user file
+        assertTrue(user.getShoppingList().contains(ing));
+    }
+
+    @Test
+    void removeIngredientTest(FxRobot robot) {
+        addIngredient(robot, "Test ingredient", Unit.ML, 44.4);
+        robot.clickOn(doneEditIngredientButton);
+        robot.clickOn(removeIngredientButton);
+
+        // check if ingredient has been removed from list view
+        assertTrue(ingredientListView.getItems().isEmpty());
+
+        // check if ingredient has been removed from local user file
+        assertTrue(user.getShoppingList().isEmpty());
+    }
+
+    @Test
+    void editIngredientTest(FxRobot robot) {
+        addIngredient(robot, "Test ingredient", Unit.G, 125.5);
+        robot.clickOn(doneEditIngredientButton);
+        robot.clickOn(editIngredientButton);
+        robot.clickOn(editIngredientNameField);
+        robot.eraseText(20);
+        robot.write("EDIT");
+        robot.clickOn(nextButton);
+        robot.clickOn(doneEditIngredientButton);
+
+        Ingredient ing = new Ingredient(
+                new IngredientType("EDIT", null, new ArrayList<>(), null),
+                125.5, Unit.G, null);
+
+        // check if ingredient has been edited in list view
+        assertTrue(ingredientListView.getItems().contains(ing));
+
+        // check if ingredient has been edited in local user file
+        assertTrue(user.getShoppingList().contains(ing));
     }
 }
