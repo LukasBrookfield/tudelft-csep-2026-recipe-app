@@ -52,7 +52,7 @@
                         <Insets bottom="10.0" left="10.0" right="20.0" top="10.0" />
                      </padding>
                      <children>
-                        <Label prefHeight="27.0" prefWidth="91.0" text="Shopping List">
+                        <Label fx:id="shoppingListHeaderLabel" prefHeight="27.0" prefWidth="91.0" text="Shopping List">
                            <font>
                               <Font name="System Bold" size="13.0" />
                            </font>
@@ -69,7 +69,7 @@
                                              <children>
                                                 <ChoiceBox fx:id="editUnitBox" prefHeight="25.0" prefWidth="218.0" />
                                                 <TextField fx:id="editIngredientAmountField" prefHeight="25.0" prefWidth="217.0" promptText="Amount" />
-                                                <Button mnemonicParsing="false" onAction="#onBackEditIngredientButton" prefHeight="25.0" prefWidth="75.0" text="Back" />
+                                                <Button fx:id="backEditIngredientButton" mnemonicParsing="false" onAction="#onBackEditIngredientButton" prefHeight="25.0" prefWidth="75.0" text="Back" />
                                                 <Button fx:id="doneEditIngredientButton" mnemonicParsing="false" onAction="#onDoneEditIngredientButton" prefHeight="25.0" prefWidth="75.0" text="Done" />
                                              </children>
                                           </HBox>
@@ -116,7 +116,8 @@
                                                       <Font size="13.0" />
                                                    </font>
                                                 </Tooltip>
-                                             </tooltip></Button>
+                                             </tooltip>
+                                          </Button>
                                        </children>
                                     </HBox>
                                  </children>
@@ -139,7 +140,16 @@
                   </VBox>
                </center>
             </BorderPane>
+             <HBox alignment="CENTER_RIGHT"
+                   pickOnBounds="false"
+                   AnchorPane.bottomAnchor="0.0"
+                   AnchorPane.rightAnchor="9.0">
+                 <children>
+                     <fx:include source="LanguagePicker.fxml"/>
+                 </children>
+             </HBox>
          </children>
+<!--          <fx:include source="LanguagePicker.fxml" AnchorPane.bottomAnchor="12.0" AnchorPane.rightAnchor="12.0" />-->
       </AnchorPane>
    </children>
 </VBox>
