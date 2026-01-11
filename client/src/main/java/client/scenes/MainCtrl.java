@@ -12,6 +12,7 @@ import org.hibernate.service.spi.InjectService;
 
 import java.awt.*;
 import java.util.Objects;
+import java.util.ResourceBundle;
 
 public class MainCtrl {
 
@@ -108,14 +109,24 @@ public class MainCtrl {
 
     public void applyTranslationsToAllScreens() {
 
-        if (primaryStage.getScene() == homeScreenScene) primaryStage.setTitle(languages.bundle().getString("title.home"));
-        if (primaryStage.getScene() == recipeOverviewScene) primaryStage.setTitle(languages.bundle().getString("title.recipes"));
+        if (homeScreenCtrl != null) homeScreenCtrl.applyTranslations();
+        if (recipeOverviewCtrl != null) recipeOverviewCtrl.applyTranslations();
+        if (ingredientTypeOverviewCtrl != null) ingredientTypeOverviewCtrl.applyTranslations();
+        if (shoppingListCtrl != null) shoppingListCtrl.applyTranslations();
+        if (addToShoppingListCtrl != null) addToShoppingListCtrl.applyTranslations();
 
-        homeScreenCtrl.applyTranslations();
-        recipeOverviewCtrl.applyTranslations();
-        ingredientTypeOverviewCtrl.applyTranslations();
-        shoppingListCtrl.applyTranslations();
-        addToShoppingListCtrl.applyTranslations();
+        updateStageTitleForCurrentScene();
+    }
+
+    private void updateStageTitleForCurrentScene() {
+        if (primaryStage == null) return;
+        ResourceBundle b = languages.bundle();
+        Scene s = primaryStage.getScene();
+        if (s == homeScreenScene) primaryStage.setTitle(b.getString("title.home"));
+        else if (s == recipeOverviewScene) primaryStage.setTitle(b.getString("title.recipes"));
+        else if (s == ingredientTypeOverviewScene) primaryStage.setTitle(b.getString("title.ingredients"));
+        else if (s == shoppingListScene) primaryStage.setTitle(b.getString("title.shopping"));
+        else if (s == addToShoppingListScene) primaryStage.setTitle(b.getString("title.addToShopping"));
     }
 
 }

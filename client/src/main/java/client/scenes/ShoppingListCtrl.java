@@ -1,9 +1,6 @@
 package client.scenes;
 
-import client.utils.ServerUtility;
-import client.utils.ServerUtils;
-import client.utils.ShoppingListService;
-import client.utils.UserConfig;
+import client.utils.*;
 import com.google.inject.Inject;
 import commons.Ingredient;
 import commons.IngredientType;
@@ -14,8 +11,10 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.util.StringConverter;
 
 import java.util.ArrayList;
+import java.util.ResourceBundle;
 
 public class ShoppingListCtrl {
 
@@ -72,9 +71,16 @@ public class ShoppingListCtrl {
     @FXML
     private Button exitButton;
 
-    public void applyTranslations() {
-        // MISSING
-    }
+    @FXML
+    private Label shoppingListHeaderLabel;
+
+    @FXML
+    private Button backEditIngredientButton;
+
+    private final LanguageService languages;
+
+    private static final String CREATE_NEW_INGREDIENT_TYPE = "Create new ingredient type";
+
 
     //the listener for ingredient type choice box so the fields change
     private final ChangeListener<IngredientType> ingredientListener =
@@ -93,10 +99,49 @@ public class ShoppingListCtrl {
     @Inject
     public ShoppingListCtrl(ServerUtility server,
                             UserConfig user,
-                            MainCtrl mainCtrl) {
+                            MainCtrl mainCtrl, LanguageService languages) {
         this.server = server;
         this.user = user;
         this.mainCtrl = mainCtrl;
+        this.languages = languages;
+    }
+
+    private void setTooltip(Control c, String key) {
+        ResourceBundle b = languages.bundle();
+        Tooltip t = c.getTooltip();
+        if (t == null) {
+            t = new Tooltip();
+            c.setTooltip(t);
+        }
+        t.setText(b.getString(key));
+    }
+
+    public void applyTranslations() {
+        ResourceBundle b = languages.bundle();
+
+        shoppingListHeaderLabel.setText(b.getString("shopping.title"));
+        exitButton.setText(b.getString("shopping.btn.exit"));
+
+        editIngredientNameField.setPromptText(b.getString("common.field.ingredientType.prompt"));
+        editIngredientAmountField.setPromptText(b.getString("common.field.amount.prompt"));
+
+        nextButton.setText(b.getString("common.btn.next"));
+        backEditIngredientButton.setText(b.getString("common.btn.back"));
+        cancelEditIngredientButton.setText(b.getString("common.btn.cancel"));
+        doneEditIngredientButton.setText(b.getString("common.btn.done"));
+
+        setTooltip(removeIngredientButton, "common.tooltip.removeIngredient");
+        setTooltip(addIngredientButton, "common.tooltip.addIngredient");
+        setTooltip(editIngredientButton, "common.tooltip.editIngredient");
+
+        editIngredientChoiceBox.setConverter(new StringConverter<>() {
+            @Override public String toString(IngredientType it) {
+                if (it == null) return "";
+                if (CREATE_NEW_INGREDIENT_TYPE.equals(it.name)) return b.getString("common.ingredientType.createNew");
+                return it.name;
+            }
+            @Override public IngredientType fromString(String s) { return null; }
+        });
     }
 
     /**
@@ -165,6 +210,7 @@ public class ShoppingListCtrl {
         Platform.runLater(() -> addIngredientButton.requestFocus());
 
         ingredientListView.getItems().addAll(user.getShoppingList());
+        applyTranslations();
     }
 
     /**
