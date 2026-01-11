@@ -8,13 +8,16 @@ import server.database.IngredientRepository;
 @Service
 public class IngredientService {
     private final IngredientRepository repo;
+    private final IngredientTypeService ingredientTypeService;
 
     /**
      * Constructor for the IngredientService class
      * @param repo the ingredient repository
      */
-    public IngredientService(IngredientRepository repo) {
+    public IngredientService(IngredientRepository repo,
+                             IngredientTypeService ingredientTypeService) {
         this.repo = repo;
+        this.ingredientTypeService = ingredientTypeService;
     }
 
     /**
@@ -23,7 +26,8 @@ public class IngredientService {
      * @return true if the ingredient is valid, false if not
      */
     public boolean validateIngredient(Ingredient ingredient) {
-        if (ingredient == null || ingredient.ingredientType == null) {
+        if (ingredient == null || !ingredientTypeService.validateIngredientType(
+                ingredient.ingredientType)) {
             return false;
         }
 
