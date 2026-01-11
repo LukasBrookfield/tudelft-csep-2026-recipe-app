@@ -59,7 +59,7 @@
                         </Label>
                         <Separator prefWidth="200.0" />
                         <ListView fx:id="ingredientListView" prefHeight="355.0" prefWidth="570.0" />
-                        <HBox alignment="CENTER" prefHeight="0.0" prefWidth="395.0" spacing="5.0">
+                        <HBox alignment="CENTER" prefHeight="22.0" prefWidth="508.0" spacing="5.0">
                            <children>
                               <StackPane prefHeight="25.0" prefWidth="618.0">
                                  <children>
@@ -67,16 +67,16 @@
                                        <children>
                                           <HBox fx:id="editIngredientBox" prefHeight="25.0" prefWidth="457.0" spacing="5.0" visible="false">
                                              <children>
-                                                <ChoiceBox fx:id="editUnitBox" prefHeight="25.0" prefWidth="218.0" />
-                                                <TextField fx:id="editIngredientAmountField" prefHeight="25.0" prefWidth="217.0" promptText="Amount" />
-                                                <Button fx:id="backEditIngredientButton" mnemonicParsing="false" onAction="#onBackEditIngredientButton" prefHeight="25.0" prefWidth="75.0" text="Back" />
-                                                <Button fx:id="doneEditIngredientButton" mnemonicParsing="false" onAction="#onDoneEditIngredientButton" prefHeight="25.0" prefWidth="75.0" text="Done" />
+                                                <ChoiceBox fx:id="editUnitBox" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="150.0" />
+                                                <TextField fx:id="editIngredientAmountField" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="150.0" promptText="Amount" />
+                                                <Button fx:id="backEditIngredientButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onBackEditIngredientButton" prefHeight="25.0" prefWidth="75.0" text="Back" />
+                                                <Button fx:id="doneEditIngredientButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onDoneEditIngredientButton" prefHeight="25.0" prefWidth="75.0" text="Done" />
                                              </children>
                                           </HBox>
                                           <HBox fx:id="editIngredientTypeBox" prefHeight="25.0" prefWidth="454.0" spacing="5.0">
                                              <children>
-                                                <ChoiceBox fx:id="editIngredientChoiceBox" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="251.0" />
-                                                <TextField fx:id="editIngredientNameField" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="191.0" promptText="Ingredient type" />
+                                                <ChoiceBox fx:id="editIngredientChoiceBox" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="150.0" />
+                                                <TextField fx:id="editIngredientNameField" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="150.0" promptText="Ingredient type" />
                                                 <Button fx:id="cancelEditIngredientButton" alignment="CENTER" minWidth="-Infinity" mnemonicParsing="false" onAction="#onCancelEditIngredientButton" prefHeight="25.0" prefWidth="75.0" text="Cancel" textAlignment="CENTER" />
                                                 <Button fx:id="nextButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onNext" prefHeight="25.0" prefWidth="75.0" text="Next" />
                                              </children>
@@ -116,7 +116,8 @@
                                                       <Font size="13.0" />
                                                    </font>
                                                 </Tooltip>
-                                             </tooltip></Button>
+                                             </tooltip>
+                                          </Button>
                                           <Button fx:id="confirmation" mnemonicParsing="false" onAction="#onConfirmationButton" text="Confirm and add to Shopping List" />
                                        </children>
                                     </HBox>
@@ -140,12 +141,9 @@
                   </VBox>
                </center>
             </BorderPane>
-             <HBox alignment="CENTER_RIGHT"
-                   pickOnBounds="false"
-                   AnchorPane.bottomAnchor="0.0"
-                   AnchorPane.rightAnchor="9.0">
+             <HBox alignment="CENTER_RIGHT" pickOnBounds="false" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="9.0">
                  <children>
-                     <fx:include source="LanguagePicker.fxml"/>
+                     <fx:include source="LanguagePicker.fxml" />
                  </children>
              </HBox>
          </children>

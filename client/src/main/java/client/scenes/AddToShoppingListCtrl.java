@@ -1,9 +1,6 @@
 package client.scenes;
 
-import client.utils.LanguageService;
-import client.utils.ServerUtils;
-import client.utils.ShoppingListService;
-import client.utils.UserConfig;
+import client.utils.*;
 import com.google.inject.Inject;
 import commons.Ingredient;
 import commons.IngredientType;
@@ -170,12 +167,13 @@ public class AddToShoppingListCtrl {
     /**
      * Sets the fields with ingredients from the recipe which was selected
      * @param recipe The recipe
+     * @param scale The scale
      */
-    public void setFields(Recipe recipe){
+    public void setFields(Recipe recipe, double scale){
         newIngredientType = false;
         this.recipe = recipe;
         if(recipe != null && recipe.ingredients != null){
-            ShoppingListService.addIngredientsToListView(recipe, ingredientListView.getItems());
+            ShoppingListService.addIngredientsToListView(recipe, ingredientListView.getItems(), scale);
         }
         if(recipe != null && recipe.name != null){
             label.setText("Add to Shopping List - " + recipe.name);
@@ -222,6 +220,20 @@ public class AddToShoppingListCtrl {
         Platform.runLater(() -> addIngredientButton.requestFocus());
 
         applyTranslations();
+
+        ingredientListView.setCellFactory(lv -> new ListCell<>() {
+            @Override
+            protected void updateItem(ShoppingListItem item, boolean empty) {
+                super.updateItem(item, empty);
+
+                if (empty || item == null) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    setText(ShoppingListService.shoppingListItemString(item));
+                }
+            }
+        });
     }
 
     /**
@@ -340,10 +352,7 @@ public class AddToShoppingListCtrl {
         if (editIngredientChoiceBox.getValue().name.equals("Create new ingredient type")) {
             ingredient.ingredientType = server.addIngredientType(
                     new IngredientType(editIngredientNameField.getText(),
-                            null, new ArrayList<>(), null)
-            ).copy();   //the ingredient has a copy of this type so
-                        //the change of its name while saving it to shopping list
-                        //would not affect the ingredient type on the server
+                            null, new ArrayList<>(), null));
         } else {
             ingredient.ingredientType = editIngredientChoiceBox.getValue();
         }

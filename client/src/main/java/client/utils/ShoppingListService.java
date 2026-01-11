@@ -1,6 +1,5 @@
 package client.utils;
 
-import client.scenes.ShoppingListCtrl;
 import commons.Ingredient;
 import commons.Recipe;
 import commons.ShoppingListItem;
@@ -15,9 +14,16 @@ public class ShoppingListService {
      * @param recipe The recipe
      * @param list The list
      */
-    public static void addIngredientsToListView(Recipe recipe, List<ShoppingListItem> list){
-        list.addAll(recipe.ingredients.stream().
-                map(Ingredient::copy).map(ShoppingListItem::new).toList());
+    public static void addIngredientsToListView(Recipe recipe, List<ShoppingListItem> list, double scale) {
+        list.addAll(
+                recipe.ingredients.stream()
+                        .map(Ingredient::copy)
+                        .map(i -> {
+                            i.amount = scale * i.amount;
+                            return new ShoppingListItem(i);
+                        })
+                        .toList()
+        );
     }
 
     /**
@@ -39,11 +45,20 @@ public class ShoppingListService {
             System.out.println("This unit needs an amount.");
             return false;
         }
+
         if (unit.equals("TO_TASTE")
                 && !amount.isEmpty()) {
             System.out.println("This unit cannot have an amount.");
             return false;
         }
+
+        try{
+            Double.parseDouble(amount);
+        }catch(Exception e){
+            System.out.println("Invalid amount");
+            return false;
+        }
+
         return true;
     }
 
@@ -80,5 +95,15 @@ public class ShoppingListService {
             user.addShoppingListItem(ingredient);
         });
         user.saveUser();
+    }
+
+    public static String shoppingListItemString(ShoppingListItem item){
+        IngredientScaling ingredientScaling  = new IngredientScaling();
+        if(item.getRecipeName() == null){
+            return ingredientScaling.format(item.getIngredient(), 1.0);
+        } else {
+            return ingredientScaling.format(item.getIngredient(), 1.0) +
+                    " (" + item.getRecipeName() + ")";
+        }
     }
 }
