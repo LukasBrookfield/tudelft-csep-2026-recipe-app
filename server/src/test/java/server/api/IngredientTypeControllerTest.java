@@ -4,6 +4,7 @@ import commons.IngredientType;
 import commons.Nutrition;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import server.services.IngredientTypeService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,11 +17,13 @@ public class IngredientTypeControllerTest {
 
     private TestIngredientTypeRepository repo;
     private IngredientTypeController sut;
+    private IngredientTypeService ingredientTypeService;
 
     @BeforeEach
     public void setup() {
         repo = new TestIngredientTypeRepository();
-        sut = new IngredientTypeController(repo);
+        ingredientTypeService = new IngredientTypeService(repo);
+        sut = new IngredientTypeController(repo, ingredientTypeService);
 
         ingredientType1 = new IngredientType(
                 "Onion", new Nutrition(60.0, 0.0, 0.0), new ArrayList<>(), null);
