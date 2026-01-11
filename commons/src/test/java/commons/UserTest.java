@@ -16,7 +16,7 @@ class UserTest {
     static final IngredientType ING_TYPE_C = new IngredientType("C", null, null, null);
 
     static final List<Long> FAVOURITE_RECIPES = List.of(123L, 456L);
-    static final List<Ingredient> SHOPPING_LIST = createShoppingList("A", ING_TYPE_A, ING_TYPE_B);
+    static final List<ShoppingListItem> SHOPPING_LIST = createShoppingList("A", ING_TYPE_A, ING_TYPE_B);
 
     private User testUser;
 
@@ -44,7 +44,7 @@ class UserTest {
         // with same shopping, but differently ordered (absent, to be implemented differently later)
 
         // with different shopping list
-        List<Ingredient> otherList = createShoppingList(RECIPE_A_NAME, ING_TYPE_A, ING_TYPE_C);
+        List<ShoppingListItem> otherList = createShoppingList(RECIPE_A_NAME, ING_TYPE_A, ING_TYPE_C);
         user2 = new User(FAVOURITE_RECIPES, otherList);
         assertNotEquals(testUser, user2);
     }
@@ -66,7 +66,7 @@ class UserTest {
         // with same ingredients, but different recipe name (to be implemented later
 
         // with different shopping list
-        List<Ingredient> otherList = createShoppingList(RECIPE_A_NAME, ING_TYPE_A, ING_TYPE_C);
+        List<ShoppingListItem> otherList = createShoppingList(RECIPE_A_NAME, ING_TYPE_A, ING_TYPE_C);
         user2 = new User(FAVOURITE_RECIPES, otherList);
         assertNotEquals(testUser.hashCode(), user2.hashCode());
     }
@@ -81,10 +81,10 @@ class UserTest {
     }
 
 
-    private static List<Ingredient> createShoppingList(String recipeName, IngredientType type1, IngredientType type2) {
+    private static List<ShoppingListItem> createShoppingList(String recipeName, IngredientType type1, IngredientType type2) {
         Recipe recipe = new Recipe(recipeName);
         return List.of(
-                new Ingredient(type1, 1.0, Unit.TBSP, recipe),
-                new Ingredient(type2, 1.0, Unit.TBSP, recipe));
+                new ShoppingListItem(new Ingredient(type1, 1.0, Unit.TBSP, recipe)),
+                new ShoppingListItem(new Ingredient(type2, 1.0, Unit.TBSP, recipe)));
     }
 }

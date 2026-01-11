@@ -7,6 +7,7 @@ import com.google.inject.Inject;
 import commons.Ingredient;
 import commons.IngredientType;
 import commons.Recipe;
+import commons.ShoppingListItem;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
@@ -25,7 +26,7 @@ public class AddToShoppingListCtrl {
     private Recipe recipe;
 
     @FXML
-    private ListView<Ingredient> ingredientListView;
+    private ListView<ShoppingListItem> ingredientListView;
 
     @FXML
     private Button removeIngredientButton;
@@ -197,7 +198,7 @@ public class AddToShoppingListCtrl {
     @FXML
     private void onAddIngredientButton() {
         newIngredientType = true;
-        ingredientListView.getItems().add(new Ingredient(null, null, null, null));
+        ingredientListView.getItems().add(new ShoppingListItem(new Ingredient(null, null, null, null)));
         ingredientListView.getSelectionModel().select(
                 ingredientListView.getItems().size() - 1
         );
@@ -236,7 +237,7 @@ public class AddToShoppingListCtrl {
         }
         changeIngredientViewEditMode(true);
 
-        Ingredient ingredient = ingredientListView.getSelectionModel().getSelectedItem();
+        Ingredient ingredient = ingredientListView.getSelectionModel().getSelectedItem().getIngredient();
 
         if (ingredient.ingredientType != null) {
             editIngredientChoiceBox.setValue(ingredient.ingredientType);
@@ -281,7 +282,7 @@ public class AddToShoppingListCtrl {
         }
 
         int index = ingredientListView.getSelectionModel().getSelectedIndex();
-        Ingredient ingredient = ingredientListView.getItems().get(index);
+        Ingredient ingredient = ingredientListView.getItems().get(index).getIngredient();
 
         //we create a new ingredient type
         if (editIngredientChoiceBox.getValue().name.equals("Create new ingredient type")) {
@@ -300,9 +301,8 @@ public class AddToShoppingListCtrl {
                 editIngredientAmountField.getText(),
                 editUnitBox.getValue());
 
-        ingredientListView.getItems().set(index, ingredient);
-
         changeIngredientViewEditMode(false);
+        onRefresh();
     }
 
     /**
@@ -318,7 +318,7 @@ public class AddToShoppingListCtrl {
         changeIngredientTypeViewEditMode(true);
 
         Ingredient ingredient = ingredientListView.getSelectionModel()
-                .getSelectedItem();
+                .getSelectedItem().getIngredient();
         if (ingredient.amount != null) {
             editIngredientAmountField.setText(String.valueOf(ingredient.amount));
         }

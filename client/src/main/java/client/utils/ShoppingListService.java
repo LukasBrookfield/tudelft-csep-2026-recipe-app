@@ -1,7 +1,9 @@
 package client.utils;
 
+import client.scenes.ShoppingListCtrl;
 import commons.Ingredient;
 import commons.Recipe;
+import commons.ShoppingListItem;
 import commons.Unit;
 
 import java.util.List;
@@ -13,9 +15,9 @@ public class ShoppingListService {
      * @param recipe The recipe
      * @param list The list
      */
-    public static void addIngredientsToListView(Recipe recipe, List<Ingredient> list){
+    public static void addIngredientsToListView(Recipe recipe, List<ShoppingListItem> list){
         list.addAll(recipe.ingredients.stream().
-                map(Ingredient::copy).toList());
+                map(Ingredient::copy).map(ShoppingListItem::new).toList());
     }
 
     /**
@@ -72,9 +74,9 @@ public class ShoppingListService {
      * @param recipe The recipe from which ingredients comes from
      * @param user The user
      */
-    public static void confirmAddingIngredients(List<Ingredient> ingredientListView, Recipe recipe, UserConfig user){
+    public static void confirmAddingIngredients(List<ShoppingListItem> ingredientListView, Recipe recipe, UserConfig user){
         ingredientListView.forEach(ingredient -> {
-            ingredient.ingredientType.name = ingredient.ingredientType.name + " (" + recipe.name + ")";
+            ingredient.setRecipeName(recipe.name);
             user.addShoppingListItem(ingredient);
         });
         user.saveUser();
