@@ -106,9 +106,6 @@ public class RecipeOverviewCtrl {
     @FXML
     private Button cloneRecipeButton;
 
-    @FXML
-    private Button shoppingListButton;
-
     // Top right
 
     @FXML
@@ -127,10 +124,7 @@ public class RecipeOverviewCtrl {
     private Button printRecipeButton;
 
     @FXML
-    private Button toggleOverviewButton;
-
-    @FXML
-    private Button homeButton;
+    public ChoiceBox<String> sceneBox;
 
     // Recipe title row
 
@@ -152,22 +146,40 @@ public class RecipeOverviewCtrl {
     @FXML
     private Separator mainSeparator;
 
-    // Servings
+    // Details
+
+    @FXML
+    private Label servingsCaptionLabel;
 
     @FXML
     private Label servingsLabel;
 
     @FXML
+    private Label scaleCaptionLabel;
+
+    @FXML
+    private Label scaleLabel;
+
+    @FXML
+    private Label kcalCaptionLabel;
+
+    @FXML
+    private Label recipeKcalPer100gLabel;
+
+    @FXML
+    private Button editDetailsButton;
+
+    @FXML
     private TextField editServingsField;
 
     @FXML
-    private Button editServingsButton;
+    private TextField scaleFactorField;
 
     @FXML
-    private Button cancelEditServingsButton;
+    private Button cancelEditDetailsButton;
 
     @FXML
-    private Button doneEditServingsButton;
+    private Button doneEditDetailsButton;
 
     // Ingredients
 
@@ -257,18 +269,6 @@ public class RecipeOverviewCtrl {
     private ChoiceBox<String> sortChoiceBox;
 
     @FXML
-    private Label recipeKcalPer100gLabel;
-
-    @FXML
-    private TextField scaleFactorField;
-
-    @FXML
-    private Label servingsCaptionLabel;
-
-    @FXML
-    private Label kcalCaptionLabel;
-
-    @FXML
     private HBox languagePickerContainer;
 
     private final LanguageService languages;
@@ -318,11 +318,8 @@ public class RecipeOverviewCtrl {
 
         ResourceBundle b = languages.bundle();
 
-        addToShoppingListButton.setText(b.getString("recipe.btn.addToShoppingList"));
         downloadRecipeButton.setText(b.getString("recipe.btn.download"));
         printRecipeButton.setText(b.getString("recipe.btn.print"));
-        toggleOverviewButton.setText(b.getString("recipe.btn.viewIngredients"));
-        shoppingListButton.setText(b.getString("recipe.btn.shoppingList"));
 
         recipeSearchField.setPromptText(b.getString("recipe.search.prompt"));
         recipeTitleField.setPromptText(b.getString("recipe.field.name.prompt"));
@@ -344,11 +341,10 @@ public class RecipeOverviewCtrl {
         doneEditStepButton.setText(b.getString("common.btn.done"));
         cancelEditButton.setText(b.getString("common.btn.cancel"));
         doneEditButton.setText(b.getString("common.btn.done"));
-        cancelEditServingsButton.setText(b.getString("common.btn.cancel"));
-        doneEditServingsButton.setText(b.getString("common.btn.done"));
+        cancelEditDetailsButton.setText(b.getString("common.btn.cancel"));
+        doneEditDetailsButton.setText(b.getString("common.btn.done"));
 
         // tooltips
-        setTooltip(homeButton, "common.tooltip.home");
         setTooltip(removeRecipeButton, "common.tooltip.removeRecipe");
         setTooltip(addRecipeButton, "common.tooltip.addRecipe");
         setTooltip(cloneRecipeButton, "common.tooltip.cloneRecipe");
@@ -363,7 +359,7 @@ public class RecipeOverviewCtrl {
         setTooltip(editStepButton, "common.tooltip.editStep");
         setTooltip(moveStepUpButton, "common.tooltip.moveUp");
         setTooltip(moveStepDownButton, "common.tooltip.moveDown");
-        setTooltip(editServingsButton, "common.tooltip.editServings");
+        setTooltip(editDetailsButton, "common.tooltip.editServings");
 
         // choiceboxs
         favouriteRecipeFilterBox.setConverter(new StringConverter<>() {
@@ -424,35 +420,17 @@ public class RecipeOverviewCtrl {
      * @param value false for viewing mode, true for editing mode
      */
     private void changeViewEditMode(boolean value) {
+        downloadRecipeButton.getParent().setDisable(value);
+        recipeSearchField.getParent().getParent().setDisable(value);
+
         recipeTitleLabel.setVisible(!value);
         recipeTitleField.setVisible(value);
+        starRecipeButton.getParent().setVisible(!value);
+        doneEditButton.getParent().setVisible(value);
 
-        editRecipeButton.setVisible(!value);
-
-        editServingsButton.getParent().setVisible(value);
-        removeIngredientButton.getParent().setVisible(value);
-        removeStepButton.getParent().setVisible(value);
-
-        cancelEditButton.setVisible(value);
-        doneEditButton.setVisible(value);
-
-        addRecipeButton.setVisible(!value);
-        removeRecipeButton.setVisible(!value);
-        cloneRecipeButton.setVisible(!value);
-        shoppingListButton.setVisible(!value);
-
-        recipeSearchField.setDisable(value);
-        sortChoiceBox.setDisable(value);
-        recipeListView.setDisable(value);
-
-        starRecipeButton.setVisible(!value);
-        addToShoppingListButton.setVisible(!value);
-        downloadRecipeButton.setVisible(!value);
-        printRecipeButton.setVisible(!value);
-        toggleOverviewButton.setVisible(!value);
-        homeButton.setVisible(!value);
-
-        favouriteRecipeFilterBox.setDisable(value);
+        editDetailsButton.setVisible(value);
+        editIngredientButton.getParent().setVisible(value);
+        editStepButton.getParent().setVisible(value);
 
         // When going into edit mode, it automatically selects the
         // recipe name field
@@ -462,9 +440,17 @@ public class RecipeOverviewCtrl {
         });
     }
 
-    private void changeServingsViewEditMode(boolean value) {
-        editServingsButton.getParent().setVisible(!value);
+    private void changeDetailsViewEditMode(boolean value) {
+        editDetailsButton.getParent().setVisible(!value);
         editServingsField.getParent().setVisible(value);
+        removeIngredientButton.getParent().setDisable(value);
+        removeStepButton.getParent().setDisable(value);
+
+        cancelEditButton.getParent().setDisable(value);
+
+        Platform.runLater(() -> {
+            editServingsField.requestFocus();
+        });
     }
 
     /**
@@ -476,8 +462,11 @@ public class RecipeOverviewCtrl {
         removeStepButton.getParent().setVisible(!value);
         editStepField.getParent().setVisible(value);
         removeStepButton.getParent().setMouseTransparent(value);
+        editDetailsButton.getParent().setDisable(value);
+        removeIngredientButton.getParent().setDisable(value);
         preparationStepListView.setDisable(value);
-        removeIngredientButton.getParent().setVisible(!value);
+
+        cancelEditButton.getParent().setDisable(value);
 
 //        setLanguagePickerVisible(!(value && newStep));
 
@@ -511,7 +500,11 @@ public class RecipeOverviewCtrl {
 
         removeIngredientButton.getParent().setMouseTransparent(value > 0);
         ingredientListView.setDisable(value > 0);
-        removeStepButton.getParent().setVisible(value == 0);
+
+        editDetailsButton.setDisable(value > 0);
+        removeStepButton.getParent().setDisable(value > 0);
+
+        cancelEditButton.getParent().setDisable(value > 0);
 
         // When going into edit mode, it automatically selects the
         // ingredient name field
@@ -648,15 +641,17 @@ public class RecipeOverviewCtrl {
      */
     @FXML
     private void initialize() {
-        changeServingsViewEditMode(false);
+        changeDetailsViewEditMode(false);
         changeIngredientTypeViewEditMode(0);
         changeStepViewEditMode(false);
         changeViewEditMode(false);
         recipeTitleField.setVisible(false);
         applyTranslations();
         onRefresh();
-
-        editUnitBox.getItems().addAll("Select a unit", "G", "ML", "TBSP", "TSP", "PINCH",
+        
+        sceneBox.getItems().addAll("Home", "Recipe overview", "Ingredient overview",
+                "Shopping list");
+        editUnitBox.getItems().addAll("Select a unit", "G", "KG", "ML", "L", "TBSP", "TSP", "PINCH",
                 "HANDFUL", "TO_TASTE");
 
         // set up "all recipes" + filtered list
@@ -790,6 +785,11 @@ public class RecipeOverviewCtrl {
             user.saveUser();
             if (n > 0) showDeletedFavouritesAlert(n);
         });
+
+        sceneBox.getSelectionModel().selectedItemProperty().addListener(
+                (obs, oldValue, newValue) -> {
+                    mainCtrl.showScene(newValue);
+                });
     }
 
     private void initializeScaleFactorUI() {
@@ -1376,16 +1376,6 @@ public class RecipeOverviewCtrl {
         }
     }
 
-    @FXML
-    private void onToggleOverviewButton() {
-        mainCtrl.showIngredientTypeOverview();
-    }
-
-    @FXML
-    private void onHomeButton() {
-        mainCtrl.showHomeScreen();
-    }
-
     // Recipe title row
 
     /**
@@ -1411,7 +1401,6 @@ public class RecipeOverviewCtrl {
         onRefresh();
         changeViewEditMode(false);
         newRecipe = false;
-        setStepEditMode(false);
     }
 
     /**
@@ -1465,18 +1454,18 @@ public class RecipeOverviewCtrl {
     // Servings section
 
     @FXML
-    private void onEditServingsButton() {
+    private void onEditDetailsButton() {
         editServingsField.setText(Integer.toString(getBaseServingsFromLabel()));
-        changeServingsViewEditMode(true);
+        changeDetailsViewEditMode(true);
     }
 
     @FXML
-    private void onCancelEditServingsButton() {
-        changeServingsViewEditMode(false);
+    private void onCancelEditDetailsButton() {
+        changeDetailsViewEditMode(false);
     }
 
     @FXML
-    private void onDoneEditServingsButton() {
+    private void onDoneEditDetailsButton() {
         if (editServingsField.getText().isBlank()) {
             System.out.println("Enter a valid amount.");
             return;
@@ -1490,12 +1479,14 @@ public class RecipeOverviewCtrl {
         try {
             Integer.parseInt(editServingsField.getText());
             servingsLabel.setText(editServingsField.getText());
+            Integer.parseInt(scaleFactorField.getText());
+            scaleLabel.setText(scaleFactorField.getText());
         } catch (NumberFormatException e) {
             System.out.println("Enter a valid number.");
             return;
         }
 
-        changeServingsViewEditMode(false);
+        changeDetailsViewEditMode(false);
     }
 
     // Ingredient edit section
@@ -1586,9 +1577,6 @@ public class RecipeOverviewCtrl {
                                 .getValue().name);
                     }
                 });
-
-        cancelEditButton.setVisible(false);
-        doneEditButton.setVisible(false);
 
         // Force focus into the IngredientType name box
         Platform.runLater(() -> editIngredientBox.requestFocus());
@@ -1742,17 +1730,11 @@ public class RecipeOverviewCtrl {
         editStepField.requestFocus();
     }
 
-    private void setStepEditMode(boolean editing) {
-        languagePickerContainer.setVisible(!editing);
-        languagePickerContainer.setManaged(!editing);
-    }
-
     /**
      * On action method for the Edit Step button
      */
     @FXML
     private void onEditStepButton() {
-        setStepEditMode(true);
         if (preparationStepListView.getItems().isEmpty()) {
             System.out.println("There is no preparation step to edit.");
             return;
@@ -1765,9 +1747,6 @@ public class RecipeOverviewCtrl {
 
         String step = preparationStepListView.getSelectionModel().getSelectedItem();
         editStepField.setText(step);
-
-        cancelEditButton.setVisible(false);
-        doneEditButton.setVisible(false);
 
         // Force focus into the step field
         editStepField.requestFocus();
@@ -1799,21 +1778,12 @@ public class RecipeOverviewCtrl {
         int index = preparationStepListView.getSelectionModel().getSelectedIndex();
         preparationStepListView.getItems().set(index, editStepField.getText());
 
+        preparationStepListView.getSelectionModel().select(index);
+
         changeStepViewEditMode(false);
         cancelEditButton.setVisible(true);
         doneEditButton.setVisible(true);
         newStep = false;
-
-        setStepEditMode(false);
-    }
-
-    /**
-     * On action method for the Shopping List button
-     * A new scene with shopping list is opened
-     */
-    @FXML
-    private void onShoppingListButton() {
-        mainCtrl.showShoppingList(true);
     }
 
     /**

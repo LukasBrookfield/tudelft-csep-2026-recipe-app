@@ -19,9 +19,9 @@
     <children>
         <AnchorPane fx:id="rootPane" maxHeight="-1.0" maxWidth="-1.0" prefHeight="-1.0" prefWidth="-1.0" VBox.vgrow="ALWAYS">
             <children>
-                <BorderPane layoutX="194.0" layoutY="39.0" prefHeight="375.0" prefWidth="640.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                <BorderPane layoutX="194.0" layoutY="39.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                     <top>
-                        <HBox alignment="CENTER" prefHeight="33.0" prefWidth="518.0" BorderPane.alignment="CENTER">
+                        <HBox alignment="CENTER" BorderPane.alignment="CENTER">
                             <padding>
                                 <Insets left="10.0" right="10.0" />
                             </padding>
@@ -34,32 +34,13 @@
                                         <Insets left="5.0" />
                                     </padding>
                                 </Label>
-                                <HBox alignment="CENTER_RIGHT" prefHeight="33.0" prefWidth="504.0" spacing="5.0">
+                        <HBox HBox.hgrow="ALWAYS" />
+                                <HBox alignment="CENTER_RIGHT" prefHeight="33.0" prefWidth="469.0" spacing="5.0">
                                     <children>
-                              <Button fx:id="starRecipeButton" mnemonicParsing="false" onAction="#onStarRecipe" text="☆">
-                                 <tooltip>
-                                    <Tooltip fx:id="starTooltip" text="Empty Tooltip">
-                                       <font>
-                                          <Font size="13.0" />
-                                       </font>
-                                    </Tooltip>
-                                 </tooltip></Button>
-                              <Button fx:id="addToShoppingListButton" mnemonicParsing="false" onAction="#onAddToShoppingList" text="Add to Shopping List" />
-                              <Button fx:id="downloadRecipeButton" alignment="CENTER_RIGHT" cacheShape="false" mnemonicParsing="false" onAction="#onDownloadRecipe" prefHeight="25.0" prefWidth="71.0" text="Download" />
-                              <Button fx:id="printRecipeButton" alignment="CENTER_RIGHT" cacheShape="false" mnemonicParsing="false" onAction="#onPrintRecipe" prefHeight="25.0" prefWidth="42.0" text="Print" />
-                              <Button fx:id="toggleOverviewButton" mnemonicParsing="false" onAction="#onToggleOverviewButton" text="View ingredient overview" />
-                              <Button fx:id="homeButton" mnemonicParsing="false" onAction="#onHomeButton" prefHeight="25.0" prefWidth="28.0" text="🏠">
-                                 <font>
-                                    <Font name="Segoe UI Emoji" size="10.0" />
-                                 </font>
-                                 <tooltip>
-                                    <Tooltip text="View home screen">
-                                       <font>
-                                          <Font size="13.0" />
-                                       </font>
-                                    </Tooltip>
-                                 </tooltip>
-                              </Button>
+                              <Button fx:id="downloadRecipeButton" alignment="CENTER_RIGHT" cacheShape="false" mnemonicParsing="false" onAction="#onDownloadRecipe" text="Download" />
+                              <Button fx:id="printRecipeButton" alignment="CENTER_RIGHT" cacheShape="false" mnemonicParsing="false" onAction="#onPrintRecipe" text="Print" />
+                                    <fx:include source="LanguagePicker.fxml" />
+                              <ChoiceBox fx:id="sceneBox" prefWidth="140.0" />
                                     </children>
                            <HBox.margin>
                               <Insets right="10.0" />
@@ -131,11 +112,7 @@
                                     </Tooltip>
                                  </tooltip>
                               </Button>
-                              <HBox alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="131.0">
-                                 <children>
-                                    <Button fx:id="shoppingListButton" contentDisplay="CENTER" mnemonicParsing="false" onAction="#onShoppingListButton" prefHeight="25.0" prefWidth="121.0" text="Shopping list" />
-                                 </children>
-                              </HBox>
+                              <HBox alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="131.0" />
                                     </children>
                            <VBox.margin>
                               <Insets top="5.0" />
@@ -148,39 +125,65 @@
                         </VBox>
                     </left>
                     <center>
-                        <VBox fx:id="recipeDetailsVBox" prefHeight="200.0" prefWidth="100.0" spacing="8.0" BorderPane.alignment="CENTER">
+                        <VBox fx:id="recipeDetailsVBox" spacing="8.0" BorderPane.alignment="CENTER">
                             <padding>
                                 <Insets bottom="10.0" left="10.0" right="20.0" top="10.0" />
                             </padding>
                             <children>
-                                <HBox alignment="CENTER" prefHeight="25.0" prefWidth="410.0" spacing="5.0">
+                                <HBox alignment="CENTER" spacing="5.0">
                                     <children>
-                              <StackPane alignment="CENTER_LEFT" prefHeight="25.0" prefWidth="390.0" HBox.hgrow="ALWAYS">
+                              <StackPane alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
                                  <children>
                                               <Label fx:id="recipeTitleLabel" prefHeight="25.0" prefWidth="288.0" text="New recipe" StackPane.alignment="CENTER_LEFT">
                                                   <font>
                                                       <Font name="System Bold" size="14.0" />
                                                   </font>
                                               </Label>
-                                    <TextField fx:id="recipeTitleField" prefHeight="25.0" prefWidth="275.0" promptText="Enter a recipe name" StackPane.alignment="CENTER_LEFT" />
+                                    <TextField fx:id="recipeTitleField" promptText="Enter a recipe name" StackPane.alignment="CENTER_LEFT" />
                                  </children>
                               </StackPane>
-                              <StackPane alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="248.0" HBox.hgrow="ALWAYS">
+                              <StackPane alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS">
                                  <children>
-                                    <HBox alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="102.0" spacing="5.0" StackPane.alignment="CENTER_RIGHT">
+                                    <HBox alignment="CENTER_RIGHT" spacing="5.0" StackPane.alignment="CENTER_RIGHT">
                                        <children>
-                                          <Button fx:id="cancelEditButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#onCancelEditButton" prefHeight="25.0" prefWidth="67.0" text="Cancel" />
-                                          <Button fx:id="doneEditButton" alignment="CENTER" mnemonicParsing="false" onAction="#onDoneEditButton" prefHeight="25.0" prefWidth="57.0" text="Done" />
+                                          <Button fx:id="cancelEditButton" alignment="CENTER" contentDisplay="CENTER" minWidth="-Infinity" mnemonicParsing="false" onAction="#onCancelEditButton" text="Cancel" HBox.hgrow="ALWAYS" />
+                                          <Button fx:id="doneEditButton" alignment="CENTER" minWidth="-Infinity" mnemonicParsing="false" onAction="#onDoneEditButton" text="Done" HBox.hgrow="ALWAYS" />
                                        </children>
                                     </HBox>
-                                              <Button fx:id="editRecipeButton" alignment="CENTER_RIGHT" cacheShape="false" mnemonicParsing="false" onAction="#onEditRecipeButton" prefHeight="25.0" prefWidth="28.0" text="✎" StackPane.alignment="CENTER_RIGHT">
-                                       <tooltip>
-                                          <Tooltip text="Edit recipe">
-                                             <font>
-                                                <Font size="13.0" />
-                                             </font>
-                                          </Tooltip>
-                                       </tooltip></Button>
+                                    <HBox alignment="CENTER_RIGHT" spacing="5.0" StackPane.alignment="CENTER_RIGHT">
+                                       <children>
+                                          <Button fx:id="starRecipeButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onStarRecipe" prefHeight="25.0" prefWidth="28.0" text="☆">
+                                             <tooltip>
+                                                <Tooltip fx:id="starTooltip" text="Empty Tooltip">
+                                                   <font>
+                                                      <Font size="13.0" />
+                                                   </font>
+                                                </Tooltip>
+                                             </tooltip>
+                                          </Button>
+                                          <Button fx:id="addToShoppingListButton" alignment="CENTER" contentDisplay="CENTER" mnemonicParsing="false" onAction="#onAddToShoppingList" text="🛒">
+                                             <tooltip>
+                                                <Tooltip text="Add to shopping list">
+                                                   <font>
+                                                      <Font size="13.0" />
+                                                   </font>
+                                                </Tooltip>
+                                             </tooltip>
+                                             <HBox.margin>
+                                                <Insets />
+                                             </HBox.margin>
+                                          </Button>
+                                                    <Button fx:id="editRecipeButton" alignment="CENTER_RIGHT" cacheShape="false" contentDisplay="CENTER" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onEditRecipeButton" prefHeight="25.0" prefWidth="28.0" text="✎">
+                                             <tooltip>
+                                                <Tooltip text="Edit recipe">
+                                                   <font>
+                                                      <Font size="13.0" />
+                                                   </font>
+                                                </Tooltip>
+                                             </tooltip>
+                                          </Button>
+                                       </children>
+                                    </HBox>
                                  </children>
                               </StackPane>
                                     </children>
@@ -189,9 +192,9 @@
                            </VBox.margin>
                                 </HBox>
                                 <Separator fx:id="mainSeparator" prefWidth="200.0" />
-                        <HBox prefHeight="100.0" prefWidth="200.0">
+                        <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0">
                            <children>
-                              <HBox alignment="CENTER_LEFT" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="165.0" spacing="5.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
+                              <HBox alignment="CENTER_LEFT" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="128.0" spacing="5.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
                                  <children>
                                     <Label fx:id="servingsCaptionLabel" prefHeight="17.0" prefWidth="153.0" text="Servings:">
                                        <HBox.margin>
@@ -205,19 +208,21 @@
                                     </Label>
                                  </children>
                               </HBox>
-                              <HBox prefHeight="25.0" prefWidth="72.0" HBox.hgrow="ALWAYS">
+                              <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="128.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
                                  <children>
-                                    <TextField fx:id="scaleFactorField" prefHeight="25.0" prefWidth="34.0" />
-                                    <Label alignment="CENTER" prefHeight="25.0" prefWidth="17.0" text="×" textAlignment="CENTER">
+                                    <Label fx:id="scaleCaptionLabel" prefHeight="17.0" prefWidth="99.0" text="Scale:">
                                        <HBox.margin>
-                                          <Insets />
+                                          <Insets left="5.0" />
+                                       </HBox.margin>
+                                    </Label>
+                                    <Label fx:id="scaleLabel" alignment="CENTER_RIGHT" contentDisplay="RIGHT" prefHeight="17.0" prefWidth="48.0" text="-">
+                                       <HBox.margin>
+                                          <Insets right="5.0" />
                                        </HBox.margin>
                                     </Label>
                                  </children>
-                                 <HBox.margin>
-                                    <Insets right="10.0" />
-                                 </HBox.margin></HBox>
-                              <HBox alignment="CENTER_RIGHT" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="149.0" spacing="5.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
+                              </HBox>
+                              <HBox alignment="CENTER_RIGHT" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="128.0" spacing="5.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
                                  <children>
                                     <Label fx:id="kcalCaptionLabel" prefHeight="23.0" prefWidth="207.0" text="Kcal per 100g:">
                                        <HBox.margin>
@@ -237,19 +242,19 @@
                            <children>
                               <HBox alignment="CENTER_LEFT" prefHeight="25.0" prefWidth="307.0" spacing="5.0">
                                  <children>
-                                    <TextField fx:id="editServingsField" prefHeight="25.0" prefWidth="302.0" promptText="Enter the amount of servings" />
-                                    <HBox prefHeight="25.0" prefWidth="185.0" HBox.hgrow="ALWAYS" />
-                                    <HBox alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="232.0" spacing="5.0">
+                                    <TextField fx:id="editServingsField" minWidth="-Infinity" prefHeight="25.0" prefWidth="128.0" promptText="Enter the amount of servings" />
+                                    <TextField fx:id="scaleFactorField" minWidth="-Infinity" prefWidth="128.0" />
+                                    <HBox alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="217.0" spacing="5.0" HBox.hgrow="ALWAYS">
                                        <children>
-                                          <Button fx:id="cancelEditServingsButton" mnemonicParsing="false" onAction="#onCancelEditServingsButton" prefHeight="25.0" prefWidth="51.0" text="Cancel" />
-                                          <Button fx:id="doneEditServingsButton" mnemonicParsing="false" onAction="#onDoneEditServingsButton" prefHeight="25.0" prefWidth="45.0" text="Done" />
+                                          <Button fx:id="cancelEditDetailsButton" minWidth="-Infinity" mnemonicParsing="false" onAction="#onCancelEditDetailsButton" text="Cancel" HBox.hgrow="ALWAYS" />
+                                          <Button fx:id="doneEditDetailsButton" minWidth="-Infinity" mnemonicParsing="false" onAction="#onDoneEditDetailsButton" text="Done" HBox.hgrow="ALWAYS" />
                                        </children>
                                     </HBox>
                                  </children>
                               </HBox>
                               <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
                                  <children>
-                                    <Button fx:id="editServingsButton" mnemonicParsing="false" onAction="#onEditServingsButton" prefHeight="25.0" prefWidth="28.0" text="✎">
+                                    <Button fx:id="editDetailsButton" mnemonicParsing="false" onAction="#onEditDetailsButton" prefHeight="25.0" prefWidth="28.0" text="✎">
                                        <tooltip>
                                           <Tooltip text="Edit servings">
                                              <font>
@@ -267,9 +272,9 @@
                                     </font>
                                 </Label>
                                 <ListView fx:id="ingredientListView" prefHeight="190.0" prefWidth="395.0" />
-                                <HBox alignment="CENTER_LEFT" prefHeight="0.0" prefWidth="395.0" spacing="5.0">
+                                <HBox alignment="CENTER_LEFT" spacing="5.0">
                                     <children>
-                              <StackPane prefHeight="25.0" prefWidth="411.0">
+                              <StackPane prefHeight="25.0">
                                  <children>
                                     <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0" visible="false">
                                        <children>
@@ -307,26 +312,26 @@
                                              </tooltip></Button>
                                        </children>
                                     </HBox>
-                                    <HBox prefHeight="25.0" prefWidth="307.0" spacing="5.0" visible="false">
+                                    <HBox spacing="5.0" visible="false">
                                        <children>
-                                          <ChoiceBox fx:id="editIngredientBox" prefHeight="25.0" prefWidth="277.0" />
-                                          <TextField fx:id="editIngredientNameField" prefHeight="25.0" prefWidth="208.0" promptText="Ingredient type" />
-                                          <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                                          <ChoiceBox fx:id="editIngredientBox" HBox.hgrow="ALWAYS" />
+                                          <TextField fx:id="editIngredientNameField" promptText="Ingredient type" HBox.hgrow="ALWAYS" />
+                                          <HBox alignment="CENTER_RIGHT" spacing="5.0" HBox.hgrow="ALWAYS">
                                              <children>
-                                                <Button fx:id="cancelEditIngredientButton" mnemonicParsing="false" onAction="#onCancelEditIngredientButton" prefHeight="25.0" prefWidth="56.0" text="Cancel" />
-                                                <Button fx:id="nextEditIngredientButton" mnemonicParsing="false" onAction="#onNextEditIngredientButton" prefHeight="25.0" prefWidth="43.0" text="Next" />
+                                                <Button fx:id="cancelEditIngredientButton" minWidth="-Infinity" mnemonicParsing="false" onAction="#onCancelEditIngredientButton" text="Cancel" />
+                                                <Button fx:id="nextEditIngredientButton" minWidth="-Infinity" mnemonicParsing="false" onAction="#onNextEditIngredientButton" text="Next" />
                                              </children>
                                           </HBox>
                                        </children>
                                     </HBox>
-                                    <HBox layoutX="10.0" layoutY="10.0" prefHeight="25.0" prefWidth="307.0" spacing="5.0">
+                                    <HBox alignment="CENTER_RIGHT" layoutX="10.0" layoutY="10.0" spacing="5.0">
                                        <children>
-                                          <ChoiceBox fx:id="editUnitBox" prefHeight="25.0" prefWidth="203.0" />
-                                          <TextField fx:id="editIngredientAmountField" prefHeight="25.0" prefWidth="191.0" promptText="Amount" />
-                                          <HBox alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="149.0" spacing="5.0">
+                                          <ChoiceBox fx:id="editUnitBox" maxWidth="-Infinity" prefHeight="25.0" prefWidth="215.0" HBox.hgrow="ALWAYS" />
+                                          <TextField fx:id="editIngredientAmountField" maxWidth="-Infinity" prefHeight="25.0" prefWidth="252.0" promptText="Amount" HBox.hgrow="ALWAYS" />
+                                          <HBox alignment="CENTER_RIGHT" prefHeight="0.0" prefWidth="0.0" spacing="5.0" HBox.hgrow="ALWAYS">
                                              <children>
-                                                <Button fx:id="onBackEditIngredientButton" mnemonicParsing="false" onAction="#onBackEditIngredientButton" prefHeight="25.0" prefWidth="48.0" text="Back" />
-                                                <Button fx:id="doneEditIngredientButton" mnemonicParsing="false" onAction="#onDoneEditIngredientButton" text="Done" />
+                                                <Button fx:id="onBackEditIngredientButton" minWidth="-Infinity" mnemonicParsing="false" onAction="#onBackEditIngredientButton" text="Back" HBox.hgrow="ALWAYS" />
+                                                <Button fx:id="doneEditIngredientButton" minWidth="-Infinity" mnemonicParsing="false" onAction="#onDoneEditIngredientButton" text="Done" HBox.hgrow="ALWAYS" />
                                              </children>
                                           </HBox>
                                        </children>
@@ -359,8 +364,8 @@
                                           <TextField fx:id="editStepField" prefHeight="25.0" prefWidth="385.0" promptText="Enter an instruction" />
                                           <HBox alignment="TOP_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
                                              <children>
-                                                <Button fx:id="cancelEditStepButton" alignment="TOP_RIGHT" contentDisplay="CENTER" mnemonicParsing="false" onAction="#onCancelEditStepButton" prefHeight="25.0" prefWidth="57.0" text="Cancel" />
-                                                <Button fx:id="doneEditStepButton" alignment="TOP_RIGHT" mnemonicParsing="false" onAction="#onDoneEditStepButton" prefHeight="25.0" prefWidth="49.0" text="Done" />
+                                                <Button fx:id="cancelEditStepButton" alignment="TOP_RIGHT" contentDisplay="CENTER" minWidth="-Infinity" mnemonicParsing="false" onAction="#onCancelEditStepButton" text="Cancel" />
+                                                <Button fx:id="doneEditStepButton" alignment="TOP_RIGHT" minWidth="-Infinity" mnemonicParsing="false" onAction="#onDoneEditStepButton" text="Done" />
                                              </children>
                                              <HBox.margin>
                                                 <Insets />
@@ -439,15 +444,6 @@
                         </VBox>
                     </center>
                 </BorderPane>
-                <HBox fx:id="languagePickerContainer"
-                      alignment="CENTER_RIGHT"
-                      pickOnBounds="false"
-                      AnchorPane.bottomAnchor="0.0"
-                      AnchorPane.rightAnchor="9.0">
-                    <children>
-                        <fx:include source="LanguagePicker.fxml"/>
-                    </children>
-                </HBox>
             </children>
         </AnchorPane>
     </children>

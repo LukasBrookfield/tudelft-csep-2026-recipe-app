@@ -55,10 +55,7 @@ public class IngredientTypeOverviewCtrl {
     // Top right
 
     @FXML
-    private Button toggleOverviewButton;
-
-    @FXML
-    private Button homeButton;
+    public ChoiceBox<String> sceneBox;
 
     // Ingredient title row
 
@@ -180,7 +177,6 @@ public class IngredientTypeOverviewCtrl {
     public void applyTranslations() {
         ResourceBundle b = languages.bundle();
 
-        toggleOverviewButton.setText(b.getString("ing.btn.viewRecipes"));
         ingredientTypeSearchField.setPromptText(b.getString("ing.search.prompt"));
 
         if ("New ingredient".equals(ingredientTypeTitleLabel.getText()) || ingredientTypeTitleLabel.getText().isBlank()) {
@@ -211,7 +207,6 @@ public class IngredientTypeOverviewCtrl {
         usedInRecipesLabel.setText(formatUsedInRecipes(usedInRecipesCount));
 
         // tooltips
-        setTooltip(homeButton, "common.tooltip.home");
         setTooltip(removeIngredientTypeButton, "common.tooltip.removeIngredient");
         setTooltip(addIngredientTypeButton, "common.tooltip.addIngredient");
         setTooltip(editIngredientTypeButton, "common.tooltip.editIngredient");
@@ -239,24 +234,16 @@ public class IngredientTypeOverviewCtrl {
      */
     @FXML
     private void changeViewEditMode(boolean value) {
+        // While in edit mode, the user can't change to a different ingredient
+        ingredientTypeSearchField.getParent().setDisable(value);
+
+        sceneBox.getParent().setDisable(value);
         editIngredientTypeButton.setVisible(!value);
         cancelEditButton.getParent().setVisible(value);
         editDetailsButton.getParent().getParent().getParent().setVisible(value);
 
         editDensityButton.setVisible(value);
         editNutritionButton.getParent().getParent().getParent().setVisible(value);
-
-        // While in edit mode, the user can't change to a different ingredient
-        ingredientTypeSearchField.setDisable(value);
-        ingredientTypeListView.setDisable(value);
-
-        // While in edit mode, the user can't remove the current ingredient
-        // or add a new one
-        addIngredientTypeButton.setVisible(!value);
-        removeIngredientTypeButton.setVisible(!value);
-
-        toggleOverviewButton.setVisible(!value);
-        homeButton.setVisible(!value);
     }
 
     /**
@@ -273,10 +260,10 @@ public class IngredientTypeOverviewCtrl {
 
         editNameField.getParent().setVisible(value);
 
-        cancelEditButton.setVisible(!value);
-        doneEditButton.setVisible(!value);
-        editNutritionButton.setVisible(!value);
-        editDensityButton.setVisible(!value);
+        cancelEditButton.setDisable(value);
+        doneEditButton.setDisable(value);
+        editNutritionButton.setDisable(value);
+        editDensityButton.setDisable(value);
     }
 
     /**
@@ -294,10 +281,10 @@ public class IngredientTypeOverviewCtrl {
         cancelEditNutritionButton.getParent().setVisible(value);
         proteinTextField.getParent().setVisible(value);
 
-        cancelEditButton.setVisible(!value);
-        doneEditButton.setVisible(!value);
-        editDetailsButton.setVisible(!value);
-        editDensityButton.setVisible(!value);
+        cancelEditButton.setDisable(value);
+        doneEditButton.setDisable(value);
+        editDetailsButton.setDisable(value);
+        editDensityButton.setDisable(value);
     }
 
     /**
@@ -391,10 +378,10 @@ public class IngredientTypeOverviewCtrl {
         cancelEditDensityButton.setVisible(value);
         editDensityField.getParent().setVisible(value);
 
-        cancelEditButton.setVisible(!value);
-        doneEditButton.setVisible(!value);
-        editDetailsButton.setVisible(!value);
-        editNutritionButton.setVisible(!value);
+        cancelEditButton.setDisable(value);
+        doneEditButton.setDisable(value);
+        editDetailsButton.setDisable(value);
+        editNutritionButton.setDisable(value);
 
         editDensityButton.getParent().setMouseTransparent(value);
     }
@@ -411,12 +398,20 @@ public class IngredientTypeOverviewCtrl {
         applyTranslations();
         onRefresh();
 
+        sceneBox.getItems().addAll("Home", "Recipe overview", "Ingredient overview",
+                "Shopping list");
+
         ingredientTypeListView.getSelectionModel().selectedItemProperty().addListener(
                 (observable,
                  oldIngredientType, newIngredientType) -> {
                     onRefresh();
                 }
         );
+
+        sceneBox.getSelectionModel().selectedItemProperty().addListener(
+                (obs, oldValue, newValue) -> {
+                    mainCtrl.showScene(newValue);
+                });
     }
 
     // Left sidebar
@@ -509,21 +504,6 @@ public class IngredientTypeOverviewCtrl {
         onEditIngredientTypeButton();
         nameLabel.setText("-");
         editDetailsButton.requestFocus();
-    }
-
-    // Top right
-
-    /**
-     * Changes the scene to Recipe Overview
-     */
-    @FXML
-    private void onToggleOverviewButton() {
-        mainCtrl.showRecipeOverview();
-    }
-
-    @FXML
-    private void onHomeButton() {
-        mainCtrl.showHomeScreen();
     }
 
     // Ingredient title row

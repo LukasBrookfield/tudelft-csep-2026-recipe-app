@@ -75,6 +75,25 @@ public class MainCtrl {
         primaryStage.show();
     }
 
+    public void showScene(String scene) {
+        switch (scene) {
+            case "Home":
+                showHomeScreen();
+                break;
+            case "Recipe overview":
+                recipeOverviewCtrl.sceneBox.getSelectionModel().select(1);
+                showRecipeOverview();
+                break;
+            case "Ingredient overview":
+                ingredientTypeOverviewCtrl.sceneBox.getSelectionModel().select(2);
+                showIngredientTypeOverview();
+                break;
+            case "Shopping list":
+                shoppingListCtrl.sceneBox.getSelectionModel().select(3);
+                showShoppingList();
+        }
+    }
+
     public void showHomeScreen() {
         primaryStage.setTitle(languages.bundle().getString("title.home"));
 //        primaryStage.setTitle("FoodPal - Home");
@@ -95,13 +114,12 @@ public class MainCtrl {
         ingredientTypeOverviewCtrl.onRefresh();
     }
 
-    public void showShoppingList(boolean currentScene) {
+    public void showShoppingList() {
         primaryStage.setTitle(languages.bundle().getString("title.shopping"));
 //        primaryStage.setTitle("FoodPal - Shopping List");
         primaryStage.setScene(shoppingListScene);
 
         shoppingListCtrl.set();
-        shoppingListCtrl.lastScene = currentScene;
     }
 
     public void showAddToShoppingList(Recipe recipe) {
