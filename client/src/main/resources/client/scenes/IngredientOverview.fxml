@@ -2,6 +2,7 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.Separator?>
@@ -18,7 +19,7 @@
    <children>
       <AnchorPane fx:id="rootPane" VBox.vgrow="ALWAYS">
          <children>
-            <BorderPane prefHeight="400.0" prefWidth="640.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <BorderPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <top>
                   <HBox alignment="CENTER" prefHeight="33.0" prefWidth="518.0" BorderPane.alignment="CENTER">
                      <BorderPane.margin>
@@ -46,19 +47,8 @@
                               <Insets right="10.0" />
                            </HBox.margin>
                            <children>
-                              <Button fx:id="toggleOverviewButton" mnemonicParsing="false" onAction="#onToggleOverviewButton" text="View recipe overview" />
-                              <Button fx:id="homeButton" mnemonicParsing="false" onAction="#onHomeButton" prefHeight="25.0" prefWidth="28.0" text="🏠">
-                                 <font>
-                                    <Font name="Segoe UI Emoji" size="10.0" />
-                                 </font>
-                                 <tooltip>
-                                    <Tooltip text="View home screen">
-                                       <font>
-                                          <Font size="13.0" />
-                                       </font>
-                                    </Tooltip>
-                                 </tooltip>
-                              </Button>
+                                 <fx:include source="LanguagePicker.fxml" />
+                              <ChoiceBox fx:id="sceneBox" prefWidth="140.0" />
                            </children>
                         </HBox>
                      </children>
@@ -68,7 +58,7 @@
                   </HBox>
                </top>
                <left>
-                  <VBox prefHeight="200.0" prefWidth="210.0" spacing="3.0" BorderPane.alignment="CENTER">
+                  <VBox minHeight="-Infinity" prefHeight="440.67" prefWidth="210.0" spacing="3.0" BorderPane.alignment="CENTER">
                      <children>
                         <TextField fx:id="ingredientTypeSearchField" promptText="Search ingredients...">
                            <VBox.margin>
@@ -162,7 +152,7 @@
                            <children>
                               <HBox alignment="CENTER_LEFT" minHeight="-Infinity" prefHeight="25.0" prefWidth="181.0" spacing="5.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
                                  <children>
-                                    <Label fx:id="nameCaptionLabel" text="Name:">
+                                    <Label fx:id="nameCaptionLabel" prefHeight="17.0" prefWidth="64.0" text="Name:">
                                        <HBox.margin>
                                           <Insets left="5.0" />
                                        </HBox.margin>
@@ -185,17 +175,17 @@
                                  <children>
                                     <HBox alignment="CENTER_LEFT" prefHeight="25.0" prefWidth="307.0" spacing="5.0">
                                        <children>
-                                          <TextField fx:id="editNameField" prefHeight="25.0" prefWidth="267.0" promptText="Enter an ingredient name" />
+                                          <TextField fx:id="editNameField" minWidth="-Infinity" prefHeight="25.0" prefWidth="181.0" promptText="Enter an ingredient name" />
                                           <HBox prefHeight="25.0" prefWidth="185.0" HBox.hgrow="ALWAYS" />
-                                          <HBox alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="187.0" spacing="5.0">
+                                          <HBox alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="422.0" spacing="5.0">
                                              <children>
-                                                <Button fx:id="cancelEditDetailsButton" mnemonicParsing="false" onAction="#onCancelEditDetailsButton" prefHeight="25.0" prefWidth="55.0" text="Cancel" />
-                                                <Button fx:id="doneEditDetailsButton" mnemonicParsing="false" onAction="#onDoneEditDetailsButton" prefHeight="25.0" prefWidth="50.0" text="Done" />
+                                                <Button fx:id="cancelEditDetailsButton" mnemonicParsing="false" onAction="#onCancelEditDetailsButton" text="Cancel" />
+                                                <Button fx:id="doneEditDetailsButton" mnemonicParsing="false" onAction="#onDoneEditDetailsButton" text="Done" />
                                              </children>
                                           </HBox>
                                        </children>
                                     </HBox>
-                                    <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                                    <HBox alignment="CENTER_LEFT" minWidth="-Infinity" prefHeight="100.0" prefWidth="181.0" spacing="5.0">
                                        <children>
                                           <Button fx:id="editDetailsButton" mnemonicParsing="false" onAction="#onEditDetailsButton" prefHeight="25.0" prefWidth="28.0" text="✎">
                                              <tooltip>
@@ -224,7 +214,7 @@
                            <children>
                               <HBox alignment="CENTER_LEFT" minHeight="-Infinity" prefHeight="25.0" prefWidth="181.0" spacing="5.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
                                  <children>
-                                    <Label fx:id="densityCaptionLabel" prefHeight="17.0" prefWidth="128.0" text="Density (g/ml):">
+                                    <Label fx:id="densityCaptionLabel" prefHeight="17.0" prefWidth="169.0" text="Density (g/ml):">
                                        <HBox.margin>
                                           <Insets left="5.0" />
                                        </HBox.margin>
@@ -245,12 +235,12 @@
                            <children>
                               <HBox alignment="CENTER_LEFT" prefHeight="25.0" prefWidth="307.0" spacing="5.0">
                                  <children>
-                                    <TextField fx:id="editDensityField" prefHeight="25.0" prefWidth="267.0" promptText="Enter the ingredient's density" />
+                                    <TextField fx:id="editDensityField" minWidth="-Infinity" prefHeight="25.0" prefWidth="181.0" promptText="Enter the ingredient's density" />
                                     <HBox prefHeight="25.0" prefWidth="185.0" HBox.hgrow="ALWAYS" />
-                                    <HBox alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="187.0" spacing="5.0">
+                                    <HBox alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="443.0" spacing="5.0">
                                        <children>
-                                          <Button fx:id="cancelEditDensityButton" mnemonicParsing="false" onAction="#onCancelEditDensityButton" prefHeight="25.0" prefWidth="55.0" text="Cancel" />
-                                          <Button fx:id="doneEditDensityButton" mnemonicParsing="false" onAction="#onDoneEditDensityButton" prefHeight="25.0" prefWidth="50.0" text="Done" />
+                                          <Button fx:id="cancelEditDensityButton" mnemonicParsing="false" onAction="#onCancelEditDensityButton" text="Cancel" />
+                                          <Button fx:id="doneEditDensityButton" mnemonicParsing="false" onAction="#onDoneEditDensityButton" text="Done" />
                                        </children>
                                     </HBox>
                                  </children>
@@ -284,11 +274,11 @@
                            <children>
                               <HBox prefHeight="121.0" prefWidth="182.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
                                  <children>
-                                    <VBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="100.0" spacing="10.0">
+                                    <VBox alignment="CENTER_LEFT" prefHeight="119.0" prefWidth="164.0" spacing="10.0">
                                        <children>
                                           <Label fx:id="proteinCaptionLabel" text="Protein:" />
                                           <Label fx:id="fatCaptionLabel" text="Fat:" />
-                                          <Label fx:id="carbsCaptionLabel" text="Carbohydrates:" />
+                                          <Label fx:id="carbsCaptionLabel" prefHeight="17.0" prefWidth="125.0" text="Carbohydrates:" />
                                           <Separator prefWidth="200.0">
                                              <VBox.margin>
                                                 <Insets bottom="-5.0" />
@@ -324,7 +314,7 @@
                                     </VBox>
                                  </children>
                               </HBox>
-                              <VBox prefHeight="121.0" prefWidth="115.0" spacing="5.0">
+                              <VBox prefHeight="121.0" prefWidth="135.0" spacing="5.0">
                                  <children>
                                     <TextField fx:id="proteinTextField" promptText="Protein" />
                                     <TextField fx:id="fatTextField" promptText="Fat" />
@@ -342,10 +332,10 @@
                                  <children>
                                     <HBox alignment="TOP_RIGHT" prefHeight="25.0" prefWidth="220.0" spacing="5.0" StackPane.alignment="CENTER_RIGHT">
                                        <children>
-                                          <HBox alignment="TOP_RIGHT" prefHeight="25.0" prefWidth="102.0" spacing="5.0">
+                                          <HBox alignment="TOP_RIGHT" prefHeight="25.0" prefWidth="183.0" spacing="5.0">
                                              <children>
-                                                <Button fx:id="cancelEditNutritionButton" alignment="TOP_RIGHT" contentDisplay="CENTER" mnemonicParsing="false" onAction="#onCancelEditNutritionButton" prefHeight="25.0" prefWidth="57.0" text="Cancel" />
-                                                <Button fx:id="doneEditNutritionButton" alignment="TOP_RIGHT" mnemonicParsing="false" onAction="#onDoneEditNutritionButton" prefHeight="25.0" prefWidth="49.0" text="Done" />
+                                                <Button fx:id="cancelEditNutritionButton" alignment="TOP_RIGHT" contentDisplay="CENTER" mnemonicParsing="false" onAction="#onCancelEditNutritionButton" text="Cancel" />
+                                                <Button fx:id="doneEditNutritionButton" alignment="TOP_RIGHT" mnemonicParsing="false" onAction="#onDoneEditNutritionButton" text="Done" />
                                              </children>
                                              <HBox.margin>
                                                 <Insets />
@@ -393,14 +383,6 @@
                   </VBox>
                </center>
             </BorderPane>
-             <HBox alignment="CENTER_RIGHT"
-                   pickOnBounds="false"
-                   AnchorPane.bottomAnchor="0.0"
-                   AnchorPane.rightAnchor="9.0">
-                 <children>
-                     <fx:include source="LanguagePicker.fxml"/>
-                 </children>
-             </HBox>
          </children>
 <!--          <fx:include source="LanguagePicker.fxml" AnchorPane.bottomAnchor="12.0" AnchorPane.rightAnchor="12.0" />-->
       </AnchorPane>
