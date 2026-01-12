@@ -77,11 +77,13 @@ public class RecipeServiceTest {
     public void updateRecipeTest() {
         recipeRepo.save(salad);
 
-        assertTrue(recipeService.validateUpdatedRecipe(1, salad));
-        assertFalse(recipeService.validateUpdatedRecipe(5, salad));
+        long recipeID = salad.id;
+        long nonExistingID = 5;
+        assertTrue(recipeService.validateUpdatedRecipe(recipeID, salad));
+        assertFalse(recipeService.validateUpdatedRecipe(nonExistingID, salad));
 
         salad.steps = null;
-        assertFalse(recipeService.validateUpdatedRecipe(1, salad));
+        assertFalse(recipeService.validateUpdatedRecipe(recipeID, salad));
     }
 
     @Test

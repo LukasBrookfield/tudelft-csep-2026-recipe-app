@@ -56,11 +56,16 @@ public class IngredientTypeServiceTest {
     public void updateIngredientTypeTest() {
         ingredientTypeRepo.save(tomato);
 
-        assertTrue(ingredientTypeService.validateUpdatedIngredientType(1, tomato));
-        assertFalse(ingredientTypeService.validateUpdatedIngredientType(-1, tomato));
+        long ingredientTypeID = tomato.id;
+        long invalidID = -1;
+        assertTrue(ingredientTypeService.validateUpdatedIngredientType(
+                ingredientTypeID, tomato));
+        assertFalse(ingredientTypeService.validateUpdatedIngredientType(
+                invalidID, tomato));
 
         tomato.density = -0.5;
-        assertFalse(ingredientTypeService.validateUpdatedIngredientType(1, tomato));
+        assertFalse(ingredientTypeService.validateUpdatedIngredientType(
+                ingredientTypeID, tomato));
     }
 
     @Test

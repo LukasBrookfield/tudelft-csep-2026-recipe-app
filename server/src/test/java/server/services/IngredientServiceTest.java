@@ -69,11 +69,13 @@ public class IngredientServiceTest {
     public void updateIngredientTest() {
         ingredientRepo.save(tomato);
 
-        assertTrue(ingredientService.validateUpdatedIngredient(1, tomato));
-        assertFalse(ingredientService.validateUpdatedIngredient(-1, tomato));
+        long ingredientID = tomato.id;
+        long invalidID = -1;
+        assertTrue(ingredientService.validateUpdatedIngredient(ingredientID, tomato));
+        assertFalse(ingredientService.validateUpdatedIngredient(invalidID, tomato));
 
         tomato.ingredientType.nutrition.protein = -1.6;
-        assertFalse(ingredientService.validateUpdatedIngredient(1, tomato));
+        assertFalse(ingredientService.validateUpdatedIngredient(ingredientID, tomato));
     }
 
     @Test
