@@ -5,6 +5,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import server.services.IngredientService;
+import server.services.IngredientTypeService;
 import server.services.RecipeService;
 
 import static org.mockito.Mockito.mock;
@@ -16,9 +18,14 @@ import static org.springframework.http.HttpStatus.OK;
 
 public class RecipeControllerTest{
     // For testing with TestRecipeRepository
-    private TestRecipeRepository repo;
+    private TestRecipeRepository recipeRepo;
+    private TestIngredientRepository ingredientRepo;
+
     private RecipeController sut;
+
     private RecipeService recipeService;
+    private IngredientService ingredientService;
+    private IngredientTypeService ingredientTypeService;
 
     private Recipe recipe1;
     private Recipe recipe2;
@@ -27,10 +34,14 @@ public class RecipeControllerTest{
     @BeforeEach
     public void setUp() {
         // for testing with TestIngredientRepository
-        repo = new TestRecipeRepository();
-        recipeService = new RecipeService(repo);
+        recipeRepo = new TestRecipeRepository();
+        ingredientRepo = new TestIngredientRepository();
+
+        ingredientService = new IngredientService(ingredientRepo, ingredientTypeService);
+        recipeService = new RecipeService(recipeRepo, ingredientService);
+
         messagingTemplate = mock(SimpMessagingTemplate.class);
-        sut = new RecipeController(repo, messagingTemplate, null,
+        sut = new RecipeController(recipeRepo, messagingTemplate, null,
                 recipeService);
 
         recipe1 = new Recipe("cucumber salad",
@@ -53,7 +64,7 @@ public class RecipeControllerTest{
     public void getAllRecipesDatabaseTest () {
         sut.add(recipe1);
         sut.getAllRecipes();
-        assertTrue(repo.calledMethods.contains("findAll"));
+        assertTrue(recipeRepo.calledMethods.contains("findAll"));
     }
 
     @Test
@@ -76,7 +87,7 @@ public class RecipeControllerTest{
     @Test
     public void addRecipeDatabaseUsedTest () {
         sut.add(recipe1);
-        assertTrue(repo.calledMethods.contains("save"));
+        assertTrue(recipeRepo.calledMethods.contains("save"));
     }
 
     @Test
@@ -84,7 +95,7 @@ public class RecipeControllerTest{
         sut.add(recipe1);
         sut.add(recipe2);
         sut.delete(recipe1.id);
-        assertFalse(repo.findAll().contains(recipe1));
+        assertFalse(recipeRepo.findAll().contains(recipe1));
     }
 
     @Test
@@ -111,9 +122,11 @@ public class RecipeControllerTest{
         var result = sut.update(recipe1.id, recipe2);
         assertEquals(OK, result.getStatusCode());
 
-        assertIterableEquals(repo.findById(recipe1.id).get().steps, recipe2.steps);
-        assertEquals(repo.findById(recipe1.id).get().name, recipe2.name);
-        assertIterableEquals(repo.findById(recipe1.id).get().ingredients, recipe2.ingredients);
+        assertIterableEquals(recipeRepo.findById(recipe1.id).get().steps,
+                recipe2.steps);
+        assertEquals(recipeRepo.findById(recipe1.id).get().name, recipe2.name);
+        assertIterableEquals(recipeRepo.findById(recipe1.id).get().ingredients,
+                recipe2.ingredients);
     }
 
     @Test
