@@ -1,5 +1,6 @@
 package server.services;
 
+import commons.Ingredient;
 import commons.Recipe;
 import org.springframework.stereotype.Service;
 import server.database.RecipeRepository;
@@ -7,13 +8,16 @@ import server.database.RecipeRepository;
 @Service
 public class RecipeService {
     private final RecipeRepository repo;
+    private final IngredientService ingredientService;
 
     /**
      * Constructor for the RecipeService class
      * @param repo the recipe repository
      */
-    public RecipeService(RecipeRepository repo) {
+    public RecipeService(RecipeRepository repo,
+                         IngredientService ingredientService) {
         this.repo = repo;
+        this.ingredientService = ingredientService;
     }
 
     /**
@@ -26,6 +30,14 @@ public class RecipeService {
                 || recipe.ingredients == null || recipe.steps == null) {
             return false;
         }
+
+        // Check whether all the recipe's ingredients are valid
+        for (Ingredient ingredient : recipe.ingredients) {
+            if (!ingredientService.validateIngredient(ingredient)) {
+                return false;
+            }
+        }
+
         return true;
     }
 
