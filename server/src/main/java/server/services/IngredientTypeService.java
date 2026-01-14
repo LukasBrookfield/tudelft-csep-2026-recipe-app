@@ -1,6 +1,7 @@
 package server.services;
 
 import commons.IngredientType;
+import commons.Nutrition;
 import org.springframework.stereotype.Service;
 import server.database.IngredientTypeRepository;
 
@@ -26,6 +27,23 @@ public class IngredientTypeService {
                 || ingredientType.name.isBlank()) {
             return false;
         }
+
+        // The density must be null or non-negative
+        Double density = ingredientType.density;
+        if (density != null && density < 0) {
+            return false;
+        }
+
+        // All nutritional values must be null or non-negative
+        Nutrition nutrition = ingredientType.nutrition;
+        if (nutrition != null) {
+            if ((nutrition.carbs != null && nutrition.carbs < 0)
+                    || (nutrition.protein != null && nutrition.protein < 0)
+                    || (nutrition.fat != null && nutrition.fat < 0)) {
+                return false;
+            }
+        }
+
         return true;
     }
 

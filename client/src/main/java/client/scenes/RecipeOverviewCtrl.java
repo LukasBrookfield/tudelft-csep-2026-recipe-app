@@ -1792,7 +1792,7 @@ public class RecipeOverviewCtrl {
      */
     @FXML
     private void onAddToShoppingList() {
-        mainCtrl.showAddToShoppingList(recipeListView.getSelectionModel().getSelectedItem());
+        mainCtrl.showAddToShoppingList(recipeListView.getSelectionModel().getSelectedItem(), scaleFactor);
     }
 
     /**
