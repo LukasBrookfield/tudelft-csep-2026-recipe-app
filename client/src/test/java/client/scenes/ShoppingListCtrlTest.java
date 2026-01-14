@@ -11,6 +11,7 @@ import client.utils.TestUserStorage;
 import client.utils.UserConfig;
 import client.utils.UserStorage;
 import commons.Ingredient;
+import commons.ShoppingListItem;
 import commons.User;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -33,7 +34,7 @@ public class ShoppingListCtrlTest {
     private Button removeIngredientButton;
     private Button editIngredientButton;
     private Button addIngredientButton;
-    private final List<Ingredient> shoppingList = new ArrayList<>();
+    private final List<ShoppingListItem> shoppingList = new ArrayList<>();
     private final List<Long> favouriteRecipes = new ArrayList<>();
     private final User user = new User(favouriteRecipes, shoppingList);
     private final UserStorage userStorage = new TestUserStorage(user);

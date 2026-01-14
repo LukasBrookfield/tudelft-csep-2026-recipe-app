@@ -4,7 +4,7 @@ import client.utils.*;
 import com.google.inject.Inject;
 import commons.Ingredient;
 import commons.IngredientType;
-import commons.Unit;
+import commons.ShoppingListItem;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
@@ -27,7 +27,7 @@ public class ShoppingListCtrl {
     public boolean lastScene;
 
     @FXML
-    private ListView<Ingredient> ingredientListView;
+    private ListView<ShoppingListItem> ingredientListView;
 
     @FXML
     private Button removeIngredientButton;
@@ -170,7 +170,7 @@ public class ShoppingListCtrl {
     @FXML
     public void set(){
         ingredientListView.getItems().clear();
-        initialize();
+        ingredientListView.getItems().addAll(new ArrayList<>(user.getShoppingList()));
         onRefresh();
     }
 
@@ -217,6 +217,20 @@ public class ShoppingListCtrl {
 
         ingredientListView.getItems().addAll(user.getShoppingList());
         applyTranslations();
+
+        ingredientListView.setCellFactory(lv -> new ListCell<>() {
+            @Override
+            protected void updateItem(ShoppingListItem item, boolean empty) {
+                super.updateItem(item, empty);
+
+                if (empty || item == null) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    setText(ShoppingListService.shoppingListItemString(item));
+                }
+            }
+        });
     }
 
     /**
@@ -237,7 +251,7 @@ public class ShoppingListCtrl {
         int index = ingredientListView.getSelectionModel().getSelectedIndex();
         ingredientListView.getItems().remove(index);
 
-        user.setShoppingList(ingredientListView.getItems());
+        user.setShoppingList(new ArrayList<>(ingredientListView.getItems()));
         user.saveUser();
     }
 
@@ -248,7 +262,7 @@ public class ShoppingListCtrl {
      */
     @FXML
     private void onAddIngredientButton() {
-        ingredientListView.getItems().add(new Ingredient(null, null, null, null));
+        ingredientListView.getItems().add(new ShoppingListItem(new Ingredient(null, null, null, null)));
         ingredientListView.getSelectionModel().select(
                 ingredientListView.getItems().size() - 1
         );
@@ -287,7 +301,7 @@ public class ShoppingListCtrl {
         }
         changeIngredientViewEditMode(true);
 
-        Ingredient ingredient = ingredientListView.getSelectionModel().getSelectedItem();
+        Ingredient ingredient = ingredientListView.getSelectionModel().getSelectedItem().getIngredient();
 
         if (ingredient.ingredientType != null) {
             editIngredientChoiceBox.setValue(ingredient.ingredientType);
@@ -328,7 +342,7 @@ public class ShoppingListCtrl {
         }
 
         int index = ingredientListView.getSelectionModel().getSelectedIndex();
-        Ingredient ingredient = ingredientListView.getItems().get(index);
+        Ingredient ingredient = ingredientListView.getItems().get(index).getIngredient();
 
         //we create a new ingredient type
         if (editIngredientChoiceBox.getValue().name.equals("Create new ingredient type")) {
@@ -345,12 +359,11 @@ public class ShoppingListCtrl {
                 editIngredientAmountField.getText(),
                 editUnitBox.getValue());
 
-        ingredientListView.getItems().set(index, ingredient);
-
         changeIngredientViewEditMode(false);
 
-        user.setShoppingList(ingredientListView.getItems());
+        user.setShoppingList(new ArrayList<>(ingredientListView.getItems()));
         user.saveUser();
+        onRefresh();
     }
 
     public void onNext(){
@@ -362,7 +375,7 @@ public class ShoppingListCtrl {
         changeIngredientTypeViewEditMode(true);
 
         Ingredient ingredient = ingredientListView.getSelectionModel()
-                .getSelectedItem();
+                .getSelectedItem().getIngredient();
         if (ingredient.amount != null) {
             editIngredientAmountField.setText(String.valueOf(ingredient.amount));
         }
