@@ -183,6 +183,7 @@ public class ShoppingListCtrl {
         removeIngredientButton.getParent().setMouseTransparent(value);
         changeIngredientTypeViewEditMode(false);
         ingredientListView.setDisable(value);
+        sceneBox.getParent().setDisable(value);
     }
 
     /**
@@ -204,7 +205,7 @@ public class ShoppingListCtrl {
 
         sceneBox.getItems().addAll("Home", "Recipe overview", "Ingredient overview",
                 "Shopping list");
-        editUnitBox.getItems().addAll("", "G", "ML", "TBSP", "TSP", "PINCH",
+        editUnitBox.getItems().addAll("Select a unit", "G", "KG", "ML", "L", "TBSP", "TSP", "PINCH",
                 "HANDFUL", "TO_TASTE");
 
         ingredientListView.getSelectionModel().selectedItemProperty().addListener(

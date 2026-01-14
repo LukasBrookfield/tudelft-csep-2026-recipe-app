@@ -190,6 +190,7 @@ public class AddToShoppingListCtrl {
         editPane.setVisible(value);
         changeIngredientTypeViewEditMode(false);
         ingredientListView.setDisable(value);
+        exitButton.getParent().setDisable(value);
     }
 
     /**
@@ -208,7 +209,7 @@ public class AddToShoppingListCtrl {
     @FXML
     private void initialize() {
         changeIngredientViewEditMode(false);
-        editUnitBox.getItems().addAll("", "G", "ML", "TBSP", "TSP", "PINCH",
+        editUnitBox.getItems().addAll("Select a unit", "G", "KG", "ML", "L", "TBSP", "TSP", "PINCH",
                 "HANDFUL", "TO_TASTE");
 
         ingredientListView.getSelectionModel().selectedItemProperty().addListener(

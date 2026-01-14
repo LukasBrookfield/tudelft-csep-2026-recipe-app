@@ -66,7 +66,7 @@
                                  </opaqueInsets>
                               </TextField>
                               <HBox prefHeight="25.0" prefWidth="4.0" />
-                              <ChoiceBox fx:id="sortChoiceBox" prefHeight="25.0" prefWidth="199.0" />
+                              <ChoiceBox fx:id="sortChoiceBox" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="75.0" />
                            </children>
                            <VBox.margin>
                               <Insets />
@@ -192,7 +192,7 @@
                            </VBox.margin>
                                 </HBox>
                                 <Separator fx:id="mainSeparator" prefWidth="200.0" />
-                        <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                        <HBox prefHeight="25.0" prefWidth="200.0" spacing="5.0">
                            <children>
                               <HBox alignment="CENTER_LEFT" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="128.0" spacing="5.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
                                  <children>
@@ -274,7 +274,7 @@
                                 <ListView fx:id="ingredientListView" prefHeight="190.0" prefWidth="395.0" />
                                 <HBox alignment="CENTER_LEFT" spacing="5.0">
                                     <children>
-                              <StackPane prefHeight="25.0">
+                              <StackPane prefHeight="25.0" HBox.hgrow="ALWAYS">
                                  <children>
                                     <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0" visible="false">
                                        <children>
@@ -314,8 +314,8 @@
                                     </HBox>
                                     <HBox spacing="5.0" visible="false">
                                        <children>
-                                          <ChoiceBox fx:id="editIngredientBox" HBox.hgrow="ALWAYS" />
-                                          <TextField fx:id="editIngredientNameField" promptText="Ingredient type" HBox.hgrow="ALWAYS" />
+                                          <ChoiceBox fx:id="editIngredientBox" prefWidth="225.0" HBox.hgrow="ALWAYS" />
+                                          <TextField fx:id="editIngredientNameField" maxWidth="-Infinity" prefWidth="165.0" promptText="Ingredient type" HBox.hgrow="ALWAYS" />
                                           <HBox alignment="CENTER_RIGHT" spacing="5.0" HBox.hgrow="ALWAYS">
                                              <children>
                                                 <Button fx:id="cancelEditIngredientButton" minWidth="-Infinity" mnemonicParsing="false" onAction="#onCancelEditIngredientButton" text="Cancel" />
@@ -326,9 +326,14 @@
                                     </HBox>
                                     <HBox alignment="CENTER_RIGHT" layoutX="10.0" layoutY="10.0" spacing="5.0">
                                        <children>
-                                          <ChoiceBox fx:id="editUnitBox" maxWidth="-Infinity" prefHeight="25.0" prefWidth="215.0" HBox.hgrow="ALWAYS" />
-                                          <TextField fx:id="editIngredientAmountField" maxWidth="-Infinity" prefHeight="25.0" prefWidth="252.0" promptText="Amount" HBox.hgrow="ALWAYS" />
-                                          <HBox alignment="CENTER_RIGHT" prefHeight="0.0" prefWidth="0.0" spacing="5.0" HBox.hgrow="ALWAYS">
+                                          <ChoiceBox fx:id="editUnitBox" maxWidth="-Infinity" prefWidth="195.0" HBox.hgrow="ALWAYS" />
+                                          <TextField fx:id="editIngredientAmountField" maxWidth="-Infinity" prefWidth="195.0" promptText="Amount" HBox.hgrow="ALWAYS" />
+                                          <HBox HBox.hgrow="ALWAYS">
+                                             <HBox.margin>
+                                                <Insets left="-2.5" right="-2.5" />
+                                             </HBox.margin>
+                                          </HBox>
+                                          <HBox alignment="CENTER_RIGHT" prefHeight="0.0" prefWidth="0.0" spacing="5.0">
                                              <children>
                                                 <Button fx:id="onBackEditIngredientButton" minWidth="-Infinity" mnemonicParsing="false" onAction="#onBackEditIngredientButton" text="Back" HBox.hgrow="ALWAYS" />
                                                 <Button fx:id="doneEditIngredientButton" minWidth="-Infinity" mnemonicParsing="false" onAction="#onDoneEditIngredientButton" text="Done" HBox.hgrow="ALWAYS" />
@@ -357,12 +362,17 @@
                                 <ListView fx:id="preparationStepListView" prefHeight="190.0" prefWidth="200.0" />
                         <HBox prefHeight="100.0" prefWidth="200.0" spacing="5.0">
                            <children>
-                              <StackPane alignment="TOP_RIGHT" prefHeight="25.0" prefWidth="405.0">
+                              <StackPane alignment="TOP_RIGHT" prefHeight="25.0" prefWidth="405.0" HBox.hgrow="ALWAYS">
                                  <children>
                                     <HBox alignment="TOP_RIGHT" prefHeight="25.0" prefWidth="220.0" spacing="5.0" StackPane.alignment="CENTER_RIGHT">
                                        <children>
-                                          <TextField fx:id="editStepField" prefHeight="25.0" prefWidth="385.0" promptText="Enter an instruction" />
-                                          <HBox alignment="TOP_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
+                                          <TextField fx:id="editStepField" maxWidth="-Infinity" prefHeight="25.0" prefWidth="395.0" promptText="Enter an instruction" />
+                                          <HBox HBox.hgrow="ALWAYS">
+                                             <HBox.margin>
+                                                <Insets left="-2.5" right="-2.5" />
+                                             </HBox.margin>
+                                          </HBox>
+                                          <HBox alignment="TOP_CENTER" spacing="5.0">
                                              <children>
                                                 <Button fx:id="cancelEditStepButton" alignment="TOP_RIGHT" contentDisplay="CENTER" minWidth="-Infinity" mnemonicParsing="false" onAction="#onCancelEditStepButton" text="Cancel" />
                                                 <Button fx:id="doneEditStepButton" alignment="TOP_RIGHT" minWidth="-Infinity" mnemonicParsing="false" onAction="#onDoneEditStepButton" text="Done" />
