@@ -119,12 +119,12 @@
                                     </Label>
                                  </children>
                               </StackPane>
-                              <StackPane alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="252.0" HBox.hgrow="ALWAYS">
+                              <StackPane alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS">
                                  <children>
-                                    <HBox alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="102.0" spacing="5.0" StackPane.alignment="CENTER_RIGHT">
+                                    <HBox alignment="CENTER_RIGHT" spacing="5.0" StackPane.alignment="CENTER_RIGHT">
                                        <children>
-                                          <Button fx:id="cancelEditButton" mnemonicParsing="false" onAction="#onCancelEditButton" prefHeight="25.0" prefWidth="67.0" text="Cancel" />
-                                          <Button fx:id="doneEditButton" mnemonicParsing="false" onAction="#onDoneEditButton" prefHeight="25.0" prefWidth="57.0" text="Done" />
+                                          <Button fx:id="cancelEditButton" minWidth="-Infinity" mnemonicParsing="false" onAction="#onCancelEditButton" text="Cancel" />
+                                          <Button fx:id="doneEditButton" minWidth="-Infinity" mnemonicParsing="false" onAction="#onDoneEditButton" text="Done" />
                                        </children>
                                     </HBox>
                                     <Button fx:id="editIngredientTypeButton" mnemonicParsing="false" onAction="#onEditIngredientTypeButton" text="✎">
@@ -171,12 +171,12 @@
                         </HBox>
                         <HBox alignment="CENTER_LEFT" prefHeight="0.0" prefWidth="395.0" spacing="5.0">
                            <children>
-                              <StackPane prefHeight="25.0" prefWidth="411.0">
+                              <StackPane prefHeight="25.0" prefWidth="411.0" HBox.hgrow="ALWAYS">
                                  <children>
                                     <HBox alignment="CENTER_LEFT" prefHeight="25.0" prefWidth="307.0" spacing="5.0">
                                        <children>
                                           <TextField fx:id="editNameField" minWidth="-Infinity" prefHeight="25.0" prefWidth="181.0" promptText="Enter an ingredient name" />
-                                          <HBox prefHeight="25.0" prefWidth="185.0" HBox.hgrow="ALWAYS" />
+                                          <HBox HBox.hgrow="ALWAYS" />
                                           <HBox alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="422.0" spacing="5.0">
                                              <children>
                                                 <Button fx:id="cancelEditDetailsButton" mnemonicParsing="false" onAction="#onCancelEditDetailsButton" text="Cancel" />
@@ -328,10 +328,11 @@
                         </HBox>
                         <HBox prefHeight="25.0" prefWidth="200.0" spacing="5.0">
                            <children>
-                              <StackPane alignment="TOP_RIGHT" prefHeight="25.0" prefWidth="405.0">
+                              <StackPane alignment="TOP_RIGHT" prefHeight="25.0" prefWidth="405.0" HBox.hgrow="ALWAYS">
                                  <children>
                                     <HBox alignment="TOP_RIGHT" prefHeight="25.0" prefWidth="220.0" spacing="5.0" StackPane.alignment="CENTER_RIGHT">
                                        <children>
+                                          <HBox HBox.hgrow="ALWAYS" />
                                           <HBox alignment="TOP_RIGHT" prefHeight="25.0" prefWidth="183.0" spacing="5.0">
                                              <children>
                                                 <Button fx:id="cancelEditNutritionButton" alignment="TOP_RIGHT" contentDisplay="CENTER" mnemonicParsing="false" onAction="#onCancelEditNutritionButton" text="Cancel" />
