@@ -25,5 +25,6 @@ public class TestModule implements Module {
         binder.bind(UserStorage.class).toInstance(new TestUserStorage(new User()));
         binder.bind(UserConfig.class).in(Scopes.SINGLETON);
         binder.bind(RecipeUtils.class).in(Scopes.SINGLETON);
+        binder.bind(LanguageService.class).in(Scopes.SINGLETON);
     }
 }
