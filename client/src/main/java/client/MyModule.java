@@ -31,5 +31,6 @@ public class MyModule implements Module {
         binder.bind(UserConfig.class).in(Scopes.SINGLETON);
         binder.bind(ShoppingListCtrl.class);
         binder.bind(RecipeUtils.class).in(Scopes.SINGLETON);
+        binder.bind(ShoppingListUtils.class).in(Scopes.SINGLETON);
     }
 }
