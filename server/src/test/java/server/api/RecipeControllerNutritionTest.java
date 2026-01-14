@@ -4,6 +4,7 @@ import commons.*;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import server.services.IngredientTypeService;
 import server.services.RecipeService;
 import server.services.UnitConversionService;
 
@@ -17,21 +18,37 @@ import static org.springframework.http.HttpStatus.OK;
 
 public class RecipeControllerNutritionTest {
 
-    private TestRecipeRepository repo;
+    private TestRecipeRepository recipeRepo;
+    private TestIngredientRepository ingredientRepo;
+    private TestIngredientTypeRepository ingredientTypeRepo;
+
     private RecipeController controller;
+
     private RecipeService recipeService;
+    private IngredientTypeService ingredientTypeService;
 
     @BeforeEach
     public void setup(){
-        repo = new TestRecipeRepository();
+        recipeRepo = new TestRecipeRepository();
+        ingredientRepo = new TestIngredientRepository();
+        ingredientTypeRepo = new TestIngredientTypeRepository();
+
         var messagingTemplate = mock(SimpMessagingTemplate.class);
 
         var unitConversion = new server.services.UnitConversionService();
         var normalizer = new server.services.QuantityNormalizationService(unitConversion);
         var nutritionService = new server.services.RecipeNutritionService(normalizer);
-        var recipeService = new server.services.RecipeService(repo);
 
-        controller = new RecipeController(repo, messagingTemplate, nutritionService,
+        var ingredientTypeService = new server.services.IngredientTypeService(
+                ingredientTypeRepo
+        );
+        var ingredientService = new server.services.IngredientService(
+                ingredientRepo, ingredientTypeService
+        );
+        var recipeService = new server.services.RecipeService(recipeRepo,
+                ingredientService);
+
+        controller = new RecipeController(recipeRepo, messagingTemplate, nutritionService,
                 recipeService);
     }
 

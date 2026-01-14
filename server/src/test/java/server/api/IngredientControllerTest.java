@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.ResponseEntity;
 import server.services.IngredientService;
+import server.services.IngredientTypeService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,16 +22,23 @@ public class IngredientControllerTest {
     private Recipe recipe1;
     private Recipe recipe2;
 
-    private TestIngredientRepository repo;
+    private TestIngredientRepository ingredientRepo;
+    private TestIngredientTypeRepository ingredientTypeRepo;
+
     private IngredientController sut;
+
     private IngredientService ingredientService;
+    private IngredientTypeService ingredientTypeService;
 
     @BeforeEach
     public void setup() {
         // for testing with TestIngredientRepository
-        repo = new TestIngredientRepository();
-        ingredientService = new IngredientService(repo);
-        sut = new IngredientController(repo, ingredientService);
+        ingredientRepo = new TestIngredientRepository();
+
+        ingredientTypeService = new IngredientTypeService(ingredientTypeRepo);
+        ingredientService = new IngredientService(ingredientRepo, ingredientTypeService);
+
+        sut = new IngredientController(ingredientRepo, ingredientService);
 
         recipe1 = new Recipe("cucumber salad",
                 new ArrayList<>(),
@@ -49,7 +57,7 @@ public class IngredientControllerTest {
     @Test
     public void getAllIngredientsTest() {
         var ingredients = sut.getAllIngredients();
-        assertTrue(repo.calledMethods.contains("findAll"));
+        assertTrue(ingredientRepo.calledMethods.contains("findAll"));
     }
 
     @Test
@@ -70,7 +78,7 @@ public class IngredientControllerTest {
         sut.add(ingredient1);
         sut.add(ingredient2);
         sut.delete(ingredient1.id);
-        assertFalse(repo.findAll().contains(ingredient1));
+        assertFalse(ingredientRepo.findAll().contains(ingredient1));
     }
 
     @Test
@@ -96,7 +104,7 @@ public class IngredientControllerTest {
         sut.add(ingredient1);
         var result = sut.update(ingredient1.id, ingredient2);
         assertEquals(OK, result.getStatusCode());
-        assertEquals(repo.findById(ingredient1.id).get(), ingredient2);
+        assertEquals(ingredientRepo.findById(ingredient1.id).get(), ingredient2);
     }
 
     @Test
