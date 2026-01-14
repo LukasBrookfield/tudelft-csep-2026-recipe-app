@@ -8,7 +8,7 @@ import java.util.List;
 
 public class User {
     private List<Long> favouriteRecipes;
-    private List<Ingredient> shoppingList;
+    private List<ShoppingListItem> shoppingList;
 
     private String languageTag;
 
@@ -17,7 +17,7 @@ public class User {
      * @param favouriteRecipes A list of the ids of the user's favourite recipes
      * @param shoppingList A list of ingredients part of the user's shopping list
      */
-    public User(List<Long> favouriteRecipes, List<Ingredient> shoppingList) {
+    public User(List<Long> favouriteRecipes, List<ShoppingListItem> shoppingList) {
         this.favouriteRecipes = favouriteRecipes;
         this.shoppingList = shoppingList;
 
@@ -37,7 +37,7 @@ public class User {
         return favouriteRecipes;
     }
 
-    public List<Ingredient> getShoppingList() {
+    public List<ShoppingListItem> getShoppingList() {
         return shoppingList;
     }
 
@@ -45,19 +45,19 @@ public class User {
         this.favouriteRecipes = favouriteRecipes;
     }
 
-    public void setShoppingList(List<Ingredient> shoppingList) {
+    public void setShoppingList(List<ShoppingListItem> shoppingList) {
         this.shoppingList = shoppingList;
     }
 
     /**
      * Adds an ingredient to shopping list
-     * @param ingredient The ingredient
+     * @param shoppingListItem The ingredient
      */
-    public void addShoppingListItem(Ingredient ingredient){
+    public void addShoppingListItem(ShoppingListItem shoppingListItem) {
         if(shoppingList == null){
             shoppingList = new ArrayList<>();
         }
-        shoppingList.add(ingredient);
+        shoppingList.add(shoppingListItem);
     }
 
     @Override

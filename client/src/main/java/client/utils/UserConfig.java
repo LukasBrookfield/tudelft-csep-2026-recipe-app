@@ -2,10 +2,10 @@ package client.utils;
 
 import com.google.inject.Inject;
 import commons.Ingredient;
+import commons.ShoppingListItem;
 import commons.User;
 import commons.Recipe;
 import java.io.*;
-import java.util.ArrayList;
 import java.util.List;
 
 public class UserConfig {
@@ -37,7 +37,7 @@ public class UserConfig {
         userStorage.save(user);
     }
 
-    public List<Ingredient> getShoppingList() {
+    public List<ShoppingListItem> getShoppingList() {
         return user.getShoppingList();
     }
 
@@ -45,7 +45,7 @@ public class UserConfig {
         return user.getFavouriteRecipes();
     }
 
-    public void setShoppingList(List<Ingredient> shoppingList) {
+    public void setShoppingList(List<ShoppingListItem> shoppingList) {
         user.setShoppingList(shoppingList);
     }
 
@@ -57,7 +57,7 @@ public class UserConfig {
      * Adds an ingredient to shopping list
      * @param ingredient The ingredient
      */
-    public void addShoppingListItem(Ingredient ingredient){
+    public void addShoppingListItem(ShoppingListItem ingredient){
         user.addShoppingListItem(ingredient);
     }
 

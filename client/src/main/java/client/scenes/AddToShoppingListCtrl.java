@@ -1,13 +1,11 @@
 package client.scenes;
 
-import client.utils.LanguageService;
-import client.utils.ServerUtils;
-import client.utils.ShoppingListService;
-import client.utils.UserConfig;
+import client.utils.*;
 import com.google.inject.Inject;
 import commons.Ingredient;
 import commons.IngredientType;
 import commons.Recipe;
+import commons.ShoppingListItem;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
@@ -28,7 +26,7 @@ public class AddToShoppingListCtrl {
     private Recipe recipe;
 
     @FXML
-    private ListView<Ingredient> ingredientListView;
+    private ListView<ShoppingListItem> ingredientListView;
 
     @FXML
     private Button removeIngredientButton;
@@ -169,12 +167,13 @@ public class AddToShoppingListCtrl {
     /**
      * Sets the fields with ingredients from the recipe which was selected
      * @param recipe The recipe
+     * @param scale The scale
      */
-    public void setFields(Recipe recipe){
+    public void setFields(Recipe recipe, double scale){
         newIngredientType = false;
         this.recipe = recipe;
         if(recipe != null && recipe.ingredients != null){
-            ShoppingListService.addIngredientsToListView(recipe, ingredientListView.getItems());
+            ShoppingListService.addIngredientsToListView(recipe, ingredientListView.getItems(), scale);
         }
         if(recipe != null && recipe.name != null){
             label.setText("Add to Shopping List - " + recipe.name);
@@ -221,6 +220,20 @@ public class AddToShoppingListCtrl {
         Platform.runLater(() -> addIngredientButton.requestFocus());
 
         applyTranslations();
+
+        ingredientListView.setCellFactory(lv -> new ListCell<>() {
+            @Override
+            protected void updateItem(ShoppingListItem item, boolean empty) {
+                super.updateItem(item, empty);
+
+                if (empty || item == null) {
+                    setText(null);
+                    setGraphic(null);
+                } else {
+                    setText(ShoppingListService.shoppingListItemString(item));
+                }
+            }
+        });
     }
 
     /**
@@ -249,7 +262,7 @@ public class AddToShoppingListCtrl {
     @FXML
     private void onAddIngredientButton() {
         newIngredientType = true;
-        ingredientListView.getItems().add(new Ingredient(null, null, null, null));
+        ingredientListView.getItems().add(new ShoppingListItem(new Ingredient(null, null, null, null)));
         ingredientListView.getSelectionModel().select(
                 ingredientListView.getItems().size() - 1
         );
@@ -288,7 +301,7 @@ public class AddToShoppingListCtrl {
         }
         changeIngredientViewEditMode(true);
 
-        Ingredient ingredient = ingredientListView.getSelectionModel().getSelectedItem();
+        Ingredient ingredient = ingredientListView.getSelectionModel().getSelectedItem().getIngredient();
 
         if (ingredient.ingredientType != null) {
             editIngredientChoiceBox.setValue(ingredient.ingredientType);
@@ -333,16 +346,13 @@ public class AddToShoppingListCtrl {
         }
 
         int index = ingredientListView.getSelectionModel().getSelectedIndex();
-        Ingredient ingredient = ingredientListView.getItems().get(index);
+        Ingredient ingredient = ingredientListView.getItems().get(index).getIngredient();
 
         //we create a new ingredient type
         if (editIngredientChoiceBox.getValue().name.equals("Create new ingredient type")) {
             ingredient.ingredientType = server.addIngredientType(
                     new IngredientType(editIngredientNameField.getText(),
-                            null, new ArrayList<>(), null)
-            ).copy();   //the ingredient has a copy of this type so
-                        //the change of its name while saving it to shopping list
-                        //would not affect the ingredient type on the server
+                            null, new ArrayList<>(), null));
         } else {
             ingredient.ingredientType = editIngredientChoiceBox.getValue();
         }
@@ -352,9 +362,8 @@ public class AddToShoppingListCtrl {
                 editIngredientAmountField.getText(),
                 editUnitBox.getValue());
 
-        ingredientListView.getItems().set(index, ingredient);
-
         changeIngredientViewEditMode(false);
+        onRefresh();
     }
 
     /**
@@ -370,7 +379,7 @@ public class AddToShoppingListCtrl {
         changeIngredientTypeViewEditMode(true);
 
         Ingredient ingredient = ingredientListView.getSelectionModel()
-                .getSelectedItem();
+                .getSelectedItem().getIngredient();
         if (ingredient.amount != null) {
             editIngredientAmountField.setText(String.valueOf(ingredient.amount));
         }
