@@ -10,9 +10,7 @@ import commons.Ingredient;
 import commons.IngredientType;
 import commons.ShoppingListItem;
 import commons.Unit;
-import javafx.scene.control.ChoiceBox;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -24,11 +22,9 @@ import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.stage.Stage;
 import static com.google.inject.Guice.createInjector;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(ApplicationExtension.class)
 public class ShoppingListCtrlTest {
@@ -54,6 +50,8 @@ public class ShoppingListCtrlTest {
     private ChoiceBox<IngredientType> editIngredientChoiceBox;
     private Button nextButton;
     private Button exitButton;
+    private Label shoppingListHeaderLabel;
+    private Button backEditIngredientButton;
 
 
     @Start
@@ -76,6 +74,7 @@ public class ShoppingListCtrlTest {
         // initialize utils using the injector
         server = injector.getInstance(ServerUtility.class);
         user = injector.getInstance(UserConfig.class);
+        languages = injector.getInstance(LanguageService.class);
 
         // Initialize buttons (you can lookup buttons after loading the scene)
         ingredientListView = lookup(scene, "#ingredientListView");
@@ -93,6 +92,8 @@ public class ShoppingListCtrlTest {
         editIngredientChoiceBox = lookup(scene, "#editIngredientChoiceBox");
         nextButton = lookup(scene, "#nextButton");
         exitButton = lookup(scene, "#exitButton");
+        backEditIngredientButton = lookup(scene, "#backEditIngredientButton");
+        shoppingListHeaderLabel = lookup(scene, "#shoppingListHeaderLabel");
     }
 
     @SuppressWarnings("unchecked")
@@ -150,6 +151,19 @@ public class ShoppingListCtrlTest {
 
         // check if item has been saved to the local user file
         assertTrue(user.getShoppingList().contains(item));
+    }
+
+    @Test
+    void cancelAddItemTest(FxRobot robot) {
+        addItem(robot, "Test ingredient", Unit.G, 125.5);
+        robot.clickOn(backEditIngredientButton);
+        robot.clickOn(cancelEditIngredientButton);
+
+        // check if item has been removed from list view
+        assertTrue(ingredientListView.getItems().isEmpty());
+
+        // check if item has not been added to the user config file
+        assertTrue(user.getShoppingList().isEmpty());
     }
 
     @Test
