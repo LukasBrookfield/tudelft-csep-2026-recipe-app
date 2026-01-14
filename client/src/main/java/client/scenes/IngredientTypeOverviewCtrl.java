@@ -1,7 +1,8 @@
 package client.scenes;
 
+import client.utils.LanguageService;
 import client.utils.RecipeUtils;
-import client.utils.ServerUtils;
+import client.utils.ServerUtility;
 import client.utils.UserConfig;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -10,7 +11,6 @@ import commons.Ingredient;
 import commons.IngredientType;
 import commons.Nutrition;
 import commons.Recipe;
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -19,14 +19,12 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.text.MessageFormat;
+import java.util.*;
 
 public class IngredientTypeOverviewCtrl {
 
-    private final ServerUtils server;
+    private final ServerUtility server;
 
     private final RecipeUtils recipeUtils;
 
@@ -35,6 +33,10 @@ public class IngredientTypeOverviewCtrl {
     private final MainCtrl mainCtrl;
 
     boolean newIngredientType = false;
+
+    private final LanguageService languages;
+
+    private int usedInRecipesCount = 0;
 
     // Left sidebar
 
@@ -145,21 +147,90 @@ public class IngredientTypeOverviewCtrl {
     @FXML
     private Button doneEditNutritionButton;
 
+    @FXML private Label detailsHeaderLabel;
+    @FXML private Label nameCaptionLabel;
+    @FXML private Label densityCaptionLabel;
+    @FXML private Label nutritionHeaderLabel;
+    @FXML private Label proteinCaptionLabel;
+    @FXML private Label fatCaptionLabel;
+    @FXML private Label carbsCaptionLabel;
+    @FXML private Label kcalCaptionLabel;
+
     // Bottom
 
     @FXML
     private Label usedInRecipesLabel;
 
+    private void setTooltip(Control c, String key){
+        ResourceBundle b = languages.bundle();
+        Tooltip t = c.getTooltip();
+        if (t == null) {
+            t = new Tooltip();
+            c.setTooltip(t);
+        }
+        t.setText(b.getString(key));
+    }
+
+    private String formatUsedInRecipes(int count){
+        ResourceBundle b = languages.bundle();
+        String key = (count == 1) ? "ing.usedInRecipes.one" : "ing.usedInRecipes.many";
+        return MessageFormat.format(b.getString(key), count);
+    }
+
+    public void applyTranslations() {
+        ResourceBundle b = languages.bundle();
+
+        toggleOverviewButton.setText(b.getString("ing.btn.viewRecipes"));
+        ingredientTypeSearchField.setPromptText(b.getString("ing.search.prompt"));
+
+        if ("New ingredient".equals(ingredientTypeTitleLabel.getText()) || ingredientTypeTitleLabel.getText().isBlank()) {
+            ingredientTypeTitleLabel.setText(b.getString("ing.title.new"));
+        }
+
+        detailsHeaderLabel.setText(b.getString("ing.details.header"));
+        nameCaptionLabel.setText(b.getString("ing.details.name"));
+        densityCaptionLabel.setText(b.getString("ing.details.density"));
+        nutritionHeaderLabel.setText(b.getString("ing.nutrition.header"));
+        proteinCaptionLabel.setText(b.getString("ing.nutrition.protein"));
+        fatCaptionLabel.setText(b.getString("ing.nutrition.fat"));
+        carbsCaptionLabel.setText(b.getString("ing.nutrition.carbs"));
+        kcalCaptionLabel.setText(b.getString("ing.nutrition.kcal"));
+
+        editNameField.setPromptText(b.getString("ing.details.name.prompt"));
+        editDensityField.setPromptText(b.getString("ing.details.density.prompt"));
+        proteinTextField.setPromptText(b.getString("ing.nutrition.protein.prompt"));
+        fatTextField.setPromptText(b.getString("ing.nutrition.fat.prompt"));
+        carbsTextField.setPromptText(b.getString("ing.nutrition.carbs.prompt"));
+
+        cancelEditDetailsButton.setText(b.getString("common.btn.cancel"));
+        doneEditDetailsButton.setText(b.getString("common.btn.done"));
+
+        cancelEditNutritionButton.setText(b.getString("common.btn.cancel"));
+        doneEditNutritionButton.setText(b.getString("common.btn.done"));
+
+        usedInRecipesLabel.setText(formatUsedInRecipes(usedInRecipesCount));
+
+        // tooltips
+        setTooltip(homeButton, "common.tooltip.home");
+        setTooltip(removeIngredientTypeButton, "common.tooltip.removeIngredient");
+        setTooltip(addIngredientTypeButton, "common.tooltip.addIngredient");
+        setTooltip(editIngredientTypeButton, "common.tooltip.editIngredient");
+        setTooltip(editDetailsButton, "common.tooltip.editName");
+        setTooltip(editDensityButton, "common.tooltip.editDensity");
+        setTooltip(editNutritionButton, "common.tooltip.editNutrition");
+    }
+
     // General
     @Inject
-    public IngredientTypeOverviewCtrl(ServerUtils server,
+    public IngredientTypeOverviewCtrl(ServerUtility server,
                                       RecipeUtils recipeUtils,
                                       UserConfig user,
-                                      MainCtrl mainCtrl) {
+                                      MainCtrl mainCtrl, LanguageService languages) {
         this.server = server;
         this.recipeUtils = recipeUtils;
         this.user = user;
         this.mainCtrl = mainCtrl;
+        this.languages = languages;
     }
 
     /**
@@ -267,8 +338,8 @@ public class IngredientTypeOverviewCtrl {
         }
 
         int usedInRecipes = getUsedInRecipes(ingredientType).size();
-        usedInRecipesLabel.setText("This ingredient type is used in "
-                + usedInRecipes + " recipe" + (usedInRecipes == 1 ? "" : "s"));
+        usedInRecipesCount = usedInRecipes;
+        usedInRecipesLabel.setText(formatUsedInRecipes(usedInRecipesCount));
 
         kcalLabel.setText(String.valueOf(recipeUtils
                 .getCaloriesPer100g(ingredientType)));
@@ -337,6 +408,7 @@ public class IngredientTypeOverviewCtrl {
         changeDensityViewEditMode(false);
         changeNutritionViewEditMode(false);
         changeViewEditMode(false);
+        applyTranslations();
         onRefresh();
 
         ingredientTypeListView.getSelectionModel().selectedItemProperty().addListener(
@@ -368,17 +440,24 @@ public class IngredientTypeOverviewCtrl {
 
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.initModality(Modality.APPLICATION_MODAL); // disables the main stage
-        alert.setTitle("FoodPal - Warning");
+        ResourceBundle b = languages.bundle();
+        alert.setTitle(b.getString("ing.alert.removeUsed.title"));
         alert.setHeaderText(null);
 
         Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
         stage.getIcons().add(new Image(Objects.requireNonNull(
                 getClass().getResourceAsStream("/FoodPalLogo.png"))));
 
-        Label content = new Label("This ingredient is used in " + usedInRecipes.size() + " " +
-                (usedInRecipes.size() == 1 ? "recipe" : "different recipes") + ". Removing " +
-                "it will remove it from the following recipe" + (usedInRecipes.size() == 1
-                ? ":" : "s:"));
+        int count = usedInRecipes.size();
+
+        String messageKey = (count == 1) ? "ing.alert.removeUsed.one" : "ing.alert.removeUsed.many";
+
+        Label content = new Label(MessageFormat.format(b.getString(messageKey), count));
+
+//        Label content = new Label("This ingredient is used in " + usedInRecipes.size() + " " +
+//                (usedInRecipes.size() == 1 ? "recipe" : "different recipes") + ". Removing " +
+//                "it will remove it from the following recipe" + (usedInRecipes.size() == 1
+//                ? ":" : "s:"));
         content.setWrapText(true);
         content.setMinHeight(50);
 
@@ -391,8 +470,8 @@ public class IngredientTypeOverviewCtrl {
         vbox.setSpacing(5);
         alert.getDialogPane().setContent(vbox);
 
-        ButtonType cancelButton = new ButtonType("Cancel", ButtonBar.ButtonData.CANCEL_CLOSE);
-        ButtonType okButton = new ButtonType("OK", ButtonBar.ButtonData.OK_DONE);
+        ButtonType cancelButton = new ButtonType(b.getString("common.btn.cancel"), ButtonBar.ButtonData.CANCEL_CLOSE);
+        ButtonType okButton = new ButtonType(b.getString("common.btn.ok"), ButtonBar.ButtonData.OK_DONE);
         alert.getDialogPane().getButtonTypes().setAll(cancelButton, okButton);
 
         Optional<ButtonType> res = alert.showAndWait();

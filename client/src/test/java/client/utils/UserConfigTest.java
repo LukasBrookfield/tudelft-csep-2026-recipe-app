@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class UserConfigTest {
     private UserConfig userConfig;
     private List<Recipe> allRecipes;
-    private List<Ingredient> shoppingList;
+    private List<ShoppingListItem> shoppingList;
     private List<Long> favouriteRecipes;
     private User user;
     private UserStorage userStorage;
@@ -28,9 +28,9 @@ public class UserConfigTest {
         IngredientType t = new IngredientType("Potato", null, null, null);
         ingredient = new Ingredient(t, 1.0, Unit.TO_TASTE, null);
         shoppingList = new ArrayList<>(List.of(
-            new Ingredient(t, 1.0, Unit.G, allRecipes.get(0)),
-            new Ingredient(t, 2.0, Unit.ML, allRecipes.get(1)),
-            new Ingredient(t, 3.0, Unit.HANDFUL, allRecipes.get(2))
+                new ShoppingListItem(new Ingredient(t, 1.0, Unit.G, allRecipes.get(0))),
+                new ShoppingListItem(new Ingredient(t, 2.0, Unit.ML, allRecipes.get(1))),
+                new ShoppingListItem(new Ingredient(t, 3.0, Unit.HANDFUL, allRecipes.get(2)))
         ));
         favouriteRecipes = new ArrayList<>(List.of(1L, 2L));
         user = new User(favouriteRecipes, shoppingList);
@@ -96,7 +96,7 @@ public class UserConfigTest {
 
     @Test
     public void setShoppingListTest() {
-        List<Ingredient> shoppingList = List.of();
+        List<ShoppingListItem> shoppingList = List.of();
         userConfig.setShoppingList(shoppingList);
         assertEquals(shoppingList, userConfig.getShoppingList());
     }
@@ -104,8 +104,8 @@ public class UserConfigTest {
     @Test
     public void addToShoppingListTest(){
         int count = userConfig.getShoppingList().size();
-        userConfig.addShoppingListItem(ingredient);
+        userConfig.addShoppingListItem(new ShoppingListItem(ingredient));
         assertEquals(count + 1, userConfig.getShoppingList().size());
-        assertEquals(ingredient, userConfig.getShoppingList().get(count));
+        assertEquals(new ShoppingListItem(ingredient), userConfig.getShoppingList().get(count));
     }
 }

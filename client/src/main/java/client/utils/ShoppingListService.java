@@ -2,6 +2,7 @@ package client.utils;
 
 import commons.Ingredient;
 import commons.Recipe;
+import commons.ShoppingListItem;
 import commons.Unit;
 
 import java.util.List;
@@ -13,9 +14,16 @@ public class ShoppingListService {
      * @param recipe The recipe
      * @param list The list
      */
-    public static void addIngredientsToListView(Recipe recipe, List<Ingredient> list){
-        list.addAll(recipe.ingredients.stream().
-                map(Ingredient::copy).toList());
+    public static void addIngredientsToListView(Recipe recipe, List<ShoppingListItem> list, double scale) {
+        list.addAll(
+                recipe.ingredients.stream()
+                        .map(Ingredient::copy)
+                        .map(i -> {
+                            i.amount = scale * i.amount;
+                            return new ShoppingListItem(i);
+                        })
+                        .toList()
+        );
     }
 
     /**
@@ -37,11 +45,20 @@ public class ShoppingListService {
             System.out.println("This unit needs an amount.");
             return false;
         }
+
         if (unit.equals("TO_TASTE")
                 && !amount.isEmpty()) {
             System.out.println("This unit cannot have an amount.");
             return false;
         }
+
+        try{
+            Double.parseDouble(amount);
+        }catch(Exception e){
+            System.out.println("Invalid amount");
+            return false;
+        }
+
         return true;
     }
 
@@ -72,11 +89,21 @@ public class ShoppingListService {
      * @param recipe The recipe from which ingredients comes from
      * @param user The user
      */
-    public static void confirmAddingIngredients(List<Ingredient> ingredientListView, Recipe recipe, UserConfig user){
+    public static void confirmAddingIngredients(List<ShoppingListItem> ingredientListView, Recipe recipe, UserConfig user){
         ingredientListView.forEach(ingredient -> {
-            ingredient.ingredientType.name = ingredient.ingredientType.name + " (" + recipe.name + ")";
+            ingredient.setRecipeName(recipe.name);
             user.addShoppingListItem(ingredient);
         });
         user.saveUser();
+    }
+
+    public static String shoppingListItemString(ShoppingListItem item){
+        IngredientScaling ingredientScaling  = new IngredientScaling();
+        if(item.getRecipeName() == null){
+            return ingredientScaling.format(item.getIngredient(), 1.0);
+        } else {
+            return ingredientScaling.format(item.getIngredient(), 1.0) +
+                    " (" + item.getRecipeName() + ")";
+        }
     }
 }

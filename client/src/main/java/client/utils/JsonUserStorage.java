@@ -19,6 +19,8 @@ public class JsonUserStorage implements UserStorage {
     public JsonUserStorage(String FILE_PATH, ObjectMapper objectMapper) {
         this.FILE_PATH = FILE_PATH;
         this.objectMapper = objectMapper;
+        System.out.println("UserConfig path = " + new File(FILE_PATH).getAbsolutePath());
+
     }
 
     @Override

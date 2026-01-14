@@ -53,6 +53,9 @@ public class ShoppingListCtrlTest {
     private Button nextButton;
     private Button exitButton;
 
+    private final LanguageService languages = new LanguageService(user);
+    private final MainCtrl mainCtrl = new MainCtrl(languages);
+
     @Start
     private void start(Stage stage) throws IOException {
         Injector injector = createInjector(new TestModule());
