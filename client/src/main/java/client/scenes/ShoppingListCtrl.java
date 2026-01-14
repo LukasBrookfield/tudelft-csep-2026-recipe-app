@@ -9,10 +9,13 @@ import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.stage.FileChooser;
 import javafx.util.StringConverter;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
@@ -27,7 +30,12 @@ public class ShoppingListCtrl {
     @FXML
     public ChoiceBox<String> sceneBox;
 
-    private ShoppingListUtils shoppingListUtils;
+    private final ShoppingListUtils shoppingListUtils;
+
+    // Root
+
+    @FXML
+    private AnchorPane rootPane;
 
     @FXML
     private ListView<ShoppingListItem> ingredientListView;
@@ -80,7 +88,7 @@ public class ShoppingListCtrl {
     private final LanguageService languages;
 
     private static final String CREATE_NEW_INGREDIENT_TYPE = "Create new ingredient type";
-
+    private boolean newIngredientType = false;
 
     //the listener for ingredient type choice box so the fields change
     private final ChangeListener<IngredientType> ingredientListener =
@@ -246,6 +254,29 @@ public class ShoppingListCtrl {
     }
 
     /**
+     * Download button:
+     * Asks the user where to save the PDF, then writes the shopping list PDF there.
+     */
+    @FXML
+    private void onDownloadButton() {
+        FileChooser chooser = new FileChooser();
+        shoppingListUtils.setFileChooser(chooser);
+        // Show the dialog
+        File file = chooser.showSaveDialog(rootPane.getScene().getWindow());
+        shoppingListUtils.saveListToFile(file, user.getShoppingList());
+    }
+
+    /**
+     * Print button:
+     * Creates a temporary PDF file and sends it to the OS printer.
+     */
+    @FXML
+    private void onPrint() {
+        shoppingListUtils.printShoppingList(new  ArrayList<>(ingredientListView.getItems()));
+    }
+
+
+    /**
      * On action method for the Remove Ingredient Button
      * Removes the currently selected ingredient (if any), note that a change like
      * this only affects the recipe if the user presses 'Done' later
@@ -274,6 +305,7 @@ public class ShoppingListCtrl {
      */
     @FXML
     private void onAddIngredientButton() {
+        newIngredientType = true;
         ingredientListView.getItems().add(new ShoppingListItem(new Ingredient(null, null, null, null)));
         ingredientListView.getSelectionModel().select(
                 ingredientListView.getItems().size() - 1
@@ -338,8 +370,10 @@ public class ShoppingListCtrl {
      */
     @FXML
     private void onCancelEditIngredientButton() {
-        ingredientListView.getItems().remove(
-                ingredientListView.getSelectionModel().getSelectedIndex());
+        if(newIngredientType){
+            onRemoveIngredientButton();
+        }
+        newIngredientType = false;
         changeIngredientViewEditMode(false);
     }
 
@@ -349,6 +383,7 @@ public class ShoppingListCtrl {
      */
     @FXML
     private void onDoneEditIngredientButton() {
+        newIngredientType = false;
         if(!shoppingListUtils.ingredientValidation(editIngredientNameField.getText(),
                 editIngredientAmountField.getText(),
                 editUnitBox.getValue())){
@@ -380,7 +415,13 @@ public class ShoppingListCtrl {
         onRefresh();
     }
 
-    public void onNext(){
+    /**
+     * On action method for the Next Edit Ingredient button
+     * Switches the scene to edit ingredient part 2 (which is where the user inputs
+     * the unit and amount of the ingredient)
+     */
+    @FXML
+    private void onNext(){
         if (editIngredientNameField.getText().isEmpty()) {
             System.out.println("The ingredient type needs a name.");
             return;

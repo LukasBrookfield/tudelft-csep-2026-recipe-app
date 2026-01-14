@@ -24,7 +24,7 @@ public class AddToShoppingListCtrl {
     private final UserConfig user;
     private final MainCtrl controller;
     private Recipe recipe;
-    private ShoppingListUtils shoppingListUtils;
+    private final ShoppingListUtils shoppingListUtils;
 
     @FXML
     private ListView<ShoppingListItem> ingredientListView;
