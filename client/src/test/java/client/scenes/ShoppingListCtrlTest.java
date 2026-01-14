@@ -1,6 +1,5 @@
 package client.scenes;
 
-import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -9,10 +8,12 @@ import client.utils.*;
 import com.google.inject.Injector;
 import commons.Ingredient;
 import commons.IngredientType;
+import commons.ShoppingListItem;
 import commons.Unit;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.util.Pair;
@@ -35,6 +36,7 @@ public class ShoppingListCtrlTest {
     private ShoppingListCtrl sut;
     private ServerUtility server;
     private UserConfig user;
+    private LanguageService languages;
 
     // FXML components
     private ListView<Ingredient> ingredientListView;
@@ -53,8 +55,6 @@ public class ShoppingListCtrlTest {
     private Button nextButton;
     private Button exitButton;
 
-    private final LanguageService languages = new LanguageService(user);
-    private final MainCtrl mainCtrl = new MainCtrl(languages);
 
     @Start
     private void start(Stage stage) throws IOException {
@@ -100,7 +100,7 @@ public class ShoppingListCtrlTest {
         return (T) scene.lookup(id);
     }
 
-    private void addIngredient(FxRobot robot, String ingredientType, Unit unit, double amount) {
+    private void addItem(FxRobot robot, String ingredientType, Unit unit, double amount) {
         robot.clickOn(addIngredientButton);
         robot.clickOn(editIngredientNameField);
         robot.write(ingredientType);
@@ -111,14 +111,14 @@ public class ShoppingListCtrlTest {
     }
 
     @Test
-    void testBeforeAddingIngredientButton() {
+    void testBeforeAddingItemButton() {
         assertTrue(addIngredientButton.isVisible());
         assertTrue(removeIngredientButton.isVisible());
         assertTrue(editIngredientButton.isVisible());
     }
 
     @Test
-    void testAfterAddingIngredientButton(FxRobot robot) {
+    void testAfterAddingItemButton(FxRobot robot) {
         robot.clickOn(addIngredientButton);
 
         assertFalse(addIngredientButton.isVisible());
@@ -127,49 +127,50 @@ public class ShoppingListCtrlTest {
     }
 
     @Test
-    void addIngredientTest(FxRobot robot) {
+    void addItemTest(FxRobot robot) {
         robot.clickOn(addIngredientButton);
 
-        // check if new ingredient has been added to list view
+        // check if new item has been added to list view
         assertTrue(ingredientListView.getItems().contains(
-                new Ingredient(null, null, null, null)));
+                new ShoppingListItem(new Ingredient(null, null, null, null))));
     }
 
     @Test
-    void doneAddIngredientTest(FxRobot robot) {
-        addIngredient(robot, "Test ingredient", Unit.G, 125.5);
+    void doneAddItemTest(FxRobot robot) {
+        addItem(robot, "Test ingredient", Unit.G, 125.5);
         robot.clickOn(doneEditIngredientButton);
 
         Ingredient ing = new Ingredient(
                 new IngredientType("Test ingredient", null, new ArrayList<>(), null),
                 125.5, Unit.G, null);
+        ShoppingListItem item = new ShoppingListItem(ing);
 
-        // check if ingredient has been edited in list view
-        assertTrue(ingredientListView.getItems().contains(ing));
+        // check if item has been edited in list view
+        assertTrue(ingredientListView.getItems().contains(item));
 
-        // check if ingredient has been saved to the local user file
-        assertTrue(user.getShoppingList().contains(ing));
+        // check if item has been saved to the local user file
+        assertTrue(user.getShoppingList().contains(item));
     }
 
     @Test
-    void removeIngredientTest(FxRobot robot) {
-        addIngredient(robot, "Test ingredient", Unit.ML, 44.4);
+    void removeItemTest(FxRobot robot) {
+        addItem(robot, "Test ingredient", Unit.ML, 44.4);
         robot.clickOn(doneEditIngredientButton);
         robot.clickOn(removeIngredientButton);
 
-        // check if ingredient has been removed from list view
+        // check if item has been removed from list view
         assertTrue(ingredientListView.getItems().isEmpty());
 
-        // check if ingredient has been removed from local user file
+        // check if item has been removed from local user file
         assertTrue(user.getShoppingList().isEmpty());
     }
 
     @Test
-    void editIngredientTest(FxRobot robot) {
-        addIngredient(robot, "Test ingredient", Unit.G, 125.5);
+    void editItemTest(FxRobot robot) {
+        addItem(robot, "Test ingredient", Unit.G, 125.5);
         robot.clickOn(doneEditIngredientButton);
         robot.clickOn(editIngredientButton);
-        robot.clickOn(editIngredientNameField);
+        robot.clickOn(editIngredientNameField).type(KeyCode.END);
         robot.eraseText(20);
         robot.write("EDIT");
         robot.clickOn(nextButton);
@@ -178,11 +179,12 @@ public class ShoppingListCtrlTest {
         Ingredient ing = new Ingredient(
                 new IngredientType("EDIT", null, new ArrayList<>(), null),
                 125.5, Unit.G, null);
+        ShoppingListItem item =  new ShoppingListItem(ing);
 
-        // check if ingredient has been edited in list view
-        assertTrue(ingredientListView.getItems().contains(ing));
+        // check if item has been edited in list view
+        assertTrue(ingredientListView.getItems().contains(item));
 
-        // check if ingredient has been edited in local user file
-        assertTrue(user.getShoppingList().contains(ing));
+        // check if item has been edited in local user file
+        assertTrue(user.getShoppingList().contains(item));
     }
 }
