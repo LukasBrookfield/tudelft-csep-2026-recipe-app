@@ -1670,6 +1670,9 @@ public class RecipeOverviewCtrl {
         changeIngredientTypeViewEditMode(1);
         editUnitBox.getSelectionModel().select(0);
 
+        // removes previous filler ingredient types
+        allIngredientTypes.removeIf(x -> x.name.isBlank());
+
         Ingredient ingredient = ingredientListView.getSelectionModel().getSelectedItem();
         if (ingredient.ingredientType != null) {
             editIngredientTypeBox.setValue(ingredient.ingredientType);
@@ -1716,10 +1719,11 @@ public class RecipeOverviewCtrl {
             System.out.println("The ingredient type needs a name.");
             return;
         }
-        if(editIngredientNameField.getText().length()>50) {
+
+        if(ingredientType.name.length()>50) {
             System.out.println("The ingredient type name exceeds 50 characters!");
             List<TextInputControl> textFields = new ArrayList<>();
-            textFields.add(editIngredientNameField);
+            textFields.add(new TextField(ingredientType.name));
             recipeUtils.displayAlertInputWarning("recipe.warning.ingredient.exceeds.limit", textFields);
             return;
         }
@@ -1825,6 +1829,8 @@ public class RecipeOverviewCtrl {
 
         editIngredientAmountField.clear();
         editUnitBox.getSelectionModel().select(0);
+
+        allIngredientTypes.add(ingredient.ingredientType);
 
         changeIngredientTypeViewEditMode(0);
         cancelEditButton.setVisible(true);

@@ -653,9 +653,11 @@ public class IngredientTypeOverviewCtrl {
     private void onDoneEditDetailsButton() {
         List<TextInputControl> textFields = new ArrayList<>();
         textFields.add(editNameField);
-        String inputName = null;
+        String inputName;
         if(!editNameField.getText().isEmpty()) {
             inputName = editNameField.getText().trim();
+        } else {
+            inputName = null;
         }
 
         if (inputName == null || inputName.isBlank()) {
@@ -674,6 +676,15 @@ public class IngredientTypeOverviewCtrl {
         if (Character.isDigit(inputName.trim().charAt(0))) {
             System.out.println("The ingredient type name cannot start with a digit.");
             recipeUtils.displayAlertInputWarning("ingredient.warning.number", textFields);
+            return;
+        }
+
+        // check if ingredient type is unique
+        boolean isDuplicate = ingredientTypeListView.getItems().stream().anyMatch(
+                x -> x.name.equals(inputName));
+        if (isDuplicate) {
+            System.out.println("The name of the ingredient type must be unique!");
+            recipeUtils.displayAlertInputWarning("recipe.warning.ing.duplicate", null);
             return;
         }
 
