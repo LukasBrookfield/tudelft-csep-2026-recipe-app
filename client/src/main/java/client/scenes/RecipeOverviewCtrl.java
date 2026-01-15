@@ -30,9 +30,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.pdf.PdfWriter;
@@ -40,7 +38,7 @@ import com.lowagie.text.Paragraph;
 import com.lowagie.text.Font;
 import com.lowagie.text.FontFactory;
 import java.awt.print.PrinterJob;
-import java.util.ResourceBundle;
+import java.util.List;
 import java.util.function.Predicate;
 
 import javafx.stage.Modality;
@@ -696,7 +694,7 @@ public class RecipeOverviewCtrl {
             @Override
             public String toString(Object o) {
                 if (o == null) return "";
-                return ((IngredientType) o).name;
+                return ((IngredientType) o).toString();
             }
             @Override
             public Object fromString(String s) {
@@ -708,16 +706,16 @@ public class RecipeOverviewCtrl {
         });
 
         editIngredientTypeBox.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
-            // apply the filter
-            filteredIngredientTypes.setPredicate(item -> {
-                if (newValue == null || newValue.isBlank()) return true;
-                return item.name.toLowerCase().contains(newValue.toLowerCase());
-            });
+            Platform.runLater(() -> {
+                // apply the filter
+                filteredIngredientTypes.setPredicate(item -> {
+                    if (newValue == null || newValue.isBlank()) return true;
+                    return item.name.toLowerCase().contains(newValue.toLowerCase());
+                });
 
-            // keep the dropdown visible while typing
-            if (!newValue.isBlank()) {
+                editIngredientTypeBox.getSelectionModel().clearSelection();
                 editIngredientTypeBox.show();
-            }
+            });
         });
 
         // set up "all recipes" + filtered list
@@ -1641,6 +1639,7 @@ public class RecipeOverviewCtrl {
             System.out.println("There is no ingredient selected.");
             return;
         }
+        allIngredientTypes.remove(ingredientListView.getSelectionModel().getSelectedItem().ingredientType);
         Recipe recipe = recipeListView.getSelectionModel().getSelectedItem();
         Ingredient ingredient = ingredientListView.getSelectionModel().getSelectedItem();
         ingredientListView.getItems().remove(ingredient);
@@ -1687,19 +1686,19 @@ public class RecipeOverviewCtrl {
             return;
         }
 
+        // remove duplicates in combo box
+        List<IngredientType> newList = new ArrayList<>(new HashSet<>(allIngredientTypes));
+        allIngredientTypes = FXCollections.observableList(newList);
+
+        editIngredientTypeBox.getSelectionModel().clearSelection();
         changeIngredientTypeViewEditMode(1);
         editUnitBox.getSelectionModel().select(0);
-
-        // removes previous filler ingredient types
-        allIngredientTypes.removeIf(x -> x.name.isBlank());
 
         Ingredient ingredient = ingredientListView.getSelectionModel().getSelectedItem();
         if (ingredient.ingredientType != null) {
             editIngredientTypeBox.setValue(ingredient.ingredientType);
         } else {
-            IngredientType newIngredientType = new IngredientType("", null, new ArrayList<>(), null);
-            allIngredientTypes.add(newIngredientType);
-            editIngredientTypeBox.getSelectionModel().select(newIngredientType);
+            editIngredientTypeBox.getSelectionModel().clearSelection();
         }
 
         cancelEditButton.setVisible(false);

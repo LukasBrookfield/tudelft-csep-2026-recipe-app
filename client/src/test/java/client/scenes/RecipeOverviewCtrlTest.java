@@ -92,6 +92,7 @@ public class RecipeOverviewCtrlTest {
     private ChoiceBox<String> sortChoiceBox;
     private Label recipeKcalPer100gLabel;
     private LanguageService languageService;
+    private ComboBox<IngredientType> editIngredientTypeBox;
 
     @Start
     private void start(Stage stage) throws IOException {
@@ -169,6 +170,7 @@ public class RecipeOverviewCtrlTest {
         searchStatusLabel = lookup(scene, "#searchStatusLabel");
         sortChoiceBox = lookup(scene, "#sortChoiceBox");
         recipeKcalPer100gLabel = lookup(scene, "#recipeKcalPer100gLabel");
+        editIngredientTypeBox = lookup(scene, "#editIngredientTypeBox");
     }
 
     private <T> T lookup(Scene scene, String id) {
@@ -193,7 +195,7 @@ public class RecipeOverviewCtrlTest {
 
     private void addIngredient(FxRobot robot, String ingredientType, double amount, Unit unit) {
         robot.clickOn(addIngredientButton);
-        robot.clickOn(editIngredientNameField);
+        robot.clickOn(editIngredientTypeBox);
         robot.write(ingredientType);
         robot.clickOn(nextEditIngredientButton);
         robot.interact(() -> editUnitBox.getSelectionModel().select(unit.toString()));
