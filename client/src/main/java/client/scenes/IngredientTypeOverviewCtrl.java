@@ -20,7 +20,7 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-
+import javafx.collections.ObservableList;
 import java.text.MessageFormat;
 import java.util.*;
 
@@ -39,6 +39,10 @@ public class IngredientTypeOverviewCtrl {
     private final LanguageService languages;
 
     private int usedInRecipesCount = 0;
+    private ObservableList<IngredientType> allIngredientTypes;
+
+    private Long subscribedIngredientTypeId = null;
+
 
     // Left sidebar
 
@@ -373,17 +377,16 @@ public class IngredientTypeOverviewCtrl {
      */
     @FXML
     public void onRefresh() {
-        ingredientTypeListView.getItems().setAll(server.getIngredientTypes());
-
         boolean empty = ingredientTypeListView.getItems().isEmpty();
         mainSeparator.getParent().setVisible(!empty);
 
-        if (ingredientTypeListView.getSelectionModel().getSelectedIndex() == -1) {
+        if (ingredientTypeListView.getSelectionModel().getSelectedIndex() == -1 && !empty) {
             ingredientTypeListView.getSelectionModel().select(0);
         }
 
         setLabelsAndFields();
     }
+
 
     /**
      * Changes between viewing and editing density
@@ -414,15 +417,76 @@ public class IngredientTypeOverviewCtrl {
         changeViewEditMode(false);
 
         applyTranslations();
+
+        // Backing list like RecipeOverviewCtrl
+        allIngredientTypes = FXCollections.observableArrayList();
+
+        // Initial load once
+        try {
+            List<IngredientType> fromServer = server.getIngredientTypes();
+            allIngredientTypes.setAll(fromServer);
+        } catch (Exception e) {
+            System.out.println("ERROR: Could not load ingredient types from server.");
+            e.printStackTrace();
+        }
+
+        ingredientTypeListView.setItems(allIngredientTypes);
+
+        // Subscribe to list updates (like recipes/list)
+        server.subscribeToIngredientTypeList(list -> Platform.runLater(() -> {
+            allIngredientTypes.setAll(list);
+            ingredientTypeListView.refresh();
+            onRefresh();
+        }));
+
+        // Initial UI refresh
         onRefresh();
 
+        // Selection listener: refresh UI + subscribe to selected ingredient type updates
         ingredientTypeListView.getSelectionModel().selectedItemProperty().addListener(
-                (observable,
-                 oldIngredientType, newIngredientType) -> {
+                (obs, oldIt, newIt) -> {
                     onRefresh();
+                    if (newIt == null) return;
+
+                    subscribeToIngredientTypeIfNeeded(newIt.id);
                 }
         );
+
+        // If something is selected at startup, subscribe to it
+        IngredientType selected = ingredientTypeListView.getSelectionModel().getSelectedItem();
+        if (selected != null) {
+            subscribeToIngredientTypeIfNeeded(selected.id);
+        }
     }
+
+    /**
+     * Helper to subscribe to a specific IngredientType object and update the UI
+     * @param id The id of the IngredientType object
+     */
+    private void subscribeToIngredientTypeIfNeeded(long id) {
+        if (subscribedIngredientTypeId != null && subscribedIngredientTypeId == id) return;
+        subscribedIngredientTypeId = id;
+
+        server.subscribeToIngredientType(id, updated -> Platform.runLater(() -> {
+
+            // Replace updated item inside allIngredientTypes so list stays correct
+            for (int i = 0; i < allIngredientTypes.size(); i++) {
+                if (allIngredientTypes.get(i).id == updated.id) {
+                    allIngredientTypes.set(i, updated);
+                    break;
+                }
+            }
+
+            // If the user is still viewing the same one, refresh right pane
+            IngredientType current = ingredientTypeListView.getSelectionModel().getSelectedItem();
+            if (current != null && current.id == updated.id) {
+                setLabelsAndFields();
+            }
+
+            ingredientTypeListView.refresh();
+        }));
+    }
+
 
     // Left sidebar
 
@@ -439,6 +503,7 @@ public class IngredientTypeOverviewCtrl {
 
         if (usedInRecipes.isEmpty()) {
             server.deleteIngredientType(ingredientType.id);
+            allIngredientTypes.removeIf(it -> it.id == ingredientType.id);
             onRefresh();
             return;
         }
@@ -489,6 +554,7 @@ public class IngredientTypeOverviewCtrl {
                 }
             }
             server.deleteIngredientType(ingredientType.id);
+            allIngredientTypes.removeIf(it -> it.id == ingredientType.id);
             onRefresh();
         }
     }
@@ -502,19 +568,19 @@ public class IngredientTypeOverviewCtrl {
         IngredientType ingredientType = new IngredientType(
                 "New ingredient", null, new ArrayList<>(), null);
 
-        System.out.println(new ObjectMapper().writeValueAsString(ingredientType));
+        IngredientType created = server.addIngredientType(ingredientType);
 
-        server.addIngredientType(ingredientType);
+        allIngredientTypes.add(created);
+        ingredientTypeListView.getSelectionModel().select(created);
+
         onRefresh();
-        ingredientTypeListView.getSelectionModel().select(
-                ingredientTypeListView.getItems().size() - 1
-        );
 
         newIngredientType = true;
         onEditIngredientTypeButton();
         nameLabel.setText("-");
         editDetailsButton.requestFocus();
     }
+
 
     // Top right
 
@@ -550,8 +616,12 @@ public class IngredientTypeOverviewCtrl {
     private void onCancelEditButton() {
         if (newIngredientType) {
             IngredientType ingredientType = ingredientTypeListView.getSelectionModel().getSelectedItem();
-            server.deleteIngredientType(ingredientType.id);
+            if (ingredientType != null) {
+                server.deleteIngredientType(ingredientType.id);
+                allIngredientTypes.removeIf(it -> it.id == ingredientType.id);
+            }
         }
+
         onRefresh();
         changeViewEditMode(false);
         newIngredientType = false;
