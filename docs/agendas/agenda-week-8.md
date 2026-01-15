@@ -42,30 +42,31 @@
 **B) “Extra touch” for features (7 min) - (inform + decide)**
 
 - For each topic, comment on whether you agree or disagree that the feature is done
+
 - Extra touch ideas:  
-    2. Automated Change Synchronization - (done)
+    1. Automated Change Synchronization - (done)
 
         “Extra touch” - (missing) - ideas?  
         Teammate 4 was supposed to think about it.
 
-    3. Nutritional Value - (done)
+    2. Nutritional Value - (done)
 
         Missing: list all ingredients ordered by name + scaling + show kcal per 100g
 
         “Extra touch” - (missing) - ideas?  
         Lukas was supposed to think about it.
 
-    4. Searching for Recipes - (done)
+    3. Searching for Recipes - (done)
 
         “Extra touch” - filtering a search  
         Teammate 2 was supposed to think about it.
 
-    5. Shopping List - (done)
+    4. Shopping List - (done)
 
         “Extra touch” - (missing) - ideas?  
         Teammate 1 was supposed to think about it.
 
-    6. Live Language Switch - (missing)
+    5. Live Language Switch - (missing)
 
         Our language switch does not currently filter recipes
 
