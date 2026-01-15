@@ -11,10 +11,12 @@ import commons.Ingredient;
 import commons.IngredientType;
 import commons.Nutrition;
 import commons.Recipe;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -160,6 +162,8 @@ public class IngredientTypeOverviewCtrl {
 
     @FXML
     private Label usedInRecipesLabel;
+
+    private List<TextInputControl> activeFieldsToClear = new ArrayList<>();
 
     private void setTooltip(Control c, String key){
         ResourceBundle b = languages.bundle();
@@ -408,6 +412,7 @@ public class IngredientTypeOverviewCtrl {
         changeDensityViewEditMode(false);
         changeNutritionViewEditMode(false);
         changeViewEditMode(false);
+
         applyTranslations();
         onRefresh();
 
@@ -646,13 +651,27 @@ public class IngredientTypeOverviewCtrl {
      */
     @FXML
     private void onDoneEditDetailsButton() {
-        if (editNameField.getText().isBlank()) {
+        List<TextInputControl> textFields = new ArrayList<>();
+        textFields.add(editNameField);
+        String inputName = null;
+        if(!editNameField.getText().isEmpty()) {
+            inputName = editNameField.getText().trim();
+        }
+
+        if (inputName == null || inputName.isBlank()) {
             System.out.println("The ingredient type needs a name.");
+            recipeUtils.displayAlertInputWarning("ingredient.warning.empty.name", textFields);
+
             return;
         }
 
-        nameLabel.setText(editNameField.getText());
+        if (Character.isDigit(inputName.trim().charAt(0))) {
+            System.out.println("The ingredient type name cannot start with a digit.");
+            recipeUtils.displayAlertInputWarning("ingredient.warning.number", textFields);
+            return;
+        }
 
+        nameLabel.setText(inputName.trim());
         changeDetailsViewEditMode(false);
     }
 
@@ -677,6 +696,9 @@ public class IngredientTypeOverviewCtrl {
      */
     @FXML
     private void onDoneEditDensityButton() {
+        List<TextInputControl> textFields = new ArrayList<>();
+        textFields.add(editDensityField);
+        editDensityField.setText(editDensityField.getText().trim());
         if (editDensityField.getText().isBlank()) {
             densityLabel.setText("");
             changeDensityViewEditMode(false);
@@ -687,6 +709,7 @@ public class IngredientTypeOverviewCtrl {
             density = Double.parseDouble(editDensityField.getText());
         } catch (NumberFormatException e) {
             System.out.println("Density must be a double");
+            recipeUtils.displayAlertInputWarning("ingredient.warning.double.density", textFields);
             return;
         }
         densityLabel.setText(String.valueOf(density));
@@ -725,22 +748,44 @@ public class IngredientTypeOverviewCtrl {
      */
     @FXML
     private void onDoneEditNutritionButton() {
-        if (!proteinTextField.getText().isEmpty()) {
-            proteinLabel.setText(proteinTextField.getText() + "g");
-        } else {
-            proteinLabel.setText("-");
-        }
-        if (!fatTextField.getText().isEmpty()) {
-            fatLabel.setText(fatTextField.getText() + "g");
-        } else {
-            fatLabel.setText("-");
-        }
-        if (!carbsTextField.getText().isEmpty()) {
-            carbsLabel.setText(carbsTextField.getText() + "g");
-        } else {
-            carbsLabel.setText("-");
+        List<TextInputControl> textFields = new ArrayList<>();
+
+        String pText = proteinTextField.getText().trim();
+        if (!pText.isEmpty()) {
+            try {
+                if (Double.parseDouble(pText) < 0) throw new NumberFormatException();
+            } catch (NumberFormatException e) {
+                textFields.add(proteinTextField);
+            }
         }
 
+        String fText = fatTextField.getText().trim();
+        if (!fText.isEmpty()) {
+            try {
+                if (Double.parseDouble(fText) < 0) throw new NumberFormatException();
+            } catch (NumberFormatException e) {
+                textFields.add(fatTextField);
+            }
+        }
+
+        String cText = carbsTextField.getText().trim();
+        if (!cText.isEmpty()) {
+            try {
+                if (Double.parseDouble(cText) < 0) throw new NumberFormatException();
+            } catch (NumberFormatException e) {
+                textFields.add(carbsTextField);
+            }
+        }
+
+        if (!textFields.isEmpty()) {
+            recipeUtils.displayAlertInputWarning("ingredient.warning.nutrition", textFields);
+            System.out.println("Invalid nutritional input detected in specific fields.");
+            return;
+        }
+
+        proteinLabel.setText(pText.isEmpty() ? "-" : pText + "g");
+        fatLabel.setText(fText.isEmpty() ? "-" : fText + "g");
+        carbsLabel.setText(cText.isEmpty() ? "-" : cText + "g");
         kcalLabel.setText("-");
         changeNutritionViewEditMode(false);
     }
