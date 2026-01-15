@@ -36,6 +36,9 @@ public class ShoppingListCtrl {
     private FilteredList<IngredientType> filteredIngredientTypes;
     private SortedList<IngredientType> sortedIngredientTypes;
 
+    private ShoppingListUtils shoppingListUtils;
+
+
     @FXML
     private ListView<ShoppingListItem> ingredientListView;
 
@@ -91,17 +94,21 @@ public class ShoppingListCtrl {
     @Inject
     public ShoppingListCtrl(ServerUtility server,
                             UserConfig user,
-                            MainCtrl mainCtrl, LanguageService languages) {
+                            MainCtrl mainCtrl,
+                            LanguageService languages,
+                            ShoppingListUtils shoppingListUtils) {
         this.server = server;
         this.user = user;
         this.mainCtrl = mainCtrl;
         this.languages = languages;
+        this.shoppingListUtils = shoppingListUtils;
     }
 
     public ShoppingListCtrl(ServerUtility server,
                             UserConfig user,
-                            MainCtrl mainCtrl) {
-        this(server, user, mainCtrl, LanguageService.defaultService());
+                            MainCtrl mainCtrl,
+                            ShoppingListUtils shoppingListUtils) {
+        this(server, user, mainCtrl, LanguageService.defaultService(), shoppingListUtils);
     }
 
     private void setTooltip(Control c, String key) {
@@ -254,7 +261,7 @@ public class ShoppingListCtrl {
                     setText(null);
                     setGraphic(null);
                 } else {
-                    setText(ShoppingListService.shoppingListItemString(item));
+                    setText(shoppingListUtils.shoppingListItemString(item));
                 }
             }
         });
@@ -361,6 +368,8 @@ public class ShoppingListCtrl {
      */
     @FXML
     private void onCancelEditIngredientButton() {
+        ingredientListView.getItems().remove(
+                ingredientListView.getSelectionModel().getSelectedIndex());
         changeIngredientViewEditMode(false);
         editIngredientTypeBox.hide();
         onRefresh();
@@ -372,7 +381,7 @@ public class ShoppingListCtrl {
      */
     @FXML
     private void onDoneEditIngredientButton() {
-        if(!ShoppingListService.ingredientValidation(editIngredientTypeBox.getValue().name,
+        if(!shoppingListUtils.ingredientValidation(editIngredientTypeBox.getValue().name,
                 editIngredientAmountField.getText(),
                 editUnitBox.getValue())){
             return;
@@ -384,7 +393,7 @@ public class ShoppingListCtrl {
         // set ingredient type
         ingredient.ingredientType = editIngredientTypeBox.getValue();
 
-        ShoppingListService.applyEditsToIngredient(ingredient,
+        shoppingListUtils.applyEditsToIngredient(ingredient,
                 editIngredientTypeBox.getValue().name,
                 editIngredientAmountField.getText(),
                 editUnitBox.getValue());

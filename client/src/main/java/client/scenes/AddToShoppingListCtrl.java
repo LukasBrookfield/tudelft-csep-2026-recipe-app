@@ -30,6 +30,7 @@ public class AddToShoppingListCtrl {
     private final UserConfig user;
     private final MainCtrl controller;
     private Recipe recipe;
+    private ShoppingListUtils shoppingListUtils;
 
     private ObservableList<IngredientType> allIngredientTypes;
     private FilteredList<IngredientType> filteredIngredientTypes;
@@ -127,11 +128,14 @@ public class AddToShoppingListCtrl {
     @Inject
     AddToShoppingListCtrl(ServerUtils server,
                           UserConfig user,
-                          MainCtrl controller, LanguageService languages) {
+                          MainCtrl controller,
+                          LanguageService languages,
+                          ShoppingListUtils shoppingListUtils) {
         this.server = server;
         this.user = user;
         this.controller = controller;
         this.languages = languages;
+        this.shoppingListUtils = shoppingListUtils;
     }
 
     /**
@@ -168,7 +172,7 @@ public class AddToShoppingListCtrl {
         newIngredientType = false;
         this.recipe = recipe;
         if(recipe != null && recipe.ingredients != null){
-            ShoppingListService.addIngredientsToListView(recipe, ingredientListView.getItems(), scale);
+            shoppingListUtils.addIngredientsToListView(recipe, ingredientListView.getItems(), scale);
         }
         if(recipe != null && recipe.name != null){
             label.setText("Add to Shopping List - " + recipe.name);
@@ -258,7 +262,7 @@ public class AddToShoppingListCtrl {
                     setText(null);
                     setGraphic(null);
                 } else {
-                    setText(ShoppingListService.shoppingListItemString(item));
+                    setText(shoppingListUtils.shoppingListItemString(item));
                 }
             }
         });
@@ -379,7 +383,7 @@ public class AddToShoppingListCtrl {
     @FXML
     private void onDoneEditIngredientButton() {
         newIngredientType = false;
-        if(!ShoppingListService.ingredientValidation(editIngredientTypeBox.getValue().name,
+        if(!shoppingListUtils.ingredientValidation(editIngredientTypeBox.getValue().name,
                 editIngredientAmountField.getText(),
                 editUnitBox.getValue())){
             return;
@@ -391,7 +395,7 @@ public class AddToShoppingListCtrl {
         // Set Ingredient Type
         ingredient.ingredientType = editIngredientTypeBox.getValue();
 
-        ShoppingListService.applyEditsToIngredient(ingredient,
+        shoppingListUtils.applyEditsToIngredient(ingredient,
                 editIngredientTypeBox.getValue().name,
                 editIngredientAmountField.getText(),
                 editUnitBox.getValue());
@@ -457,7 +461,7 @@ public class AddToShoppingListCtrl {
      */
     @FXML
     private void onConfirmationButton(){
-        ShoppingListService.confirmAddingIngredients(ingredientListView.getItems(), recipe, user);
+        shoppingListUtils.confirmAddingIngredients(ingredientListView.getItems(), recipe, user);
         onExitButton();
     }
 }
