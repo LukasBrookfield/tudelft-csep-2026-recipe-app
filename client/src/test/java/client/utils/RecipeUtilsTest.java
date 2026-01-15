@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
-class TestRecipeUtils {
+class RecipeUtilsTest {
     private RecipeUtils recipeUtils;
     private Nutrition nutrition;
     private IngredientType cucumber;

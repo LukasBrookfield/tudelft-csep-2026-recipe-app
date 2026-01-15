@@ -7,14 +7,14 @@ import commons.Unit;
 
 import java.util.List;
 
-public class ShoppingListService {
+public class ShoppingListUtils {
 
     /**
      * Creates a deep copy of ingredients in recipe and saves them to provided list
      * @param recipe The recipe
      * @param list The list
      */
-    public static void addIngredientsToListView(Recipe recipe, List<ShoppingListItem> list, double scale) {
+    public void addIngredientsToListView(Recipe recipe, List<ShoppingListItem> list, double scale) {
         list.addAll(
                 recipe.ingredients.stream()
                         .map(Ingredient::copy)
@@ -34,7 +34,7 @@ public class ShoppingListService {
      * @param unit The unit
      * @return true if valid and false if invalid
      */
-    public static boolean ingredientValidation(String name, String amount, String unit){
+    public boolean ingredientValidation(String name, String amount, String unit){
         if(name.isEmpty()){
             System.out.println("A name is required.");
             return false;
@@ -69,7 +69,7 @@ public class ShoppingListService {
      * @param amount The amount as String
      * @param unit The unit as String
      */
-    public static void applyEditsToIngredient(Ingredient ingredient, String name, String amount, String unit){
+    public void applyEditsToIngredient(Ingredient ingredient, String name, String amount, String unit){
         ingredient.ingredientType.name = name;
         if (!amount.isEmpty()) {
             ingredient.amount = Double.parseDouble(amount);
@@ -89,7 +89,7 @@ public class ShoppingListService {
      * @param recipe The recipe from which ingredients comes from
      * @param user The user
      */
-    public static void confirmAddingIngredients(List<ShoppingListItem> ingredientListView, Recipe recipe, UserConfig user){
+    public void confirmAddingIngredients(List<ShoppingListItem> ingredientListView, Recipe recipe, UserConfig user){
         ingredientListView.forEach(ingredient -> {
             ingredient.setRecipeName(recipe.name);
             user.addShoppingListItem(ingredient);
@@ -97,7 +97,7 @@ public class ShoppingListService {
         user.saveUser();
     }
 
-    public static String shoppingListItemString(ShoppingListItem item){
+    public String shoppingListItemString(ShoppingListItem item){
         IngredientScaling ingredientScaling  = new IngredientScaling();
         if(item.getRecipeName() == null){
             return ingredientScaling.format(item.getIngredient(), 1.0);
