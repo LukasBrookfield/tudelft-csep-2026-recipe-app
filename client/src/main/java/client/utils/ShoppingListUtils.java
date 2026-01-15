@@ -3,11 +3,9 @@ package client.utils;
 import com.lowagie.text.*;
 import com.lowagie.text.Font;
 import com.lowagie.text.pdf.PdfWriter;
-import commons.Ingredient;
-import commons.Recipe;
-import commons.ShoppingListItem;
-import commons.Unit;
+import commons.*;
 import jakarta.inject.Inject;
+import javafx.application.Platform;
 import javafx.stage.FileChooser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.printing.PDFPageable;
@@ -74,11 +72,13 @@ public class ShoppingListUtils {
             return false;
         }
 
-        try{
-            Double.parseDouble(amount);
-        }catch(Exception e){
-            System.out.println("Invalid amount");
-            return false;
+        if(!unit.equals("TO_TASTE")){
+            try{
+                Double.parseDouble(amount);
+            }catch(Exception e){
+                System.out.println("Invalid amount");
+                return false;
+            }
         }
 
         return true;
