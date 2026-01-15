@@ -10,6 +10,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import client.utils.ServerUtils;
+import javafx.stage.Stage;
 import commons.*;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -22,8 +23,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.FontWeight;
 import javafx.stage.FileChooser;
@@ -422,7 +421,7 @@ public class RecipeOverviewCtrl {
         doneEditIngredientButton.setText(b.getString("common.btn.done"));
         cancelEditStepButton.setText(b.getString("common.btn.cancel"));
         nextEditIngredientButton.setText(b.getString("common.btn.next"));
-        onBackEditIngredientButton.setText(b.getString("common.btn.back"));
+        backEditIngredientButton.setText(b.getString("common.btn.back"));
         doneEditStepButton.setText(b.getString("common.btn.done"));
         cancelEditButton.setText(b.getString("common.btn.cancel"));
         doneEditButton.setText(b.getString("common.btn.done"));

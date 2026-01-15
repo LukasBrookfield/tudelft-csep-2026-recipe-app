@@ -90,7 +90,7 @@ public class ShoppingListCtrl {
 
     @FXML
     private Label shoppingListHeaderLabel;
-
+    
     @FXML
     private Button printButton;
 
