@@ -18,6 +18,8 @@ import javafx.scene.layout.StackPane;
 import javafx.util.StringConverter;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class ShoppingListCtrl {
@@ -190,6 +192,7 @@ public class ShoppingListCtrl {
         } else {
             editIngredientTypeBox.hide();
         }
+        editIngredientTypeBox.getSelectionModel().clearSelection();
         editIngredientTypeContainer.setVisible(!value);
         editIngredientBox.setVisible(value);
         editIngredientTypeContainer.setManaged(value);
@@ -215,16 +218,16 @@ public class ShoppingListCtrl {
         editIngredientTypeBox.setItems(sortedIngredientTypes);
 
         editIngredientTypeBox.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
-            // apply the filter
-            filteredIngredientTypes.setPredicate(item -> {
-                if (newValue == null || newValue.isBlank()) return true;
-                return item.name.toLowerCase().contains(newValue.toLowerCase());
-            });
+            Platform.runLater(() -> {
+                // apply the filter
+                filteredIngredientTypes.setPredicate(item -> {
+                    if (newValue == null || newValue.isBlank()) return true;
+                    return item.name.toLowerCase().contains(newValue.toLowerCase());
+                });
 
-            // keep the dropdown visible while typing
-            if (!newValue.isBlank()) {
+                editIngredientTypeBox.getSelectionModel().clearSelection();
                 editIngredientTypeBox.show();
-            }
+            });
         });
 
         changeIngredientViewEditMode(false);
@@ -261,7 +264,7 @@ public class ShoppingListCtrl {
             @Override
             public String toString(Object o) {
                 if (o == null) return "";
-                return ((IngredientType) o).name;
+                return ((IngredientType) o).toString();
             }
             @Override
             public Object fromString(String s) {
@@ -295,6 +298,8 @@ public class ShoppingListCtrl {
             System.out.println("There is no ingredient selected.");
             return;
         }
+        allIngredientTypes.remove(
+                ingredientListView.getSelectionModel().getSelectedItem().getIngredient().ingredientType);
         int index = ingredientListView.getSelectionModel().getSelectedIndex();
         ingredientListView.getItems().remove(index);
 
@@ -324,17 +329,12 @@ public class ShoppingListCtrl {
      */
     @FXML
     private void onEditIngredientButton() {
-        // removes previous filler ingredient types
-        allIngredientTypes.removeIf(x -> x.name.isBlank());
-
         //sets the values to the ingredient type choice box
         ShoppingListItem item = ingredientListView.getSelectionModel().getSelectedItem();
         if (item.getIngredient().ingredientType != null) {
             editIngredientTypeBox.setValue(item.getIngredient().ingredientType);
         } else {
-            IngredientType newIngredientType = new IngredientType("", null, new ArrayList<>(), null);
-            allIngredientTypes.add(newIngredientType);
-            editIngredientTypeBox.getSelectionModel().select(newIngredientType);
+            editIngredientTypeBox.getSelectionModel().clearSelection();
         }
 
         if(ingredientListView.getItems().isEmpty()){
@@ -345,6 +345,11 @@ public class ShoppingListCtrl {
             System.out.println("There is no ingredient selected.");
             return;
         }
+
+        // remove duplicates in combo box
+        List<IngredientType> newList = new ArrayList<>(new HashSet<>(allIngredientTypes));
+        allIngredientTypes = FXCollections.observableList(newList);
+
         changeIngredientViewEditMode(true);
 
         // Force focus into the IngredientType name box
