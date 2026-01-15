@@ -21,6 +21,7 @@
 - Announcements by the team (1-2 min)
     - Has everybody passed the buddycheck assignment? Are there any concerns about the feedback? Was it appropriate?
     - Has anybody experienced issues regarding the gitlab outage?
+    - Make sure to check the implemented features in the checklist.
 - Announcements by the TA (3 min)
 - Presentation of the current app to TA (4 min)
     - Show our current app from the main branch. Highlight progress compared to last week.
@@ -28,9 +29,8 @@
     - Add warnings and client-side validation for ingredient amount. If a user types four instead of 4, they should receive a message like: "Invalid amount: Provide the amount as an integer!"
     - Should we add data propagation via websockets for the shopping list and favourite recipes as well? (it is an extra feature related to 4.2)
     - Does everybody agree with the current database structure?
-    - Should we change the .gitlab-ci.yml config file to be able to automatically start the server when testing the client? How do we test JavaFX?
-    - How are we going to implement servings?
-    - Should we start implementing the live language switch in week 7 (The Recipe class needs a language attribute so there will be changes across the entire app)? If so, how do we persist a language selection through a restart? Do we make a separate entity?
+    - How are we going to implement serving scaling? What about ingredients that don't have an amount?
+    - Should we start implementing the live language switch in week 7 (The Recipe class needs a language attribute so there will be changes across the entire app)? If so, how do we store the list of languages and the list of flags? Do we make a separate entity?
 - Summarize action points: who, what, when? (2 min)
 - Feedback round: what went well and what can be improved next time? (2 min)
 - Question round: does anyone have anything to add before the meeting closes? (2 min)

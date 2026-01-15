@@ -41,6 +41,14 @@ public class IngredientType {
 
     private IngredientType() {}  // for object mapper
 
+    /**
+     * Copy an ingredientType
+     * @return a copy of ingredientType
+     */
+    public IngredientType copy() {
+        return new IngredientType(name, nutrition, ingredients, density);
+    }
+
     @Override
     public boolean equals(Object obj) {
         return EqualsBuilder.reflectionEquals(this, obj,
