@@ -58,6 +58,7 @@ public class RecipeOverviewCtrl {
     // Constants
     private static final String EMPTY_STAR = "☆";
     private static final String FULL_STAR = "★";
+    private static final String UNIT_PLACEHOLDER = "__SELECT_UNIT__";
 
     private final ServerUtility server;
 
@@ -321,6 +322,20 @@ public class RecipeOverviewCtrl {
     public void applyTranslations() {
 
         ResourceBundle b = languages.bundle();
+        editUnitBox.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(String value) {
+                if (value == null) return "";
+                if (UNIT_PLACEHOLDER.equals(value)) return b.getString("recipe.select.unit");
+                return value;
+            }
+
+            @Override
+            public String fromString(String s) {
+                return s;
+            }
+        });
+        editUnitBox.setValue(editUnitBox.getValue());
 
         addToShoppingListButton.setText(b.getString("recipe.btn.addToShoppingList"));
         downloadRecipeButton.setText(b.getString("recipe.btn.download"));
@@ -665,8 +680,11 @@ public class RecipeOverviewCtrl {
         applyTranslations();
         onRefresh();
 
-        editUnitBox.getItems().addAll("Select a unit", "G", "ML", "TBSP", "TSP", "PINCH",
-                "HANDFUL", "TO_TASTE");
+        editUnitBox.getItems().setAll(
+                UNIT_PLACEHOLDER, "G", "ML", "TBSP", "TSP", "PINCH", "HANDFUL", "TO_TASTE"
+        );
+        editUnitBox.getSelectionModel().select(0);
+
 
         // set up "all recipes" + filtered list
         allRecipes = FXCollections.observableArrayList();
@@ -1586,7 +1604,7 @@ public class RecipeOverviewCtrl {
         // Clear the placeholder so the user doesn't have to delete "New ingredient"
         editIngredientNameField.clear();
         editIngredientAmountField.clear();
-        editUnitBox.setValue("");
+        editUnitBox.getSelectionModel().select(0);
 
         editIngredientNameField.requestFocus(); // Put the cursor in the name field
     }
@@ -1711,14 +1729,13 @@ public class RecipeOverviewCtrl {
         // Prepare the list of fields to clear if validation fails
         List<TextInputControl> textFields = new ArrayList<>();
         textFields.add(editIngredientAmountField);
-
-        if (editUnitBox.getValue() == null || editUnitBox.getValue().equals("Select a unit")) {
+        String selectedUnit = editUnitBox.getValue();
+        if (selectedUnit == null || UNIT_PLACEHOLDER.equals(selectedUnit)) {
             recipeUtils.displayAlertInputWarning("recipe.warning.ing.unit", null);
             System.out.println("Select a unit.");
             return;
         }
 
-        String selectedUnit = editUnitBox.getValue();
         String amountText = editIngredientAmountField.getText().trim();
 
         if (selectedUnit.equals("TO_TASTE") && !amountText.isEmpty()) {
