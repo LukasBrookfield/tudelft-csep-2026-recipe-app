@@ -1477,6 +1477,14 @@ public class RecipeOverviewCtrl {
             return;
         }
 
+        if(recipeTitleField.getText().length()>100) {
+            System.out.println("The recipe name exceeds 100 characters!");
+            List<TextInputControl> textFields = new ArrayList<>();
+            textFields.add(recipeTitleField);
+            recipeUtils.displayAlertInputWarning("recipe.warning.exceeds.limit", textFields);
+            return;
+        }
+
         int index = recipeListView.getSelectionModel().getSelectedIndex();
         Recipe recipe = recipeListView.getItems().get(index);
 
@@ -1535,6 +1543,12 @@ public class RecipeOverviewCtrl {
         if (editServingsField.getText().isBlank()) {
             System.out.println("Enter a valid amount.");
             recipeUtils.displayAlertInputWarning("recipe.warning.servings.empty.amount", textFields);
+            return;
+        }
+        // Check if fields exceeds 8 characters
+        if(editServingsField.getText().length()>8) {
+            System.out.println("The servings amount exceeds 8 characters!");
+            recipeUtils.displayAlertInputWarning("recipe.warning.serving.exceeds.limit", textFields);
             return;
         }
         try {
@@ -1684,6 +1698,13 @@ public class RecipeOverviewCtrl {
             System.out.println("The ingredient type needs a name.");
             return;
         }
+        if(editIngredientNameField.getText().length()>50) {
+            System.out.println("The ingredient type name exceeds 50 characters!");
+            List<TextInputControl> textFields = new ArrayList<>();
+            textFields.add(editIngredientNameField);
+            recipeUtils.displayAlertInputWarning("recipe.warning.ingredient.exceeds.limit", textFields);
+            return;
+        }
 
         // Check if the name field is empty first to avoid an IndexOutOfBoundsException
         if (Character.isDigit(editIngredientNameField.getText().charAt(0))) {
@@ -1727,8 +1748,6 @@ public class RecipeOverviewCtrl {
     @FXML
     private void onDoneEditIngredientButton() throws JsonProcessingException {
         // Prepare the list of fields to clear if validation fails
-        List<TextInputControl> textFields = new ArrayList<>();
-        textFields.add(editIngredientAmountField);
         String selectedUnit = editUnitBox.getValue();
         if (selectedUnit == null || UNIT_PLACEHOLDER.equals(selectedUnit)) {
             recipeUtils.displayAlertInputWarning("recipe.warning.ing.unit", null);
@@ -1738,6 +1757,9 @@ public class RecipeOverviewCtrl {
 
         String amountText = editIngredientAmountField.getText().trim();
 
+        List<TextInputControl> textFields = new ArrayList<>();
+        textFields.add(editIngredientAmountField);
+
         if (selectedUnit.equals("TO_TASTE") && !amountText.isEmpty()) {
             recipeUtils.displayAlertInputWarning("recipe.warning.ing.TO_TASTE", textFields);
             System.out.println("This unit cannot have an amount.");
@@ -1745,9 +1767,14 @@ public class RecipeOverviewCtrl {
         }
 
         if (!selectedUnit.equals("TO_TASTE") && amountText.isEmpty()) {
-            //showWarning("This unit requires an amount.", textFields);
             recipeUtils.displayAlertInputWarning("recipe.warning.ing.required", textFields);
             System.out.println("This unit needs an amount.");
+            return;
+        }
+
+        if(amountText.length()>8){
+            System.out.println("Amount exceeds the limit!");
+            recipeUtils.displayAlertInputWarning("recipe.warning.ing.exceed.limit", textFields);
             return;
         }
 
@@ -1892,6 +1919,13 @@ public class RecipeOverviewCtrl {
             System.out.println("The step cannot be empty.");
 
             return;
+        }
+        // Check if the step exceeds 250 characters
+        if(editStepField.getText().length()>250){
+            List<TextInputControl> textFields = new ArrayList<>();
+            textFields.add(editStepField);
+            recipeUtils.displayAlertInputWarning("recipe.warning.step.exceed.limit", textFields);
+            System.out.println("The step exceeds 250 characters!");
         }
         int index = preparationStepListView.getSelectionModel().getSelectedIndex();
         preparationStepListView.getItems().set(index, editStepField.getText());
