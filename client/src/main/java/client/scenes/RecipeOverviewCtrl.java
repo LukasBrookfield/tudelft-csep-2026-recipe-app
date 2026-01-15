@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 
+import client.utils.ServerUtils;
 import commons.*;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -19,6 +20,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
 
@@ -579,10 +582,10 @@ public class RecipeOverviewCtrl {
 
             if (user.isFavouriteRecipe(recipe)) {
                 starRecipeButton.setText(FULL_STAR);
-//                starTooltip.setText("Remove recipe from favorites");
+                starTooltip.setText("Remove recipe from favorites");
             } else {
                 starRecipeButton.setText(EMPTY_STAR);
-//                starTooltip.setText("Add recipe to favorites");
+                starTooltip.setText("Add recipe to favorites");
             }
             refreshStartTooltip();
         }
@@ -648,7 +651,7 @@ public class RecipeOverviewCtrl {
         recipeTitleField.setVisible(false);
         applyTranslations();
         onRefresh();
-        
+
         sceneBox.getItems().addAll("Home", "Recipe overview", "Ingredient overview",
                 "Shopping list");
         editUnitBox.getItems().addAll("Select a unit", "G", "KG", "ML", "L", "TBSP", "TSP", "PINCH",
@@ -1409,8 +1412,21 @@ public class RecipeOverviewCtrl {
      */
     @FXML
     private void onDoneEditButton() throws JsonProcessingException {
+        // Check if the name is blank
+        recipeTitleField.setText(recipeTitleField.getText().trim());
         if (recipeTitleField.getText().isBlank()) {
             System.out.println("The recipe needs a name");
+            List<TextInputControl> textFields = new ArrayList<>();
+            textFields.add(recipeTitleField);
+            recipeUtils.displayAlertInputWarning("recipe.warning.empty.name", null);
+            return;
+        }
+        // Check if the name starts with a digit
+        if (Character.isDigit(recipeTitleField.getText().charAt(0))) {
+            System.out.println("The recipe name cannot start with a digit");
+            List<TextInputControl> textFields = new ArrayList<>();
+            textFields.add(recipeTitleField);
+            recipeUtils.displayAlertInputWarning("recipe.warning.start.with.number", textFields);
             return;
         }
 
@@ -1466,14 +1482,23 @@ public class RecipeOverviewCtrl {
 
     @FXML
     private void onDoneEditDetailsButton() {
+        List<TextInputControl> textFields = new ArrayList<>();
+        editServingsField.setText(editServingsField.getText().trim());
+        textFields.add(editServingsField);
         if (editServingsField.getText().isBlank()) {
             System.out.println("Enter a valid amount.");
+            recipeUtils.displayAlertInputWarning("recipe.warning.servings.empty.amount", textFields);
             return;
         }
-        if (Integer.parseInt(editServingsField.getText()) <= 0) {
-            System.out.println("The amount of servings needs to " +
-                    "be a positive integer.");
-            return;
+        try {
+            if (Integer.parseInt(editServingsField.getText()) <= 0) {
+                System.out.println("The amount of servings needs to " +
+                        "be a positive integer.");
+                recipeUtils.displayAlertInputWarning("recipe.warning.servings.negative.amount", textFields);
+                return;
+            }
+        } catch (NumberFormatException e) {
+            recipeUtils.displayAlertInputWarning("recipe.warning.servings.non.integer", textFields);
         }
 
         try {
@@ -1483,6 +1508,7 @@ public class RecipeOverviewCtrl {
             scaleLabel.setText(scaleFactorField.getText());
         } catch (NumberFormatException e) {
             System.out.println("Enter a valid number.");
+            recipeUtils.displayAlertInputWarning("recipe.warning.servings.non.integer", textFields);
             return;
         }
 
@@ -1506,6 +1532,7 @@ public class RecipeOverviewCtrl {
             System.out.println("There is no ingredient selected.");
             return;
         }
+        Recipe recipe = recipeListView.getSelectionModel().getSelectedItem();
         Ingredient ingredient = ingredientListView.getSelectionModel().getSelectedItem();
         ingredientListView.getItems().remove(ingredient);
     }
@@ -1603,8 +1630,20 @@ public class RecipeOverviewCtrl {
      */
     @FXML
     private void onNextEditIngredientButton() {
+        editIngredientNameField.setText(editIngredientNameField.getText().trim());
         if (editIngredientNameField.getText().isEmpty()) {
+            recipeUtils.displayAlertInputWarning("recipe.warning.ing.empty", null);
             System.out.println("The ingredient type needs a name.");
+            return;
+        }
+
+        // Check if the name field is empty first to avoid an IndexOutOfBoundsException
+        if (Character.isDigit(editIngredientNameField.getText().charAt(0))) {
+
+            List<TextInputControl> textFields = new ArrayList<>();
+            textFields.add(editIngredientNameField);
+
+            recipeUtils.displayAlertInputWarning("recipe.warning.ing.number", textFields);
             return;
         }
 
@@ -1639,26 +1678,52 @@ public class RecipeOverviewCtrl {
      */
     @FXML
     private void onDoneEditIngredientButton() throws JsonProcessingException {
-        if (editUnitBox.getValue().equals("Select a unit")) {
+        // Prepare the list of fields to clear if validation fails
+        List<TextInputControl> textFields = new ArrayList<>();
+        textFields.add(editIngredientAmountField);
+
+        if (editUnitBox.getValue() == null || editUnitBox.getValue().equals("Select a unit")) {
+            recipeUtils.displayAlertInputWarning("recipe.warning.ing.unit", null);
             System.out.println("Select a unit.");
             return;
         }
-        if (!editUnitBox.getValue().equals("TO_TASTE")
-                && editIngredientAmountField.getText().isEmpty()) {
+
+        String selectedUnit = editUnitBox.getValue();
+        String amountText = editIngredientAmountField.getText().trim();
+
+        if (selectedUnit.equals("TO_TASTE") && !amountText.isEmpty()) {
+            recipeUtils.displayAlertInputWarning("recipe.warning.ing.TO_TASTE", textFields);
+            System.out.println("This unit cannot have an amount.");
+            return;
+        }
+
+        if (!selectedUnit.equals("TO_TASTE") && amountText.isEmpty()) {
+            //showWarning("This unit requires an amount.", textFields);
+            recipeUtils.displayAlertInputWarning("recipe.warning.ing.required", textFields);
             System.out.println("This unit needs an amount.");
             return;
         }
-        if (editUnitBox.getValue().equals("TO_TASTE")
-                && !editIngredientAmountField.getText().isEmpty()) {
-            System.out.println("This unit cannot have an amount.");
-            return;
+
+        Double parsedAmount = null;
+        if (!amountText.isEmpty()) {
+            try {
+                parsedAmount = Double.parseDouble(amountText);
+                if (parsedAmount <= 0) {
+                    recipeUtils.displayAlertInputWarning("recipe.warning.ing.negative", textFields);
+                    return;
+                }
+            } catch (NumberFormatException e) {
+                recipeUtils.displayAlertInputWarning("recipe.warning.ing.nonNumeric", textFields);
+                System.out.println("Enter a valid number.");
+                return;
+            }
         }
 
         int index = ingredientListView.getSelectionModel().getSelectedIndex();
         Ingredient ingredient = ingredientListView.getItems().get(index);
 
+        // Set Ingredient Type
         if (editIngredientBox.getValue().name.equals("Create new ingredient type")) {
-            // Create a LOCAL type only (id stays 0 / null)
             ingredient.ingredientType = new IngredientType(
                     editIngredientNameField.getText(),
                     null, new ArrayList<>(), null
@@ -1667,21 +1732,15 @@ public class RecipeOverviewCtrl {
             ingredient.ingredientType = editIngredientBox.getValue();
         }
 
-        if (!editIngredientAmountField.getText().isEmpty()) {
-            ingredient.amount = Double.parseDouble(editIngredientAmountField.getText());
-        } else {
-            ingredient.amount = null;
-        }
-        if (!editUnitBox.getValue().isEmpty()) {
-            ingredient.unit = Unit.valueOf(editUnitBox.getValue());
-        } else {
-            ingredient.unit = null;
-        }
-        ingredientListView.getItems().set(index, ingredient);
+        // Apply validated data
+        ingredient.amount = parsedAmount;
+        ingredient.unit = Unit.valueOf(selectedUnit);
 
+        // Update UI and Server
+        ingredientListView.getItems().set(index, ingredient);
         System.out.println(new ObjectMapper().writeValueAsString(ingredient));
 
-        editIngredientAmountField.setText("");
+        editIngredientAmountField.clear();
         editUnitBox.getSelectionModel().select(0);
 
         changeIngredientTypeViewEditMode(0);
@@ -1771,8 +1830,11 @@ public class RecipeOverviewCtrl {
      */
     @FXML
     private void onDoneEditStepButton() {
+        editStepField.setText(editStepField.getText().trim());
         if (editStepField.getText().isEmpty()) {
+            recipeUtils.displayAlertInputWarning("recipe.warning.step.empty", null);
             System.out.println("The step cannot be empty.");
+
             return;
         }
         int index = preparationStepListView.getSelectionModel().getSelectedIndex();

@@ -12,11 +12,13 @@ import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.stage.Stage;
 import javafx.util.Pair;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.testfx.api.FxRobot;
 import org.testfx.framework.junit5.ApplicationExtension;
 import org.testfx.framework.junit5.Start;
+import org.testfx.util.WaitForAsyncUtils;
 
 import java.util.ArrayList;
 
@@ -151,7 +153,6 @@ public class IngredientTypeOverviewCtrlTest {
     void addIngredientTypeTest(FxRobot robot) {
         robot.clickOn(addIngredientTypeButton);
         IngredientType type = new IngredientType("New ingredient", null, new ArrayList<>(), null);
-
         // check if ingredient type has been added to the list view
         assertTrue(ingredientTypeListView.getItems().contains(type));
 
@@ -283,9 +284,9 @@ public class IngredientTypeOverviewCtrlTest {
         robot.clickOn(editDensityField);
         robot.write("abcdefg");
         robot.clickOn(doneEditDensityButton);
-
+        robot.clickOn("OK");
         // check that edit has not gone through
-        assertEquals("-", densityLabel.getText());
+        assertEquals("", densityLabel.getText());
     }
 
     @Test
