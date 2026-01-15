@@ -75,6 +75,7 @@ public class RecipeOverviewCtrl {
     boolean newRecipe = false;
     boolean newIngredient = false;
     boolean newStep = false;
+    private Long newRecipeId = null;
 
     private final IngredientScaling ingredientScaling = new IngredientScaling();
     private final ScaleFactorParser scaleFactorParser = new ScaleFactorParser();
@@ -1177,6 +1178,7 @@ public class RecipeOverviewCtrl {
         );
 
         newRecipe = true;
+        newRecipeId = recipe.id;
         // Now immediately enter edit mode for this recipe
         onEditRecipeButton();
 
@@ -1407,13 +1409,18 @@ public class RecipeOverviewCtrl {
      */
     @FXML
     private void onCancelEditButton() {
-        if (newRecipe) {
-            Recipe recipe = recipeListView.getSelectionModel().getSelectedItem();
-            server.deleteRecipe(recipe.id);
+        if (newRecipe && newRecipeId != null) {
+            try {
+                server.deleteRecipe(newRecipeId);
+                allRecipes.removeIf(r -> r.id == newRecipeId);
+            } finally {
+                newRecipe = false;
+                newRecipeId = null;
+            }
         }
+
         onRefresh();
         changeViewEditMode(false);
-        newRecipe = false;
         setStepEditMode(false);
     }
 
