@@ -310,7 +310,7 @@
                                                 </HBox>
                                                 <HBox prefHeight="25.0" prefWidth="307.0" spacing="5.0" visible="false">
                                                     <children>
-                                          <ComboBox fx:id="editIngredientTypeBox" prefHeight="25.0" prefWidth="252.0" />
+                                          <ComboBox fx:id="editIngredientTypeBox" prefHeight="25.0" prefWidth="275.0" />
                                                         <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="5.0">
                                                             <children>
                                                                 <Button fx:id="cancelEditIngredientButton" mnemonicParsing="false" onAction="#onCancelEditIngredientButton" prefHeight="25.0" prefWidth="56.0" text="Cancel" />
