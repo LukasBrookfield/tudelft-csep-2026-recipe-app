@@ -3,7 +3,9 @@ package server.api;
 import java.util.List;
 
 import commons.IngredientType;
+import commons.Recipe;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 import server.database.IngredientTypeRepository;
 import server.services.IngredientTypeService;
@@ -13,15 +15,17 @@ import server.services.IngredientTypeService;
 public class IngredientTypeController {
     private final IngredientTypeRepository repo;
     private final IngredientTypeService ingredientTypeService;
+    private final SimpMessagingTemplate messagingTemplate;
 
     /**
      * IngredientTypeController constructor
      * @param repo The spring IngredientType repository (connects to sql database)
      */
     public IngredientTypeController(IngredientTypeRepository repo,
-                                    IngredientTypeService ingredientTypeService) {
+                                    IngredientTypeService ingredientTypeService, SimpMessagingTemplate messagingTemplate) {
         this.repo = repo;
         this.ingredientTypeService = ingredientTypeService;
+        this.messagingTemplate = messagingTemplate;
     }
 
     /**
@@ -61,6 +65,12 @@ public class IngredientTypeController {
             return ResponseEntity.badRequest().build();
         }
         IngredientType saved = repo.save(ingredientType);
+
+        //Broadcast the entire list of ingredientType elements
+        broadcastList();
+        //Broadcast the ingredientType element by id
+        broadcastSingle(saved);
+
         return ResponseEntity.ok(saved);
     }
 
@@ -81,6 +91,10 @@ public class IngredientTypeController {
         } else {
             IngredientType deleted = repo.findById(id).get();
             repo.deleteById(id);
+
+            //Broadcast the entire list of ingredientType elements
+            broadcastList();
+
             return ResponseEntity.ok(deleted);
         }
     }
@@ -110,6 +124,26 @@ public class IngredientTypeController {
                 ingredientTypeToUpdate);
 
         IngredientType updated = repo.save(ingredientTypeToUpdate);
+
+        //Broadcast the entire list of ingredientType elements
+        broadcastList();
+        //Broadcast the ingredientType element by id
+        broadcastSingle(updated);
+
         return ResponseEntity.ok(updated);
+    }
+
+    private void broadcastList() {
+        List<IngredientType> all = repo.findAll();
+        // Every client that is subscribed to "/topic/ingredientType/list" gets the new full list
+        messagingTemplate.convertAndSend("/topic/ingredientType/list", all);
+    }
+
+
+    private void broadcastSingle(IngredientType ingredientType) {
+        if (ingredientType != null && ingredientType.id > 0) {
+            // Every client that is subscribed to "/topic/ingredientType/{id}" gets this updated ingredientType
+            messagingTemplate.convertAndSend("/topic/ingredientType/" + ingredientType.id, ingredientType);
+        }
     }
 }
