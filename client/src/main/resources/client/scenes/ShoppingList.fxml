@@ -46,7 +46,7 @@
                         </HBox>
                      </children>
                      <BorderPane.margin>
-                        <Insets right="2.5" top="5.0" />
+                        <Insets top="5.0" />
                      </BorderPane.margin>
                   </HBox>
                </top>

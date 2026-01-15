@@ -77,7 +77,7 @@
                               <Insets bottom="5.0" top="5.0" />
                            </VBox.margin></ChoiceBox>
                                 <ListView fx:id="recipeListView" prefWidth="190.0" VBox.vgrow="ALWAYS" />
-                        <Label fx:id="searchStatusLabel" prefHeight="25.0" prefWidth="196.0" text="Label" />
+                        <Label fx:id="searchStatusLabel" text="Label" />
                                 <HBox alignment="CENTER_LEFT" prefHeight="29.0" prefWidth="190.0" spacing="5.0">
                                     <children>
                                         <Button fx:id="removeRecipeButton" minWidth="-Infinity" mnemonicParsing="false" onAction="#onRemoveRecipe" prefHeight="25.0" prefWidth="25.0" text="✕">
