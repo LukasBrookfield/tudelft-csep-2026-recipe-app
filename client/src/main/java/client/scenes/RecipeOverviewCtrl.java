@@ -345,6 +345,8 @@ public class RecipeOverviewCtrl {
         cancelEditIngredientButton.setText(b.getString("common.btn.cancel"));
         doneEditIngredientButton.setText(b.getString("common.btn.done"));
         cancelEditStepButton.setText(b.getString("common.btn.cancel"));
+        nextEditIngredientButton.setText(b.getString("common.btn.next"));
+        onBackEditIngredientButton.setText(b.getString("common.btn.back"));
         doneEditStepButton.setText(b.getString("common.btn.done"));
         cancelEditButton.setText(b.getString("common.btn.cancel"));
         doneEditButton.setText(b.getString("common.btn.done"));
