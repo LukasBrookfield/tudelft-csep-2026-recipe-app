@@ -701,8 +701,6 @@ public class IngredientTypeOverviewCtrl {
         editDensityField.setText(editDensityField.getText().trim());
         if (editDensityField.getText().isBlank()) {
             densityLabel.setText("");
-            //showWarning("The ingredient type density cannot be empty!", null);
-            recipeUtils.displayAlertInputWarning("ingredient.warning.empty.density", null);
             changeDensityViewEditMode(false);
             return;
         }

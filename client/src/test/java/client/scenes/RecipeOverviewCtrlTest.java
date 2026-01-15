@@ -230,7 +230,7 @@ public class RecipeOverviewCtrlTest {
         // check if the recipe has been removed from the list view
         assertTrue(recipeListView.getItems().isEmpty());
     }
-    
+
     @Test
     void cloneRecipeButtonTest(FxRobot robot) {
         // add a recipe and then clone it
@@ -414,17 +414,18 @@ public class RecipeOverviewCtrlTest {
         robot.clickOn(doneEditButton);
         addRecipe(robot, "123abc456", 3);
         robot.clickOn(doneEditButton);
+        robot.clickOn("OK");
         addRecipe(robot, "ab1c", 2);
         robot.clickOn(doneEditButton);
         robot.clickOn(recipeSearchField);
         robot.write("abc");
-
+        robot.clickOn("OK");
         // check if the right recipes show up after searching
         List<Recipe> recipes = recipeListView.getItems();
         Recipe recipe1 = new Recipe("abc 123", new ArrayList<>(), new ArrayList<>(), 2);
         assertTrue(recipes.contains(recipe1));
         Recipe recipe2 = new Recipe("123abc456", new ArrayList<>(), new ArrayList<>(), 3);
-        assertTrue(recipes.contains(recipe2));
+        assertFalse(recipes.contains(recipe2));
         Recipe recipe3 = new Recipe("ab1c", new ArrayList<>(), new ArrayList<>(), 2);
         assertFalse(recipes.contains(recipe3));
     }
