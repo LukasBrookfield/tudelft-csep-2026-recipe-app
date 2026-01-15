@@ -37,7 +37,7 @@
                               <Font name="System Bold" size="16.0" />
                            </font>
                         </Label>
-                        <HBox prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
+                        <HBox HBox.hgrow="ALWAYS">
                            <HBox.margin>
                               <Insets />
                            </HBox.margin>
@@ -65,7 +65,7 @@
                               <Insets bottom="5.0" />
                            </VBox.margin>
                         </TextField>
-                        <ListView fx:id="ingredientTypeListView" minHeight="-Infinity" prefHeight="352.0" prefWidth="190.0" VBox.vgrow="ALWAYS" />
+                        <ListView fx:id="ingredientTypeListView" minHeight="-Infinity" prefHeight="353.0" prefWidth="190.0" VBox.vgrow="ALWAYS" />
                         <HBox alignment="CENTER_LEFT" prefHeight="29.0" prefWidth="190.0" spacing="5.0">
                            <children>
                               <Button fx:id="removeIngredientTypeButton" mnemonicParsing="false" onAction="#onRemoveIngredientTypeButton" prefHeight="25.0" prefWidth="25.0" text="✕">
