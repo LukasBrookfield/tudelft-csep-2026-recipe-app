@@ -422,9 +422,9 @@ public class IngredientTypeOverviewCtrl {
         changeNutritionViewEditMode(false);
         changeViewEditMode(false);
 
-        if (warningOverlay != null) {
-            warningOverlay.setVisible(false);
-        }
+        //if (warningOverlay != null) {
+        //    warningOverlay.setVisible(false);
+        //}
         applyTranslations();
         onRefresh();
 
@@ -667,13 +667,13 @@ public class IngredientTypeOverviewCtrl {
 
         if (inputName == null || inputName.isBlank()) {
             System.out.println("The ingredient type needs a name.");
-            showWarning("The ingredient type name cannot be empty!", List.of(editNameField));
+            //showWarning("The ingredient type name cannot be empty!", List.of(editNameField));
             return;
         }
 
         if (Character.isDigit(inputName.trim().charAt(0))) {
             System.out.println("The ingredient type name cannot start with a digit.");
-            showWarning("Ingredient names cannot start with a number!", List.of(editNameField));
+            //showWarning("Ingredient names cannot start with a number!", List.of(editNameField));
             return;
         }
 
@@ -706,7 +706,7 @@ public class IngredientTypeOverviewCtrl {
         fields.add(editDensityField);
         if (editDensityField.getText().isBlank()) {
             densityLabel.setText("");
-            showWarning("The ingredient type density cannot be empty!", null);
+            //showWarning("The ingredient type density cannot be empty!", null);
             changeDensityViewEditMode(false);
             return;
         }
@@ -715,7 +715,7 @@ public class IngredientTypeOverviewCtrl {
             density = Double.parseDouble(editDensityField.getText());
         } catch (NumberFormatException e) {
             System.out.println("Density must be a double");
-            showWarning("Density must be a double!", fields);
+            //showWarning("Density must be a double!", fields);
             return;
         }
         densityLabel.setText(String.valueOf(density));
@@ -784,7 +784,7 @@ public class IngredientTypeOverviewCtrl {
         }
 
         if (!invalidFields.isEmpty()) {
-            showWarning("Nutritional values must be valid positive numbers!", invalidFields);
+            //showWarning("Nutritional values must be valid positive numbers!", invalidFields);
             System.out.println("Invalid nutritional input detected in specific fields.");
             return;
         }

@@ -263,15 +263,6 @@ public class RecipeOverviewCtrl {
     private Label recipeKcalPer100gLabel;
 
     @FXML
-    private StackPane warningOverlay; // The semi-transparent background pane
-
-    @FXML
-    private Label warningLabel;
-
-    @FXML
-    private VBox warningBox;
-
-    @FXML
     private TextField scaleFactorField;
 
     @FXML
@@ -666,7 +657,6 @@ public class RecipeOverviewCtrl {
         changeViewEditMode(false);
         recipeTitleField.setVisible(false);
         applyTranslations();
-        warningOverlay.setVisible(false);       // Make the warning overlay pane invisible
         onRefresh();
 
         editUnitBox.getItems().addAll("Select a unit", "G", "ML", "TBSP", "TSP", "PINCH",
@@ -1434,11 +1424,12 @@ public class RecipeOverviewCtrl {
     @FXML
     private void onDoneEditButton() throws JsonProcessingException {
         // Check if the name is blank
+        recipeTitleField.setText(recipeTitleField.getText().trim());
         if (recipeTitleField.getText().isBlank()) {
             System.out.println("The recipe needs a name");
             List<TextInputControl> textFields = new ArrayList<>();
             textFields.add(recipeTitleField);
-            showWarning("Please give the recipe a name!", textFields);
+            recipeUtils.displayAlertInputWarning("recipe.warning.empty.name", null);
             return;
         }
         // Check if the name starts with a digit
@@ -1446,7 +1437,7 @@ public class RecipeOverviewCtrl {
             System.out.println("The recipe name cannot start with a digit");
             List<TextInputControl> textFields = new ArrayList<>();
             textFields.add(recipeTitleField);
-            showWarning("The recipe name cannot start with a number!", textFields);
+            recipeUtils.displayAlertInputWarning("recipe.warning.start.with.number", textFields);
             return;
         }
 
@@ -1503,21 +1494,22 @@ public class RecipeOverviewCtrl {
     @FXML
     private void onDoneEditServingsButton() {
         List<TextInputControl> textFields = new ArrayList<>();
+        editServingsField.setText(editServingsField.getText().trim());
         textFields.add(editServingsField);
         if (editServingsField.getText().isBlank()) {
             System.out.println("Enter a valid amount.");
-            showWarning("The amount of servings needs can't be blank!", null);
+            recipeUtils.displayAlertInputWarning("recipe.warning.servings.empty.amount", textFields);
             return;
         }
         try {
             if (Integer.parseInt(editServingsField.getText()) <= 0) {
                 System.out.println("The amount of servings needs to " +
                         "be a positive integer.");
-                showWarning("The amount of servings needs to be a positive integer!", null);
+                recipeUtils.displayAlertInputWarning("recipe.warning.servings.negative.amount", textFields);
                 return;
             }
         } catch (NumberFormatException e) {
-            showWarning("Enter a valid number.", textFields);
+            recipeUtils.displayAlertInputWarning("recipe.warning.servings.non.integer", textFields);
         }
 
         try {
@@ -1525,7 +1517,7 @@ public class RecipeOverviewCtrl {
             servingsLabel.setText(editServingsField.getText());
         } catch (NumberFormatException e) {
             System.out.println("Enter a valid number.");
-            showWarning("Enter a valid number.", textFields);
+            recipeUtils.displayAlertInputWarning("recipe.warning.servings.non.integer", textFields);
             return;
         }
 
@@ -1650,8 +1642,9 @@ public class RecipeOverviewCtrl {
      */
     @FXML
     private void onNextEditIngredientButton() {
+        editIngredientNameField.setText(editIngredientNameField.getText().trim());
         if (editIngredientNameField.getText().isEmpty()) {
-            showWarning("Please give the ingredient a valid name!", null);
+            recipeUtils.displayAlertInputWarning("recipe.warning.ing.empty", null);
             System.out.println("The ingredient type needs a name.");
             return;
         }
@@ -1659,10 +1652,10 @@ public class RecipeOverviewCtrl {
         // Check if the name field is empty first to avoid an IndexOutOfBoundsException
         if (Character.isDigit(editIngredientNameField.getText().charAt(0))) {
 
-            List<TextInputControl> nameFields = new ArrayList<>();
-            nameFields.add(editIngredientNameField);
+            List<TextInputControl> textFields = new ArrayList<>();
+            textFields.add(editIngredientNameField);
 
-            showWarning("Ingredient name cannot start with a number!", nameFields);
+            recipeUtils.displayAlertInputWarning("recipe.warning.ing.number", textFields);
             return;
         }
 
@@ -1702,7 +1695,7 @@ public class RecipeOverviewCtrl {
         textFields.add(editIngredientAmountField);
 
         if (editUnitBox.getValue() == null || editUnitBox.getValue().equals("Select a unit")) {
-            showWarning("Please select a unit for the ingredient!", null);
+            recipeUtils.displayAlertInputWarning("recipe.warning.ing.unit", null);
             System.out.println("Select a unit.");
             return;
         }
@@ -1711,13 +1704,14 @@ public class RecipeOverviewCtrl {
         String amountText = editIngredientAmountField.getText().trim();
 
         if (selectedUnit.equals("TO_TASTE") && !amountText.isEmpty()) {
-            showWarning("The 'TO_TASTE' unit cannot have an amount.", textFields);
+            recipeUtils.displayAlertInputWarning("recipe.warning.ing.TO_TASTE", textFields);
             System.out.println("This unit cannot have an amount.");
             return;
         }
 
         if (!selectedUnit.equals("TO_TASTE") && amountText.isEmpty()) {
-            showWarning("This unit requires an amount.", textFields);
+            //showWarning("This unit requires an amount.", textFields);
+            recipeUtils.displayAlertInputWarning("recipe.warning.ing.required", textFields);
             System.out.println("This unit needs an amount.");
             return;
         }
@@ -1727,11 +1721,11 @@ public class RecipeOverviewCtrl {
             try {
                 parsedAmount = Double.parseDouble(amountText);
                 if (parsedAmount <= 0) {
-                    showWarning("Amount must be greater than zero.", textFields);
+                    recipeUtils.displayAlertInputWarning("recipe.warning.ing.negative", textFields);
                     return;
                 }
             } catch (NumberFormatException e) {
-                showWarning("Please enter a valid numeric value for the amount!", textFields);
+                recipeUtils.displayAlertInputWarning("recipe.warning.ing.nonNumeric", textFields);
                 System.out.println("Enter a valid number.");
                 return;
             }
@@ -1857,8 +1851,9 @@ public class RecipeOverviewCtrl {
      */
     @FXML
     private void onDoneEditStepButton() {
+        editStepField.setText(editStepField.getText().trim());
         if (editStepField.getText().isEmpty()) {
-            showWarning("The step cannot be empty!", null);
+            recipeUtils.displayAlertInputWarning("recipe.warning.step.empty", null);
             System.out.println("The step cannot be empty.");
 
             return;
@@ -1931,41 +1926,6 @@ public class RecipeOverviewCtrl {
                     onRefresh();
                 }
         );
-    }
-
-    /**
-     * Close warning after clicking the OK button and reset the input fields
-     */
-    @FXML
-    private void onCloseWarning() {
-        warningOverlay.setVisible(false);
-        System.out.println("Warning closed and fields reset.");
-    }
-
-    /**
-     * Set the message to a warning and makes it visible
-     * @param message String of warning message
-     * @param fields One or more TextFields/TextAreas to clear
-     */
-    private void showWarning(String message, List<TextInputControl> fields) {
-        warningLabel.setText(message);
-        warningOverlay.setVisible(true);
-        if(fields!=null && !fields.isEmpty()) {
-            clearFields(fields);
-        }
-    }
-
-    /**
-     * Clear any number of provided fields.
-     * @param fields One or more TextFields/TextAreas to clear
-     */
-    private void clearFields(List<TextInputControl> fields) {
-        for (TextInputControl field : fields) {
-            if (field != null) {
-                field.clear();
-                field.setText("");
-            }
-        }
     }
 
     /**
