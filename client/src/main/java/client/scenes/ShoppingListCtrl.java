@@ -271,10 +271,19 @@ public class ShoppingListCtrl {
      * Creates a temporary PDF file and sends it to the OS printer.
      */
     @FXML
-    private void onPrint() {
+    private void onPrintButton() {
         shoppingListUtils.printShoppingList(new  ArrayList<>(ingredientListView.getItems()));
     }
 
+    /**
+     * Resets the shopping list
+     */
+    @FXML
+    private void onResetButton(){
+        ingredientListView.getItems().clear();
+        user.getShoppingList().clear();
+        user.saveUser();
+    }
 
     /**
      * On action method for the Remove Ingredient Button
