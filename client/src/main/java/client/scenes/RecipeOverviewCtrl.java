@@ -58,6 +58,7 @@ public class RecipeOverviewCtrl {
     // Constants
     private static final String EMPTY_STAR = "☆";
     private static final String FULL_STAR = "★";
+    private static final String UNIT_PLACEHOLDER = "__SELECT_UNIT__";
 
     private final ServerUtility server;
 
@@ -79,6 +80,7 @@ public class RecipeOverviewCtrl {
     boolean newRecipe = false;
     boolean newIngredient = false;
     boolean newStep = false;
+    private Long newRecipeId = null;
 
     private final IngredientScaling ingredientScaling = new IngredientScaling();
     private final ScaleFactorParser scaleFactorParser = new ScaleFactorParser();
@@ -321,6 +323,20 @@ public class RecipeOverviewCtrl {
     public void applyTranslations() {
 
         ResourceBundle b = languages.bundle();
+        editUnitBox.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(String value) {
+                if (value == null) return "";
+                if (UNIT_PLACEHOLDER.equals(value)) return b.getString("recipe.select.unit");
+                return value;
+            }
+
+            @Override
+            public String fromString(String s) {
+                return s;
+            }
+        });
+        editUnitBox.setValue(editUnitBox.getValue());
 
         addToShoppingListButton.setText(b.getString("recipe.btn.addToShoppingList"));
         downloadRecipeButton.setText(b.getString("recipe.btn.download"));
@@ -344,6 +360,8 @@ public class RecipeOverviewCtrl {
         cancelEditIngredientButton.setText(b.getString("common.btn.cancel"));
         doneEditIngredientButton.setText(b.getString("common.btn.done"));
         cancelEditStepButton.setText(b.getString("common.btn.cancel"));
+        nextEditIngredientButton.setText(b.getString("common.btn.next"));
+        onBackEditIngredientButton.setText(b.getString("common.btn.back"));
         doneEditStepButton.setText(b.getString("common.btn.done"));
         cancelEditButton.setText(b.getString("common.btn.cancel"));
         doneEditButton.setText(b.getString("common.btn.done"));
@@ -627,6 +645,9 @@ public class RecipeOverviewCtrl {
                     // (so we don't update the wrong recipe in the UI)
                     Recipe current = recipeListView.getSelectionModel().getSelectedItem();
 
+                    lastNutrition = n;
+                    updateNutritionTooltip();
+
                     if (current == null || current.id != requestedId) return;
 
                     if (n.totalGrams() <= 0) {
@@ -658,8 +679,11 @@ public class RecipeOverviewCtrl {
         applyTranslations();
         onRefresh();
 
-        editUnitBox.getItems().addAll("Select a unit", "G", "ML", "TBSP", "TSP", "PINCH",
-                "HANDFUL", "TO_TASTE");
+        editUnitBox.getItems().setAll(
+                UNIT_PLACEHOLDER, "G", "ML", "TBSP", "TSP", "PINCH", "HANDFUL", "TO_TASTE"
+        );
+        editUnitBox.getSelectionModel().select(0);
+
 
         editIngredientTypeBox.setEditable(true);
         editIngredientTypeBox.setConverter(new StringConverter() {
@@ -890,6 +914,12 @@ public class RecipeOverviewCtrl {
     }
 
     private void updateNutritionTooltip(){
+        if (lastNutrition == null) {
+            // no nutrition loaded yet (or recipe has none)
+            Tooltip t = recipeKcalPer100gLabel.getTooltip();
+            if (t != null) t.setText("Nutrition info not available yet.");
+            return;
+        }
         double baseKcal = lastNutrition.totalKcal();
         double baseGrams = lastNutrition.totalGrams();
 
@@ -1207,6 +1237,7 @@ public class RecipeOverviewCtrl {
         );
 
         newRecipe = true;
+        newRecipeId = recipe.id;
         // Now immediately enter edit mode for this recipe
         onEditRecipeButton();
 
@@ -1437,13 +1468,18 @@ public class RecipeOverviewCtrl {
      */
     @FXML
     private void onCancelEditButton() {
-        if (newRecipe) {
-            Recipe recipe = recipeListView.getSelectionModel().getSelectedItem();
-            server.deleteRecipe(recipe.id);
+        if (newRecipe && newRecipeId != null) {
+            try {
+                server.deleteRecipe(newRecipeId);
+                allRecipes.removeIf(r -> r.id == newRecipeId);
+            } finally {
+                newRecipe = false;
+                newRecipeId = null;
+            }
         }
+
         onRefresh();
         changeViewEditMode(false);
-        newRecipe = false;
         setStepEditMode(false);
     }
 
@@ -1468,6 +1504,14 @@ public class RecipeOverviewCtrl {
             List<TextInputControl> textFields = new ArrayList<>();
             textFields.add(recipeTitleField);
             recipeUtils.displayAlertInputWarning("recipe.warning.start.with.number", textFields);
+            return;
+        }
+
+        if(recipeTitleField.getText().length()>100) {
+            System.out.println("The recipe name exceeds 100 characters!");
+            List<TextInputControl> textFields = new ArrayList<>();
+            textFields.add(recipeTitleField);
+            recipeUtils.displayAlertInputWarning("recipe.warning.exceeds.limit", textFields);
             return;
         }
 
@@ -1529,6 +1573,12 @@ public class RecipeOverviewCtrl {
         if (editServingsField.getText().isBlank()) {
             System.out.println("Enter a valid amount.");
             recipeUtils.displayAlertInputWarning("recipe.warning.servings.empty.amount", textFields);
+            return;
+        }
+        // Check if fields exceeds 8 characters
+        if(editServingsField.getText().length()>8) {
+            System.out.println("The servings amount exceeds 8 characters!");
+            recipeUtils.displayAlertInputWarning("recipe.warning.serving.exceeds.limit", textFields);
             return;
         }
         try {
@@ -1597,7 +1647,7 @@ public class RecipeOverviewCtrl {
 
         // Clear the placeholder so the user doesn't have to delete "New ingredient"
         editIngredientAmountField.clear();
-        editUnitBox.setValue("");
+        editUnitBox.getSelectionModel().select(0);
 
         editIngredientTypeBox.requestFocus(); // Put the cursor in the name field
     }
@@ -1666,6 +1716,13 @@ public class RecipeOverviewCtrl {
             System.out.println("The ingredient type needs a name.");
             return;
         }
+        if(editIngredientNameField.getText().length()>50) {
+            System.out.println("The ingredient type name exceeds 50 characters!");
+            List<TextInputControl> textFields = new ArrayList<>();
+            textFields.add(editIngredientNameField);
+            recipeUtils.displayAlertInputWarning("recipe.warning.ingredient.exceeds.limit", textFields);
+            return;
+        }
 
         // check if ingredient type starts with a digit
         if (Character.isDigit(ingredientType.name.charAt(0))) {
@@ -1707,17 +1764,17 @@ public class RecipeOverviewCtrl {
     @FXML
     private void onDoneEditIngredientButton() throws JsonProcessingException {
         // Prepare the list of fields to clear if validation fails
-        List<TextInputControl> textFields = new ArrayList<>();
-        textFields.add(editIngredientAmountField);
-
-        if (editUnitBox.getValue() == null || editUnitBox.getValue().equals("Select a unit")) {
+        String selectedUnit = editUnitBox.getValue();
+        if (selectedUnit == null || UNIT_PLACEHOLDER.equals(selectedUnit)) {
             recipeUtils.displayAlertInputWarning("recipe.warning.ing.unit", null);
             System.out.println("Select a unit.");
             return;
         }
 
-        String selectedUnit = editUnitBox.getValue();
         String amountText = editIngredientAmountField.getText().trim();
+
+        List<TextInputControl> textFields = new ArrayList<>();
+        textFields.add(editIngredientAmountField);
 
         if (selectedUnit.equals("TO_TASTE") && !amountText.isEmpty()) {
             recipeUtils.displayAlertInputWarning("recipe.warning.ing.TO_TASTE", textFields);
@@ -1726,9 +1783,14 @@ public class RecipeOverviewCtrl {
         }
 
         if (!selectedUnit.equals("TO_TASTE") && amountText.isEmpty()) {
-            //showWarning("This unit requires an amount.", textFields);
             recipeUtils.displayAlertInputWarning("recipe.warning.ing.required", textFields);
             System.out.println("This unit needs an amount.");
+            return;
+        }
+
+        if(amountText.length()>8){
+            System.out.println("Amount exceeds the limit!");
+            recipeUtils.displayAlertInputWarning("recipe.warning.ing.exceed.limit", textFields);
             return;
         }
 
@@ -1866,6 +1928,13 @@ public class RecipeOverviewCtrl {
             System.out.println("The step cannot be empty.");
 
             return;
+        }
+        // Check if the step exceeds 250 characters
+        if(editStepField.getText().length()>250){
+            List<TextInputControl> textFields = new ArrayList<>();
+            textFields.add(editStepField);
+            recipeUtils.displayAlertInputWarning("recipe.warning.step.exceed.limit", textFields);
+            System.out.println("The step exceeds 250 characters!");
         }
         int index = preparationStepListView.getSelectionModel().getSelectedIndex();
         preparationStepListView.getItems().set(index, editStepField.getText());
