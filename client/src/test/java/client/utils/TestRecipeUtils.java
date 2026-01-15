@@ -23,7 +23,6 @@ class TestRecipeUtils {
 
     @BeforeEach
     void setUp() {
-        recipeUtils = new RecipeUtils();
         testServerUtils = new TestServerUtils();
         nutrition = new Nutrition(10.0, 5.0, 2.0);
 
