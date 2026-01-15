@@ -11,6 +11,7 @@ import commons.Ingredient;
 import commons.IngredientType;
 import commons.Nutrition;
 import commons.Recipe;
+import javafx.collections.ObservableList;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -39,6 +40,10 @@ public class IngredientTypeOverviewCtrl {
     private final LanguageService languages;
 
     private int usedInRecipesCount = 0;
+
+    private ObservableList<IngredientType> allIngredientTypes;
+
+    private Long subscribedIngredientTypeId = null;
 
     // Left sidebar
 
@@ -373,17 +378,16 @@ public class IngredientTypeOverviewCtrl {
      */
     @FXML
     public void onRefresh() {
-        ingredientTypeListView.getItems().setAll(server.getIngredientTypes());
-
         boolean empty = ingredientTypeListView.getItems().isEmpty();
         mainSeparator.getParent().setVisible(!empty);
 
-        if (ingredientTypeListView.getSelectionModel().getSelectedIndex() == -1) {
+        if (ingredientTypeListView.getSelectionModel().getSelectedIndex() == -1 && !empty) {
             ingredientTypeListView.getSelectionModel().select(0);
         }
 
         setLabelsAndFields();
     }
+
 
     /**
      * Changes between viewing and editing density
@@ -414,15 +418,113 @@ public class IngredientTypeOverviewCtrl {
         changeViewEditMode(false);
 
         applyTranslations();
-        onRefresh();
 
+        // Create observable list (like recipes)
+        allIngredientTypes = FXCollections.observableArrayList();
+
+        // Load initial data from server once
+        try {
+            List<IngredientType> fromServer = server.getIngredientTypes();
+            allIngredientTypes.setAll(fromServer);
+        } catch (Exception e) {
+            System.out.println("ERROR: Could not load ingredient types from server.");
+            e.printStackTrace();
+        }
+
+        // Bind list to UI
+        ingredientTypeListView.setItems(allIngredientTypes);
+
+        // Subscribe to ingredient type LIST updates (like recipe list subscription)
+        server.subscribeToIngredientTypeList(list -> Platform.runLater(() -> {
+            Long selectedId = getSelectedIngredientTypeIdOrNull();
+
+            allIngredientTypes.setAll(list);
+            ingredientTypeListView.refresh();
+
+            // Try to keep same selection after refresh
+            if (selectedId != null) {
+                selectIngredientTypeById(selectedId);
+            } else if (!allIngredientTypes.isEmpty()) {
+                ingredientTypeListView.getSelectionModel().select(0);
+            }
+
+            setLabelsAndFields();
+        }));
+
+        // When user selects an ingredient type, subscribe to that specific ingredient type
         ingredientTypeListView.getSelectionModel().selectedItemProperty().addListener(
-                (observable,
-                 oldIngredientType, newIngredientType) -> {
-                    onRefresh();
+                (obs, oldIt, newIt) -> {
+                    if (newIt == null) return;
+
+                    setLabelsAndFields();
+                    subscribeToSelectedIngredientTypeIfNeeded(newIt.id);
                 }
         );
+
+        // Ensure something is selected at startup
+        if (!allIngredientTypes.isEmpty()) {
+            ingredientTypeListView.getSelectionModel().select(0);
+            setLabelsAndFields();
+            subscribeToSelectedIngredientTypeIfNeeded(allIngredientTypes.get(0).id);
+        }
     }
+
+    /**
+     * Gets the id of the currently selected IngredientType in the ListView.
+     *
+     * @return the selected ingredient type id, or null if nothing is selected
+     */
+    private Long getSelectedIngredientTypeIdOrNull() {
+        IngredientType selected = ingredientTypeListView.getSelectionModel().getSelectedItem();
+        return (selected == null) ? null : selected.id;
+    }
+
+    /**
+     * Selects an IngredientType in the ListView by its id.
+     *
+     * This is mainly used after the ingredient type list is replaced,
+     * to keep the user's current selection instead of jumping back to the first item.
+     *
+     * @param id the id of the ingredient type to select
+     */
+    private void selectIngredientTypeById(long id) {
+        for (int i = 0; i < allIngredientTypes.size(); i++) {
+            if (allIngredientTypes.get(i).id == id) {
+                ingredientTypeListView.getSelectionModel().select(i);
+                return;
+            }
+        }
+    }
+
+    /**
+     * Subscribes (via WebSockets/STOMP) to updates for a single ingredient type by id.
+     * @param id the id of the ingredient type to subscribe to
+     */
+    private void subscribeToSelectedIngredientTypeIfNeeded(long id) {
+        // Avoid subscribing again and again for the same item
+        if (subscribedIngredientTypeId != null && subscribedIngredientTypeId == id) return;
+        subscribedIngredientTypeId = id;
+
+        server.subscribeToIngredientType(id, updated -> Platform.runLater(() -> {
+            // Update this ingredient type in the list
+            for (int i = 0; i < allIngredientTypes.size(); i++) {
+                if (allIngredientTypes.get(i).id == updated.id) {
+                    allIngredientTypes.set(i, updated);
+                    break;
+                }
+            }
+
+            // If still selected, refresh right panel
+            IngredientType current = ingredientTypeListView.getSelectionModel().getSelectedItem();
+            if (current != null && current.id == updated.id) {
+                setLabelsAndFields();
+            }
+
+            ingredientTypeListView.refresh();
+        }));
+    }
+
+
 
     // Left sidebar
 
