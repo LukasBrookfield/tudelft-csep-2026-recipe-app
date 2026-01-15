@@ -445,6 +445,7 @@ public class RecipeOverviewCtrl {
      * @param value false for viewing mode, true for editing mode
      */
     private void changeViewEditMode(boolean value) {
+        editIngredientTypeBox.hide();
         recipeTitleLabel.setVisible(!value);
         recipeTitleField.setVisible(value);
 
@@ -528,6 +529,11 @@ public class RecipeOverviewCtrl {
     private void changeIngredientTypeViewEditMode(int value) {
         removeIngredientButton.getParent().setVisible(value == 0);
         editIngredientTypeBox.getParent().setVisible(value == 1);
+        if (value == 1) {
+            editIngredientTypeBox.show();
+        } else {
+            editIngredientTypeBox.hide();
+        }
         editIngredientAmountField.getParent().setVisible(value == 2);
 
         removeIngredientButton.getParent().setMouseTransparent(value > 0);
@@ -698,6 +704,19 @@ public class RecipeOverviewCtrl {
                         .filter(x -> x.name.equals(s))
                         .findFirst()
                         .orElseGet(() -> new IngredientType(s, null, new ArrayList<>(), null));
+            }
+        });
+
+        editIngredientTypeBox.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
+            // apply the filter
+            filteredIngredientTypes.setPredicate(item -> {
+                if (newValue == null || newValue.isBlank()) return true;
+                return item.name.toLowerCase().contains(newValue.toLowerCase());
+            });
+
+            // keep the dropdown visible while typing
+            if (!newValue.isBlank()) {
+                editIngredientTypeBox.show();
             }
         });
 
@@ -1143,6 +1162,7 @@ public class RecipeOverviewCtrl {
         filteredIngredientTypes = new FilteredList<>(allIngredientTypes);
         sortedIngredientTypes = new SortedList<>(filteredIngredientTypes);
         editIngredientTypeBox.setItems(sortedIngredientTypes);
+        editIngredientTypeBox.hide();
 
         boolean empty = recipeListView.getItems().isEmpty();
         mainSeparator.getParent().setVisible(!empty);

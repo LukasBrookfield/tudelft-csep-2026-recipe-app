@@ -181,7 +181,7 @@ public class AddToShoppingListCtrl {
         addRemoveEditHBox.setVisible(!value);
         addRemoveEditHBox.setMouseTransparent(value);
         editPane.setVisible(value);
-        changeIngredientTypeViewEditMode(false);
+        if (value) changeIngredientTypeViewEditMode(false);
         ingredientListView.setDisable(value);
     }
 
@@ -190,6 +190,11 @@ public class AddToShoppingListCtrl {
      * @param value false for type mode, true for ingredient mode
      */
     private void changeIngredientTypeViewEditMode(boolean value) {
+        if (!value) {
+            editIngredientTypeBox.show();
+        } else {
+            editIngredientTypeBox.hide();
+        }
         editIngredientTypeContainer.setVisible(!value);
         editIngredientBox.setVisible(value);
         editIngredientTypeContainer.setManaged(value);
@@ -213,6 +218,19 @@ public class AddToShoppingListCtrl {
         filteredIngredientTypes = new FilteredList<>(allIngredientTypes);
         sortedIngredientTypes = new SortedList<>(filteredIngredientTypes);
         editIngredientTypeBox.setItems(sortedIngredientTypes);
+
+        editIngredientTypeBox.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
+            // apply the filter
+            filteredIngredientTypes.setPredicate(item -> {
+                if (newValue == null || newValue.isBlank()) return true;
+                return item.name.toLowerCase().contains(newValue.toLowerCase());
+            });
+
+            // keep the dropdown visible while typing
+            if (!newValue.isBlank()) {
+                editIngredientTypeBox.show();
+            }
+        });
 
         changeIngredientViewEditMode(false);
         editUnitBox.getItems().addAll("", "G", "ML", "TBSP", "TSP", "PINCH",
@@ -346,6 +364,8 @@ public class AddToShoppingListCtrl {
         }
         newIngredientType = false;
         changeIngredientViewEditMode(false);
+        editIngredientTypeBox.hide();
+        onRefresh();
     }
 
     /**
@@ -374,6 +394,7 @@ public class AddToShoppingListCtrl {
         allIngredientTypes.add(ingredient.ingredientType);
 
         changeIngredientViewEditMode(false);
+        editIngredientTypeBox.hide();
         onRefresh();
     }
 
