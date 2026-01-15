@@ -369,7 +369,7 @@
                               <Insets />
                            </VBox.margin>
                         </HBox>
-                        <HBox alignment="CENTER_LEFT" prefHeight="25.0" prefWidth="200.0">
+                        <HBox alignment="CENTER">
                            <children>
                               <Label fx:id="usedInRecipesLabel" text="This ingredient type is used in 0 recipes">
                                  <HBox.margin>
