@@ -20,11 +20,12 @@ public class MyModule implements Module {
     @Override
     public void configure(Binder binder) {
         binder.bind(MainCtrl.class).in(Scopes.SINGLETON);
-        binder.bind(RecipeOverviewCtrl.class).in(Scopes.SINGLETON);
-        binder.bind(IngredientTypeOverviewCtrl.class).in(Scopes.SINGLETON);
+        binder.bind(RecipeOverviewCtrl.class);
+        binder.bind(IngredientTypeOverviewCtrl.class);
+        binder.bind(LanguageService.class).in(Scopes.SINGLETON);
 
         binder.bind(Client.class).toInstance(ClientBuilder.newClient(new ClientConfig()));
-        binder.bind(ServerUtils.class).in(Scopes.SINGLETON);
+        binder.bind(ServerUtility.class).toInstance(new ServerUtils(ClientBuilder.newClient(new ClientConfig())));
         binder.bind(UserStorage.class).toInstance(new JsonUserStorage(
                 "UserConfig.json", new ObjectMapper()));
         binder.bind(UserConfig.class).in(Scopes.SINGLETON);

@@ -42,6 +42,14 @@ public class Ingredient {
 
     private Ingredient() {}  // for object mapper
 
+    /**
+     * Copy an ingredient
+     * @return a copy of ingredient
+     */
+    public Ingredient copy() {
+        return new Ingredient(ingredientType.copy(), amount, unit, recipe);
+    }
+
     @Override
     public boolean equals(Object obj) {
         return EqualsBuilder.reflectionEquals(this, obj,
@@ -66,37 +74,37 @@ public class Ingredient {
             return amount + " " + ingredientType.name;
         }
 
-        switch (unit.name()) {
-            case "G":
-            case "ML":
-            case "KG":
-            case "L":
+        switch (unit) {
+            case G:
+            case ML:
+            case KG:
+            case L:
                 return amount + unit.name() + " " + ingredientType.name;
-            case "TBSP":
+            case TBSP:
                 if (amount == 1) {
                     return "1 tablespoon of " + ingredientType.name;
                 } else {
                     return amount + " tablespoons of " + ingredientType.name;
                 }
-            case "TSP":
+            case TSP:
                 if (amount == 1) {
                     return "1 teaspoon of " + ingredientType.name;
                 } else {
                     return amount + " teaspoons of " + ingredientType.name;
                 }
-            case "PINCH":
+            case PINCH:
                 if (amount == 1) {
                     return "A pinch of " + ingredientType.name;
                 } else {
                     return amount + " pinches of " + ingredientType.name;
                 }
-            case "HANDFUL":
+            case HANDFUL:
                 if (amount == 1) {
                     return "A handful of " + ingredientType.name;
                 } else {
                     return amount + " handfuls of " + ingredientType.name;
                 }
-            case "TO_TASTE":
+            case TO_TASTE:
                 return ingredientType.name + " to taste";
         }
         return "";

@@ -1,13 +1,18 @@
 package client.scenes;
 
+import client.utils.LanguageService;
+import com.google.inject.Inject;
+import commons.Recipe;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 import javafx.scene.image.Image;
+import org.hibernate.service.spi.InjectService;
 
 import java.awt.*;
 import java.util.Objects;
+import java.util.ResourceBundle;
 
 public class MainCtrl {
 
@@ -25,11 +30,27 @@ public class MainCtrl {
     private ShoppingListCtrl shoppingListCtrl;
     private Scene shoppingListScene;
 
+    private AddToShoppingListCtrl addToShoppingListCtrl;
+    private Scene addToShoppingListScene;
+
+    private final LanguageService languages;
+
+    @Inject
+    public MainCtrl(LanguageService languages) {
+        this.languages = languages;
+    }
+
+    public MainCtrl() {
+        this(LanguageService.defaultService());
+    }
+
     public void initialize(Stage primaryStage,
                            Pair<HomeScreenCtrl, Parent> homeScreen,
                            Pair<RecipeOverviewCtrl, Parent> recipeOverview,
                            Pair<IngredientTypeOverviewCtrl, Parent> ingredientOverview,
-                           Pair<ShoppingListCtrl, Parent> shoppingList) {
+                           Pair<ShoppingListCtrl, Parent> shoppingList,
+                           Pair<AddToShoppingListCtrl, Parent> addToShoppingList) {
+
         this.primaryStage = primaryStage;
 
         this.homeScreenCtrl = homeScreen.getKey();
@@ -44,6 +65,9 @@ public class MainCtrl {
         this.shoppingListCtrl = shoppingList.getKey();
         this.shoppingListScene = new Scene(shoppingList.getValue());
 
+        this.addToShoppingListCtrl = addToShoppingList.getKey();
+        this.addToShoppingListScene = new Scene(addToShoppingList.getValue());
+
         primaryStage.getIcons().add(new Image(Objects.requireNonNull(
                 getClass().getResourceAsStream("/FoodPalLogo.png"))));
 
@@ -52,26 +76,61 @@ public class MainCtrl {
     }
 
     public void showHomeScreen() {
-        primaryStage.setTitle("FoodPal - Home Screen");
+        primaryStage.setTitle(languages.bundle().getString("title.home"));
+//        primaryStage.setTitle("FoodPal - Home");
         primaryStage.setScene(homeScreenScene);
     }
 
     public void showRecipeOverview() {
-        primaryStage.setTitle("FoodPal - Recipe Overview");
+        primaryStage.setTitle(languages.bundle().getString("title.recipes"));
+//        primaryStage.setTitle("FoodPal - Recipe Overview");
         primaryStage.setScene(recipeOverviewScene);
         recipeOverviewCtrl.onRefresh();
     }
 
     public void showIngredientTypeOverview() {
-        primaryStage.setTitle("FoodPal - Ingredient Overview");
+        primaryStage.setTitle(languages.bundle().getString("title.ingredients"));
+//        primaryStage.setTitle("FoodPal - Ingredient Overview");
         primaryStage.setScene(ingredientTypeOverviewScene);
         ingredientTypeOverviewCtrl.onRefresh();
     }
 
     public void showShoppingList(boolean currentScene) {
-        primaryStage.setTitle("FoodPal - Shopping List");
+        primaryStage.setTitle(languages.bundle().getString("title.shopping"));
+//        primaryStage.setTitle("FoodPal - Shopping List");
         primaryStage.setScene(shoppingListScene);
 
+        shoppingListCtrl.set();
         shoppingListCtrl.lastScene = currentScene;
     }
+
+    public void showAddToShoppingList(Recipe recipe, double scaleFactor) {
+        primaryStage.setTitle(languages.bundle().getString("title.addToShopping"));
+//        primaryStage.setTitle("FoodPal - Add to Shopping List");
+        primaryStage.setScene(addToShoppingListScene);
+        addToShoppingListCtrl.setFields(recipe, scaleFactor);
+    }
+
+    public void applyTranslationsToAllScreens() {
+
+        if (homeScreenCtrl != null) homeScreenCtrl.applyTranslations();
+        if (recipeOverviewCtrl != null) recipeOverviewCtrl.applyTranslations();
+        if (ingredientTypeOverviewCtrl != null) ingredientTypeOverviewCtrl.applyTranslations();
+        if (shoppingListCtrl != null) shoppingListCtrl.applyTranslations();
+        if (addToShoppingListCtrl != null) addToShoppingListCtrl.applyTranslations();
+
+        updateStageTitleForCurrentScene();
+    }
+
+    private void updateStageTitleForCurrentScene() {
+        if (primaryStage == null) return;
+        ResourceBundle b = languages.bundle();
+        Scene s = primaryStage.getScene();
+        if (s == homeScreenScene) primaryStage.setTitle(b.getString("title.home"));
+        else if (s == recipeOverviewScene) primaryStage.setTitle(b.getString("title.recipes"));
+        else if (s == ingredientTypeOverviewScene) primaryStage.setTitle(b.getString("title.ingredients"));
+        else if (s == shoppingListScene) primaryStage.setTitle(b.getString("title.shopping"));
+        else if (s == addToShoppingListScene) primaryStage.setTitle(b.getString("title.addToShopping"));
+    }
+
 }

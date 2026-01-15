@@ -6,10 +6,12 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import client.utils.LanguageService;
 import client.utils.TestUserStorage;
 import client.utils.UserConfig;
 import client.utils.UserStorage;
 import commons.Ingredient;
+import commons.ShoppingListItem;
 import commons.User;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -32,12 +34,15 @@ public class ShoppingListCtrlTest {
     private Button removeIngredientButton;
     private Button editIngredientButton;
     private Button addIngredientButton;
-    private final List<Ingredient> shoppingList = new ArrayList<>();
+    private final List<ShoppingListItem> shoppingList = new ArrayList<>();
     private final List<Long> favouriteRecipes = new ArrayList<>();
     private final User user = new User(favouriteRecipes, shoppingList);
     private final UserStorage userStorage = new TestUserStorage(user);
     private final UserConfig userConfig = new UserConfig(userStorage, user);
-    private final MainCtrl mainCtrl = new MainCtrl();
+//    private final MainCtrl mainCtrl = new MainCtrl();
+
+    private final LanguageService languages = new LanguageService(userConfig);
+    private final MainCtrl mainCtrl = new MainCtrl(languages);
 
     @Start
     private void start(Stage shoppingListStage) throws IOException {
@@ -58,12 +63,21 @@ public class ShoppingListCtrlTest {
         URL url = getClass().getResource("/client/scenes/ShoppingList.fxml");
         FXMLLoader loader = new FXMLLoader(url);
 
+        loader.setResources(languages.bundle());
+
         loader.setControllerFactory(type -> {
             if (type == ShoppingListCtrl.class) {
-                return new ShoppingListCtrl(new TestServerUtils(), userConfig, mainCtrl);
-            }else{
+                return new ShoppingListCtrl(new TestServerUtils(), userConfig, mainCtrl, languages);
+//                return new ShoppingListCtrl(new TestServerUtils(), userConfig, mainCtrl);
+            }
+
+            else if (type == LanguagePickerCtrl.class) {
+                return new LanguagePickerCtrl(languages, mainCtrl);
+            }
+            else {
                 throw new RuntimeException();
             }
+
         });
 
 
