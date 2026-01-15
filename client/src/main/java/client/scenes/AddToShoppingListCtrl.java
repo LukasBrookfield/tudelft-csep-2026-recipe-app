@@ -132,7 +132,7 @@ public class AddToShoppingListCtrl {
     private final ChangeListener<IngredientType> ingredientListener =
             (observable, oldValue, newValue) -> {
                 if (newValue != null &&
-                        "Create new ingredient type".equals(newValue.name)) {
+                        CREATE_NEW_INGREDIENT_TYPE.equals(newValue.name)) {
 
                     editIngredientNameField.setDisable(false);
                     editIngredientNameField.clear();
@@ -290,7 +290,7 @@ public class AddToShoppingListCtrl {
 
         //sets the values to the ingredient type choice box
         editIngredientChoiceBox.getItems().setAll(
-                new IngredientType("Create new ingredient type", null,
+                new IngredientType(CREATE_NEW_INGREDIENT_TYPE, null,
                         null, null)
         );
         editIngredientChoiceBox.getSelectionModel().select(0);
@@ -354,7 +354,7 @@ public class AddToShoppingListCtrl {
         Ingredient ingredient = ingredientListView.getItems().get(index).getIngredient();
 
         //we create a new ingredient type
-        if (editIngredientChoiceBox.getValue().name.equals("Create new ingredient type")) {
+        if (editIngredientChoiceBox.getValue().name.equals(CREATE_NEW_INGREDIENT_TYPE)) {
             ingredient.ingredientType = server.addIngredientType(
                     new IngredientType(editIngredientNameField.getText(),
                             null, new ArrayList<>(), null));
