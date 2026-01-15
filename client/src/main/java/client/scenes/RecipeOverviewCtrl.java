@@ -629,6 +629,9 @@ public class RecipeOverviewCtrl {
                     // (so we don't update the wrong recipe in the UI)
                     Recipe current = recipeListView.getSelectionModel().getSelectedItem();
 
+                    lastNutrition = n;
+                    updateNutritionTooltip();
+
                     if (current == null || current.id != requestedId) return;
 
                     if (n.totalGrams() <= 0) {
@@ -869,6 +872,12 @@ public class RecipeOverviewCtrl {
     }
 
     private void updateNutritionTooltip(){
+        if (lastNutrition == null) {
+            // no nutrition loaded yet (or recipe has none)
+            Tooltip t = recipeKcalPer100gLabel.getTooltip();
+            if (t != null) t.setText("Nutrition info not available yet.");
+            return;
+        }
         double baseKcal = lastNutrition.totalKcal();
         double baseGrams = lastNutrition.totalGrams();
 
