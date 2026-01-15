@@ -3,17 +3,23 @@ import commons.Recipe;
 import commons.Ingredient;
 import commons.IngredientType;
 import commons.Unit;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import jakarta.inject.Inject;
+import javafx.scene.Node;
+import javafx.scene.control.Alert;
+import javafx.scene.control.TextInputControl;
+import javafx.stage.Modality;
+import java.util.*;
 
 public class RecipeUtils {
     public static final double CAL_PER_GRAM_CARB = 4.0;
     public static final double CAL_PER_GRAM_PROTEIN = 4.0;
     public static final double CAL_PER_GRAM_FAT = 9.0;
+    private final LanguageService languages;
 
+    @Inject
+    public RecipeUtils(LanguageService languages) {
+        this.languages = languages;
+    }
     /**
      * Uses the carbs, protein and fat content to calculate the calories per 100g.
      * If the unit isn't grams or there is no nutritional info, return 0.
@@ -73,6 +79,53 @@ public class RecipeUtils {
                 ing.ingredientType = saved;
             } else {
                 savedTypes.put(type.name, type);
+            }
+        }
+    }
+
+    /**
+     * Display an alert indicating that the user input is invalid
+     * Reset the text fields of the FXML elements
+     * @param warningMessage Key to translated warning message
+     * @param fields FXML fields to reset
+     */
+    public void displayAlertInputWarning(String warningMessage, List<TextInputControl> fields) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.initModality(Modality.APPLICATION_MODAL);
+
+        ResourceBundle b = languages.bundle();
+        alert.setTitle(b.getString("recipe.warning.invalid.user.input"));
+        alert.setHeaderText("Wooops...");
+        alert.setContentText(b.getString(warningMessage));
+
+        alert.getDialogPane().applyCss();
+
+        Node header = alert.getDialogPane().lookup(".header-panel .label");
+        if (header != null) {
+            header.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+        }
+
+        Node content = alert.getDialogPane().lookup(".content.label");
+        if (content != null) {
+            content.setStyle("-fx-font-size: 12px;");
+        }
+
+        if(fields != null && !fields.isEmpty()) {
+            clearFields(fields);
+        }
+
+        alert.show();
+    }
+
+    /**
+     * Clear any number of provided fields
+     * @param fields One or more TextFields/TextAreas to clear
+     */
+    public void clearFields(List<TextInputControl> fields) {
+        for (TextInputControl field : fields) {
+            if (field != null) {
+                field.clear();
+                field.setText("");
             }
         }
     }
