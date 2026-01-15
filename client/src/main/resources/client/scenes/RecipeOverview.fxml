@@ -200,7 +200,7 @@
                                 <Separator fx:id="mainSeparator" prefWidth="200.0" />
                         <HBox prefHeight="25.0" prefWidth="200.0" spacing="5.0">
                            <children>
-                              <HBox alignment="CENTER_LEFT" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="128.0" spacing="5.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
+                              <HBox alignment="CENTER_LEFT" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="140.0" spacing="5.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
                                  <children>
                                     <Label fx:id="servingsCaptionLabel" prefHeight="17.0" prefWidth="153.0" text="Servings:">
                                        <HBox.margin>
@@ -214,14 +214,14 @@
                                     </Label>
                                  </children>
                               </HBox>
-                              <HBox alignment="CENTER_RIGHT" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="128.0" spacing="5.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
+                              <HBox alignment="CENTER_RIGHT" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="140.0" spacing="5.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
                                  <children>
                                     <Label fx:id="kcalCaptionLabel" prefHeight="23.0" prefWidth="207.0" text="Kcal per 100g:">
                                        <HBox.margin>
                                           <Insets left="5.0" />
                                        </HBox.margin>
                                     </Label>
-                                    <Label fx:id="recipeKcalPer100gLabel" alignment="CENTER_RIGHT" prefHeight="17.0" prefWidth="128.0" text="-">
+                                    <Label fx:id="recipeKcalPer100gLabel" alignment="CENTER_RIGHT" prefHeight="17.0" prefWidth="179.0" text="-">
                                        <HBox.margin>
                                           <Insets right="5.0" />
                                        </HBox.margin>
@@ -234,7 +234,7 @@
                            <children>
                               <HBox alignment="CENTER_LEFT" prefHeight="25.0" prefWidth="307.0" spacing="5.0">
                                  <children>
-                                    <TextField fx:id="editServingsField" minWidth="-Infinity" prefHeight="25.0" prefWidth="128.0" promptText="Enter the amount of servings" />
+                                    <TextField fx:id="editServingsField" minWidth="-Infinity" prefHeight="25.0" prefWidth="140.0" promptText="Enter the amount of servings" />
                                     <HBox alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="217.0" spacing="5.0" HBox.hgrow="ALWAYS">
                                        <children>
                                           <Button fx:id="cancelEditDetailsButton" minWidth="-Infinity" mnemonicParsing="false" onAction="#onCancelEditDetailsButton" text="Cancel" HBox.hgrow="ALWAYS" />
