@@ -645,6 +645,12 @@ public class IngredientTypeOverviewCtrl {
             return;
         }
 
+        if(inputName != null && inputName.length()>50) {
+            System.out.println("The ingredient type name exceeds 50 characters!");
+            recipeUtils.displayAlertInputWarning("ingredient.warning.name.exceeds.limit", textFields);
+            return;
+        }
+
         if (Character.isDigit(inputName.trim().charAt(0))) {
             System.out.println("The ingredient type name cannot start with a digit.");
             recipeUtils.displayAlertInputWarning("ingredient.warning.number", textFields);
@@ -685,11 +691,23 @@ public class IngredientTypeOverviewCtrl {
             return;
         }
         double density;
+
+        if(!editDensityField.getText().isBlank() && editDensityField.getText().length()>6) {
+            System.out.println("The density exceeds 8 characters!");
+            recipeUtils.displayAlertInputWarning("ingredient.warning.density.exceeds.limit", textFields);
+            return;
+        }
         try {
             density = Double.parseDouble(editDensityField.getText());
         } catch (NumberFormatException e) {
             System.out.println("Density must be a double");
             recipeUtils.displayAlertInputWarning("ingredient.warning.double.density", textFields);
+            return;
+        }
+        //Check if ingredient density is larger than the density of Osmium
+        if(density > 22.6) {
+            System.out.println("The density is out of this world");
+            recipeUtils.displayAlertInputWarning("ingredient.warning.density.exceeds.limit", textFields);
             return;
         }
         densityLabel.setText(String.valueOf(density));
@@ -733,6 +751,8 @@ public class IngredientTypeOverviewCtrl {
         String pText = proteinTextField.getText().trim();
         if (!pText.isEmpty()) {
             try {
+                if(pText.length()>6)
+                    textFields.add(proteinTextField);
                 if (Double.parseDouble(pText) < 0) throw new NumberFormatException();
             } catch (NumberFormatException e) {
                 textFields.add(proteinTextField);
@@ -742,6 +762,8 @@ public class IngredientTypeOverviewCtrl {
         String fText = fatTextField.getText().trim();
         if (!fText.isEmpty()) {
             try {
+                if(fText.length()>6)
+                    textFields.add(fatTextField);
                 if (Double.parseDouble(fText) < 0) throw new NumberFormatException();
             } catch (NumberFormatException e) {
                 textFields.add(fatTextField);
@@ -751,6 +773,8 @@ public class IngredientTypeOverviewCtrl {
         String cText = carbsTextField.getText().trim();
         if (!cText.isEmpty()) {
             try {
+                if(cText.length()>6)
+                    textFields.add(carbsTextField);
                 if (Double.parseDouble(cText) < 0) throw new NumberFormatException();
             } catch (NumberFormatException e) {
                 textFields.add(carbsTextField);
