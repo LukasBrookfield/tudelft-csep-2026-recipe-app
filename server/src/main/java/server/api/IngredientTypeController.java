@@ -66,9 +66,9 @@ public class IngredientTypeController {
         }
         IngredientType saved = repo.save(ingredientType);
 
-        //Broadcast the entire list of ingredientType elements
+        //Broadcast the entire list of ingredientType objects
         broadcastList();
-        //Broadcast the ingredientType element by id
+        //Broadcast the ingredientType object by id
         broadcastSingle(saved);
 
         return ResponseEntity.ok(saved);
@@ -92,7 +92,7 @@ public class IngredientTypeController {
             IngredientType deleted = repo.findById(id).get();
             repo.deleteById(id);
 
-            //Broadcast the entire list of ingredientType elements
+            //Broadcast the entire list of ingredientType objects
             broadcastList();
 
             return ResponseEntity.ok(deleted);
@@ -125,21 +125,32 @@ public class IngredientTypeController {
 
         IngredientType updated = repo.save(ingredientTypeToUpdate);
 
-        //Broadcast the entire list of ingredientType elements
+        //Broadcast the entire list of ingredientType objects
         broadcastList();
-        //Broadcast the ingredientType element by id
+        //Broadcast the ingredientType object by id
         broadcastSingle(updated);
 
         return ResponseEntity.ok(updated);
     }
 
+    /**
+     * Gets all the ingredientType objects from the DB,
+     * serializes the objects into a JSON format,
+     * wraps the converted payload in a STOMP MESSAGE frame and
+     * forwards it to the broker for distribution to the list URL
+     */
     private void broadcastList() {
         List<IngredientType> all = repo.findAll();
         // Every client that is subscribed to "/topic/ingredientType/list" gets the new full list
         messagingTemplate.convertAndSend("/topic/ingredientType/list", all);
     }
 
-
+    /**
+     * Uses the passed ingredientType,
+     * serializes the object into a JSON format,
+     * wraps the converted payload in a STOMP MESSAGE frame and
+     * forwards it to the broker for distribution to the id URL
+     */
     private void broadcastSingle(IngredientType ingredientType) {
         if (ingredientType != null && ingredientType.id > 0) {
             // Every client that is subscribed to "/topic/ingredientType/{id}" gets this updated ingredientType
