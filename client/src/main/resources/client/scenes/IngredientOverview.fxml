@@ -150,7 +150,7 @@
                         </Label>
                         <HBox alignment="CENTER_LEFT" prefHeight="25.0" prefWidth="437.0" spacing="5.0">
                            <children>
-                              <HBox alignment="CENTER_LEFT" minHeight="-Infinity" prefHeight="25.0" prefWidth="181.0" spacing="5.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
+                              <HBox alignment="CENTER_LEFT" minHeight="-Infinity" prefHeight="25.0" prefWidth="205.0" spacing="5.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
                                  <children>
                                     <Label fx:id="nameCaptionLabel" prefHeight="17.0" prefWidth="64.0" text="Name:">
                                        <HBox.margin>
@@ -175,7 +175,7 @@
                                  <children>
                                     <HBox alignment="CENTER_LEFT" prefHeight="25.0" prefWidth="307.0" spacing="5.0">
                                        <children>
-                                          <TextField fx:id="editNameField" minWidth="-Infinity" prefHeight="25.0" prefWidth="181.0" promptText="Enter an ingredient name" />
+                                          <TextField fx:id="editNameField" minWidth="-Infinity" prefHeight="25.0" prefWidth="205.0" promptText="Enter an ingredient name" />
                                           <HBox HBox.hgrow="ALWAYS" />
                                           <HBox alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="422.0" spacing="5.0">
                                              <children>
@@ -212,7 +212,7 @@
                         </HBox>
                         <HBox alignment="CENTER_LEFT" prefHeight="25.0" prefWidth="437.0" spacing="5.0">
                            <children>
-                              <HBox alignment="CENTER_LEFT" minHeight="-Infinity" prefHeight="25.0" prefWidth="181.0" spacing="5.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
+                              <HBox alignment="CENTER_LEFT" minHeight="-Infinity" prefHeight="25.0" prefWidth="205.0" spacing="5.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
                                  <children>
                                     <Label fx:id="densityCaptionLabel" prefHeight="17.0" prefWidth="169.0" text="Density (g/ml):">
                                        <HBox.margin>
@@ -235,7 +235,7 @@
                            <children>
                               <HBox alignment="CENTER_LEFT" prefHeight="25.0" prefWidth="307.0" spacing="5.0">
                                  <children>
-                                    <TextField fx:id="editDensityField" minWidth="-Infinity" prefHeight="25.0" prefWidth="181.0" promptText="Enter the ingredient's density" />
+                                    <TextField fx:id="editDensityField" minWidth="-Infinity" prefHeight="25.0" prefWidth="205.0" promptText="Enter the ingredient's density" />
                                     <HBox prefHeight="25.0" prefWidth="185.0" HBox.hgrow="ALWAYS" />
                                     <HBox alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="443.0" spacing="5.0">
                                        <children>
@@ -272,7 +272,7 @@
                         </Label>
                         <HBox prefHeight="121.0" prefWidth="298.0">
                            <children>
-                              <HBox prefHeight="121.0" prefWidth="182.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
+                              <HBox prefHeight="121.0" prefWidth="205.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
                                  <children>
                                     <VBox alignment="CENTER_LEFT" prefHeight="119.0" prefWidth="164.0" spacing="10.0">
                                        <children>
@@ -293,7 +293,7 @@
                                           <Insets bottom="5.0" left="5.0" top="5.0" />
                                        </padding>
                                     </VBox>
-                                    <VBox alignment="CENTER_RIGHT" prefHeight="119.0" prefWidth="79.0" spacing="10.0">
+                                    <VBox alignment="CENTER_RIGHT" prefHeight="119.0" prefWidth="100.0" spacing="10.0">
                                        <children>
                                           <Label fx:id="proteinLabel" text="-" />
                                           <Label fx:id="fatLabel" text="-" />
