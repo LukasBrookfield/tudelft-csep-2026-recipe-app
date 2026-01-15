@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class TestRecipeUtils {
@@ -23,6 +22,17 @@ class TestRecipeUtils {
 
     @BeforeEach
     void setUp() {
+        UserStorage inMemoryStorage = new UserStorage() {
+            private User user = new User();
+            @Override public User load() { return user; }
+            @Override public void save(User u) { this.user = u; }
+        };
+        UserConfig config = new UserConfig(inMemoryStorage);
+        config.setLanguageTag("en");
+
+        LanguageService realLanguageService = new LanguageService(config);
+
+        recipeUtils = new RecipeUtils(realLanguageService);
         testServerUtils = new TestServerUtils();
         nutrition = new Nutrition(10.0, 5.0, 2.0);
 
