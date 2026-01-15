@@ -158,12 +158,6 @@ public class RecipeOverviewCtrl {
     private Label servingsLabel;
 
     @FXML
-    private Label scaleCaptionLabel;
-
-    @FXML
-    private Label scaleLabel;
-
-    @FXML
     private Label kcalCaptionLabel;
 
     @FXML
@@ -802,7 +796,9 @@ public class RecipeOverviewCtrl {
         scaleFactorField.setOnAction(e -> applyScaleFromField());
 
         scaleFactorField.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue) applyScaleFromField();
+            if (!newValue) {
+                applyScaleFromField();
+            }
         });
     }
 
@@ -1505,7 +1501,6 @@ public class RecipeOverviewCtrl {
             Integer.parseInt(editServingsField.getText());
             servingsLabel.setText(editServingsField.getText());
             Integer.parseInt(scaleFactorField.getText());
-            scaleLabel.setText(scaleFactorField.getText());
         } catch (NumberFormatException e) {
             System.out.println("Enter a valid number.");
             recipeUtils.displayAlertInputWarning("recipe.warning.servings.non.integer", textFields);
