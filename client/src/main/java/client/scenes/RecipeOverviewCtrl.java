@@ -16,9 +16,6 @@ import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -48,7 +45,6 @@ import java.util.List;
 import java.util.function.Predicate;
 
 import javafx.stage.Modality;
-import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 import org.apache.pdfbox.pdmodel.PDDocument;
@@ -266,7 +262,7 @@ public class RecipeOverviewCtrl {
     private Button doneEditIngredientButton;
 
     @FXML
-    private Button onBackEditIngredientButton;
+    private Button backEditIngredientButton;
 
     // Preparation
 
@@ -2380,7 +2376,7 @@ public class RecipeOverviewCtrl {
                 doneEditStepButton.setDefaultButton(false);
                 // edit ingredient - second step
                 doneEditIngredientButton.setCancelButton(false);
-                onBackEditIngredientButton.setDefaultButton(false);
+                backEditIngredientButton.setDefaultButton(false);
             }
             case EDIT_INGREDIENT_1 -> {
                 // exit form
@@ -2393,7 +2389,7 @@ public class RecipeOverviewCtrl {
                 doneEditStepButton.setDefaultButton(false);
                 // edit ingredient - second step
                 doneEditIngredientButton.setCancelButton(false);
-                onBackEditIngredientButton.setDefaultButton(false);
+                backEditIngredientButton.setDefaultButton(false);
             }
             case EDIT_INGREDIENT_2 -> {
                 // exit form
@@ -2406,7 +2402,7 @@ public class RecipeOverviewCtrl {
                 doneEditStepButton.setDefaultButton(false);
                 // edit ingredient - second step
                 doneEditIngredientButton.setCancelButton(true);
-                onBackEditIngredientButton.setDefaultButton(true);
+                backEditIngredientButton.setDefaultButton(true);
             }
             case EDIT_PREPARATION -> {
                 // exit form
@@ -2419,7 +2415,7 @@ public class RecipeOverviewCtrl {
                 doneEditStepButton.setDefaultButton(true);
                 // edit ingredient - second step
                 doneEditIngredientButton.setCancelButton(false);
-                onBackEditIngredientButton.setDefaultButton(false);
+                backEditIngredientButton.setDefaultButton(false);
             }
         }
     }
