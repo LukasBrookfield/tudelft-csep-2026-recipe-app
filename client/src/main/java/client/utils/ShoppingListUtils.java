@@ -16,6 +16,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.ResourceBundle;
 
 public class ShoppingListUtils {
 
@@ -145,6 +146,9 @@ public class ShoppingListUtils {
     public void addRecipeContentToDocument(Document doc,
                                             List<ShoppingListItem> shoppingListItems) throws Exception {
 
+        //the language for title
+
+        ResourceBundle b = languages.bundle();
         // Define fonts
         Font titleFont = FontFactory.getFont(FontFactory.HELVETICA, 18, Font.BOLD);
         Font dateFont = FontFactory.getFont(FontFactory.HELVETICA, 12, Font.BOLD);
@@ -153,7 +157,7 @@ public class ShoppingListUtils {
         Font recipeFont = FontFactory.getFont(FontFactory.HELVETICA, 12, Font.ITALIC);
 
         doc.open();
-        doc.add(new Paragraph("Shopping list", titleFont));
+        doc.add(new Paragraph(b.getString("shopping.title"), titleFont));
         doc.add(new Paragraph(LocalDate.now().toString(), dateFont));
         doc.add(new Paragraph(" "));
         doc.add(new Paragraph(" "));
