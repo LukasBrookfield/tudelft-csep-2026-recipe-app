@@ -5,7 +5,6 @@ import com.lowagie.text.Font;
 import com.lowagie.text.pdf.PdfWriter;
 import commons.*;
 import jakarta.inject.Inject;
-import javafx.application.Platform;
 import javafx.stage.FileChooser;
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.printing.PDFPageable;
@@ -159,7 +158,6 @@ public class ShoppingListUtils {
         doc.add(new Paragraph(" "));
         doc.add(new Paragraph(" "));
         doc.add(new Paragraph("Items:", sectinFont));
-        doc.add(new Paragraph(" "));
         for (ShoppingListItem i : shoppingListItems) {
             Paragraph p = new Paragraph();
 

@@ -331,8 +331,8 @@ public class RecipeOverviewCtrl {
         });
         editUnitBox.setValue(editUnitBox.getValue());
 
-        downloadRecipeButton.setText(b.getString("recipe.btn.download"));
-        printRecipeButton.setText(b.getString("recipe.btn.print"));
+        downloadRecipeButton.setText(b.getString("common.btn.download"));
+        printRecipeButton.setText(b.getString("common.btn.print"));
 
         recipeSearchField.setPromptText(b.getString("recipe.search.prompt"));
         recipeTitleField.setPromptText(b.getString("recipe.field.name.prompt"));
