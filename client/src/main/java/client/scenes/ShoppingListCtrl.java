@@ -85,6 +85,15 @@ public class ShoppingListCtrl {
     @FXML
     private Button backEditIngredientButton;
 
+    @FXML
+    private Button printButton;
+
+    @FXML
+    private Button downloadButton;
+
+    @FXML
+    private Button resetButton;
+
     private final LanguageService languages;
 
     private static final String CREATE_NEW_INGREDIENT_TYPE = "Create new ingredient type";
