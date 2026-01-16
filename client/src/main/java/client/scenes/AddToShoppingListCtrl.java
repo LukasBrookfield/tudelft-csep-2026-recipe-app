@@ -340,6 +340,7 @@ public class AddToShoppingListCtrl {
             editIngredientTypeBox.setValue(item.getIngredient().ingredientType);
         } else {
             editIngredientTypeBox.getSelectionModel().clearSelection();
+            editIngredientTypeBox.setValue(null);
         }
 
         if(ingredientListView.getItems().isEmpty()){

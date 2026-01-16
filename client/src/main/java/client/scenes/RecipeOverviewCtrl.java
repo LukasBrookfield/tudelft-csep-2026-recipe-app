@@ -714,7 +714,7 @@ public class RecipeOverviewCtrl {
                 });
 
                 editIngredientTypeBox.getSelectionModel().clearSelection();
-                editIngredientTypeBox.show();
+//                editIngredientTypeBox.show();
             });
         });
 
@@ -1699,6 +1699,7 @@ public class RecipeOverviewCtrl {
             editIngredientTypeBox.setValue(ingredient.ingredientType);
         } else {
             editIngredientTypeBox.getSelectionModel().clearSelection();
+            editIngredientTypeBox.setValue(null);
         }
 
         cancelEditButton.setVisible(false);
@@ -1849,6 +1850,7 @@ public class RecipeOverviewCtrl {
         editIngredientAmountField.clear();
         editUnitBox.getSelectionModel().select(0);
 
+        // add new ingredient type to list
         allIngredientTypes.add(ingredient.ingredientType);
 
         changeIngredientTypeViewEditMode(0);
