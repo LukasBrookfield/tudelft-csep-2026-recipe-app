@@ -36,10 +36,10 @@
                         </Label>
                         <HBox alignment="CENTER_RIGHT" prefHeight="33.0" prefWidth="491.0" spacing="5.0">
                            <children>
-                              <Button fx:id="downloadButton" mnemonicParsing="false" onAction="#onDownloadButton" text="Download" />
-                              <Button fx:id="printButton" mnemonicParsing="false" onAction="#onPrintButton" text="Print" />
-                              <Button fx:id="resetButton" mnemonicParsing="false" onAction="#onResetButton" text="Reset" />
-                                 <fx:include source="LanguagePicker.fxml" />
+                              <Button fx:id="downloadButton" minWidth="-Infinity" mnemonicParsing="false" onAction="#onDownloadButton" text="Download" />
+                              <Button fx:id="printButton" minWidth="-Infinity" mnemonicParsing="false" onAction="#onPrintButton" text="Print" />
+                              <Button fx:id="resetButton" minWidth="-Infinity" mnemonicParsing="false" onAction="#onResetButton" text="Reset" />
+                                 <fx:include minWidth="-Infinity" source="LanguagePicker.fxml" />
                               <ChoiceBox fx:id="sceneBox" prefWidth="140.0" />
                            </children>
                            <HBox.margin>
