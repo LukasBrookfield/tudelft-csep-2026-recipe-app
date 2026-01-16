@@ -17,7 +17,7 @@
 
 <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="478.67" prefWidth="640.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="client.scenes.ShoppingListCtrl">
    <children>
-      <AnchorPane prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+      <AnchorPane fx:id="rootPane" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
          <children>
             <BorderPane prefHeight="400.0" prefWidth="600.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <top>
@@ -34,10 +34,12 @@
                               <Insets left="5.0" />
                            </padding>
                         </Label>
-                        <HBox prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
-                        <HBox alignment="CENTER_RIGHT" prefHeight="33.0" prefWidth="322.0" spacing="5.0">
+                        <HBox alignment="CENTER_RIGHT" prefHeight="33.0" prefWidth="491.0" spacing="5.0">
                            <children>
-                                 <fx:include source="LanguagePicker.fxml" />
+                              <Button fx:id="downloadButton" minWidth="-Infinity" mnemonicParsing="false" onAction="#onDownloadButton" text="Download" />
+                              <Button fx:id="printButton" minWidth="-Infinity" mnemonicParsing="false" onAction="#onPrintButton" text="Print" />
+                              <Button fx:id="resetButton" minWidth="-Infinity" mnemonicParsing="false" onAction="#onResetButton" text="Reset" />
+                                 <fx:include minWidth="-Infinity" source="LanguagePicker.fxml" />
                               <ChoiceBox fx:id="sceneBox" prefWidth="140.0" />
                            </children>
                            <HBox.margin>
