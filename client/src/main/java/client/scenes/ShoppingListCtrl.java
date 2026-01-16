@@ -155,6 +155,9 @@ public class ShoppingListCtrl {
         backEditIngredientButton.setText(b.getString("common.btn.back"));
         cancelEditIngredientButton.setText(b.getString("common.btn.cancel"));
         doneEditIngredientButton.setText(b.getString("common.btn.done"));
+        downloadButton.setText(b.getString("common.btn.download"));
+        resetButton.setText(b.getString("shopping.btn.reset"));
+        printButton.setText(b.getString("common.btn.print"));
 
         setTooltip(removeIngredientButton, "common.tooltip.removeIngredient");
         setTooltip(addIngredientButton, "common.tooltip.addIngredient");
