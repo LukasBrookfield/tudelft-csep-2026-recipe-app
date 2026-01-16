@@ -75,5 +75,6 @@ public class IngredientTypeService {
         toIngredientType.name = fromIngredientType.name;
         toIngredientType.nutrition = fromIngredientType.nutrition;
         toIngredientType.density = fromIngredientType.density;
+        toIngredientType.setCategory(fromIngredientType.getCategory());
     }
 }
