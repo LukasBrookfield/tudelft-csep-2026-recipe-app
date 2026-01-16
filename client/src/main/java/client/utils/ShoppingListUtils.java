@@ -39,7 +39,10 @@ public class ShoppingListUtils {
                 recipe.ingredients.stream()
                         .map(Ingredient::copy)
                         .map(i -> {
-                            i.amount = scale * i.amount;
+                            if(i.amount != null){
+                                i.amount = scale * i.amount;
+                                return new ShoppingListItem(i);
+                            }
                             return new ShoppingListItem(i);
                         })
                         .toList()
