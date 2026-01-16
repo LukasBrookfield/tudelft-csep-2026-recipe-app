@@ -233,7 +233,11 @@ public class ShoppingListCtrl {
                 });
 
                 editIngredientTypeBox.getSelectionModel().clearSelection();
-                editIngredientTypeBox.show();
+                if (editIngredientTypeBox.getParent().isVisible()) {
+                    editIngredientTypeBox.show();
+                } else {
+                    editIngredientTypeBox.hide();
+                }
             });
         });
 
@@ -357,6 +361,9 @@ public class ShoppingListCtrl {
         // remove duplicates in combo box
         List<IngredientType> newList = new ArrayList<>(new HashSet<>(allIngredientTypes));
         allIngredientTypes = FXCollections.observableList(newList);
+        filteredIngredientTypes = new FilteredList<>(allIngredientTypes);
+        sortedIngredientTypes = new SortedList<>(filteredIngredientTypes);
+        editIngredientTypeBox.setItems(sortedIngredientTypes);
 
         changeIngredientViewEditMode(true);
 
