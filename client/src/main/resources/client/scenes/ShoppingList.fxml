@@ -34,8 +34,7 @@
                               <Insets left="5.0" />
                            </padding>
                         </Label>
-                        <HBox prefHeight="100.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
-                        <HBox alignment="CENTER_RIGHT" prefHeight="33.0" prefWidth="428.0" spacing="5.0">
+                        <HBox alignment="CENTER_RIGHT" prefHeight="33.0" prefWidth="491.0" spacing="5.0">
                            <children>
                               <Button fx:id="downloadButton" mnemonicParsing="false" onAction="#onDownloadButton" text="Download" />
                               <Button fx:id="printButton" mnemonicParsing="false" onAction="#onPrintButton" text="Print" />
