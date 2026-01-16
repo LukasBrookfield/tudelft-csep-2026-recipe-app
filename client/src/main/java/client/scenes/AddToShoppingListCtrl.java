@@ -21,7 +21,6 @@ import java.util.ResourceBundle;
 public class AddToShoppingListCtrl {
 
     private final ServerUtils server;
-    private final UserConfig user;
     private final MainCtrl controller;
     private Recipe recipe;
     private final ShoppingListUtils shoppingListUtils;
@@ -89,6 +88,18 @@ public class AddToShoppingListCtrl {
 
     private boolean newIngredientType = false;
 
+    @Inject
+    AddToShoppingListCtrl(ServerUtils server,
+                          UserConfig user,
+                          MainCtrl controller,
+                          LanguageService languages,
+                          ShoppingListUtils shoppingListUtils) {
+        this.server = server;
+        this.controller = controller;
+        this.languages = languages;
+        this.shoppingListUtils = shoppingListUtils;
+    }
+
     private void setTooltip(Control c, String key){
         ResourceBundle b = languages.bundle();
         Tooltip t = c.getTooltip();
@@ -141,19 +152,6 @@ public class AddToShoppingListCtrl {
                     editIngredientNameField.setText(newValue.name);
                 }
             };
-
-    @Inject
-    AddToShoppingListCtrl(ServerUtils server,
-                          UserConfig user,
-                          MainCtrl controller,
-                          LanguageService languages,
-                          ShoppingListUtils shoppingListUtils) {
-        this.server = server;
-        this.user = user;
-        this.controller = controller;
-        this.languages = languages;
-        this.shoppingListUtils = shoppingListUtils;
-    }
 
     /**
      * On action method for the Refresh button
@@ -422,7 +420,7 @@ public class AddToShoppingListCtrl {
      */
     @FXML
     private void onConfirmationButton(){
-        shoppingListUtils.confirmAddingIngredients(ingredientListView.getItems(), recipe, user);
+        shoppingListUtils.confirmAddingIngredients(ingredientListView.getItems(), recipe);
         onExitButton();
     }
 }

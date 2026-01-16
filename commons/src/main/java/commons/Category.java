@@ -5,7 +5,7 @@ public enum Category {
     Dairy,
     Grains,
     Vegetables,
-    Fruits ,
+    Fruits,
     OilsFats,
     SaucesCondiments,
     HerbsSpices,
