@@ -1,6 +1,5 @@
 package commons;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.apache.commons.lang3.builder.EqualsBuilder;
@@ -15,6 +14,9 @@ public class IngredientType {
 
     @Column(nullable = false)
     public String name;
+
+    @Enumerated(EnumType.STRING)
+    private Category category;  // can be null
 
     @OneToOne(cascade = CascadeType.ALL)
     public Nutrition nutrition;
@@ -46,7 +48,17 @@ public class IngredientType {
      * @return a copy of ingredientType
      */
     public IngredientType copy() {
-        return new IngredientType(name, nutrition, ingredients, density);
+        IngredientType copy = new IngredientType(name, nutrition, ingredients, density);
+        copy.setCategory(category);
+        return copy;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    public Category getCategory() {
+        return category;
     }
 
     @Override
