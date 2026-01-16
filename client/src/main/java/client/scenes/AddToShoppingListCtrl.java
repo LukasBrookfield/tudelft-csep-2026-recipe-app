@@ -30,7 +30,7 @@ public class AddToShoppingListCtrl {
     private final UserConfig user;
     private final MainCtrl controller;
     private Recipe recipe;
-    private ShoppingListUtils shoppingListUtils;
+    private final ShoppingListUtils shoppingListUtils;
 
     private ObservableList<IngredientType> allIngredientTypes;
     private FilteredList<IngredientType> filteredIngredientTypes;
@@ -124,7 +124,6 @@ public class AddToShoppingListCtrl {
         setTooltip(addIngredientButton, "common.tooltip.addIngredient");
         setTooltip(editIngredientButton, "common.tooltip.editIngredient");
     }
-
     @Inject
     AddToShoppingListCtrl(ServerUtils server,
                           UserConfig user,
