@@ -30,7 +30,8 @@ public class ShoppingListCtrl {
 
     private final MainCtrl mainCtrl;
 
-    public boolean lastScene;
+    @FXML
+    public ChoiceBox<String> sceneBox;
 
     private ObservableList<IngredientType> allIngredientTypes;
     private FilteredList<IngredientType> filteredIngredientTypes;
@@ -79,9 +80,6 @@ public class ShoppingListCtrl {
     private Button nextButton;
 
     @FXML
-    private Button exitButton;
-
-    @FXML
     private Label shoppingListHeaderLabel;
 
     @FXML
@@ -125,7 +123,6 @@ public class ShoppingListCtrl {
         ResourceBundle b = languages.bundle();
 
         shoppingListHeaderLabel.setText(b.getString("shopping.title"));
-        exitButton.setText(b.getString("shopping.btn.exit"));
 
         editIngredientAmountField.setPromptText(b.getString("common.field.amount.prompt"));
 
@@ -187,6 +184,7 @@ public class ShoppingListCtrl {
         removeIngredientButton.getParent().setMouseTransparent(value);
         if (value) changeIngredientTypeViewEditMode(false);
         ingredientListView.setDisable(value);
+        sceneBox.getParent().setDisable(value);
     }
 
     /**
@@ -242,7 +240,10 @@ public class ShoppingListCtrl {
         });
 
         changeIngredientViewEditMode(false);
-        editUnitBox.getItems().addAll("", "G", "ML", "TBSP", "TSP", "PINCH",
+
+        sceneBox.getItems().addAll("Home", "Recipe overview", "Ingredient overview",
+                "Shopping list");
+        editUnitBox.getItems().addAll("Select a unit", "G", "KG", "ML", "L", "TBSP", "TSP", "PINCH",
                 "HANDFUL", "TO_TASTE");
 
         ingredientListView.getSelectionModel().selectedItemProperty().addListener(
@@ -255,6 +256,11 @@ public class ShoppingListCtrl {
 
         ingredientListView.getItems().addAll(user.getShoppingList());
         applyTranslations();
+
+        sceneBox.getSelectionModel().selectedItemProperty().addListener(
+                (obs, oldValue, newValue) -> {
+                    mainCtrl.showScene(newValue);
+                });
 
         ingredientListView.setCellFactory(lv -> new ListCell<>() {
             @Override
@@ -448,14 +454,5 @@ public class ShoppingListCtrl {
     @FXML
     private void onBackEditIngredientButton() {
         changeIngredientTypeViewEditMode(false);
-    }
-
-    @FXML
-    private void onExitButton() {
-        if(lastScene == false) {
-            mainCtrl.showHomeScreen();
-        } else {
-            mainCtrl.showRecipeOverview();
-        }
     }
 }
