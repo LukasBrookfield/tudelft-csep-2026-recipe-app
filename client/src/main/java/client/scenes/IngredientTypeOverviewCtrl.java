@@ -7,16 +7,11 @@ import client.utils.UserConfig;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
-import commons.Ingredient;
-import commons.IngredientType;
-import commons.Nutrition;
-import commons.Recipe;
-import javafx.application.Platform;
+import commons.*;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -24,13 +19,13 @@ import javafx.stage.Stage;
 import java.text.MessageFormat;
 import java.util.*;
 
+import static commons.Category.*;
+
 public class IngredientTypeOverviewCtrl {
 
     private final ServerUtility server;
 
     private final RecipeUtils recipeUtils;
-
-    private UserConfig user;
 
     private final MainCtrl mainCtrl;
 
@@ -94,6 +89,15 @@ public class IngredientTypeOverviewCtrl {
 
     @FXML
     private Button doneEditDetailsButton;
+
+    @FXML
+    private Label categoryLabel;
+
+    @FXML
+    private Label categoryCaptionLabel;
+
+    @FXML
+    private ChoiceBox<Category> categoryBox;
 
     // edit density section
 
@@ -160,8 +164,6 @@ public class IngredientTypeOverviewCtrl {
     @FXML
     private Label usedInRecipesLabel;
 
-    private List<TextInputControl> activeFieldsToClear = new ArrayList<>();
-
     private void setTooltip(Control c, String key){
         ResourceBundle b = languages.bundle();
         Tooltip t = c.getTooltip();
@@ -227,7 +229,6 @@ public class IngredientTypeOverviewCtrl {
                                       MainCtrl mainCtrl, LanguageService languages) {
         this.server = server;
         this.recipeUtils = recipeUtils;
-        this.user = user;
         this.mainCtrl = mainCtrl;
         this.languages = languages;
     }
@@ -246,6 +247,7 @@ public class IngredientTypeOverviewCtrl {
         cancelEditButton.getParent().setVisible(value);
         editDetailsButton.getParent().getParent().getParent().setVisible(value);
 
+        categoryBox.setVisible(value);
         editDensityButton.setVisible(value);
         editNutritionButton.getParent().getParent().getParent().setVisible(value);
     }
@@ -294,7 +296,7 @@ public class IngredientTypeOverviewCtrl {
     /**
      * Counts in how many recipes an ingredient type is used
      * @param ingredientType the ingredient type to count for
-     * @return the amount of recipes the ingredient type is used in
+     * @return the list of recipes the ingredient type is used in
      */
     private List<Recipe> getUsedInRecipes(IngredientType ingredientType) {
         List<Recipe> res = new ArrayList<>();
@@ -322,6 +324,12 @@ public class IngredientTypeOverviewCtrl {
 
         ingredientTypeTitleLabel.setText(ingredientType.name);
         nameLabel.setText(ingredientType.name);
+        categoryBox.getSelectionModel().select(ingredientType.getCategory());
+        if(ingredientType.getCategory() != null){
+            categoryLabel.setText(ingredientType.getCategory().toString());
+        }else{
+            categoryLabel.setText("-");
+        }
         if (ingredientType.density != null) {
             densityLabel.setText(String.valueOf(ingredientType.density));
         } else {
@@ -405,6 +413,18 @@ public class IngredientTypeOverviewCtrl {
 
         sceneBox.getItems().addAll("Home", "Recipe overview", "Ingredient overview",
                 "Shopping list");
+
+        categoryBox.getItems().addAll(
+                Meat,
+                Dairy,
+                Grains,
+                Vegetables,
+                Fruits,
+                OilsFats,
+                SaucesCondiments,
+                HerbsSpices,
+                Sweeteners
+        );
 
         ingredientTypeListView.getSelectionModel().selectedItemProperty().addListener(
                 (observable,
@@ -551,6 +571,7 @@ public class IngredientTypeOverviewCtrl {
         IngredientType ingredientType = ingredientTypeListView
                 .getSelectionModel().getSelectedItem();
         ingredientType.name = nameLabel.getText();
+        ingredientType.setCategory(categoryBox.getSelectionModel().getSelectedItem());
 
         String densityText = densityLabel.getText();
         if (densityText.isBlank() || densityText.equals("-")) {

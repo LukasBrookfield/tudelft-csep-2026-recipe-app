@@ -15,7 +15,7 @@ public class IngredientType {
     @Column(nullable = false)
     public String name;
 
-    @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.ORDINAL)
     private Category category;  // can be null
 
     @OneToOne(cascade = CascadeType.ALL)
