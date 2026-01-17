@@ -6,6 +6,7 @@ import commons.Ingredient;
 import commons.IngredientType;
 import commons.ShoppingListItem;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -166,18 +167,12 @@ public class ShoppingListCtrl {
         ingredientListView.refresh();
 
         // load all ingredient types from server
-        allIngredientTypes = FXCollections.observableArrayList();
         try {
             allIngredientTypes.setAll(server.getIngredientTypes());
         } catch (RuntimeException e) {
             System.out.println("ERROR: Could not load ingredient types from server.");
             e.printStackTrace();
         }
-
-        // setup filtered and sorted ingredient types
-        filteredIngredientTypes = new FilteredList<>(allIngredientTypes);
-        sortedIngredientTypes = new SortedList<>(filteredIngredientTypes);
-        editIngredientTypeBox.setItems(sortedIngredientTypes);
     }
 
     /**
@@ -241,6 +236,10 @@ public class ShoppingListCtrl {
         sortedIngredientTypes = new SortedList<>(filteredIngredientTypes);
         editIngredientTypeBox.setItems(sortedIngredientTypes);
 
+        editIngredientTypeBox.visibleRowCountProperty().bind(
+                Bindings.min(5, Bindings.size(editIngredientTypeBox.getItems()))
+        );
+
         editIngredientTypeBox.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
             Platform.runLater(() -> {
                 // apply the filter
@@ -250,11 +249,9 @@ public class ShoppingListCtrl {
                 });
 
                 editIngredientTypeBox.getSelectionModel().clearSelection();
-                if (editIngredientTypeBox.getParent().isVisible()) {
-                    editIngredientTypeBox.show();
-                } else {
-                    editIngredientTypeBox.hide();
-                }
+                editIngredientTypeBox.hide();
+                // show box while typing
+                if (editIngredientTypeBox.getParent().isVisible()) editIngredientTypeBox.show();
             });
         });
 
@@ -305,7 +302,7 @@ public class ShoppingListCtrl {
             @Override
             public Object fromString(String s) {
                 return allIngredientTypes.stream()
-                        .filter(x -> x.name.equals(s))
+                        .filter(x -> x.name.equalsIgnoreCase(s))
                         .findFirst()
                         .orElseGet(() -> new IngredientType(s, null, new ArrayList<>(), null));
             }
@@ -416,17 +413,7 @@ public class ShoppingListCtrl {
             return;
         }
 
-        // remove duplicates in combo box
-        List<IngredientType> newList = new ArrayList<>(new HashSet<>(allIngredientTypes));
-        allIngredientTypes = FXCollections.observableList(newList);
-        filteredIngredientTypes = new FilteredList<>(allIngredientTypes);
-        sortedIngredientTypes = new SortedList<>(filteredIngredientTypes);
-        editIngredientTypeBox.setItems(sortedIngredientTypes);
-
         changeIngredientViewEditMode(true);
-
-        // Force focus into the IngredientType name box
-        Platform.runLater(() -> editIngredientTypeBox.requestFocus());
     }
 
     /**
@@ -467,7 +454,10 @@ public class ShoppingListCtrl {
                 editIngredientAmountField.getText(),
                 editUnitBox.getValue());
 
-        allIngredientTypes.add(ingredient.ingredientType);
+        // add new ingredient type to list if it is new
+        if (! allIngredientTypes.contains(ingredient.ingredientType)) {
+            allIngredientTypes.add(ingredient.ingredientType);
+        }
 
         changeIngredientViewEditMode(false);
         editIngredientTypeBox.hide();
