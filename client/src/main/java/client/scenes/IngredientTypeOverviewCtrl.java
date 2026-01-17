@@ -1,9 +1,6 @@
 package client.scenes;
 
-import client.utils.LanguageService;
-import client.utils.RecipeUtils;
-import client.utils.ServerUtility;
-import client.utils.UserConfig;
+import client.utils.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
@@ -15,6 +12,7 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 
 import java.text.MessageFormat;
 import java.util.*;
@@ -28,6 +26,8 @@ public class IngredientTypeOverviewCtrl {
     private final RecipeUtils recipeUtils;
 
     private final MainCtrl mainCtrl;
+
+    private final CategoryUtils categoryUtils;
 
     boolean newIngredientType = false;
 
@@ -191,6 +191,7 @@ public class IngredientTypeOverviewCtrl {
 
         detailsHeaderLabel.setText(b.getString("ing.details.header"));
         nameCaptionLabel.setText(b.getString("ing.details.name"));
+        categoryCaptionLabel.setText(b.getString("ing.details.category"));
         densityCaptionLabel.setText(b.getString("ing.details.density"));
         nutritionHeaderLabel.setText(b.getString("ing.nutrition.header"));
         proteinCaptionLabel.setText(b.getString("ing.nutrition.protein"));
@@ -219,18 +220,40 @@ public class IngredientTypeOverviewCtrl {
         setTooltip(editDetailsButton, "common.tooltip.editName");
         setTooltip(editDensityButton, "common.tooltip.editDensity");
         setTooltip(editNutritionButton, "common.tooltip.editNutrition");
+
+        //translation for ingredient type category if ingredient type is selected
+        IngredientType ingredientType = ingredientTypeListView.getSelectionModel().getSelectedItem();
+        if(ingredientType != null){
+            if(ingredientType.getCategory() != null){
+                categoryLabel.setText(categoryUtils.format(ingredientType.getCategory()));
+            }else{
+                categoryLabel.setText("-");
+            }
+        }
+
+        categoryBox.setConverter(new StringConverter<Category>() {
+            @Override
+            public String toString(Category category){
+                return categoryUtils.format(category);
+            }
+
+            @Override
+            public Category fromString(String s){return null;}
+        });
     }
 
     // General
     @Inject
     public IngredientTypeOverviewCtrl(ServerUtility server,
                                       RecipeUtils recipeUtils,
-                                      UserConfig user,
-                                      MainCtrl mainCtrl, LanguageService languages) {
+                                      MainCtrl mainCtrl,
+                                      LanguageService languages,
+                                      CategoryUtils categoryUtils) {
         this.server = server;
         this.recipeUtils = recipeUtils;
         this.mainCtrl = mainCtrl;
         this.languages = languages;
+        this.categoryUtils = categoryUtils;
     }
 
     /**
@@ -326,7 +349,7 @@ public class IngredientTypeOverviewCtrl {
         nameLabel.setText(ingredientType.name);
         categoryBox.getSelectionModel().select(ingredientType.getCategory());
         if(ingredientType.getCategory() != null){
-            categoryLabel.setText(ingredientType.getCategory().toString());
+            categoryLabel.setText(categoryUtils.format(ingredientType.getCategory()));
         }else{
             categoryLabel.setText("-");
         }

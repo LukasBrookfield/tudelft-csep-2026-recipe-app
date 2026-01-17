@@ -1,15 +1,11 @@
 package client;
 
-import client.scenes.IngredientTypeOverviewCtrl;
-import client.scenes.ShoppingListCtrl;
+import client.scenes.*;
 import client.utils.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Binder;
 import com.google.inject.Module;
 import com.google.inject.Scopes;
-
-import client.scenes.RecipeOverviewCtrl;
-import client.scenes.MainCtrl;
 
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
@@ -21,6 +17,7 @@ public class MyModule implements Module {
     public void configure(Binder binder) {
         binder.bind(MainCtrl.class).in(Scopes.SINGLETON);
         binder.bind(RecipeOverviewCtrl.class);
+        binder.bind(AddToShoppingListCtrl.class);
         binder.bind(IngredientTypeOverviewCtrl.class);
         binder.bind(LanguageService.class).in(Scopes.SINGLETON);
 
@@ -32,5 +29,6 @@ public class MyModule implements Module {
         binder.bind(ShoppingListCtrl.class);
         binder.bind(RecipeUtils.class).in(Scopes.SINGLETON);
         binder.bind(ShoppingListUtils.class).in(Scopes.SINGLETON);
+        binder.bind(CategoryUtils.class).in(Scopes.SINGLETON);
     }
 }
