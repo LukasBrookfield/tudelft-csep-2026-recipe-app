@@ -63,13 +63,13 @@ class IngredientTest {
         assertEquals("3.0 chicken", ingredient.toString());
 
         ingredient = new Ingredient(type3, 1.0, Unit.G, null);
-        assertEquals("1.0G chicken", ingredient.toString());
+        assertEquals("1.0g chicken", ingredient.toString());
         ingredient = new Ingredient(type3, 3.0, Unit.ML, null);
-        assertEquals("3.0ML chicken", ingredient.toString());
+        assertEquals("3.0ml chicken", ingredient.toString());
         ingredient = new Ingredient(type3, 2.0, Unit.KG, null);
-        assertEquals("2.0KG chicken", ingredient.toString());
+        assertEquals("2.0kg chicken", ingredient.toString());
         ingredient = new Ingredient(type3, 1.0, Unit.L, null);
-        assertEquals("1.0L chicken", ingredient.toString());
+        assertEquals("1.0l chicken", ingredient.toString());
 
         ingredient = new Ingredient(type3, 1.0, Unit.TBSP, null);
         assertEquals("1 tablespoon of chicken", ingredient.toString());
