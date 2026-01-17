@@ -661,7 +661,7 @@ public class IngredientTypeOverviewCtrl {
 
         // check if ingredient type is unique
         boolean isDuplicate = ingredientTypeListView.getItems().stream().anyMatch(
-                x -> x.name.equals(inputName));
+                x -> x.name.equalsIgnoreCase(inputName));
         if (isDuplicate) {
             System.out.println("The name of the ingredient type must be unique!");
             recipeUtils.displayAlertInputWarning("recipe.warning.ing.duplicate", null);

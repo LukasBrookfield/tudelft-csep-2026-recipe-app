@@ -8,6 +8,7 @@ import com.google.inject.Inject;
 import client.utils.ServerUtils;
 import commons.*;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
@@ -282,8 +283,6 @@ public class RecipeOverviewCtrl {
     private static final String SORT_FEWEST_STEPS = "Fewest steps first";
     private static final String SORT_FEWEST_ING = "Fewest ingredients first";
 
-    private static final String CREATE_NEW_INGREDIENT_TYPE = "Create new ingredient type";
-
     private int baseServings = 1;
 
     // General
@@ -403,15 +402,6 @@ public class RecipeOverviewCtrl {
             @Override public String fromString(String s) { return s; }
         });
 
-//        editIngredientBox.setConverter(new StringConverter<>() {
-//            @Override public String toString(IngredientType it) {
-//                if (it == null) return "";
-//                if (CREATE_NEW_INGREDIENT_TYPE.equals(it.name)) return b.getString("common.ingredientType.createNew");
-//                return it.name;
-//            }
-//            @Override public IngredientType fromString (String s) {return null; }
-//        });
-
         refreshStartTooltip();
     }
 
@@ -523,12 +513,6 @@ public class RecipeOverviewCtrl {
         removeStepButton.getParent().setDisable(value > 0);
 
         cancelEditButton.getParent().setDisable(value > 0);
-
-        // When going into edit mode, it automatically selects the
-        // ingredient name field
-        Platform.runLater(() -> {
-            editIngredientTypeBox.requestFocus();
-        });
     }
 
     /**
@@ -667,7 +651,6 @@ public class RecipeOverviewCtrl {
         changeViewEditMode(false);
         recipeTitleField.setVisible(false);
         applyTranslations();
-        onRefresh();
 
         sceneBox.getItems().addAll("Home", "Recipe overview", "Ingredient overview",
                 "Shopping list");
@@ -675,6 +658,23 @@ public class RecipeOverviewCtrl {
                 "HANDFUL", "TO_TASTE");
         editUnitBox.getSelectionModel().select(0);
 
+        // load all ingredient types from server
+        allIngredientTypes = FXCollections.observableArrayList();
+        try {
+            allIngredientTypes.setAll(server.getIngredientTypes());
+        } catch (RuntimeException e) {
+            System.out.println("ERROR: Could not load ingredient types from server.");
+            e.printStackTrace();
+        }
+
+        // setup filtered and sorted ingredient types
+        filteredIngredientTypes = new FilteredList<>(allIngredientTypes);
+        sortedIngredientTypes = new SortedList<>(filteredIngredientTypes);
+        editIngredientTypeBox.setItems(sortedIngredientTypes);
+
+        editIngredientTypeBox.visibleRowCountProperty().bind(
+                Bindings.min(5, Bindings.size(editIngredientTypeBox.getItems()))
+        );
 
         editIngredientTypeBox.setEditable(true);
         editIngredientTypeBox.setConverter(new StringConverter() {
@@ -686,7 +686,7 @@ public class RecipeOverviewCtrl {
             @Override
             public Object fromString(String s) {
                 return allIngredientTypes.stream()
-                        .filter(x -> x.name.equals(s))
+                        .filter(x -> x.name.equalsIgnoreCase(s))
                         .findFirst()
                         .orElseGet(() -> new IngredientType(s, null, new ArrayList<>(), null));
             }
@@ -701,11 +701,9 @@ public class RecipeOverviewCtrl {
                 });
 
                 editIngredientTypeBox.getSelectionModel().clearSelection();
-                if (editIngredientTypeBox.getParent().isVisible()) {
-                    editIngredientTypeBox.show();
-                } else {
-                    editIngredientTypeBox.hide();
-                }
+                editIngredientTypeBox.hide();
+                // show box while typing
+                if (editIngredientTypeBox.getParent().isVisible()) editIngredientTypeBox.show();
             });
         });
 
@@ -1146,19 +1144,12 @@ public class RecipeOverviewCtrl {
     @FXML
     public void onRefresh() {
         // load all ingredient types from server
-        allIngredientTypes = FXCollections.observableArrayList();
         try {
             allIngredientTypes.setAll(server.getIngredientTypes());
         } catch (RuntimeException e) {
             System.out.println("ERROR: Could not load ingredient types from server.");
             e.printStackTrace();
         }
-
-        // setup filtered and sorted ingredient types
-        filteredIngredientTypes = new FilteredList<>(allIngredientTypes);
-        sortedIngredientTypes = new SortedList<>(filteredIngredientTypes);
-        editIngredientTypeBox.setItems(sortedIngredientTypes);
-        editIngredientTypeBox.hide();
 
         boolean empty = recipeListView.getItems().isEmpty();
         mainSeparator.getParent().setVisible(!empty);
@@ -1657,8 +1648,6 @@ public class RecipeOverviewCtrl {
         // Clear the placeholder so the user doesn't have to delete "New ingredient"
         editIngredientAmountField.clear();
         editUnitBox.getSelectionModel().select(0);
-
-        editIngredientTypeBox.requestFocus(); // Put the cursor in the name field
     }
 
     /**
@@ -1676,13 +1665,6 @@ public class RecipeOverviewCtrl {
             return;
         }
 
-        // remove duplicates in combo box
-        List<IngredientType> newList = new ArrayList<>(new HashSet<>(allIngredientTypes));
-        allIngredientTypes = FXCollections.observableList(newList);
-        filteredIngredientTypes = new FilteredList<>(allIngredientTypes);
-        sortedIngredientTypes = new SortedList<>(filteredIngredientTypes);
-        editIngredientTypeBox.setItems(sortedIngredientTypes);
-
         changeIngredientTypeViewEditMode(1);
         editUnitBox.getSelectionModel().select(0);
 
@@ -1696,9 +1678,6 @@ public class RecipeOverviewCtrl {
 
         cancelEditButton.setVisible(false);
         doneEditButton.setVisible(false);
-
-        // Force focus into the IngredientType name box
-        Platform.runLater(() -> editIngredientTypeBox.requestFocus());
     }
 
     /**
@@ -1842,8 +1821,10 @@ public class RecipeOverviewCtrl {
         editIngredientAmountField.clear();
         editUnitBox.getSelectionModel().select(0);
 
-        // add new ingredient type to list
-        allIngredientTypes.add(ingredient.ingredientType);
+        // add new ingredient type to list if it is new
+        if (! allIngredientTypes.contains(ingredient.ingredientType)) {
+            allIngredientTypes.add(ingredient.ingredientType);
+        }
 
         changeIngredientTypeViewEditMode(0);
         cancelEditButton.setVisible(true);
