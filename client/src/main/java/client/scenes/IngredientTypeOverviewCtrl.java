@@ -446,7 +446,8 @@ public class IngredientTypeOverviewCtrl {
                 OilsFats,
                 SaucesCondiments,
                 HerbsSpices,
-                Sweeteners
+                Sweeteners,
+                Other
         );
 
         ingredientTypeListView.getSelectionModel().selectedItemProperty().addListener(

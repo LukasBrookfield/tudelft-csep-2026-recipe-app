@@ -9,5 +9,6 @@ public enum Category {
     OilsFats,
     SaucesCondiments,
     HerbsSpices,
-    Sweeteners
+    Sweeteners,
+    Other
 }
