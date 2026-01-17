@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 
+import javafx.scene.paint.Color;
 import client.utils.ServerUtils;
 import commons.*;
 import javafx.application.Platform;
@@ -24,6 +25,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
+import javafx.scene.text.FontWeight;
 import javafx.stage.FileChooser;
 
 import java.awt.*;
@@ -270,6 +272,9 @@ public class RecipeOverviewCtrl {
     @FXML
     private HBox languagePickerContainer;
 
+    @FXML
+    private Label nutriScoreLabel;
+
     private final LanguageService languages;
 
     private final Tooltip nutritionTooltip = new Tooltip();
@@ -282,6 +287,15 @@ public class RecipeOverviewCtrl {
     private static final String SORT_NAME_AZ = "Name (A-Z)";
     private static final String SORT_FEWEST_STEPS = "Fewest steps first";
     private static final String SORT_FEWEST_ING = "Fewest ingredients first";
+
+    private static final Map<Character, String> COLOURS = new HashMap<>();
+    static {
+        COLOURS.put('A', "#038141"); // dark green
+        COLOURS.put('B', "#85BB2F"); // light green
+        COLOURS.put('C', "#FECB02"); // yellow
+        COLOURS.put('D', "#EE8100"); // orange
+        COLOURS.put('E', "#E63E11"); // red
+    }
 
     private int baseServings = 1;
 
@@ -629,6 +643,7 @@ public class RecipeOverviewCtrl {
                     } else {
                         recipeKcalPer100gLabel.setText(String.valueOf(Math.round(n.kcalPer100g())));
                     }
+                    updateNutriScoreLabel(n);
                 });
             } catch (Exception e) {
                 System.out.println("[nutrition] ERROR while loading nutrition:");
@@ -850,6 +865,19 @@ public class RecipeOverviewCtrl {
                 (obs, oldValue, newValue) -> {
                     mainCtrl.showScene(newValue);
                 });
+    }
+
+    private void updateNutriScoreLabel(RecipeNutrition recipeNutrition) {
+        if (recipeNutrition.nutriScore() == ' ') {
+            nutriScoreLabel.setText("-");
+            nutriScoreLabel.setStyle("");
+            return;
+        }
+        nutriScoreLabel.setText(String.valueOf(recipeNutrition.nutriScore()));
+        String colour = COLOURS.get(recipeNutrition.nutriScore());
+        nutriScoreLabel.setTextFill(Color.web(colour));
+        nutriScoreLabel.setFont(javafx.scene.text.Font.font("Arial", FontWeight.BOLD, 14));
+
     }
 
     private void initializeScaleFactorUI() {

@@ -229,6 +229,20 @@
                                     </Label>
                                  </children>
                               </HBox>
+                              <HBox alignment="CENTER_RIGHT" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="140.0" spacing="5.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
+                                 <children>
+                                    <Label fx:id="nutriScoreCaptionLabel" prefHeight="23.0" prefWidth="207.0" text="Nutri-score:" HBox.hgrow="ALWAYS">
+                                       <HBox.margin>
+                                          <Insets left="5.0" />
+                                       </HBox.margin>
+                                    </Label>
+                                    <Label fx:id="nutriScoreLabel" alignment="CENTER_RIGHT" prefHeight="17.0" prefWidth="170.0" text="-">
+                                       <HBox.margin>
+                                          <Insets right="5.0" />
+                                       </HBox.margin>
+                                    </Label>
+                                 </children>
+                              </HBox>
                            </children>
                         </HBox>
                         <StackPane>
