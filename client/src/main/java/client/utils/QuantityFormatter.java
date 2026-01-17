@@ -83,11 +83,11 @@ public class QuantityFormatter {
     }
 
     public String formatDecimal(double value){
-        String s = String.format(Locale.getDefault(), "%.1f", value);
+        String s = String.format(Locale.getDefault(), "%.2f", value);
 
         int i = s.length() - 1;
         while (i>= 0 && s.charAt(i) == '0') i --;
-        if (i >= 0 && s.charAt(i) == '.') i--;
+        if (i >= 0 && (s.charAt(i) == '.' || s.charAt(i) == ',')) i--;
 
         return s.substring(0, i + 1);
     }

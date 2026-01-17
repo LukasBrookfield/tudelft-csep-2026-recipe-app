@@ -36,11 +36,11 @@ public class IngredientScaling {
         return switch (unit) {
             // Integer only
             case G -> num.formatInteger(scaled) + "g " + name;
-            case ML -> num.formatInteger(scaled) + "ml " + name;
+            case ML -> num.formatInteger(scaled) + "mL " + name;
 
             // 1 decimal
             case KG -> num.formatDecimal(scaled) + "kg " + name;
-            case L -> num.formatDecimal(scaled) + "l " + name;
+            case L -> num.formatDecimal(scaled) + "L " + name;
 
             // prefer fractions for spoons
             case TBSP -> spoonText("tbsp", scaled, name, b);
