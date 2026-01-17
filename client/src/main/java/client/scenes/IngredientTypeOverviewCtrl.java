@@ -187,6 +187,12 @@ public class IngredientTypeOverviewCtrl {
             ingredientTypeTitleLabel.setText(b.getString("ing.title.new"));
         }
 
+        sceneBox.getItems().setAll(
+                b.getString("home.btn.home"),
+                b.getString("home.btn.recipeOverview"),
+                b.getString("home.btn.ingredientOverview"),
+                b.getString("home.btn.shoppingList"));
+
         detailsHeaderLabel.setText(b.getString("ing.details.header"));
         nameCaptionLabel.setText(b.getString("ing.details.name"));
         densityCaptionLabel.setText(b.getString("ing.details.density"));
@@ -403,9 +409,6 @@ public class IngredientTypeOverviewCtrl {
         applyTranslations();
         onRefresh();
 
-        sceneBox.getItems().addAll("Home", "Recipe overview", "Ingredient overview",
-                "Shopping list");
-
         ingredientTypeListView.getSelectionModel().selectedItemProperty().addListener(
                 (observable,
                  oldIngredientType, newIngredientType) -> {
@@ -415,7 +418,7 @@ public class IngredientTypeOverviewCtrl {
 
         sceneBox.getSelectionModel().selectedItemProperty().addListener(
                 (obs, oldValue, newValue) -> {
-                    mainCtrl.showScene(newValue);
+                    mainCtrl.showScene(sceneBox.getItems().indexOf(newValue));
                 });
     }
 

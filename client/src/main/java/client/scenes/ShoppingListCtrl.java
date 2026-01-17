@@ -139,6 +139,12 @@ public class ShoppingListCtrl {
     public void applyTranslations() {
         ResourceBundle b = languages.bundle();
 
+        sceneBox.getItems().setAll(
+                b.getString("home.btn.home"),
+                b.getString("home.btn.recipeOverview"),
+                b.getString("home.btn.ingredientOverview"),
+                b.getString("home.btn.shoppingList"));
+
         shoppingListHeaderLabel.setText(b.getString("shopping.title"));
 
         editIngredientAmountField.setPromptText(b.getString("common.field.amount.prompt"));
@@ -257,8 +263,6 @@ public class ShoppingListCtrl {
 
         changeIngredientViewEditMode(false);
 
-        sceneBox.getItems().addAll("Home", "Recipe overview", "Ingredient overview",
-                "Shopping list");
         editUnitBox.getItems().addAll("Select a unit", "G", "KG", "ML", "L", "TBSP", "TSP", "PINCH",
                 "HANDFUL", "TO_TASTE");
 
@@ -275,7 +279,7 @@ public class ShoppingListCtrl {
 
         sceneBox.getSelectionModel().selectedItemProperty().addListener(
                 (obs, oldValue, newValue) -> {
-                    mainCtrl.showScene(newValue);
+                    mainCtrl.showScene(sceneBox.getItems().indexOf(newValue));
                 });
 
         ingredientListView.setCellFactory(lv -> new ListCell<>() {
