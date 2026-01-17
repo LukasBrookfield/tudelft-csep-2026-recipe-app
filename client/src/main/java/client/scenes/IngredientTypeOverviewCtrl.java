@@ -16,6 +16,7 @@ import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
@@ -39,6 +40,9 @@ public class IngredientTypeOverviewCtrl {
     private final LanguageService languages;
 
     private int usedInRecipesCount = 0;
+
+    @FXML
+    private AnchorPane rootPane;
 
     // Left sidebar
 
@@ -186,6 +190,14 @@ public class IngredientTypeOverviewCtrl {
         if ("New ingredient".equals(ingredientTypeTitleLabel.getText()) || ingredientTypeTitleLabel.getText().isBlank()) {
             ingredientTypeTitleLabel.setText(b.getString("ing.title.new"));
         }
+
+        sceneBox.getItems().setAll(
+                b.getString("home.btn.home"),
+                b.getString("home.btn.recipeOverview"),
+                b.getString("home.btn.ingredientOverview"),
+                b.getString("home.btn.shoppingList"));
+        if (rootPane != null && rootPane.getScene() != null && rootPane.getScene().getWindow() != null
+                && rootPane.getScene().getWindow().isShowing()) sceneBox.getSelectionModel().select(2);
 
         detailsHeaderLabel.setText(b.getString("ing.details.header"));
         nameCaptionLabel.setText(b.getString("ing.details.name"));
@@ -403,9 +415,6 @@ public class IngredientTypeOverviewCtrl {
         applyTranslations();
         onRefresh();
 
-        sceneBox.getItems().addAll("Home", "Recipe overview", "Ingredient overview",
-                "Shopping list");
-
         ingredientTypeListView.getSelectionModel().selectedItemProperty().addListener(
                 (observable,
                  oldIngredientType, newIngredientType) -> {
@@ -415,7 +424,7 @@ public class IngredientTypeOverviewCtrl {
 
         sceneBox.getSelectionModel().selectedItemProperty().addListener(
                 (obs, oldValue, newValue) -> {
-                    mainCtrl.showScene(newValue);
+                    mainCtrl.showScene(sceneBox.getItems().indexOf(newValue));
                 });
     }
 

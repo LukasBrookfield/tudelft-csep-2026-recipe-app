@@ -17,6 +17,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
+import javafx.util.Callback;
 import javafx.util.StringConverter;
 
 import java.util.ArrayList;
@@ -26,6 +27,7 @@ import java.util.ResourceBundle;
 
 
 public class AddToShoppingListCtrl {
+    private static final String UNIT_PLACEHOLDER = "__SELECT_UNIT__";
 
     private final ServerUtils server;
     private final UserConfig user;
@@ -91,8 +93,6 @@ public class AddToShoppingListCtrl {
     @FXML
     private Button backEditIngredientButton;
 
-    private static final String CREATE_NEW_INGREDIENT_TYPE = "Create new ingredient type";
-
     private final LanguageService languages;
 
     private boolean newIngredientType = false;
@@ -109,6 +109,22 @@ public class AddToShoppingListCtrl {
 
     public void applyTranslations() {
         ResourceBundle b = languages.bundle();
+
+        ingredientListView.refresh();
+
+        editUnitBox.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(String value) {
+                if (value == null) return "";
+                if (UNIT_PLACEHOLDER.equals(value)) return b.getString("recipe.select.unit");
+                return b.getString("recipe.select.unit." + value);
+            }
+
+            @Override
+            public String fromString(String s) {
+                return s;
+            }
+        });
 
         label.setText(b.getString("addShopping.title"));
         exitButton.setText(b.getString("addShopping.btn.exit"));
@@ -146,8 +162,8 @@ public class AddToShoppingListCtrl {
     @FXML
     private void onRefresh() {
         editIngredientAmountField.clear();
+        editUnitBox.getSelectionModel().select(0);
         ingredientListView.refresh();
-
         // load all ingredient types from server
         try {
             allIngredientTypes.setAll(server.getIngredientTypes());
@@ -241,7 +257,7 @@ public class AddToShoppingListCtrl {
         });
 
         changeIngredientViewEditMode(false);
-        editUnitBox.getItems().addAll("Select a unit", "G", "KG", "ML", "L", "TBSP", "TSP", "PINCH",
+        editUnitBox.getItems().addAll(UNIT_PLACEHOLDER, "G", "KG", "ML", "L", "TBSP", "TSP", "PINCH",
                 "HANDFUL", "TO_TASTE");
 
         ingredientListView.getSelectionModel().selectedItemProperty().addListener(

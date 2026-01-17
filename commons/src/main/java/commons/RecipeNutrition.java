@@ -8,5 +8,6 @@ public record RecipeNutrition(
             double proteinG,
             double fatG,
             double carbsG,
-            int ignoredIngredients
+            int ignoredIngredients,
+            char nutriScore
 ) {}
