@@ -166,7 +166,7 @@ public class ShoppingListUtils {
         doc.add(new Paragraph(LocalDate.now().toString(), dateFont));
         doc.add(new Paragraph(" "));
         doc.add(new Paragraph(" "));
-        doc.add(new Paragraph("Items:", sectinFont));
+        doc.add(new Paragraph(languages.bundle().getString("shoppingListItemsHeader") + ":", sectinFont));
         for (ShoppingListItem i : shoppingListItems) {
             Paragraph p = new Paragraph();
 
