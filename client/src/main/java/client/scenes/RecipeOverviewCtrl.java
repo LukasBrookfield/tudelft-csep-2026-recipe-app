@@ -341,6 +341,13 @@ public class RecipeOverviewCtrl {
                 return s;
             }
         });
+
+        sceneBox.getItems().setAll(
+                b.getString("home.btn.home"),
+                b.getString("home.btn.recipeOverview"),
+                b.getString("home.btn.ingredientOverview"),
+                b.getString("home.btn.shoppingList"));
+
         editUnitBox.setValue(editUnitBox.getValue());
 
         downloadRecipeButton.setText(b.getString("common.btn.download"));
@@ -375,6 +382,7 @@ public class RecipeOverviewCtrl {
         setTooltip(addRecipeButton, "common.tooltip.addRecipe");
         setTooltip(cloneRecipeButton, "common.tooltip.cloneRecipe");
         setTooltip(editRecipeButton, "common.tooltip.editRecipe");
+        setTooltip(addToShoppingListButton, "common.tooltip.addToShoppingList");
 
         setTooltip(removeIngredientButton, "common.tooltip.removeIngredient");
         setTooltip(addIngredientButton, "common.tooltip.addIngredient");
@@ -667,8 +675,6 @@ public class RecipeOverviewCtrl {
         recipeTitleField.setVisible(false);
         applyTranslations();
 
-        sceneBox.getItems().addAll("Home", "Recipe overview", "Ingredient overview",
-                "Shopping list");
         editUnitBox.getItems().addAll(UNIT_PLACEHOLDER, "G", "KG", "ML", "L", "TBSP", "TSP", "PINCH",
                 "HANDFUL", "TO_TASTE");
         editUnitBox.getSelectionModel().select(0);
@@ -863,7 +869,7 @@ public class RecipeOverviewCtrl {
 
         sceneBox.getSelectionModel().selectedItemProperty().addListener(
                 (obs, oldValue, newValue) -> {
-                    mainCtrl.showScene(newValue);
+                    mainCtrl.showScene(sceneBox.getItems().indexOf(newValue));
                 });
     }
 
