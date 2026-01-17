@@ -64,7 +64,7 @@ public class RecipeNutritionService {
                 fatG,
                 carbsG,
                 ignored,
-                calculateNutriScore(kcalPer100g, proteinG, fatG, carbsG));
+                calculateNutriScore(kcalPer100g, proteinG, fatG, carbsG, totalGrams));
     }
 
     /**
@@ -73,14 +73,19 @@ public class RecipeNutritionService {
      * @param proteinG grams of protein in recipe
      * @param fatG grams of fat in recipe
      * @param carbsG grams of carbs in recipe
+     * @param totalGrams total grams in recipe
      * @return A single character from {A, B, C, D, E}, or ' ' if there is no nutritional info
      */
     private char calculateNutriScore(double kcalPer100g,
                                      double proteinG,
                                      double fatG,
-                                     double carbsG) {
+                                     double carbsG,
+                                     double totalGrams) {
         if (kcalPer100g == 0.0) return ' ';
-        double score = (2.0 * proteinG) - carbsG - (1.5 * fatG) - (0.02 * kcalPer100g);
+        double proteinPer100g = (proteinG / totalGrams) * 100;
+        double carbsPer100g = (carbsG / totalGrams) * 100;
+        double fatPer100g = (fatG / totalGrams) * 100;
+        double score = (2.0 * proteinPer100g) - carbsPer100g - (1.5 * fatPer100g) - (0.02 * kcalPer100g);
         double scoreRestricted = Math.max(0, Math.min(100, score));
         if (scoreRestricted >= 80) return 'A';
         if (scoreRestricted >= 65) return 'B';
