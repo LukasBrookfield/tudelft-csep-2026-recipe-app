@@ -76,11 +76,12 @@ public class Ingredient {
         }
 
         switch (unit) {
-            case G:
-            case ML:
-            case KG:
-            case L:
+            case G, KG:
                 return amount + unit.name().toLowerCase() + " " + ingredientType.name;
+            case ML:
+                return amount + "mL " + ingredientType.name;
+            case L:
+                return amount + unit.name() + " " + ingredientType.name;
             case TBSP:
                 if (amount == 1) {
                     return "1 " + b.getString("unit.tablespoon.singular") + " " + ingredientType.name;
