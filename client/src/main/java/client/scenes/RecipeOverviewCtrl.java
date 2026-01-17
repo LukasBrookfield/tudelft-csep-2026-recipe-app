@@ -803,25 +803,6 @@ public class RecipeOverviewCtrl {
             }
         });
 
-        ingredientListView.setCellFactory(new Callback<>() {
-            @Override
-            public ListCell<Ingredient> call(ListView<Ingredient> param) {
-                return new ListCell<>() {
-                    @Override
-                    protected void updateItem(Ingredient ingredient, boolean empty) {
-                        super.updateItem(ingredient, empty);
-                        if (empty || ingredient == null) {
-                            setText(null);
-                            setGraphic(null);
-                        } else {
-                            String displayText = ingredient.toString(languages.bundle());
-                            setText(displayText);
-                        }
-                    }
-                };
-            }
-        });
-
         onRefresh();
 
         recipeListView.getSelectionModel().selectedItemProperty().addListener(
@@ -924,15 +905,21 @@ public class RecipeOverviewCtrl {
     }
 
     private void initializeIngredientRendering(){
-        ingredientListView.setCellFactory(listview -> new ListCell<>() {
+        ingredientListView.setCellFactory(new Callback<>() {
             @Override
-            protected void updateItem(Ingredient item, boolean empty){
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                    return;
-                }
-                setText(ingredientScaling.format(item, scaleFactor, languages.bundle()));
+            public ListCell<Ingredient> call(ListView<Ingredient> param) {
+                return new ListCell<>() {
+                    @Override
+                    protected void updateItem(Ingredient ingredient, boolean empty) {
+                        super.updateItem(ingredient, empty);
+                        if (empty || ingredient == null) {
+                            setText(null);
+                            setGraphic(null);
+                        } else {
+                            setText(ingredientScaling.format(ingredient, scaleFactor, languages.bundle()));
+                        }
+                    }
+                };
             }
         });
     }
@@ -1335,15 +1322,15 @@ public class RecipeOverviewCtrl {
         Font bodyFont = FontFactory.getFont(FontFactory.HELVETICA, 12);
 
         doc.open();
-        doc.add(new Paragraph("Recipe: " + title, titleFont));
+        doc.add(new Paragraph(languages.bundle().getString("recipeHeader") + ": " + title, titleFont));
         doc.add(new Paragraph(" "));
-        doc.add(new Paragraph(servings));
-        doc.add(new Paragraph("Ingredients:", sectinFont));
+        doc.add(new Paragraph(languages.bundle().getString("servingsHeader") + ": " + servings));
+        doc.add(new Paragraph(languages.bundle().getString("ingredientsHeader") + ":", sectinFont));
         for (Ingredient i : ingredients) {
             doc.add(new Paragraph(" • " + ingredientScaling.format(i, scaleFactor, languages.bundle()), bodyFont));
         }
         doc.add(new Paragraph(" "));
-        doc.add(new Paragraph("Preparation:", sectinFont));
+        doc.add(new Paragraph(languages.bundle().getString("preparationHeader") + ":", sectinFont));
         for (int i = 0; i < steps.size(); i++) {
             Object step = steps.get(i);
             doc.add(new Paragraph(String.valueOf(i + 1) + ". " + step, bodyFont));
@@ -2062,16 +2049,3 @@ public class RecipeOverviewCtrl {
         alert.show();
     }
 }
-    // MAYBE KEEP SOMETHING LIKE THIS FROM THE PROJECT TEMPLATE:
-//    public void keyPressed(KeyEvent e) {
-//        switch (e.getCode()) {
-//            case ENTER:
-//                ok();
-//                break;
-//            case ESCAPE:
-//                cancel();
-//                break;
-//            default:
-//                break;
-//        }
-//    }

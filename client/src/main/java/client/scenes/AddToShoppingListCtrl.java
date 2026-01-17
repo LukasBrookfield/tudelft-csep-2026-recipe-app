@@ -256,25 +256,6 @@ public class AddToShoppingListCtrl {
             });
         });
 
-        ingredientListView.setCellFactory(new Callback<>() {
-            @Override
-            public ListCell<ShoppingListItem> call(ListView<ShoppingListItem> param) {
-                return new ListCell<>() {
-                    @Override
-                    protected void updateItem(ShoppingListItem item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (empty || item == null) {
-                            setText(null);
-                            setGraphic(null);
-                        } else {
-                            String displayText = item.toString(languages.bundle());
-                            setText(displayText);
-                        }
-                    }
-                };
-            }
-        });
-
         changeIngredientViewEditMode(false);
         editUnitBox.getItems().addAll(UNIT_PLACEHOLDER, "G", "KG", "ML", "L", "TBSP", "TSP", "PINCH",
                 "HANDFUL", "TO_TASTE");
