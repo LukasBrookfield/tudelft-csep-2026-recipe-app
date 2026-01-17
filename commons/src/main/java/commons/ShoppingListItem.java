@@ -3,6 +3,8 @@ package commons;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import java.util.ResourceBundle;
+
 public class ShoppingListItem {
     private Ingredient ingredient;
     private String recipeName;
@@ -36,11 +38,10 @@ public class ShoppingListItem {
         return HashCodeBuilder.reflectionHashCode(this);
     }
 
-    @Override
-    public String toString() {
+    public String toString(ResourceBundle b) {
         if(recipeName == null) {
             return ingredient.toString();
         }
-        return ingredient.toString() + " (" + recipeName + ")";
+        return ingredient.toString(b) + " (" + recipeName + ")";
     }
 }

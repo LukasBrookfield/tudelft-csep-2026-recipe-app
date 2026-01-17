@@ -3,11 +3,13 @@ package client.utils;
 import commons.Ingredient;
 import commons.Unit;
 
+import java.util.ResourceBundle;
+
 public class IngredientScaling {
 
     private final QuantityFormatter num = new QuantityFormatter();
 
-    public String format(Ingredient ing, double scaleFactor){
+    public String format(Ingredient ing, double scaleFactor, ResourceBundle b){
 
         if (ing.ingredientType == null || ing.ingredientType.name == null) return "New ingredient";
 
@@ -17,9 +19,9 @@ public class IngredientScaling {
         if (ing.amount == null && ing.unit == null) return name;
 
         // do not convert informal units
-        if (ing.unit == Unit.TO_TASTE) return name + " to taste";
-        if (ing.unit == Unit.PINCH) return name + "A pinch of " + name;
-        if (ing.unit == Unit.HANDFUL) return name + "A handful of " + name;
+        if (ing.unit == Unit.TO_TASTE || ing.unit == Unit.PINCH || ing.unit == Unit.HANDFUL) {
+            return ing.toString(b);
+        }
 
         if (ing.amount == null) return name;
 
