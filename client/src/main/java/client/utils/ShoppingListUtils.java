@@ -63,6 +63,11 @@ public class ShoppingListUtils {
             return false;
         }
 
+        if ("__SELECT_UNIT__".equals(unit)) {
+            System.out.println("Unit is required.");
+            return false;
+        }
+
         if (!unit.equals("TO_TASTE")
                 && amount.isEmpty()) {
             System.out.println("This unit needs an amount.");
@@ -129,9 +134,9 @@ public class ShoppingListUtils {
      */
     public String shoppingListItemString(ShoppingListItem item){
         if(item.getRecipeName() == null){
-            return ingredientScaling.format(item.getIngredient(), 1.0);
+            return ingredientScaling.format(item.getIngredient(), 1.0, languages.bundle());
         } else {
-            return ingredientScaling.format(item.getIngredient(), 1.0) +
+            return ingredientScaling.format(item.getIngredient(), 1.0, languages.bundle()) +
                     " (" + item.getRecipeName() + ")";
         }
     }
@@ -161,12 +166,12 @@ public class ShoppingListUtils {
         doc.add(new Paragraph(LocalDate.now().toString(), dateFont));
         doc.add(new Paragraph(" "));
         doc.add(new Paragraph(" "));
-        doc.add(new Paragraph("Items:", sectinFont));
+        doc.add(new Paragraph(languages.bundle().getString("shoppingListItemsHeader") + ":", sectinFont));
         for (ShoppingListItem i : shoppingListItems) {
             Paragraph p = new Paragraph();
 
             doc.add(new Paragraph(" "));
-            p.add(new Chunk(" • " + ingredientScaling.format(i.getIngredient(), 1), bodyFont));
+            p.add(new Chunk(" • " + ingredientScaling.format(i.getIngredient(), 1, languages.bundle()), bodyFont));
             if(i.getRecipeName() != null){
                 p.add(new Chunk(" " + i.getRecipeName(), recipeFont));
             }

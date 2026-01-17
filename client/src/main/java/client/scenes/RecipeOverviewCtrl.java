@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 
+import javafx.scene.paint.Color;
 import client.utils.ServerUtils;
 import commons.*;
 import javafx.application.Platform;
@@ -24,6 +25,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
+import javafx.scene.text.FontWeight;
 import javafx.stage.FileChooser;
 
 import java.awt.*;
@@ -270,6 +272,9 @@ public class RecipeOverviewCtrl {
     @FXML
     private HBox languagePickerContainer;
 
+    @FXML
+    private Label nutriScoreLabel;
+
     private final LanguageService languages;
 
     private final Tooltip nutritionTooltip = new Tooltip();
@@ -282,6 +287,15 @@ public class RecipeOverviewCtrl {
     private static final String SORT_NAME_AZ = "Name (A-Z)";
     private static final String SORT_FEWEST_STEPS = "Fewest steps first";
     private static final String SORT_FEWEST_ING = "Fewest ingredients first";
+
+    private static final Map<Character, String> COLOURS = new HashMap<>();
+    static {
+        COLOURS.put('A', "#038141"); // dark green
+        COLOURS.put('B', "#85BB2F"); // light green
+        COLOURS.put('C', "#FECB02"); // yellow
+        COLOURS.put('D', "#EE8100"); // orange
+        COLOURS.put('E', "#E63E11"); // red
+    }
 
     private int baseServings = 1;
 
@@ -314,12 +328,15 @@ public class RecipeOverviewCtrl {
     public void applyTranslations() {
 
         ResourceBundle b = languages.bundle();
+
+        ingredientListView.refresh();
+
         editUnitBox.setConverter(new StringConverter<>() {
             @Override
             public String toString(String value) {
                 if (value == null) return "";
                 if (UNIT_PLACEHOLDER.equals(value)) return b.getString("recipe.select.unit");
-                return value;
+                return b.getString("recipe.select.unit." + value);
             }
 
             @Override
@@ -327,6 +344,15 @@ public class RecipeOverviewCtrl {
                 return s;
             }
         });
+
+        sceneBox.getItems().setAll(
+                b.getString("home.btn.home"),
+                b.getString("home.btn.recipeOverview"),
+                b.getString("home.btn.ingredientOverview"),
+                b.getString("home.btn.shoppingList"));
+        if (rootPane != null && rootPane.getScene() != null && rootPane.getScene().getWindow() != null
+                && rootPane.getScene().getWindow().isShowing()) sceneBox.getSelectionModel().select(1);
+
         editUnitBox.setValue(editUnitBox.getValue());
 
         downloadRecipeButton.setText(b.getString("common.btn.download"));
@@ -361,6 +387,7 @@ public class RecipeOverviewCtrl {
         setTooltip(addRecipeButton, "common.tooltip.addRecipe");
         setTooltip(cloneRecipeButton, "common.tooltip.cloneRecipe");
         setTooltip(editRecipeButton, "common.tooltip.editRecipe");
+        setTooltip(addToShoppingListButton, "common.tooltip.addToShoppingList");
 
         setTooltip(removeIngredientButton, "common.tooltip.removeIngredient");
         setTooltip(addIngredientButton, "common.tooltip.addIngredient");
@@ -629,6 +656,7 @@ public class RecipeOverviewCtrl {
                     } else {
                         recipeKcalPer100gLabel.setText(String.valueOf(Math.round(n.kcalPer100g())));
                     }
+                    updateNutriScoreLabel(n);
                 });
             } catch (Exception e) {
                 System.out.println("[nutrition] ERROR while loading nutrition:");
@@ -652,8 +680,6 @@ public class RecipeOverviewCtrl {
         recipeTitleField.setVisible(false);
         applyTranslations();
 
-        sceneBox.getItems().addAll("Home", "Recipe overview", "Ingredient overview",
-                "Shopping list");
         editUnitBox.getItems().addAll(UNIT_PLACEHOLDER, "G", "KG", "ML", "L", "TBSP", "TSP", "PINCH",
                 "HANDFUL", "TO_TASTE");
         editUnitBox.getSelectionModel().select(0);
@@ -740,6 +766,11 @@ public class RecipeOverviewCtrl {
             allRecipes.setAll(list);
             recipeListView.refresh();
             setLabelsAndFields();
+
+            // Alerts user if any of their favourite recipes have been deleted
+            int n = user.removeDeletedRecipes(allRecipes);
+            user.saveUser();
+            if (n > 0) showDeletedFavouritesAlert(n);
         }));
 
 
@@ -848,8 +879,21 @@ public class RecipeOverviewCtrl {
 
         sceneBox.getSelectionModel().selectedItemProperty().addListener(
                 (obs, oldValue, newValue) -> {
-                    mainCtrl.showScene(newValue);
+                    mainCtrl.showScene(sceneBox.getItems().indexOf(newValue));
                 });
+    }
+
+    private void updateNutriScoreLabel(RecipeNutrition recipeNutrition) {
+        if (recipeNutrition.nutriScore() == ' ') {
+            nutriScoreLabel.setText("-");
+            nutriScoreLabel.setStyle("");
+            return;
+        }
+        nutriScoreLabel.setText(String.valueOf(recipeNutrition.nutriScore()));
+        String colour = COLOURS.get(recipeNutrition.nutriScore());
+        nutriScoreLabel.setTextFill(Color.web(colour));
+        nutriScoreLabel.setFont(javafx.scene.text.Font.font("Arial", FontWeight.BOLD, 14));
+
     }
 
     private void initializeScaleFactorUI() {
@@ -866,15 +910,21 @@ public class RecipeOverviewCtrl {
     }
 
     private void initializeIngredientRendering(){
-        ingredientListView.setCellFactory(listview -> new ListCell<>() {
+        ingredientListView.setCellFactory(new Callback<>() {
             @Override
-            protected void updateItem(Ingredient item, boolean empty){
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                    return;
-                }
-                setText(ingredientScaling.format(item, scaleFactor));
+            public ListCell<Ingredient> call(ListView<Ingredient> param) {
+                return new ListCell<>() {
+                    @Override
+                    protected void updateItem(Ingredient ingredient, boolean empty) {
+                        super.updateItem(ingredient, empty);
+                        if (empty || ingredient == null) {
+                            setText(null);
+                            setGraphic(null);
+                        } else {
+                            setText(ingredientScaling.format(ingredient, scaleFactor, languages.bundle()));
+                        }
+                    }
+                };
             }
         });
     }
@@ -1277,15 +1327,15 @@ public class RecipeOverviewCtrl {
         Font bodyFont = FontFactory.getFont(FontFactory.HELVETICA, 12);
 
         doc.open();
-        doc.add(new Paragraph("Recipe: " + title, titleFont));
+        doc.add(new Paragraph(languages.bundle().getString("recipeHeader") + ": " + title, titleFont));
         doc.add(new Paragraph(" "));
-        doc.add(new Paragraph(servings));
-        doc.add(new Paragraph("Ingredients:", sectinFont));
+        doc.add(new Paragraph(languages.bundle().getString("servingsHeader") + ": " + servings));
+        doc.add(new Paragraph(languages.bundle().getString("ingredientsHeader") + ":", sectinFont));
         for (Ingredient i : ingredients) {
-            doc.add(new Paragraph(" • " + ingredientScaling.format(i, scaleFactor), bodyFont));
+            doc.add(new Paragraph(" • " + ingredientScaling.format(i, scaleFactor, languages.bundle()), bodyFont));
         }
         doc.add(new Paragraph(" "));
-        doc.add(new Paragraph("Preparation:", sectinFont));
+        doc.add(new Paragraph(languages.bundle().getString("preparationHeader") + ":", sectinFont));
         for (int i = 0; i < steps.size(); i++) {
             Object step = steps.get(i);
             doc.add(new Paragraph(String.valueOf(i + 1) + ". " + step, bodyFont));
@@ -2004,16 +2054,3 @@ public class RecipeOverviewCtrl {
         alert.show();
     }
 }
-    // MAYBE KEEP SOMETHING LIKE THIS FROM THE PROJECT TEMPLATE:
-//    public void keyPressed(KeyEvent e) {
-//        switch (e.getCode()) {
-//            case ENTER:
-//                ok();
-//                break;
-//            case ESCAPE:
-//                cancel();
-//                break;
-//            default:
-//                break;
-//        }
-//    }
