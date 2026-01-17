@@ -110,4 +110,52 @@ public class Ingredient {
         }
         return "";
     }
+
+    @Override
+    public String toString() {
+        if (ingredientType == null) {
+            return "New ingredient";
+        }
+        if (amount == null && unit == null) {
+            return ingredientType.name;
+        }
+        if (unit == null) {
+            return amount + " " + ingredientType.name;
+        }
+
+        switch (unit) {
+            case G:
+            case ML:
+            case KG:
+            case L:
+                return amount + unit.name().toLowerCase() + " " + ingredientType.name;
+            case TBSP:
+                if (amount == 1) {
+                    return "1 tablespoon of " + ingredientType.name;
+                } else {
+                    return amount + " tablespoons of " + ingredientType.name;
+                }
+            case TSP:
+                if (amount == 1) {
+                    return "1 teaspoon of " + ingredientType.name;
+                } else {
+                    return amount + " teaspoons of " + ingredientType.name;
+                }
+            case PINCH:
+                if (amount == 1) {
+                    return "A pinch of " + ingredientType.name;
+                } else {
+                    return amount + " pinches of " + ingredientType.name;
+                }
+            case HANDFUL:
+                if (amount == 1) {
+                    return "A handful of " + ingredientType.name;
+                } else {
+                    return amount + " handfuls of " + ingredientType.name;
+                }
+            case TO_TASTE:
+                return ingredientType.name + " to taste";
+        }
+        return "";
+    }
 }

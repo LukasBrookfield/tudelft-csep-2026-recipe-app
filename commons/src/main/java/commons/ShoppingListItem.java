@@ -38,6 +38,14 @@ public class ShoppingListItem {
         return HashCodeBuilder.reflectionHashCode(this);
     }
 
+    @Override
+    public String toString() {
+        if(recipeName == null) {
+            return ingredient.toString();
+        }
+        return ingredient.toString() + " (" + recipeName + ")";
+    }
+
     public String toString(ResourceBundle b) {
         if(recipeName == null) {
             return ingredient.toString();
