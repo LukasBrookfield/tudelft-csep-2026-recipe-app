@@ -85,7 +85,7 @@ public class RecipeNutritionService {
         double proteinPer100g = (proteinG / totalGrams) * 100;
         double carbsPer100g = (carbsG / totalGrams) * 100;
         double fatPer100g = (fatG / totalGrams) * 100;
-        double score = (2.0 * proteinPer100g) - carbsPer100g - (1.5 * fatPer100g) - (0.02 * kcalPer100g);
+        double score = (3.5 * proteinPer100g) - (0.5 * carbsPer100g) - (1.5 * fatPer100g) - (0.02 * kcalPer100g);
         double scoreRestricted = Math.max(0, Math.min(100, score));
         if (scoreRestricted >= 80) return 'A';
         if (scoreRestricted >= 65) return 'B';
