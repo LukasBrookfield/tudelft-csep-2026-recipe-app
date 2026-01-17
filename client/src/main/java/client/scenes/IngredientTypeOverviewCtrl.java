@@ -41,6 +41,7 @@ public class IngredientTypeOverviewCtrl {
 
     private int usedInRecipesCount = 0;
 
+    @FXML
     private AnchorPane rootPane;
 
     // Left sidebar
