@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 
 public class ShoppingListCtrl {
+    private static final String UNIT_PLACEHOLDER = "__SELECT_UNIT__";
 
     private final ServerUtility server;
 
@@ -139,11 +140,29 @@ public class ShoppingListCtrl {
     public void applyTranslations() {
         ResourceBundle b = languages.bundle();
 
+        ingredientListView.refresh();
+
+        editUnitBox.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(String value) {
+                if (value == null) return "";
+                if (UNIT_PLACEHOLDER.equals(value)) return b.getString("recipe.select.unit");
+                return b.getString("recipe.select.unit." + value);
+            }
+
+            @Override
+            public String fromString(String s) {
+                return s;
+            }
+        });
+
         sceneBox.getItems().setAll(
                 b.getString("home.btn.home"),
                 b.getString("home.btn.recipeOverview"),
                 b.getString("home.btn.ingredientOverview"),
                 b.getString("home.btn.shoppingList"));
+        if (rootPane != null && rootPane.getScene() != null && rootPane.getScene().getWindow() != null
+                && rootPane.getScene().getWindow().isShowing()) sceneBox.getSelectionModel().select(3);
 
         shoppingListHeaderLabel.setText(b.getString("shopping.title"));
 
@@ -170,6 +189,7 @@ public class ShoppingListCtrl {
     @FXML
     private void onRefresh() {
         editIngredientAmountField.clear();
+        editUnitBox.getSelectionModel().select(0);
         ingredientListView.refresh();
 
         // load all ingredient types from server
@@ -263,7 +283,7 @@ public class ShoppingListCtrl {
 
         changeIngredientViewEditMode(false);
 
-        editUnitBox.getItems().addAll("Select a unit", "G", "KG", "ML", "L", "TBSP", "TSP", "PINCH",
+        editUnitBox.getItems().addAll(UNIT_PLACEHOLDER, "G", "KG", "ML", "L", "TBSP", "TSP", "PINCH",
                 "HANDFUL", "TO_TASTE");
 
         ingredientListView.getSelectionModel().selectedItemProperty().addListener(
@@ -401,12 +421,6 @@ public class ShoppingListCtrl {
     private void onEditIngredientButton() {
         //sets the values to the ingredient type choice box
         ShoppingListItem item = ingredientListView.getSelectionModel().getSelectedItem();
-        if (item.getIngredient().ingredientType != null) {
-            editIngredientTypeBox.setValue(item.getIngredient().ingredientType);
-        } else {
-            editIngredientTypeBox.getSelectionModel().clearSelection();
-            editIngredientTypeBox.setValue(null);
-        }
 
         if(ingredientListView.getItems().isEmpty()){
             System.out.println("There is no ingredient to edit.");
@@ -415,6 +429,13 @@ public class ShoppingListCtrl {
         if(ingredientListView.getSelectionModel().getSelectedItem() == null){
             System.out.println("There is no ingredient selected.");
             return;
+        }
+
+        if (item.getIngredient().ingredientType != null) {
+            editIngredientTypeBox.setValue(item.getIngredient().ingredientType);
+        } else {
+            editIngredientTypeBox.getSelectionModel().clearSelection();
+            editIngredientTypeBox.setValue(null);
         }
 
         changeIngredientViewEditMode(true);

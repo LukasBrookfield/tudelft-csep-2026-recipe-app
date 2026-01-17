@@ -328,12 +328,15 @@ public class RecipeOverviewCtrl {
     public void applyTranslations() {
 
         ResourceBundle b = languages.bundle();
+
+        ingredientListView.refresh();
+
         editUnitBox.setConverter(new StringConverter<>() {
             @Override
             public String toString(String value) {
                 if (value == null) return "";
                 if (UNIT_PLACEHOLDER.equals(value)) return b.getString("recipe.select.unit");
-                return value;
+                return b.getString("recipe.select.unit." + value);
             }
 
             @Override
@@ -347,6 +350,8 @@ public class RecipeOverviewCtrl {
                 b.getString("home.btn.recipeOverview"),
                 b.getString("home.btn.ingredientOverview"),
                 b.getString("home.btn.shoppingList"));
+        if (rootPane != null && rootPane.getScene() != null && rootPane.getScene().getWindow() != null
+                && rootPane.getScene().getWindow().isShowing()) sceneBox.getSelectionModel().select(1);
 
         editUnitBox.setValue(editUnitBox.getValue());
 
@@ -798,6 +803,25 @@ public class RecipeOverviewCtrl {
             }
         });
 
+        ingredientListView.setCellFactory(new Callback<>() {
+            @Override
+            public ListCell<Ingredient> call(ListView<Ingredient> param) {
+                return new ListCell<>() {
+                    @Override
+                    protected void updateItem(Ingredient ingredient, boolean empty) {
+                        super.updateItem(ingredient, empty);
+                        if (empty || ingredient == null) {
+                            setText(null);
+                            setGraphic(null);
+                        } else {
+                            String displayText = ingredient.toString(languages.bundle());
+                            setText(displayText);
+                        }
+                    }
+                };
+            }
+        });
+
         onRefresh();
 
         recipeListView.getSelectionModel().selectedItemProperty().addListener(
@@ -908,7 +932,7 @@ public class RecipeOverviewCtrl {
                     setText(null);
                     return;
                 }
-                setText(ingredientScaling.format(item, scaleFactor));
+                setText(ingredientScaling.format(item, scaleFactor, languages.bundle()));
             }
         });
     }
@@ -1316,7 +1340,7 @@ public class RecipeOverviewCtrl {
         doc.add(new Paragraph(servings));
         doc.add(new Paragraph("Ingredients:", sectinFont));
         for (Ingredient i : ingredients) {
-            doc.add(new Paragraph(" • " + ingredientScaling.format(i, scaleFactor), bodyFont));
+            doc.add(new Paragraph(" • " + ingredientScaling.format(i, scaleFactor, languages.bundle()), bodyFont));
         }
         doc.add(new Paragraph(" "));
         doc.add(new Paragraph("Preparation:", sectinFont));

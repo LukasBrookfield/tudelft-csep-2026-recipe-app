@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import java.util.ResourceBundle;
+
 @Entity
 public class Ingredient {
     @Id
@@ -62,10 +64,9 @@ public class Ingredient {
                 "id", "recipe");  // excludes id and recipes
     }
 
-    @Override
-    public String toString() {
+    public String toString(ResourceBundle b) {
         if (ingredientType == null) {
-            return "New ingredient";
+            return b.getString("newIngredient");
         }
         if (amount == null && unit == null) {
             return ingredientType.name;
@@ -79,33 +80,33 @@ public class Ingredient {
             case ML:
             case KG:
             case L:
-                return amount + unit.name() + " " + ingredientType.name;
+                return amount + unit.name().toLowerCase() + " " + ingredientType.name;
             case TBSP:
                 if (amount == 1) {
-                    return "1 tablespoon of " + ingredientType.name;
+                    return "1 " + b.getString("unit.tablespoon.singular") + " " + ingredientType.name;
                 } else {
-                    return amount + " tablespoons of " + ingredientType.name;
+                    return amount + " " + b.getString("unit.tablespoon.plural") + " " + ingredientType.name;
                 }
             case TSP:
                 if (amount == 1) {
-                    return "1 teaspoon of " + ingredientType.name;
+                    return "1 "+ b.getString("unit.teaspoon.singular") +  " " + ingredientType.name;
                 } else {
-                    return amount + " teaspoons of " + ingredientType.name;
+                    return amount + " " + b.getString("unit.teaspoon.plural") + " " + ingredientType.name;
                 }
             case PINCH:
                 if (amount == 1) {
-                    return "A pinch of " + ingredientType.name;
+                    return b.getString("unit.pinch.singular") + " " + ingredientType.name;
                 } else {
-                    return amount + " pinches of " + ingredientType.name;
+                    return amount + " " + b.getString("unit.pinch.plural") + " " + ingredientType.name;
                 }
             case HANDFUL:
                 if (amount == 1) {
-                    return "A handful of " + ingredientType.name;
+                    return b.getString("unit.handful.singular") + " " + ingredientType.name;
                 } else {
-                    return amount + " handfuls of " + ingredientType.name;
+                    return amount + " " + b.getString("unit.handful.plural") + " " + ingredientType.name;
                 }
             case TO_TASTE:
-                return ingredientType.name + " to taste";
+                return ingredientType.name + " " + b.getString("unit.toTaste");
         }
         return "";
     }
