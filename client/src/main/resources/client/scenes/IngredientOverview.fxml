@@ -21,12 +21,12 @@
          <children>
             <BorderPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <top>
-                  <HBox alignment="CENTER" prefHeight="33.0" prefWidth="518.0" BorderPane.alignment="CENTER">
+                  <HBox alignment="CENTER" BorderPane.alignment="CENTER">
                      <BorderPane.margin>
                         <Insets top="5.0" />
                      </BorderPane.margin>
                      <children>
-                        <Label prefHeight="25.0" prefWidth="137.0" text="🍽 FoodPal" textFill="#589ed5">
+                        <Label text="🍽 FoodPal" textFill="#589ed5">
                            <padding>
                               <Insets left="5.0" />
                            </padding>
@@ -42,7 +42,7 @@
                               <Insets />
                            </HBox.margin>
                         </HBox>
-                        <HBox alignment="CENTER_RIGHT" spacing="5.0">
+                        <HBox alignment="CENTER_RIGHT" prefHeight="33.0" spacing="5.0">
                            <HBox.margin>
                               <Insets right="10.0" />
                            </HBox.margin>
@@ -58,14 +58,16 @@
                   </HBox>
                </top>
                <left>
-                  <VBox minHeight="-Infinity" prefHeight="440.67" prefWidth="210.0" spacing="3.0" BorderPane.alignment="CENTER">
+                  <VBox prefHeight="200.0" prefWidth="210.0" spacing="5.0" BorderPane.alignment="CENTER">
                      <children>
-                        <TextField fx:id="ingredientTypeSearchField" promptText="Search ingredients...">
+                        <TextField fx:id="ingredientTypeSearchField" promptText="Search ingredients..." />
+                        <ChoiceBox fx:id="sortChoiceBox" maxWidth="1.7976931348623157E308">
                            <VBox.margin>
-                              <Insets bottom="5.0" />
+                              <Insets bottom="3.0" top="3.0" />
                            </VBox.margin>
-                        </TextField>
-                        <ListView fx:id="ingredientTypeListView" minHeight="-Infinity" prefHeight="353.0" prefWidth="190.0" VBox.vgrow="ALWAYS" />
+                        </ChoiceBox>
+                        <ListView fx:id="ingredientTypeListView" VBox.vgrow="ALWAYS" />
+                        <Label fx:id="searchStatusLabel" text="0 ingredients found" />
                         <HBox alignment="CENTER_LEFT" prefHeight="29.0" prefWidth="190.0" spacing="5.0">
                            <children>
                               <Button fx:id="removeIngredientTypeButton" mnemonicParsing="false" onAction="#onRemoveIngredientTypeButton" prefHeight="25.0" prefWidth="25.0" text="✕">
@@ -90,7 +92,7 @@
                                  </tooltip></Button>
                            </children>
                            <VBox.margin>
-                              <Insets top="5.0" />
+                              <Insets top="3.0" />
                            </VBox.margin>
                         </HBox>
                      </children>

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 
+import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import client.utils.ServerUtils;
 import commons.*;
@@ -89,7 +90,7 @@ public class RecipeOverviewCtrl {
 
     private double scaleFactor = 1.0;
 
-    private commons.RecipeNutrition lastNutrition = null;
+    private RecipeNutrition lastNutrition = null;
 
     // Root
 
@@ -285,6 +286,8 @@ public class RecipeOverviewCtrl {
 
     private static final String SORT_ORDER_BY = "Order by";
     private static final String SORT_NAME_AZ = "Name (A-Z)";
+    private static final String SORT_KCAL = "Least Kcal/100g first";
+    private static final String SORT_NUTRI = "Best Nutri-Score first";
     private static final String SORT_FEWEST_STEPS = "Fewest steps first";
     private static final String SORT_FEWEST_ING = "Fewest ingredients first";
 
@@ -298,6 +301,8 @@ public class RecipeOverviewCtrl {
     }
 
     private int baseServings = 1;
+
+    private int matches = 0;
 
     // General
 
@@ -382,6 +387,15 @@ public class RecipeOverviewCtrl {
         cancelEditDetailsButton.setText(b.getString("common.btn.cancel"));
         doneEditDetailsButton.setText(b.getString("common.btn.done"));
 
+        if (matches == 0) {
+            searchStatusLabel.setText(b.getString("recipe.search.zero"));
+        } else if (matches == 1) {
+            searchStatusLabel.setText(b.getString("recipe.search.one"));
+        } else {
+            searchStatusLabel.setText(MessageFormat.format(
+                    b.getString("recipe.search.multiple"), matches));
+        }
+
         // tooltips
         setTooltip(removeRecipeButton, "common.tooltip.removeRecipe");
         setTooltip(addRecipeButton, "common.tooltip.addRecipe");
@@ -420,7 +434,9 @@ public class RecipeOverviewCtrl {
                 if (value == null) return "";
                 return switch (value) {
                     case SORT_ORDER_BY -> b.getString("recipe.sort.orderBy");
-                    case SORT_NAME_AZ -> translate(b, "recipe.sort.nameAZ", SORT_NAME_AZ);
+                    case SORT_NAME_AZ -> translate(b, "recipe.sort.nameAz", SORT_NAME_AZ);
+                    case SORT_KCAL -> b.getString("recipe.sort.kcal");
+                    case SORT_NUTRI -> b.getString("recipe.sort.nutri");
                     case SORT_FEWEST_STEPS -> b.getString("recipe.sort.fewestSteps");
                     case SORT_FEWEST_ING -> b.getString("recipe.sort.fewestIngredients");
                     default -> value;
@@ -452,7 +468,7 @@ public class RecipeOverviewCtrl {
     private void changeViewEditMode(boolean value) {
         editIngredientTypeBox.hide();
         downloadRecipeButton.getParent().setDisable(value);
-        recipeSearchField.getParent().getParent().setDisable(value);
+        recipeSearchField.getParent().setDisable(value);
         recipeTitleLabel.setVisible(!value);
         recipeTitleField.setVisible(value);
         starRecipeButton.getParent().setVisible(!value);
@@ -967,7 +983,7 @@ public class RecipeOverviewCtrl {
     }
 
     private void refreshScaledViewOnly() {
-        commons.Recipe r = recipeListView.getSelectionModel().getSelectedItem();
+        Recipe r = recipeListView.getSelectionModel().getSelectedItem();
         if (r != null) updateServingsLabel(r.servings);
 
         ingredientListView.refresh();
@@ -1019,6 +1035,8 @@ public class RecipeOverviewCtrl {
                 sortChoiceBox.getItems().addAll(
                 SORT_ORDER_BY,
                 SORT_NAME_AZ,
+                SORT_KCAL,
+                SORT_NUTRI,
                 SORT_FEWEST_STEPS,
                 SORT_FEWEST_ING
         );
@@ -1051,10 +1069,47 @@ public class RecipeOverviewCtrl {
                     return n1.compareTo(n2);
                 });
                 break;
+            case SORT_KCAL:
+                sortedRecipes.setComparator((recipe1, recipe2) -> {
+                    var n1 = server.getRecipeNutrition(recipe1.id);
+                    var n2 = server.getRecipeNutrition(recipe2.id);
+
+                    Double kcal1 = n1.totalKcal() <= 0 ? 1000000 : n1.kcalPer100g();
+                    Double kcal2 = n2.totalKcal() <= 0 ? 1000000 : n2.kcalPer100g();
+                    if (kcal1.equals(kcal2)) {
+                        String s1 = recipe1.name == null ? "" : recipe1.name.toLowerCase();
+                        String s2 = recipe2.name == null ? "" : recipe2.name.toLowerCase();
+                        return s1.compareTo(s2);
+                    } else {
+                        return Double.compare(kcal1, kcal2);
+                    }
+                });
+                break;
+            case SORT_NUTRI:
+                sortedRecipes.setComparator((recipe1, recipe2) -> {
+                    var n1 = server.getRecipeNutrition(recipe1.id);
+                    var n2 = server.getRecipeNutrition(recipe2.id);
+
+                    char nutri1 = n1.nutriScore() == ' ' ? 'F' : n1.nutriScore();
+                    char nutri2 = n2.nutriScore() == ' ' ? 'F' : n2.nutriScore();
+                    if (nutri1 == nutri2) {
+                        String s1 = recipe1.name == null ? "" : recipe1.name.toLowerCase();
+                        String s2 = recipe2.name == null ? "" : recipe2.name.toLowerCase();
+                        return s1.compareTo(s2);
+                    } else {
+                        return String.valueOf(nutri1).compareTo(String.valueOf(nutri2));
+                    }
+                });
+                break;
             case SORT_FEWEST_STEPS:
                 sortedRecipes.setComparator((r1, r2) -> {
                     int s1 = r1.steps == null ? 0 : r1.steps.size();
                     int s2 = r2.steps == null ? 0 : r2.steps.size();
+                    if (s1 == s2) {
+                        String n1 = r1.name == null ? "" : r1.name.toLowerCase();
+                        String n2 = r2.name == null ? "" : r2.name.toLowerCase();
+                        return n1.compareTo(n2);
+                    }
                     return Integer.compare(s1, s2);
                 });
                 break;
@@ -1062,6 +1117,11 @@ public class RecipeOverviewCtrl {
                 sortedRecipes.setComparator((r1, r2) -> {
                     int i1 = (r1.ingredients == null) ? 0 : r1.ingredients.size();
                     int i2 = (r2.ingredients == null) ? 0 : r2.ingredients.size();
+                    if (i1 == i2) {
+                        String s1 = r1.name == null ? "" : r1.name.toLowerCase();
+                        String s2 = r2.name == null ? "" : r2.name.toLowerCase();
+                        return s1.compareTo(s2);
+                    }
                     return Integer.compare(i1, i2);
                 });
                 break;
@@ -1082,7 +1142,7 @@ public class RecipeOverviewCtrl {
 
         // This listens to key presses when the TextField is focused
         recipeSearchField.setOnKeyReleased(e -> {
-            if (e.getCode() == javafx.scene.input.KeyCode.ESCAPE) {
+            if (e.getCode() == KeyCode.ESCAPE) {
                 recipeSearchField.clear(); // sets the text to ""
                 applySearchFilter(""); // clears the filter
                 recipeListView.getSelectionModel().clearSelection(); // deselects any recipe
@@ -1119,17 +1179,17 @@ public class RecipeOverviewCtrl {
 
         filteredRecipes.setPredicate(currentPredicate.and(recipe -> mattchesAllWords(recipe, words)));
 
-        String msg;
-        int matches = filteredRecipes.size();
-        if (matches == 0) {
-            msg = "No recipes match your search";
-        } else if (matches == 1) {
-            msg = "1 recipe found";
-        } else {
-            msg = matches + " recipes found";
-        }
+        ResourceBundle b = languages.bundle();
 
-        searchStatusLabel.setText(msg);
+        matches = filteredRecipes.size();
+        if (matches == 0) {
+            searchStatusLabel.setText(b.getString("recipe.search.zero"));
+        } else if (matches == 1) {
+            searchStatusLabel.setText(b.getString("recipe.search.one"));
+        } else {
+            searchStatusLabel.setText(MessageFormat.format(
+                    b.getString("recipe.search.multiple"), matches));
+        }
         searchStatusLabel.setVisible(true);
         searchStatusLabel.setManaged(true);
     }
@@ -1288,10 +1348,7 @@ public class RecipeOverviewCtrl {
         onRefresh();
 
         allRecipes.add(recipe);
-        // recipeListView.getSelectionModel().select(recipe);
-        recipeListView.getSelectionModel().select(
-                recipeListView.getItems().size() - 1
-        );
+        recipeListView.getSelectionModel().select(recipe);
 
         newRecipe = true;
         newRecipeId = recipe.id;
@@ -1528,7 +1585,6 @@ public class RecipeOverviewCtrl {
         onRefresh();
         changeViewEditMode(false);
         newRecipe = false;
-        changeStepViewEditMode(false);
     }
 
     /**
@@ -1580,6 +1636,7 @@ public class RecipeOverviewCtrl {
         allRecipes.set(index, server.updateRecipe(recipe.id, recipe));
 
         onRefresh();
+        recipeListView.getSelectionModel().select(recipe);
         changeViewEditMode(false);
         newRecipe = false;
 
@@ -1670,7 +1727,6 @@ public class RecipeOverviewCtrl {
             System.out.println("There is no ingredient selected.");
             return;
         }
-        allIngredientTypes.remove(ingredientListView.getSelectionModel().getSelectedItem().ingredientType);
         Recipe recipe = recipeListView.getSelectionModel().getSelectedItem();
         Ingredient ingredient = ingredientListView.getSelectionModel().getSelectedItem();
         ingredientListView.getItems().remove(ingredient);
