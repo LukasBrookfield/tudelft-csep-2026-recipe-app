@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import java.util.ResourceBundle;
+
 @Entity
 public class Ingredient {
     @Id
@@ -62,6 +64,54 @@ public class Ingredient {
                 "id", "recipe");  // excludes id and recipes
     }
 
+    public String toString(ResourceBundle b) {
+        if (ingredientType == null) {
+            return b.getString("newIngredient");
+        }
+        if (amount == null && unit == null) {
+            return ingredientType.name;
+        }
+        if (unit == null) {
+            return amount + " " + ingredientType.name;
+        }
+
+        switch (unit) {
+            case G, KG:
+                return amount + unit.name().toLowerCase() + " " + ingredientType.name;
+            case ML:
+                return amount + "mL " + ingredientType.name;
+            case L:
+                return amount + unit.name() + " " + ingredientType.name;
+            case TBSP:
+                if (amount == 1) {
+                    return "1 " + b.getString("unit.tablespoon.singular") + " " + ingredientType.name;
+                } else {
+                    return amount + " " + b.getString("unit.tablespoon.plural") + " " + ingredientType.name;
+                }
+            case TSP:
+                if (amount == 1) {
+                    return "1 "+ b.getString("unit.teaspoon.singular") +  " " + ingredientType.name;
+                } else {
+                    return amount + " " + b.getString("unit.teaspoon.plural") + " " + ingredientType.name;
+                }
+            case PINCH:
+                if (amount == 1) {
+                    return b.getString("unit.pinch.singular") + " " + ingredientType.name;
+                } else {
+                    return amount + " " + b.getString("unit.pinch.plural") + " " + ingredientType.name;
+                }
+            case HANDFUL:
+                if (amount == 1) {
+                    return b.getString("unit.handful.singular") + " " + ingredientType.name;
+                } else {
+                    return amount + " " + b.getString("unit.handful.plural") + " " + ingredientType.name;
+                }
+            case TO_TASTE:
+                return ingredientType.name + " " + b.getString("unit.toTaste");
+        }
+        return "";
+    }
+
     @Override
     public String toString() {
         if (ingredientType == null) {
@@ -79,7 +129,7 @@ public class Ingredient {
             case ML:
             case KG:
             case L:
-                return amount + unit.name() + " " + ingredientType.name;
+                return amount + unit.name().toLowerCase() + " " + ingredientType.name;
             case TBSP:
                 if (amount == 1) {
                     return "1 tablespoon of " + ingredientType.name;
