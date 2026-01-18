@@ -233,6 +233,9 @@ public class IngredientTypeOverviewCtrl {
         fatTextField.setPromptText(b.getString("ing.nutrition.fat.prompt"));
         carbsTextField.setPromptText(b.getString("ing.nutrition.carbs.prompt"));
 
+        cancelEditButton.setText(b.getString("common.btn.cancel"));
+        doneEditButton.setText(b.getString("common.btn.done"));
+
         cancelEditDetailsButton.setText(b.getString("common.btn.cancel"));
         doneEditDetailsButton.setText(b.getString("common.btn.done"));
 
@@ -907,6 +910,13 @@ public class IngredientTypeOverviewCtrl {
             recipeUtils.displayAlertInputWarning("ingredient.warning.double.density", textFields);
             return;
         }
+
+        if (density < 0) {
+            System.out.println("The density must be non-negative.");
+            recipeUtils.displayAlertInputWarning("ingredient.warning.density.negative", textFields);
+            return;
+        }
+
         //Check if ingredient density is larger than the density of Osmium
         if(density > 22.6) {
             System.out.println("The density is out of this world");
