@@ -75,7 +75,7 @@ public class LanguagePickerCtrl {
         if (tag == null) tag = "en";
         for (var option : languageBox.getItems()) {
             if (option.tag().equalsIgnoreCase(tag)) {
-                if (languageBox.getValue() == null || !languageBox.getValue().tag().equalsIgnoreCase("tag")) {
+                if (languageBox.getValue() == null || !languageBox.getValue().tag().equalsIgnoreCase(tag)) {
                     languageBox.getSelectionModel().select(option);
                 }
                 return;
