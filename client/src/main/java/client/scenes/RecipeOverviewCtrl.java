@@ -72,7 +72,13 @@ public class RecipeOverviewCtrl {
 
     private final MainCtrl mainCtrl;
 
-    private Predicate<Recipe> currentPredicate = recipe -> true;
+    private Predicate<Recipe> defaultPredicate = recipe -> true;
+    private Predicate<Recipe> searchPredicate = recipe -> true;
+    private Predicate<Recipe> favoritePredicate = recipe -> true;
+    private Predicate<Recipe> ENPredicate = recipe -> true;
+    private Predicate<Recipe> NLPredicate = recipe -> true;
+    private Predicate<Recipe> PTPredicate = recipe -> true;
+
     private ObservableList<Recipe> allRecipes;
     private FilteredList<Recipe> filteredRecipes;
     private SortedList<Recipe> sortedRecipes;
@@ -105,7 +111,19 @@ public class RecipeOverviewCtrl {
     private TextField recipeSearchField;
 
     @FXML
-    private ChoiceBox<String> favouriteRecipeFilterBox;
+    private MenuButton filterBox;
+
+    @FXML
+    private CheckMenuItem showFavorites;
+
+    @FXML
+    private CheckMenuItem showEN;
+
+    @FXML
+    private CheckMenuItem showNL;
+
+    @FXML
+    private CheckMenuItem showPT;
 
     @FXML
     private ListView<Recipe> recipeListView;
@@ -364,6 +382,7 @@ public class RecipeOverviewCtrl {
                 && rootPane.getScene().getWindow().isShowing()) sceneBox.getSelectionModel().select(1);
 
         editUnitBox.setValue(editUnitBox.getValue());
+        filterBox.setText(b.getString("recipe.filterBy"));
 
         downloadRecipeButton.setText(b.getString("common.btn.download"));
         printRecipeButton.setText(b.getString("common.btn.print"));
@@ -392,6 +411,11 @@ public class RecipeOverviewCtrl {
         cancelEditDetailsButton.setText(b.getString("common.btn.cancel"));
         doneEditDetailsButton.setText(b.getString("common.btn.done"));
 
+        showFavorites.setText(b.getString("recipe.show.favorites"));
+        showEN.setText(b.getString("recipe.show.en"));
+        showNL.setText(b.getString("recipe.show.nl"));
+        showPT.setText(b.getString("recipe.show.pt"));
+
         if (matches == 0) {
             searchStatusLabel.setText(b.getString("recipe.search.zero"));
         } else if (matches == 1) {
@@ -418,21 +442,6 @@ public class RecipeOverviewCtrl {
         setTooltip(moveStepUpButton, "common.tooltip.moveUp");
         setTooltip(moveStepDownButton, "common.tooltip.moveDown");
         setTooltip(editDetailsButton, "common.tooltip.editServings");
-
-        // choiceboxs
-        favouriteRecipeFilterBox.setConverter(new StringConverter<>() {
-            // I do this so the choicebox can still store the original text internally,
-            // but display it differently
-            @Override public String toString(String value) {
-                if (value == null) return "";
-                return switch (value) {
-                    case FILTER_ALL -> b.getString("recipe.filter.all");
-                    case FILTER_FAV -> b.getString("recipe.filter.favourites");
-                    default -> value;
-                };
-            }
-                @Override public String fromString(String s) { return s; }
-        });
 
         sortChoiceBox.setConverter(new StringConverter<>() {
             @Override public String toString(String value) {
@@ -715,6 +724,43 @@ public class RecipeOverviewCtrl {
 
         }).start();
     }
+
+    private void setShowEN(boolean value) {
+        if (value) {
+            ENPredicate = defaultPredicate;
+            user.addSelectedLanguage("en");
+        } else {
+            ENPredicate = recipe -> !("en".equals(recipe.language));
+            user.removeSelectedLanguage("en");
+        }
+        user.saveUser();
+        updateFilteredList();
+    }
+
+    private void setShowNL(boolean value) {
+        if (value) {
+            NLPredicate = defaultPredicate;
+            user.addSelectedLanguage("nl");
+        } else {
+            NLPredicate = recipe -> !("nl".equals(recipe.language));
+            user.removeSelectedLanguage("nl");
+        }
+        user.saveUser();
+        updateFilteredList();
+    }
+
+    private void setShowPT(boolean value) {
+        if (value) {
+            PTPredicate = defaultPredicate;
+            user.addSelectedLanguage("pt");
+        } else {
+            PTPredicate = recipe -> !("pt".equals(recipe.language));
+            user.removeSelectedLanguage("pt");
+        }
+        user.saveUser();
+        updateFilteredList();
+    }
+
     /**
      * Initializes the home screen with default values
      */
@@ -725,6 +771,34 @@ public class RecipeOverviewCtrl {
         changeStepViewEditMode(false);
         changeViewEditMode(false);
         recipeTitleField.setVisible(false);
+
+        showFavorites = new CheckMenuItem("");
+        showEN = new CheckMenuItem("");
+        showNL = new CheckMenuItem("");
+        showPT = new CheckMenuItem("");
+        filterBox.getItems().addAll(showFavorites, showEN, showNL, showPT);
+
+        showFavorites.setOnAction((e) -> {
+            if (showFavorites.isSelected()) {
+                favoritePredicate = recipe -> user.isFavouriteRecipe(recipe);
+            } else {
+                favoritePredicate = defaultPredicate;
+            }
+            updateFilteredList();
+        });
+
+        showEN.setOnAction((e) -> {
+            setShowEN(showEN.isSelected());
+        });
+
+        showNL.setOnAction((e) -> {
+            setShowNL(showNL.isSelected());
+        });
+
+        showPT.setOnAction((e) -> {
+            setShowPT(showPT.isSelected());
+        });
+
         applyTranslations();
 
         editUnitBox.getItems().addAll(UNIT_PLACEHOLDER, "G", "KG", "ML", "L", "TBSP", "TSP", "PINCH",
@@ -807,6 +881,15 @@ public class RecipeOverviewCtrl {
 
         // make it show the UI shows the ordered list
         recipeListView.setItems(sortedRecipes);
+
+        setShowEN(user.isSelectedLanguage("en"));
+        showEN.setSelected(user.isSelectedLanguage("en"));
+
+        setShowNL(user.isSelectedLanguage("nl"));
+        showNL.setSelected(user.isSelectedLanguage("nl"));
+
+        setShowPT(user.isSelectedLanguage("pt"));
+        showPT.setSelected(user.isSelectedLanguage("pt"));
 
         // subscribe to the websocket URL
         server.subscribeToRecipeList(list -> Platform.runLater(() -> {
@@ -912,7 +995,6 @@ public class RecipeOverviewCtrl {
 
         setupSearch();
         setupSort();
-        setupFavouriteRecipeFilter();
 
         Platform.runLater(() -> {
             // Makes it so that the 'Add Recipe' button is selected when the app gets started
@@ -1054,6 +1136,10 @@ public class RecipeOverviewCtrl {
         }
     }
 
+    private void updateFilteredList() {
+        filteredRecipes.setPredicate(searchPredicate.and(favoritePredicate)
+                .and(ENPredicate).and(NLPredicate).and(PTPredicate));
+    }
 
     private void setupSort() {
 //        sortChoiceBox.getItems().addAll(
@@ -1191,7 +1277,8 @@ public class RecipeOverviewCtrl {
     private void applySearchFilter(String query) {
         if (query == null || query.isBlank()) {
             // np search, meaning show everything
-            filteredRecipes.setPredicate(currentPredicate);
+            searchPredicate = defaultPredicate;
+            updateFilteredList();
 
             // Hide label and give space back to the list
             searchStatusLabel.setText("");
@@ -1208,7 +1295,8 @@ public class RecipeOverviewCtrl {
         // spilt the query into words
         String[] words = query.toLowerCase().trim().split("\\s+");
 
-        filteredRecipes.setPredicate(currentPredicate.and(recipe -> mattchesAllWords(recipe, words)));
+        searchPredicate = recipe -> mattchesAllWords(recipe, words);
+        updateFilteredList();
 
         ResourceBundle b = languages.bundle();
 
@@ -1338,13 +1426,23 @@ public class RecipeOverviewCtrl {
      */
     @FXML
     private void onAddRecipe() throws JsonProcessingException {
+        String language = languages.getLanguageTag();
+        if (!user.isSelectedLanguage(language)) {
+            if ("en".equals(language)) {
+                recipeUtils.displayAlertWarning("recipe.en.not.selected", null);
+            } else if ("nl".equals(language)) {
+                recipeUtils.displayAlertWarning("recipe.nl.not.selected", null);
+            } else {
+                recipeUtils.displayAlertWarning("recipe.pt.not.selected", null);
+            }
+            return;
+        }
+
         // reset the search query, otherwise 'new recipe' might not show, and it will break the app
         recipeSearchField.clear();
         applySearchFilter("");
         onRefresh();
 
-        String language = languages.getLanguageTag();
-        System.out.println("language: " + language);
         addRecipeToServer(new Recipe(
                 languages.bundle().getString("recipe.title.new"), language));
     }
@@ -1373,10 +1471,10 @@ public class RecipeOverviewCtrl {
         recipe = server.addRecipe(recipe);
 
         // if user has filtered by favourite recipes, automatically make the new recipe a favourite
-        if (favouriteRecipeFilterBox.getSelectionModel().getSelectedItem().equals(FILTER_FAV)) {
-            user.addFavouriteRecipe(recipe);
-            user.saveUser();
-        }
+//        if (favouriteRecipeFilterBox.getSelectionModel().getSelectedItem().equals(FILTER_FAV)) {
+//            user.addFavouriteRecipe(recipe);
+//            user.saveUser();
+//        }
 
         onRefresh();
 
@@ -1632,7 +1730,7 @@ public class RecipeOverviewCtrl {
             System.out.println("The recipe needs a name");
             List<TextInputControl> textFields = new ArrayList<>();
             textFields.add(recipeTitleField);
-            recipeUtils.displayAlertInputWarning("recipe.warning.empty.name", null);
+            recipeUtils.displayAlertWarning("recipe.warning.empty.name", null);
             return;
         }
         // Check if the name starts with a digit
@@ -1640,7 +1738,7 @@ public class RecipeOverviewCtrl {
             System.out.println("The recipe name cannot start with a digit");
             List<TextInputControl> textFields = new ArrayList<>();
             textFields.add(recipeTitleField);
-            recipeUtils.displayAlertInputWarning("recipe.warning.start.with.number", textFields);
+            recipeUtils.displayAlertWarning("recipe.warning.start.with.number", textFields);
             return;
         }
 
@@ -1648,7 +1746,7 @@ public class RecipeOverviewCtrl {
             System.out.println("The recipe name exceeds 100 characters!");
             List<TextInputControl> textFields = new ArrayList<>();
             textFields.add(recipeTitleField);
-            recipeUtils.displayAlertInputWarning("recipe.warning.exceeds.limit", textFields);
+            recipeUtils.displayAlertWarning("recipe.warning.exceeds.limit", textFields);
             return;
         }
 
@@ -1710,24 +1808,24 @@ public class RecipeOverviewCtrl {
         textFields.add(editServingsField);
         if (editServingsField.getText().isBlank()) {
             System.out.println("Enter a valid amount.");
-            recipeUtils.displayAlertInputWarning("recipe.warning.servings.empty.amount", textFields);
+            recipeUtils.displayAlertWarning("recipe.warning.servings.empty.amount", textFields);
             return;
         }
         // Check if fields exceeds 8 characters
         if(editServingsField.getText().length()>8) {
             System.out.println("The servings amount exceeds 8 characters!");
-            recipeUtils.displayAlertInputWarning("recipe.warning.serving.exceeds.limit", textFields);
+            recipeUtils.displayAlertWarning("recipe.warning.serving.exceeds.limit", textFields);
             return;
         }
         try {
             if (Integer.parseInt(editServingsField.getText()) <= 0) {
                 System.out.println("The amount of servings needs to " +
                         "be a positive integer.");
-                recipeUtils.displayAlertInputWarning("recipe.warning.servings.negative.amount", textFields);
+                recipeUtils.displayAlertWarning("recipe.warning.servings.negative.amount", textFields);
                 return;
             }
         } catch (NumberFormatException e) {
-            recipeUtils.displayAlertInputWarning("recipe.warning.servings.non.integer", textFields);
+            recipeUtils.displayAlertWarning("recipe.warning.servings.non.integer", textFields);
         }
 
         try {
@@ -1736,7 +1834,7 @@ public class RecipeOverviewCtrl {
             Integer.parseInt(scaleFactorField.getText());
         } catch (NumberFormatException e) {
             System.out.println("Enter a valid number.");
-            recipeUtils.displayAlertInputWarning("recipe.warning.servings.non.integer", textFields);
+            recipeUtils.displayAlertWarning("recipe.warning.servings.non.integer", textFields);
             return;
         }
 
@@ -1845,7 +1943,7 @@ public class RecipeOverviewCtrl {
 
         // Check if the name field is empty first to avoid an IndexOutOfBoundsException
         if (ingredientType.name.isEmpty()) {
-            recipeUtils.displayAlertInputWarning("recipe.warning.ing.empty", null);
+            recipeUtils.displayAlertWarning("recipe.warning.ing.empty", null);
             System.out.println("The ingredient type needs a name.");
             return;
         }
@@ -1854,7 +1952,7 @@ public class RecipeOverviewCtrl {
             System.out.println("The ingredient type name exceeds 50 characters!");
             List<TextInputControl> textFields = new ArrayList<>();
             textFields.add(new TextField(ingredientType.name));
-            recipeUtils.displayAlertInputWarning("recipe.warning.ingredient.exceeds.limit", textFields);
+            recipeUtils.displayAlertWarning("recipe.warning.ingredient.exceeds.limit", textFields);
             return;
         }
 
@@ -1862,7 +1960,7 @@ public class RecipeOverviewCtrl {
         if (Character.isDigit(ingredientType.name.charAt(0))) {
             List<TextInputControl> textFields = new ArrayList<>();
             textFields.add(new TextField(ingredientType.name));
-            recipeUtils.displayAlertInputWarning("recipe.warning.ing.number", textFields);
+            recipeUtils.displayAlertWarning("recipe.warning.ing.number", textFields);
             return;
         }
 
@@ -1900,7 +1998,7 @@ public class RecipeOverviewCtrl {
         // Prepare the list of fields to clear if validation fails
         String selectedUnit = editUnitBox.getValue();
         if (selectedUnit == null || UNIT_PLACEHOLDER.equals(selectedUnit)) {
-            recipeUtils.displayAlertInputWarning("recipe.warning.ing.unit", null);
+            recipeUtils.displayAlertWarning("recipe.warning.ing.unit", null);
             System.out.println("Select a unit.");
             return;
         }
@@ -1911,20 +2009,20 @@ public class RecipeOverviewCtrl {
         textFields.add(editIngredientAmountField);
 
         if (selectedUnit.equals("TO_TASTE") && !amountText.isEmpty()) {
-            recipeUtils.displayAlertInputWarning("recipe.warning.ing.TO_TASTE", textFields);
+            recipeUtils.displayAlertWarning("recipe.warning.ing.TO_TASTE", textFields);
             System.out.println("This unit cannot have an amount.");
             return;
         }
 
         if (!selectedUnit.equals("TO_TASTE") && amountText.isEmpty()) {
-            recipeUtils.displayAlertInputWarning("recipe.warning.ing.required", textFields);
+            recipeUtils.displayAlertWarning("recipe.warning.ing.required", textFields);
             System.out.println("This unit needs an amount.");
             return;
         }
 
         if(amountText.length()>8){
             System.out.println("Amount exceeds the limit!");
-            recipeUtils.displayAlertInputWarning("recipe.warning.ing.exceed.limit", textFields);
+            recipeUtils.displayAlertWarning("recipe.warning.ing.exceed.limit", textFields);
             return;
         }
 
@@ -1933,11 +2031,11 @@ public class RecipeOverviewCtrl {
             try {
                 parsedAmount = Double.parseDouble(amountText);
                 if (parsedAmount <= 0) {
-                    recipeUtils.displayAlertInputWarning("recipe.warning.ing.negative", textFields);
+                    recipeUtils.displayAlertWarning("recipe.warning.ing.negative", textFields);
                     return;
                 }
             } catch (NumberFormatException e) {
-                recipeUtils.displayAlertInputWarning("recipe.warning.ing.nonNumeric", textFields);
+                recipeUtils.displayAlertWarning("recipe.warning.ing.nonNumeric", textFields);
                 System.out.println("Enter a valid number.");
                 return;
             }
@@ -2054,7 +2152,7 @@ public class RecipeOverviewCtrl {
     private void onDoneEditStepButton() {
         editStepField.setText(editStepField.getText().trim());
         if (editStepField.getText().isEmpty()) {
-            recipeUtils.displayAlertInputWarning("recipe.warning.step.empty", null);
+            recipeUtils.displayAlertWarning("recipe.warning.step.empty", null);
             System.out.println("The step cannot be empty.");
 
             return;
@@ -2063,7 +2161,7 @@ public class RecipeOverviewCtrl {
         if(editStepField.getText().length()>250){
             List<TextInputControl> textFields = new ArrayList<>();
             textFields.add(editStepField);
-            recipeUtils.displayAlertInputWarning("recipe.warning.step.exceed.limit", textFields);
+            recipeUtils.displayAlertWarning("recipe.warning.step.exceed.limit", textFields);
             System.out.println("The step exceeds 250 characters!");
         }
         int index = preparationStepListView.getSelectionModel().getSelectedIndex();
@@ -2101,30 +2199,6 @@ public class RecipeOverviewCtrl {
         user.saveUser();
         recipeListView.refresh();
         onRefresh();
-    }
-
-    /**
-     * Sets up the favourite recipe filter choice box
-     */
-    private void setupFavouriteRecipeFilter() {
-        favouriteRecipeFilterBox.getItems().addAll(FILTER_ALL, FILTER_FAV);
-        favouriteRecipeFilterBox.getSelectionModel().select(0);
-
-        favouriteRecipeFilterBox.getSelectionModel().selectedItemProperty().addListener(
-                (observable, oldValue, newValue) -> {
-                    recipeSearchField.clear();
-                    applySearchFilter("");
-                    if (newValue.equals(FILTER_ALL)) {
-                        currentPredicate = recipe -> true;
-                        filteredRecipes.setPredicate(currentPredicate);
-                    } else if (newValue.equals(FILTER_FAV)) {
-                        currentPredicate = recipe -> user.isFavouriteRecipe(recipe);
-                        filteredRecipes.setPredicate(currentPredicate);
-                    }
-                    recipeListView.getSelectionModel().clearSelection();
-                    onRefresh();
-                }
-        );
     }
 
     /**

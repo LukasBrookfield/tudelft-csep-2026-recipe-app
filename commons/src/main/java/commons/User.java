@@ -9,6 +9,7 @@ import java.util.List;
 public class User {
     private List<Long> favouriteRecipes;
     private List<ShoppingListItem> shoppingList;
+    private List<String> selectedLanguages;
 
     private String languageTag;
 
@@ -17,9 +18,12 @@ public class User {
      * @param favouriteRecipes A list of the ids of the user's favourite recipes
      * @param shoppingList A list of ingredients part of the user's shopping list
      */
-    public User(List<Long> favouriteRecipes, List<ShoppingListItem> shoppingList) {
+    public User(List<Long> favouriteRecipes,
+                List<ShoppingListItem> shoppingList,
+                List<String> selectedLanguages) {
         this.favouriteRecipes = favouriteRecipes;
         this.shoppingList = shoppingList;
+        this.selectedLanguages = selectedLanguages;
 
         this.languageTag = "en";    // default language - english
     }
@@ -30,6 +34,7 @@ public class User {
     public User() {
         this.favouriteRecipes = new ArrayList<>();
         this.shoppingList = new ArrayList<>();
+        this.selectedLanguages = new ArrayList<>(List.of("en", "nl", "pt"));
         this.languageTag = "en";
     }
 
@@ -58,6 +63,14 @@ public class User {
             shoppingList = new ArrayList<>();
         }
         shoppingList.add(shoppingListItem);
+    }
+
+    public List<String> getSelectedLanguages() {
+        return selectedLanguages;
+    }
+
+    public void setSelectedLanguages(List<String> selectedLanguages) {
+        this.selectedLanguages = selectedLanguages;
     }
 
     @Override
