@@ -27,6 +27,11 @@ public class HomeScreenCtrl {
     }
 
     @FXML
+    private void initialize() {
+        applyTranslations();
+    }
+
+    @FXML
     private void onRecipeOverviewButton() {
         mainCtrl.showScene(1);
     }
