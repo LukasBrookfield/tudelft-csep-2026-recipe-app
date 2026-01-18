@@ -245,7 +245,7 @@
                            <children>
                               <HBox alignment="CENTER_LEFT" prefHeight="25.0" prefWidth="307.0" spacing="5.0">
                                  <children>
-                                    <TextField fx:id="editServingsField" minWidth="-Infinity" prefHeight="25.0" prefWidth="140.0" promptText="Enter the amount of servings" />
+                                    <TextField fx:id="editServingsField" minWidth="-Infinity" prefHeight="25.0" prefWidth="200.0" promptText="Enter the amount of servings" />
                                     <HBox alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="217.0" spacing="5.0" HBox.hgrow="ALWAYS">
                                        <children>
                                           <Button fx:id="cancelEditDetailsButton" minWidth="-Infinity" mnemonicParsing="false" onAction="#onCancelEditDetailsButton" text="Cancel" HBox.hgrow="ALWAYS" />
@@ -316,8 +316,8 @@
                                     </HBox>
                                     <HBox spacing="5.0" visible="false">
                                        <children>
-                                           <ComboBox fx:id="editIngredientTypeBox" prefHeight="25.0" prefWidth="275.0" />
-                                           <HBox alignment="CENTER_RIGHT" spacing="5.0" HBox.hgrow="ALWAYS">
+                                           <ComboBox fx:id="editIngredientTypeBox" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
+                                           <HBox alignment="CENTER_RIGHT" spacing="5.0">
                                              <children>
                                                 <Button fx:id="cancelEditIngredientButton" minWidth="-Infinity" mnemonicParsing="false" onAction="#onCancelEditIngredientButton" text="Cancel" />
                                                 <Button fx:id="nextEditIngredientButton" minWidth="-Infinity" mnemonicParsing="false" onAction="#onNextEditIngredientButton" text="Next" />
