@@ -19,7 +19,7 @@ public class QuantityNormalizationServiceTest {
     @Test
     public void ingredientToGrams_massUnit_returnGrams() {
         var type = new IngredientType("Sugar", null, new ArrayList<>(), null);
-        var ing = new Ingredient(type, 250.0, Unit.G, new Recipe("x", new ArrayList<>(), new ArrayList<>(), 1));
+        var ing = new Ingredient(type, 250.0, Unit.G, new Recipe("x", new ArrayList<>(), new ArrayList<>(), 1, "en"));
 
         var grams = controller.ingredientToGrams(ing);
 
@@ -30,7 +30,7 @@ public class QuantityNormalizationServiceTest {
     @Test
     public void ingredientToGrams_informalUnit_returnsEmpty() {
         var type = new IngredientType("Sugar", null, new ArrayList<>(), null);
-        var ing = new Ingredient(type, 250.0, Unit.TO_TASTE, new Recipe("x", new ArrayList<>(), new ArrayList<>(), 1));
+        var ing = new Ingredient(type, 250.0, Unit.TO_TASTE, new Recipe("x", new ArrayList<>(), new ArrayList<>(), 1, "en"));
 
         assertTrue(controller.ingredientToGrams(ing).isEmpty());
     }
