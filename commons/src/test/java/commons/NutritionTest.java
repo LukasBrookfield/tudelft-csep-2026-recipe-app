@@ -43,8 +43,8 @@ class NutritionTest {
     void testToString() {
         assertEquals("Nutrition[\n" +
                 "  id=0\n" +
-                "  carbs=1,0\n" +
-                "  protein=2,0\n" +
-                "  fat=3,0\n]", nutrition.toString());
+                "  carbs=1.0\n" +
+                "  protein=2.0\n" +
+                "  fat=3.0\n]", nutrition.toString());
     }
 }
