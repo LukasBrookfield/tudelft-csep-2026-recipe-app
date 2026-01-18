@@ -46,7 +46,7 @@ public class ShoppingListCtrlTest {
     private Button doneEditIngredientButton;
     private StackPane editPane;
     private HBox editIngredientBox;
-    private HBox editIngredientTypeBox;
+    private ComboBox<IngredientType> editIngredientTypeBox;
     private ChoiceBox<IngredientType> editIngredientChoiceBox;
     private Button nextButton;
     private Button exitButton;
@@ -103,7 +103,7 @@ public class ShoppingListCtrlTest {
 
     private void addItem(FxRobot robot, String ingredientType, Unit unit, double amount) {
         robot.clickOn(addIngredientButton);
-        robot.clickOn(editIngredientNameField);
+        robot.clickOn(editIngredientTypeBox);
         robot.write(ingredientType);
         robot.clickOn(nextButton);
         robot.interact(() -> editUnitBox.getSelectionModel().select(unit.toString()));
@@ -184,7 +184,7 @@ public class ShoppingListCtrlTest {
         addItem(robot, "Test ingredient", Unit.G, 125.5);
         robot.clickOn(doneEditIngredientButton);
         robot.clickOn(editIngredientButton);
-        robot.clickOn(editIngredientNameField).type(KeyCode.END);
+        robot.clickOn(editIngredientTypeBox).type(KeyCode.END);
         robot.eraseText(20);
         robot.write("EDIT");
         robot.clickOn(nextButton);

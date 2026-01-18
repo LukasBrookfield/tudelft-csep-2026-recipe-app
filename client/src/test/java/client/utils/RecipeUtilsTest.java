@@ -63,7 +63,7 @@ class RecipeUtilsTest {
 
     @Test
     void getCaloriesPer100gNullNutritionTest() {
-        assertEquals(0.0, recipeUtils.getCaloriesPer100g(flour));
+        assertEquals(-1.0, recipeUtils.getCaloriesPer100g(flour));
     }
 
     @Test

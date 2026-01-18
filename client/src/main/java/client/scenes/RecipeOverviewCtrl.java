@@ -5,9 +5,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 
+import javafx.scene.input.KeyCode;
+import javafx.scene.paint.Color;
 import client.utils.ServerUtils;
 import commons.*;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
 import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
@@ -23,6 +26,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.layout.HBox;
+import javafx.scene.text.FontWeight;
 import javafx.stage.FileChooser;
 
 import java.awt.*;
@@ -30,9 +34,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import com.lowagie.text.Document;
 import com.lowagie.text.pdf.PdfWriter;
@@ -40,7 +42,7 @@ import com.lowagie.text.Paragraph;
 import com.lowagie.text.Font;
 import com.lowagie.text.FontFactory;
 import java.awt.print.PrinterJob;
-import java.util.ResourceBundle;
+import java.util.List;
 import java.util.function.Predicate;
 
 import javafx.stage.Modality;
@@ -73,6 +75,10 @@ public class RecipeOverviewCtrl {
     private FilteredList<Recipe> filteredRecipes;
     private SortedList<Recipe> sortedRecipes;
 
+    private ObservableList<IngredientType> allIngredientTypes;
+    private FilteredList<IngredientType> filteredIngredientTypes;
+    private SortedList<IngredientType> sortedIngredientTypes;
+
     boolean newRecipe = false;
     boolean newIngredient = false;
     boolean newStep = false;
@@ -84,7 +90,7 @@ public class RecipeOverviewCtrl {
 
     private double scaleFactor = 1.0;
 
-    private commons.RecipeNutrition lastNutrition = null;
+    private RecipeNutrition lastNutrition = null;
 
     // Root
 
@@ -202,10 +208,7 @@ public class RecipeOverviewCtrl {
     // Edit ingredient step 1
 
     @FXML
-    private ChoiceBox<IngredientType> editIngredientBox;
-
-    @FXML
-    private TextField editIngredientNameField;
+    private ComboBox<IngredientType> editIngredientTypeBox;
 
     @FXML
     private Button cancelEditIngredientButton;
@@ -270,6 +273,9 @@ public class RecipeOverviewCtrl {
     @FXML
     private HBox languagePickerContainer;
 
+    @FXML
+    private Label nutriScoreLabel;
+
     private final LanguageService languages;
 
     private final Tooltip nutritionTooltip = new Tooltip();
@@ -280,12 +286,23 @@ public class RecipeOverviewCtrl {
 
     private static final String SORT_ORDER_BY = "Order by";
     private static final String SORT_NAME_AZ = "Name (A-Z)";
+    private static final String SORT_KCAL = "Least Kcal/100g first";
+    private static final String SORT_NUTRI = "Best Nutri-Score first";
     private static final String SORT_FEWEST_STEPS = "Fewest steps first";
     private static final String SORT_FEWEST_ING = "Fewest ingredients first";
 
-    private static final String CREATE_NEW_INGREDIENT_TYPE = "Create new ingredient type";
+    private static final Map<Character, String> COLOURS = new HashMap<>();
+    static {
+        COLOURS.put('A', "#038141"); // dark green
+        COLOURS.put('B', "#85BB2F"); // light green
+        COLOURS.put('C', "#FECB02"); // yellow
+        COLOURS.put('D', "#EE8100"); // orange
+        COLOURS.put('E', "#E63E11"); // red
+    }
 
     private int baseServings = 1;
+
+    private int matches = 0;
 
     // General
 
@@ -316,12 +333,15 @@ public class RecipeOverviewCtrl {
     public void applyTranslations() {
 
         ResourceBundle b = languages.bundle();
+
+        ingredientListView.refresh();
+
         editUnitBox.setConverter(new StringConverter<>() {
             @Override
             public String toString(String value) {
                 if (value == null) return "";
                 if (UNIT_PLACEHOLDER.equals(value)) return b.getString("recipe.select.unit");
-                return value;
+                return b.getString("recipe.select.unit." + value);
             }
 
             @Override
@@ -329,6 +349,15 @@ public class RecipeOverviewCtrl {
                 return s;
             }
         });
+
+        sceneBox.getItems().setAll(
+                b.getString("home.btn.home"),
+                b.getString("home.btn.recipeOverview"),
+                b.getString("home.btn.ingredientOverview"),
+                b.getString("home.btn.shoppingList"));
+        if (rootPane != null && rootPane.getScene() != null && rootPane.getScene().getWindow() != null
+                && rootPane.getScene().getWindow().isShowing()) sceneBox.getSelectionModel().select(1);
+
         editUnitBox.setValue(editUnitBox.getValue());
 
         downloadRecipeButton.setText(b.getString("common.btn.download"));
@@ -344,7 +373,6 @@ public class RecipeOverviewCtrl {
         ingredientsHeaderLabel.setText(b.getString("recipe.header.ingredients"));
         preparationHeaderLabel.setText(b.getString("recipe.header.preparation"));
 
-        editIngredientNameField.setPromptText(b.getString("common.field.ingredientType.prompt"));
         editIngredientAmountField.setPromptText(b.getString("common.field.amount.prompt"));
         editStepField.setPromptText(b.getString("recipe.field.step.prompt"));
 
@@ -359,11 +387,21 @@ public class RecipeOverviewCtrl {
         cancelEditDetailsButton.setText(b.getString("common.btn.cancel"));
         doneEditDetailsButton.setText(b.getString("common.btn.done"));
 
+        if (matches == 0) {
+            searchStatusLabel.setText(b.getString("recipe.search.zero"));
+        } else if (matches == 1) {
+            searchStatusLabel.setText(b.getString("recipe.search.one"));
+        } else {
+            searchStatusLabel.setText(MessageFormat.format(
+                    b.getString("recipe.search.multiple"), matches));
+        }
+
         // tooltips
         setTooltip(removeRecipeButton, "common.tooltip.removeRecipe");
         setTooltip(addRecipeButton, "common.tooltip.addRecipe");
         setTooltip(cloneRecipeButton, "common.tooltip.cloneRecipe");
         setTooltip(editRecipeButton, "common.tooltip.editRecipe");
+        setTooltip(addToShoppingListButton, "common.tooltip.addToShoppingList");
 
         setTooltip(removeIngredientButton, "common.tooltip.removeIngredient");
         setTooltip(addIngredientButton, "common.tooltip.addIngredient");
@@ -396,22 +434,15 @@ public class RecipeOverviewCtrl {
                 if (value == null) return "";
                 return switch (value) {
                     case SORT_ORDER_BY -> b.getString("recipe.sort.orderBy");
-                    case SORT_NAME_AZ -> translate(b, "recipe.sort.nameAZ", SORT_NAME_AZ);
+                    case SORT_NAME_AZ -> translate(b, "recipe.sort.nameAz", SORT_NAME_AZ);
+                    case SORT_KCAL -> b.getString("recipe.sort.kcal");
+                    case SORT_NUTRI -> b.getString("recipe.sort.nutri");
                     case SORT_FEWEST_STEPS -> b.getString("recipe.sort.fewestSteps");
                     case SORT_FEWEST_ING -> b.getString("recipe.sort.fewestIngredients");
                     default -> value;
                 };
             }
             @Override public String fromString(String s) { return s; }
-        });
-
-        editIngredientBox.setConverter(new StringConverter<>() {
-            @Override public String toString(IngredientType it) {
-                if (it == null) return "";
-                if (CREATE_NEW_INGREDIENT_TYPE.equals(it.name)) return b.getString("common.ingredientType.createNew");
-                return it.name;
-            }
-            @Override public IngredientType fromString (String s) {return null; }
         });
 
         refreshStartTooltip();
@@ -435,9 +466,9 @@ public class RecipeOverviewCtrl {
      * @param value false for viewing mode, true for editing mode
      */
     private void changeViewEditMode(boolean value) {
+        editIngredientTypeBox.hide();
         downloadRecipeButton.getParent().setDisable(value);
-        recipeSearchField.getParent().getParent().setDisable(value);
-
+        recipeSearchField.getParent().setDisable(value);
         recipeTitleLabel.setVisible(!value);
         recipeTitleField.setVisible(value);
         starRecipeButton.getParent().setVisible(!value);
@@ -510,7 +541,12 @@ public class RecipeOverviewCtrl {
      */
     private void changeIngredientTypeViewEditMode(int value) {
         removeIngredientButton.getParent().setVisible(value == 0);
-        editIngredientBox.getParent().setVisible(value == 1);
+        editIngredientTypeBox.getParent().setVisible(value == 1);
+        if (value == 1) {
+            editIngredientTypeBox.show();
+        } else {
+            editIngredientTypeBox.hide();
+        }
         editIngredientAmountField.getParent().setVisible(value == 2);
 
         removeIngredientButton.getParent().setMouseTransparent(value > 0);
@@ -520,13 +556,6 @@ public class RecipeOverviewCtrl {
         removeStepButton.getParent().setDisable(value > 0);
 
         cancelEditButton.getParent().setDisable(value > 0);
-
-        // When going into edit mode, it automatically selects the
-        // ingredient name field
-        Platform.runLater(() -> {
-            editIngredientNameField.requestFocus();
-            editIngredientNameField.selectAll();
-        });
     }
 
     /**
@@ -643,6 +672,7 @@ public class RecipeOverviewCtrl {
                     } else {
                         recipeKcalPer100gLabel.setText(String.valueOf(Math.round(n.kcalPer100g())));
                     }
+                    updateNutriScoreLabel(n);
                 });
             } catch (Exception e) {
                 System.out.println("[nutrition] ERROR while loading nutrition:");
@@ -665,14 +695,59 @@ public class RecipeOverviewCtrl {
         changeViewEditMode(false);
         recipeTitleField.setVisible(false);
         applyTranslations();
-        onRefresh();
 
-        sceneBox.getItems().addAll("Home", "Recipe overview", "Ingredient overview",
-                "Shopping list");
         editUnitBox.getItems().addAll(UNIT_PLACEHOLDER, "G", "KG", "ML", "L", "TBSP", "TSP", "PINCH",
                 "HANDFUL", "TO_TASTE");
         editUnitBox.getSelectionModel().select(0);
 
+        // load all ingredient types from server
+        allIngredientTypes = FXCollections.observableArrayList();
+        try {
+            allIngredientTypes.setAll(server.getIngredientTypes());
+        } catch (RuntimeException e) {
+            System.out.println("ERROR: Could not load ingredient types from server.");
+            e.printStackTrace();
+        }
+
+        // setup filtered and sorted ingredient types
+        filteredIngredientTypes = new FilteredList<>(allIngredientTypes);
+        sortedIngredientTypes = new SortedList<>(filteredIngredientTypes);
+        editIngredientTypeBox.setItems(sortedIngredientTypes);
+
+        editIngredientTypeBox.visibleRowCountProperty().bind(
+                Bindings.min(5, Bindings.size(editIngredientTypeBox.getItems()))
+        );
+
+        editIngredientTypeBox.setEditable(true);
+        editIngredientTypeBox.setConverter(new StringConverter() {
+            @Override
+            public String toString(Object o) {
+                if (o == null) return "";
+                return ((IngredientType) o).toString();
+            }
+            @Override
+            public Object fromString(String s) {
+                return allIngredientTypes.stream()
+                        .filter(x -> x.name.equalsIgnoreCase(s))
+                        .findFirst()
+                        .orElseGet(() -> new IngredientType(s, null, new ArrayList<>(), null));
+            }
+        });
+
+        editIngredientTypeBox.getEditor().textProperty().addListener((obs, oldValue, newValue) -> {
+            Platform.runLater(() -> {
+                // apply the filter
+                filteredIngredientTypes.setPredicate(item -> {
+                    if (newValue == null || newValue.isBlank()) return true;
+                    return item.name.toLowerCase().contains(newValue.toLowerCase());
+                });
+
+                editIngredientTypeBox.getSelectionModel().clearSelection();
+                editIngredientTypeBox.hide();
+                // show box while typing
+                if (editIngredientTypeBox.getParent().isVisible()) editIngredientTypeBox.show();
+            });
+        });
 
         // set up "all recipes" + filtered list
         allRecipes = FXCollections.observableArrayList();
@@ -707,10 +782,22 @@ public class RecipeOverviewCtrl {
             allRecipes.setAll(list);
             recipeListView.refresh();
             setLabelsAndFields();
+
+            // Alerts user if any of their favourite recipes have been deleted
+            int n = user.removeDeletedRecipes(allRecipes);
+            user.saveUser();
+            if (n > 0) showDeletedFavouritesAlert(n);
         }));
 
 
         sortedRecipes.setComparator(null); // default is no custom order
+
+        // setup ingredient type sorting (alphabetical order)
+        sortedIngredientTypes.setComparator((obj1, obj2) -> {
+            String n1 = obj1.name == null ? "" : obj1.name.toLowerCase();
+            String n2 = obj2.name == null ? "" : obj2.name.toLowerCase();
+            return n1.compareTo(n2);
+        });
 
         initializeScaleFactorUI();
         initializeIngredientRendering();
@@ -808,8 +895,21 @@ public class RecipeOverviewCtrl {
 
         sceneBox.getSelectionModel().selectedItemProperty().addListener(
                 (obs, oldValue, newValue) -> {
-                    mainCtrl.showScene(newValue);
+                    mainCtrl.showScene(sceneBox.getItems().indexOf(newValue));
                 });
+    }
+
+    private void updateNutriScoreLabel(RecipeNutrition recipeNutrition) {
+        if (recipeNutrition.nutriScore() == ' ') {
+            nutriScoreLabel.setText("-");
+            nutriScoreLabel.setStyle("");
+            return;
+        }
+        nutriScoreLabel.setText(String.valueOf(recipeNutrition.nutriScore()));
+        String colour = COLOURS.get(recipeNutrition.nutriScore());
+        nutriScoreLabel.setTextFill(Color.web(colour));
+        nutriScoreLabel.setFont(javafx.scene.text.Font.font("Arial", FontWeight.BOLD, 14));
+
     }
 
     private void initializeScaleFactorUI() {
@@ -826,15 +926,21 @@ public class RecipeOverviewCtrl {
     }
 
     private void initializeIngredientRendering(){
-        ingredientListView.setCellFactory(listview -> new ListCell<>() {
+        ingredientListView.setCellFactory(new Callback<>() {
             @Override
-            protected void updateItem(Ingredient item, boolean empty){
-                super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                    return;
-                }
-                setText(ingredientScaling.format(item, scaleFactor));
+            public ListCell<Ingredient> call(ListView<Ingredient> param) {
+                return new ListCell<>() {
+                    @Override
+                    protected void updateItem(Ingredient ingredient, boolean empty) {
+                        super.updateItem(ingredient, empty);
+                        if (empty || ingredient == null) {
+                            setText(null);
+                            setGraphic(null);
+                        } else {
+                            setText(ingredientScaling.format(ingredient, scaleFactor, languages.bundle()));
+                        }
+                    }
+                };
             }
         });
     }
@@ -877,7 +983,7 @@ public class RecipeOverviewCtrl {
     }
 
     private void refreshScaledViewOnly() {
-        commons.Recipe r = recipeListView.getSelectionModel().getSelectedItem();
+        Recipe r = recipeListView.getSelectionModel().getSelectedItem();
         if (r != null) updateServingsLabel(r.servings);
 
         ingredientListView.refresh();
@@ -929,6 +1035,8 @@ public class RecipeOverviewCtrl {
                 sortChoiceBox.getItems().addAll(
                 SORT_ORDER_BY,
                 SORT_NAME_AZ,
+                SORT_KCAL,
+                SORT_NUTRI,
                 SORT_FEWEST_STEPS,
                 SORT_FEWEST_ING
         );
@@ -961,10 +1069,47 @@ public class RecipeOverviewCtrl {
                     return n1.compareTo(n2);
                 });
                 break;
+            case SORT_KCAL:
+                sortedRecipes.setComparator((recipe1, recipe2) -> {
+                    var n1 = server.getRecipeNutrition(recipe1.id);
+                    var n2 = server.getRecipeNutrition(recipe2.id);
+
+                    Double kcal1 = n1.totalKcal() <= 0 ? 1000000 : n1.kcalPer100g();
+                    Double kcal2 = n2.totalKcal() <= 0 ? 1000000 : n2.kcalPer100g();
+                    if (kcal1.equals(kcal2)) {
+                        String s1 = recipe1.name == null ? "" : recipe1.name.toLowerCase();
+                        String s2 = recipe2.name == null ? "" : recipe2.name.toLowerCase();
+                        return s1.compareTo(s2);
+                    } else {
+                        return Double.compare(kcal1, kcal2);
+                    }
+                });
+                break;
+            case SORT_NUTRI:
+                sortedRecipes.setComparator((recipe1, recipe2) -> {
+                    var n1 = server.getRecipeNutrition(recipe1.id);
+                    var n2 = server.getRecipeNutrition(recipe2.id);
+
+                    char nutri1 = n1.nutriScore() == ' ' ? 'F' : n1.nutriScore();
+                    char nutri2 = n2.nutriScore() == ' ' ? 'F' : n2.nutriScore();
+                    if (nutri1 == nutri2) {
+                        String s1 = recipe1.name == null ? "" : recipe1.name.toLowerCase();
+                        String s2 = recipe2.name == null ? "" : recipe2.name.toLowerCase();
+                        return s1.compareTo(s2);
+                    } else {
+                        return String.valueOf(nutri1).compareTo(String.valueOf(nutri2));
+                    }
+                });
+                break;
             case SORT_FEWEST_STEPS:
                 sortedRecipes.setComparator((r1, r2) -> {
                     int s1 = r1.steps == null ? 0 : r1.steps.size();
                     int s2 = r2.steps == null ? 0 : r2.steps.size();
+                    if (s1 == s2) {
+                        String n1 = r1.name == null ? "" : r1.name.toLowerCase();
+                        String n2 = r2.name == null ? "" : r2.name.toLowerCase();
+                        return n1.compareTo(n2);
+                    }
                     return Integer.compare(s1, s2);
                 });
                 break;
@@ -972,6 +1117,11 @@ public class RecipeOverviewCtrl {
                 sortedRecipes.setComparator((r1, r2) -> {
                     int i1 = (r1.ingredients == null) ? 0 : r1.ingredients.size();
                     int i2 = (r2.ingredients == null) ? 0 : r2.ingredients.size();
+                    if (i1 == i2) {
+                        String s1 = r1.name == null ? "" : r1.name.toLowerCase();
+                        String s2 = r2.name == null ? "" : r2.name.toLowerCase();
+                        return s1.compareTo(s2);
+                    }
                     return Integer.compare(i1, i2);
                 });
                 break;
@@ -992,7 +1142,7 @@ public class RecipeOverviewCtrl {
 
         // This listens to key presses when the TextField is focused
         recipeSearchField.setOnKeyReleased(e -> {
-            if (e.getCode() == javafx.scene.input.KeyCode.ESCAPE) {
+            if (e.getCode() == KeyCode.ESCAPE) {
                 recipeSearchField.clear(); // sets the text to ""
                 applySearchFilter(""); // clears the filter
                 recipeListView.getSelectionModel().clearSelection(); // deselects any recipe
@@ -1029,17 +1179,17 @@ public class RecipeOverviewCtrl {
 
         filteredRecipes.setPredicate(currentPredicate.and(recipe -> mattchesAllWords(recipe, words)));
 
-        String msg;
-        int matches = filteredRecipes.size();
-        if (matches == 0) {
-            msg = "No recipes match your search";
-        } else if (matches == 1) {
-            msg = "1 recipe found";
-        } else {
-            msg = matches + " recipes found";
-        }
+        ResourceBundle b = languages.bundle();
 
-        searchStatusLabel.setText(msg);
+        matches = filteredRecipes.size();
+        if (matches == 0) {
+            searchStatusLabel.setText(b.getString("recipe.search.zero"));
+        } else if (matches == 1) {
+            searchStatusLabel.setText(b.getString("recipe.search.one"));
+        } else {
+            searchStatusLabel.setText(MessageFormat.format(
+                    b.getString("recipe.search.multiple"), matches));
+        }
         searchStatusLabel.setVisible(true);
         searchStatusLabel.setManaged(true);
     }
@@ -1103,11 +1253,13 @@ public class RecipeOverviewCtrl {
      */
     @FXML
     public void onRefresh() {
-        editIngredientBox.getItems().setAll(
-                new IngredientType(CREATE_NEW_INGREDIENT_TYPE, null,
-                        null, null)
-        );
-        editIngredientBox.getItems().addAll(server.getIngredientTypes());
+        // load all ingredient types from server
+        try {
+            allIngredientTypes.setAll(server.getIngredientTypes());
+        } catch (RuntimeException e) {
+            System.out.println("ERROR: Could not load ingredient types from server.");
+            e.printStackTrace();
+        }
 
         boolean empty = recipeListView.getItems().isEmpty();
         mainSeparator.getParent().setVisible(!empty);
@@ -1196,10 +1348,7 @@ public class RecipeOverviewCtrl {
         onRefresh();
 
         allRecipes.add(recipe);
-        // recipeListView.getSelectionModel().select(recipe);
-        recipeListView.getSelectionModel().select(
-                recipeListView.getItems().size() - 1
-        );
+        recipeListView.getSelectionModel().select(recipe);
 
         newRecipe = true;
         newRecipeId = recipe.id;
@@ -1235,15 +1384,15 @@ public class RecipeOverviewCtrl {
         Font bodyFont = FontFactory.getFont(FontFactory.HELVETICA, 12);
 
         doc.open();
-        doc.add(new Paragraph("Recipe: " + title, titleFont));
+        doc.add(new Paragraph(languages.bundle().getString("recipeHeader") + ": " + title, titleFont));
         doc.add(new Paragraph(" "));
-        doc.add(new Paragraph(servings));
-        doc.add(new Paragraph("Ingredients:", sectinFont));
+        doc.add(new Paragraph(languages.bundle().getString("servingsHeader") + ": " + servings));
+        doc.add(new Paragraph(languages.bundle().getString("ingredientsHeader") + ":", sectinFont));
         for (Ingredient i : ingredients) {
-            doc.add(new Paragraph(" • " + ingredientScaling.format(i, scaleFactor), bodyFont));
+            doc.add(new Paragraph(" • " + ingredientScaling.format(i, scaleFactor, languages.bundle()), bodyFont));
         }
         doc.add(new Paragraph(" "));
-        doc.add(new Paragraph("Preparation:", sectinFont));
+        doc.add(new Paragraph(languages.bundle().getString("preparationHeader") + ":", sectinFont));
         for (int i = 0; i < steps.size(); i++) {
             Object step = steps.get(i);
             doc.add(new Paragraph(String.valueOf(i + 1) + ". " + step, bodyFont));
@@ -1436,7 +1585,6 @@ public class RecipeOverviewCtrl {
         onRefresh();
         changeViewEditMode(false);
         newRecipe = false;
-        changeStepViewEditMode(false);
     }
 
     /**
@@ -1488,6 +1636,7 @@ public class RecipeOverviewCtrl {
         allRecipes.set(index, server.updateRecipe(recipe.id, recipe));
 
         onRefresh();
+        recipeListView.getSelectionModel().select(recipe);
         changeViewEditMode(false);
         newRecipe = false;
 
@@ -1603,11 +1752,8 @@ public class RecipeOverviewCtrl {
         onEditIngredientButton();
 
         // Clear the placeholder so the user doesn't have to delete "New ingredient"
-        editIngredientNameField.clear();
         editIngredientAmountField.clear();
         editUnitBox.getSelectionModel().select(0);
-
-        editIngredientNameField.requestFocus(); // Put the cursor in the name field
     }
 
     /**
@@ -1626,33 +1772,18 @@ public class RecipeOverviewCtrl {
         }
 
         changeIngredientTypeViewEditMode(1);
-        editIngredientNameField.setText("");
         editUnitBox.getSelectionModel().select(0);
 
         Ingredient ingredient = ingredientListView.getSelectionModel().getSelectedItem();
         if (ingredient.ingredientType != null) {
-            editIngredientBox.setValue(ingredient.ingredientType);
-            editIngredientNameField.setText(ingredient.ingredientType.name);
+            editIngredientTypeBox.setValue(ingredient.ingredientType);
         } else {
-            editIngredientBox.getSelectionModel().select(0);
+            editIngredientTypeBox.getSelectionModel().clearSelection();
+            editIngredientTypeBox.setValue(null);
         }
 
-        editIngredientBox.getSelectionModel().selectedItemProperty()
-                .addListener((observable,
-                              oldValue, newValue) -> {
-                    if (newValue == null) return;
-                    if (newValue.name.equals("Create new ingredient type")) {
-                        editIngredientNameField.setDisable(false);
-                        editIngredientNameField.setText("");
-                    } else {
-                        editIngredientNameField.setDisable(true);
-                        editIngredientNameField.setText(editIngredientBox
-                                .getValue().name);
-                    }
-                });
-
-        // Force focus into the IngredientType name box
-        Platform.runLater(() -> editIngredientBox.requestFocus());
+        cancelEditButton.setVisible(false);
+        doneEditButton.setVisible(false);
     }
 
     /**
@@ -1676,26 +1807,28 @@ public class RecipeOverviewCtrl {
      */
     @FXML
     private void onNextEditIngredientButton() {
-        editIngredientNameField.setText(editIngredientNameField.getText().trim());
-        if (editIngredientNameField.getText().isEmpty()) {
+        IngredientType ingredientType = editIngredientTypeBox.getValue();
+        ingredientType.name = ingredientType.name.trim();
+
+        // Check if the name field is empty first to avoid an IndexOutOfBoundsException
+        if (ingredientType.name.isEmpty()) {
             recipeUtils.displayAlertInputWarning("recipe.warning.ing.empty", null);
             System.out.println("The ingredient type needs a name.");
             return;
         }
-        if(editIngredientNameField.getText().length()>50) {
+
+        if(ingredientType.name.length()>50) {
             System.out.println("The ingredient type name exceeds 50 characters!");
             List<TextInputControl> textFields = new ArrayList<>();
-            textFields.add(editIngredientNameField);
+            textFields.add(new TextField(ingredientType.name));
             recipeUtils.displayAlertInputWarning("recipe.warning.ingredient.exceeds.limit", textFields);
             return;
         }
 
-        // Check if the name field is empty first to avoid an IndexOutOfBoundsException
-        if (Character.isDigit(editIngredientNameField.getText().charAt(0))) {
-
+        // check if ingredient type starts with a digit
+        if (Character.isDigit(ingredientType.name.charAt(0))) {
             List<TextInputControl> textFields = new ArrayList<>();
-            textFields.add(editIngredientNameField);
-
+            textFields.add(new TextField(ingredientType.name));
             recipeUtils.displayAlertInputWarning("recipe.warning.ing.number", textFields);
             return;
         }
@@ -1781,14 +1914,7 @@ public class RecipeOverviewCtrl {
         Ingredient ingredient = ingredientListView.getItems().get(index);
 
         // Set Ingredient Type
-        if (editIngredientBox.getValue().name.equals("Create new ingredient type")) {
-            ingredient.ingredientType = new IngredientType(
-                    editIngredientNameField.getText(),
-                    null, new ArrayList<>(), null
-            );
-        } else {
-            ingredient.ingredientType = editIngredientBox.getValue();
-        }
+        ingredient.ingredientType = editIngredientTypeBox.getValue();
 
         // Apply validated data
         ingredient.amount = parsedAmount;
@@ -1800,6 +1926,11 @@ public class RecipeOverviewCtrl {
 
         editIngredientAmountField.clear();
         editUnitBox.getSelectionModel().select(0);
+
+        // add new ingredient type to list if it is new
+        if (! allIngredientTypes.contains(ingredient.ingredientType)) {
+            allIngredientTypes.add(ingredient.ingredientType);
+        }
 
         changeIngredientTypeViewEditMode(0);
         cancelEditButton.setVisible(true);
@@ -1979,16 +2110,3 @@ public class RecipeOverviewCtrl {
         alert.show();
     }
 }
-    // MAYBE KEEP SOMETHING LIKE THIS FROM THE PROJECT TEMPLATE:
-//    public void keyPressed(KeyEvent e) {
-//        switch (e.getCode()) {
-//            case ENTER:
-//                ok();
-//                break;
-//            case ESCAPE:
-//                cancel();
-//                break;
-//            default:
-//                break;
-//        }
-//    }
