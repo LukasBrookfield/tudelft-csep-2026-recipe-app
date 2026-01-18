@@ -5,6 +5,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import client.utils.ServerUtils;
@@ -144,6 +146,9 @@ public class RecipeOverviewCtrl {
 
     @FXML
     private TextField recipeTitleField;
+
+    @FXML
+    private ImageView languageImage;
 
     @FXML
     private Button editRecipeButton;
@@ -448,6 +453,27 @@ public class RecipeOverviewCtrl {
         refreshStartTooltip();
     }
 
+    @FXML
+    private void switchLanguage() throws JsonProcessingException {
+        Recipe recipe = recipeListView.getSelectionModel().getSelectedItem();
+        int index = allRecipes.indexOf(recipe);
+
+        String language = recipe.language;
+        if ("en".equals(language)) {
+            recipe.language = "nl";
+        } else if ("nl".equals(language)) {
+            recipe.language = "pt";
+        } else {
+            recipe.language = "en";
+        }
+
+        System.out.println("language: " + recipe.language);
+        System.out.println(new ObjectMapper().writeValueAsString(recipe));
+        allRecipes.set(index, server.updateRecipe(recipe.id, recipe));
+        System.out.println(new ObjectMapper().writeValueAsString(recipe));
+        onRefresh();
+    }
+
     @Inject
     public RecipeOverviewCtrl(ServerUtility server,
                               RecipeUtils recipeUtils,
@@ -614,6 +640,11 @@ public class RecipeOverviewCtrl {
             recipeTitleLabel.setText(recipe.name);
             baseServings = recipe.servings;
             updateServingsLabel(baseServings);
+
+            Image image = new Image(Objects.requireNonNull(
+                    getClass().getResourceAsStream(
+                            "/flags/" + recipe.language + ".png")));
+            languageImage.setImage(image);
 
             List<Ingredient> ingredients = new ArrayList<>(recipe.ingredients);
             ingredientListView.setItems(FXCollections.observableList(ingredients));
@@ -1312,8 +1343,10 @@ public class RecipeOverviewCtrl {
         applySearchFilter("");
         onRefresh();
 
-//        addRecipeToServer(new Recipe("New recipe"));
-        addRecipeToServer(new Recipe(languages.bundle().getString("recipe.title.new")));
+        String language = languages.getLanguageTag();
+        System.out.println("language: " + language);
+        addRecipeToServer(new Recipe(
+                languages.bundle().getString("recipe.title.new"), language));
     }
 
     @FXML

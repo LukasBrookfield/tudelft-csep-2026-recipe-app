@@ -424,11 +424,11 @@ public class RecipeOverviewCtrlTest {
         robot.clickOn("OK");
         // check if the right recipes show up after searching
         List<Recipe> recipes = recipeListView.getItems();
-        Recipe recipe1 = new Recipe("abc 123", new ArrayList<>(), new ArrayList<>(), 2);
+        Recipe recipe1 = new Recipe("abc 123", new ArrayList<>(), new ArrayList<>(), 2, "en");
         assertTrue(recipes.contains(recipe1));
-        Recipe recipe2 = new Recipe("123abc456", new ArrayList<>(), new ArrayList<>(), 3);
+        Recipe recipe2 = new Recipe("123abc456", new ArrayList<>(), new ArrayList<>(), 3, "en");
         assertFalse(recipes.contains(recipe2));
-        Recipe recipe3 = new Recipe("ab1c", new ArrayList<>(), new ArrayList<>(), 2);
+        Recipe recipe3 = new Recipe("ab1c", new ArrayList<>(), new ArrayList<>(), 2, "en");
         assertFalse(recipes.contains(recipe3));
     }
 
@@ -444,11 +444,11 @@ public class RecipeOverviewCtrlTest {
 
         // check if the recipes are in the right order (alphabetical order in this case)
         List<Recipe> recipes = recipeListView.getItems();
-        Recipe recipe1 = new Recipe("aaa", new ArrayList<>(), new ArrayList<>(), 2);
+        Recipe recipe1 = new Recipe("aaa", new ArrayList<>(), new ArrayList<>(), 2, "en");
         assertEquals(recipe1, recipes.getFirst());
-        Recipe recipe2 = new Recipe("bbb", new ArrayList<>(), new ArrayList<>(), 3);
+        Recipe recipe2 = new Recipe("bbb", new ArrayList<>(), new ArrayList<>(), 3, "en");
         assertEquals(recipe2, recipes.get(1));
-        Recipe recipe3 = new Recipe("bbz", new ArrayList<>(), new ArrayList<>(), 2);
+        Recipe recipe3 = new Recipe("bbz", new ArrayList<>(), new ArrayList<>(), 2, "en");
         assertEquals(recipe3, recipes.get(2));
     }
 
@@ -463,9 +463,9 @@ public class RecipeOverviewCtrlTest {
 
         // check that the favourite recipes have been correctly filtered
         List<Recipe> recipes = recipeListView.getItems();
-        Recipe recipe1 = new Recipe("Test recipe 1", new ArrayList<>(), new ArrayList<>(), 3);
+        Recipe recipe1 = new Recipe("Test recipe 1", new ArrayList<>(), new ArrayList<>(), 3, "en");
         assertTrue(recipes.contains(recipe1));
-        Recipe recipe2 = new Recipe("Test recipe 2", new ArrayList<>(), new ArrayList<>(), 5);
+        Recipe recipe2 = new Recipe("Test recipe 2", new ArrayList<>(), new ArrayList<>(), 5, "en");
         assertFalse(recipes.contains(recipe2));
     }
 
