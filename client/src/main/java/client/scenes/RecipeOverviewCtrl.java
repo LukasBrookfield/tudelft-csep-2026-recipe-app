@@ -456,7 +456,7 @@ public class RecipeOverviewCtrl {
     private void changeViewEditMode(boolean value) {
         editIngredientTypeBox.hide();
         downloadRecipeButton.getParent().setDisable(value);
-        recipeSearchField.getParent().getParent().setDisable(value);
+        recipeSearchField.getParent().setDisable(value);
         recipeTitleLabel.setVisible(!value);
         recipeTitleField.setVisible(value);
         starRecipeButton.getParent().setVisible(!value);
