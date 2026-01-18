@@ -178,6 +178,8 @@ public class IngredientTypeOverviewCtrl {
     private final String SORT_NAME_AZ = "Name (A-Z)";
     private final String SORT_KCAL = "Least Kcal/100g first";
 
+    private int matches = 0;
+
     // Bottom
 
     @FXML
@@ -246,6 +248,15 @@ public class IngredientTypeOverviewCtrl {
         doneEditNutritionButton.setText(b.getString("common.btn.done"));
 
         usedInRecipesLabel.setText(formatUsedInRecipes(usedInRecipesCount));
+
+        if (matches == 0) {
+            searchStatusLabel.setText(b.getString("ing.search.zero"));
+        } else if (matches == 1) {
+            searchStatusLabel.setText(b.getString("ing.search.one"));
+        } else {
+            searchStatusLabel.setText(MessageFormat.format(
+                    b.getString("ing.search.multiple"), matches));
+        }
 
         // tooltips
         setTooltip(removeIngredientTypeButton, "common.tooltip.removeIngredient");
@@ -351,7 +362,7 @@ public class IngredientTypeOverviewCtrl {
 
             ResourceBundle b = languages.bundle();
 
-            int matches = filteredIngredientTypes.size();
+            matches = filteredIngredientTypes.size();
             if (matches == 0) {
                 searchStatusLabel.setText(b.getString("ing.search.zero"));
             } else if (matches == 1) {

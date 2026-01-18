@@ -302,6 +302,8 @@ public class RecipeOverviewCtrl {
 
     private int baseServings = 1;
 
+    private int matches = 0;
+
     // General
 
     private void setTooltip(Control c, String key) {
@@ -384,6 +386,15 @@ public class RecipeOverviewCtrl {
         doneEditButton.setText(b.getString("common.btn.done"));
         cancelEditDetailsButton.setText(b.getString("common.btn.cancel"));
         doneEditDetailsButton.setText(b.getString("common.btn.done"));
+
+        if (matches == 0) {
+            searchStatusLabel.setText(b.getString("recipe.search.zero"));
+        } else if (matches == 1) {
+            searchStatusLabel.setText(b.getString("recipe.search.one"));
+        } else {
+            searchStatusLabel.setText(MessageFormat.format(
+                    b.getString("recipe.search.multiple"), matches));
+        }
 
         // tooltips
         setTooltip(removeRecipeButton, "common.tooltip.removeRecipe");
@@ -1170,7 +1181,7 @@ public class RecipeOverviewCtrl {
 
         ResourceBundle b = languages.bundle();
 
-        int matches = filteredRecipes.size();
+        matches = filteredRecipes.size();
         if (matches == 0) {
             searchStatusLabel.setText(b.getString("recipe.search.zero"));
         } else if (matches == 1) {
