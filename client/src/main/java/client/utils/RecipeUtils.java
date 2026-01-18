@@ -27,7 +27,7 @@ public class RecipeUtils {
      * @return The amount of calories per 100g in the ingredient
      */
     public double getCaloriesPer100g(IngredientType i) {
-        if (i.nutrition == null) return 0.0;
+        if (i.nutrition == null) return -1.0;
         double calories = 0.0;
         if (i.nutrition.carbs != null) calories += CAL_PER_GRAM_CARB * i.nutrition.carbs;
         if (i.nutrition.protein != null) calories += CAL_PER_GRAM_PROTEIN * i.nutrition.protein;
