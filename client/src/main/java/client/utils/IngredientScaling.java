@@ -9,6 +9,7 @@ public class IngredientScaling {
 
     private final QuantityFormatter num = new QuantityFormatter();
 
+    @SuppressWarnings("checkstyle:Indentation")
     public String format(Ingredient ing, double scaleFactor, ResourceBundle b){
 
         if (ing.ingredientType == null || ing.ingredientType.name == null) return b.getString("newIngredient");
@@ -16,13 +17,22 @@ public class IngredientScaling {
         String name = ing.ingredientType.name;
 
         // do not convert informal units
-        if (ing.unit == Unit.TO_TASTE || ing.unit == Unit.PINCH || ing.unit == Unit.HANDFUL) {
+        if (ing.unit == Unit.TO_TASTE) {
             return ing.toString(b);
         }
 
         double f = (scaleFactor < 0) ? 1.0 : scaleFactor;
         double scaled = ing.amount * f;
         Unit unit = ing.unit;
+
+        if (unit == Unit.PINCH) {
+            if (ing.amount == null) return ing.toString(b);
+            return countUnitText("unit.pinch", scaled, name, b);
+            }
+        if (unit == Unit.HANDFUL) {
+            if (ing.amount == null) return ing.toString(b);
+            return countUnitText("unit.handful", scaled, name, b);
+        }
 
         // Normalize
         if (unit == Unit.G && scaled >= 1000){
@@ -66,6 +76,14 @@ public class IngredientScaling {
         } else {
             return amountStr + " " + b.getString("unit.teaspoon.plural") + " " + name;
         }
+    }
+
+    private String countUnitText(String unitWord, double amount, String name, ResourceBundle b){
+        String amountStr = num.format(amount);
+        if ("1".equals(amountStr)){
+            return b.getString(unitWord + ".singular") + " " + name;
+        }
+        return amountStr + " " + b.getString(unitWord + ".plural") + " " + name;
     }
 
 }

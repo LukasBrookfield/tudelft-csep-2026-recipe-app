@@ -3,6 +3,9 @@ package client.utils;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import commons.User;
+import javafx.beans.property.ReadOnlyStringProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 
 import java.text.MessageFormat;
 import java.util.Locale;
@@ -14,6 +17,7 @@ public class LanguageService {
 
     private final UserConfig userConfig;
     private Locale locale;
+    private final StringProperty languageTag = new SimpleStringProperty("en");
     // used locale and not just the tag because it allows things like formating decimals or dates
     // (and with a universal tag, I can easily set a locale)
 
@@ -24,8 +28,10 @@ public class LanguageService {
         String tag = userConfig.getLanguageTag();
         if (tag == null || tag.isEmpty()) tag = "en";
 
-        this.locale = Locale.forLanguageTag(tag);
-        Locale.setDefault(this.locale);
+//        this.locale = Locale.forLanguageTag(tag);
+//        Locale.setDefault(this.locale);
+
+        applyTag(tag, false);
     }
 
     public Locale getLocale() {
@@ -33,16 +39,31 @@ public class LanguageService {
     }
 
     public String getLanguageTag() {
-        return locale.toLanguageTag();
+        return languageTag.get();
     }
 
     public void setLanguageTag(String tag){
         if (tag == null || tag.isEmpty()) tag = "en";
+        if (tag.equalsIgnoreCase(languageTag.get())) return;
+
+        applyTag(tag, true);
+//
+//        this.locale = Locale.forLanguageTag(tag);
+//        Locale.setDefault(this.locale);
+//
+//        userConfig.setLanguageTag(tag);
+//        userConfig.saveUser();
+    }
+
+    public void applyTag(String tag, boolean persist){
         this.locale = Locale.forLanguageTag(tag);
         Locale.setDefault(this.locale);
+        this.languageTag.set(tag);
 
-        userConfig.setLanguageTag(tag);
-        userConfig.saveUser();
+        if (persist) {
+            userConfig.setLanguageTag(tag);
+            userConfig.saveUser();
+        }
     }
 
     public ResourceBundle bundle(){
@@ -69,6 +90,10 @@ public class LanguageService {
         cfg.setLanguageTag("en");
 
         return new LanguageService(cfg);
+    }
+
+    public ReadOnlyStringProperty languageTagProperty() {
+        return languageTag;
     }
 
 
