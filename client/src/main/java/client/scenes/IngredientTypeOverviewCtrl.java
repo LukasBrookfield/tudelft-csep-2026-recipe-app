@@ -236,6 +236,9 @@ public class IngredientTypeOverviewCtrl {
         cancelEditDetailsButton.setText(b.getString("common.btn.cancel"));
         doneEditDetailsButton.setText(b.getString("common.btn.done"));
 
+        cancelEditDensityButton.setText(b.getString("common.btn.cancel"));
+        doneEditDensityButton.setText(b.getString("common.btn.done"));
+
         cancelEditNutritionButton.setText(b.getString("common.btn.cancel"));
         doneEditNutritionButton.setText(b.getString("common.btn.done"));
 
