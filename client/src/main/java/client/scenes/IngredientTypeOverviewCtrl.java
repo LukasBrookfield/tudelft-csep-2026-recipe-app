@@ -254,7 +254,7 @@ public class IngredientTypeOverviewCtrl {
                 return switch (value) {
                     case null -> "";
                     case SORT_NAME_AZ -> b.getString("recipe.sort.nameAz");
-                    case SORT_KCAL -> b.getString("ingredient.sort.kcal");
+                    case SORT_KCAL -> b.getString("recipe.sort.kcal");
                     default -> value;
                 };
             }
