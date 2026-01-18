@@ -122,7 +122,7 @@
                               </HBox>
                                     </children>
                            <VBox.margin>
-                              <Insets />
+                              <Insets top="3.0" />
                            </VBox.margin>
                                 </HBox>
                             </children>
@@ -199,9 +199,9 @@
                            </VBox.margin>
                                 </HBox>
                                 <Separator fx:id="mainSeparator" prefWidth="200.0" />
-                        <HBox prefHeight="25.0" prefWidth="200.0" spacing="5.0">
+                        <HBox maxWidth="-Infinity" prefWidth="394.6" spacing="5.0">
                            <children>
-                              <HBox alignment="CENTER_LEFT" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="100.0" spacing="5.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
+                              <HBox alignment="CENTER_LEFT" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="115.0" spacing="5.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
                                  <children>
                                     <Label fx:id="servingsCaptionLabel" prefHeight="17.0" prefWidth="57.0" text="Servings:">
                                        <HBox.margin>
@@ -215,7 +215,7 @@
                                     </Label>
                                  </children>
                               </HBox>
-                              <HBox alignment="CENTER_RIGHT" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="158.0" spacing="5.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
+                              <HBox alignment="CENTER_RIGHT" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="160.0" spacing="5.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
                                  <children>
                                     <Label fx:id="kcalCaptionLabel" prefHeight="23.0" prefWidth="83.0" text="Kcal per 100g:" HBox.hgrow="ALWAYS">
                                        <HBox.margin>
@@ -229,7 +229,7 @@
                                     </Label>
                                  </children>
                               </HBox>
-                              <HBox alignment="CENTER_RIGHT" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="127.0" spacing="5.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
+                              <HBox alignment="CENTER_RIGHT" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="108.0" spacing="5.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
                                  <children>
                                     <Label fx:id="nutriScoreCaptionLabel" prefHeight="23.0" prefWidth="207.0" text="Nutri-score:" HBox.hgrow="ALWAYS">
                                        <HBox.margin>

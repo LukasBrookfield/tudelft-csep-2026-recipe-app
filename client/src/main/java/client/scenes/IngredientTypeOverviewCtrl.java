@@ -66,6 +66,9 @@ public class IngredientTypeOverviewCtrl {
     private ListView<IngredientType> ingredientTypeListView;
 
     @FXML
+    private Label searchStatusLabel;
+
+    @FXML
     private Button removeIngredientTypeButton;
 
     @FXML
@@ -317,6 +320,53 @@ public class IngredientTypeOverviewCtrl {
         }
     }
 
+    private void setupSearch() {
+        ingredientTypeSearchField.textProperty().addListener(
+                (observable, oldValue, newValue) -> {
+                    applySearchFilter(newValue);
+                });
+
+    }
+
+    private void applySearchFilter(String query) {
+        if (query == null || query.isBlank()) {
+            filteredIngredientTypes.setPredicate(currentPredicate);
+            searchStatusLabel.setText("");
+            searchStatusLabel.setVisible(false);
+            searchStatusLabel.setManaged(false);
+        } else {
+            int total = allIngredientTypes.size();
+            searchStatusLabel.setText("Showing " + total + " ingredients");
+
+            String[] words = query.toLowerCase().trim().split("\\s+");
+            filteredIngredientTypes.setPredicate(currentPredicate.and(
+                    ingredientType -> matchesAllWords(ingredientType, words)
+            ));
+
+            String msg;
+            int matches = filteredIngredientTypes.size();
+            if (matches == 0) {
+                msg = "No ingredients match your search";
+            } else if (matches == 1) {
+                msg = "1 ingredient found";
+            } else {
+                msg = matches + " ingredients found";
+            }
+            searchStatusLabel.setText(msg);
+            searchStatusLabel.setVisible(true);
+            searchStatusLabel.setManaged(true);
+        }
+    }
+
+    private boolean matchesAllWords(IngredientType ingredientType, String[] words) {
+        for (String word : words) {
+            if (!ingredientType.name.toLowerCase().contains(word)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     /**
      * Changes the scene between viewing and editing an ingredient type
      * @param value false for viewing mode, true for editing mode
@@ -511,11 +561,15 @@ public class IngredientTypeOverviewCtrl {
             e.printStackTrace();
         }
 
+        searchStatusLabel.setVisible(false);
+        searchStatusLabel.setManaged(false);
+
         filteredIngredientTypes = new FilteredList<>(allIngredientTypes);
         sortedIngredientTypes = new SortedList<>(filteredIngredientTypes);
         ingredientTypeListView.setItems(sortedIngredientTypes);
 
         setupSort();
+        setupSearch();
 
         applyTranslations();
         onRefresh();
@@ -610,6 +664,11 @@ public class IngredientTypeOverviewCtrl {
      */
     @FXML
     private void onAddIngredientTypeButton() throws JsonProcessingException {
+        // reset the search query, because "New ingredient" might not show
+        ingredientTypeSearchField.clear();
+        applySearchFilter("");
+        onRefresh();
+
         IngredientType ingredientType = new IngredientType(
                 "New ingredient", null, new ArrayList<>(), null);
 
@@ -648,6 +707,7 @@ public class IngredientTypeOverviewCtrl {
         if (newIngredientType) {
             IngredientType ingredientType = ingredientTypeListView.getSelectionModel().getSelectedItem();
             server.deleteIngredientType(ingredientType.id);
+            allIngredientTypes.remove(ingredientType);
         }
         onRefresh();
         changeViewEditMode(false);
