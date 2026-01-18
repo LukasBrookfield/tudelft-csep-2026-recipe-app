@@ -13,6 +13,9 @@ import commons.Nutrition;
 import commons.Recipe;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
@@ -21,9 +24,11 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
 
 import java.text.MessageFormat;
 import java.util.*;
+import java.util.function.Predicate;
 
 public class IngredientTypeOverviewCtrl {
 
@@ -34,6 +39,11 @@ public class IngredientTypeOverviewCtrl {
     private UserConfig user;
 
     private final MainCtrl mainCtrl;
+
+    private Predicate<IngredientType> currentPredicate = ingredientType -> true;
+    private ObservableList<IngredientType> allIngredientTypes;
+    private FilteredList<IngredientType> filteredIngredientTypes;
+    private SortedList<IngredientType> sortedIngredientTypes;
 
     boolean newIngredientType = false;
 
@@ -48,6 +58,9 @@ public class IngredientTypeOverviewCtrl {
 
     @FXML
     private TextField ingredientTypeSearchField;
+
+    @FXML
+    private ChoiceBox<String> sortChoiceBox;
 
     @FXML
     private ListView<IngredientType> ingredientTypeListView;
@@ -159,6 +172,9 @@ public class IngredientTypeOverviewCtrl {
     @FXML private Label carbsCaptionLabel;
     @FXML private Label kcalCaptionLabel;
 
+    private final String SORT_NAME_AZ = "Name (A-Z)";
+    private final String SORT_KCAL = "Least Kcal/100g first";
+
     // Bottom
 
     @FXML
@@ -229,6 +245,21 @@ public class IngredientTypeOverviewCtrl {
         setTooltip(editDetailsButton, "common.tooltip.editName");
         setTooltip(editDensityButton, "common.tooltip.editDensity");
         setTooltip(editNutritionButton, "common.tooltip.editNutrition");
+
+        sortChoiceBox.setConverter(new StringConverter<>() {
+            @Override public String toString(String value) {
+                return switch (value) {
+                    case null -> "";
+                    case SORT_NAME_AZ -> b.getString("recipe.sort.nameAz");
+                    case SORT_KCAL -> b.getString("ingredient.sort.kcal");
+                    default -> value;
+                };
+            }
+            @Override
+            public String fromString(String s) {
+                return "";
+            }
+        });
     }
 
     // General
@@ -242,6 +273,48 @@ public class IngredientTypeOverviewCtrl {
         this.user = user;
         this.mainCtrl = mainCtrl;
         this.languages = languages;
+    }
+
+    private void setupSort() {
+        sortChoiceBox.getItems().addAll(
+                SORT_NAME_AZ, SORT_KCAL
+        );
+        sortChoiceBox.getSelectionModel().select(0);
+        sortChoiceBox.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> {
+                    applySort(newValue);
+                });
+    }
+
+    private void applySort(String option) {
+        if (SORT_NAME_AZ.equals(option)) {
+            sortedIngredientTypes.setComparator(
+                (type1, type2) -> {
+                    String s1 = type1.name == null ? "" : type1.name.toLowerCase();
+                    String s2 = type2.name == null ? "" : type2.name.toLowerCase();
+                    return s1.compareTo(s2);
+                });
+
+        } else {
+            sortedIngredientTypes.setComparator(
+                    (type1, type2) -> {
+                        Double d1 = recipeUtils.getCaloriesPer100g(type1);
+                        if (d1 < 0) {
+                            d1 = 1000000.0;
+                        }
+                        Double d2 = recipeUtils.getCaloriesPer100g(type2);
+                        if (d2 < 0) {
+                            d2 = 1000000.0;
+                        }
+                        if (d1.equals(d2)) {
+                            String s1 = type1.name == null ? "" : type1.name.toLowerCase();
+                            String s2 = type2.name == null ? "" : type2.name.toLowerCase();
+                            return s1.compareTo(s2);
+                        } else {
+                            return Double.compare(d1, d2);
+                        }
+                    });
+        }
     }
 
     /**
@@ -344,8 +417,12 @@ public class IngredientTypeOverviewCtrl {
         usedInRecipesCount = usedInRecipes;
         usedInRecipesLabel.setText(formatUsedInRecipes(usedInRecipesCount));
 
-        kcalLabel.setText(String.valueOf(recipeUtils
-                .getCaloriesPer100g(ingredientType)));
+        Double kcal = recipeUtils.getCaloriesPer100g(ingredientType);
+        if (kcal < 0) {
+            kcalLabel.setText("-");
+        } else {
+            kcalLabel.setText(kcal.toString());
+        }
 
         proteinLabel.setText("-");
         fatLabel.setText("-");
@@ -372,12 +449,26 @@ public class IngredientTypeOverviewCtrl {
      */
     @FXML
     public void onRefresh() {
-        ingredientTypeListView.getItems().setAll(server.getIngredientTypes());
+        try {
+            System.out.println(allIngredientTypes);
+            for (IngredientType ingredientType : server.getIngredientTypes()) {
+                if (!allIngredientTypes.contains(ingredientType)) {
+                    System.out.println("Adding ingredient type with id = " +
+                            ingredientType.id + ", name = " + ingredientType.name);
+                    allIngredientTypes.add(ingredientType);
+                }
+            }
+            System.out.println(allIngredientTypes);
+        } catch (Exception e) {
+            System.out.println("ERROR: Could not load ingredient types from server.");
+            e.printStackTrace();
+        }
 
         boolean empty = ingredientTypeListView.getItems().isEmpty();
         mainSeparator.getParent().setVisible(!empty);
 
-        if (ingredientTypeListView.getSelectionModel().getSelectedIndex() == -1) {
+        int index = ingredientTypeListView.getSelectionModel().getSelectedIndex();
+        if (index == -1) {
             ingredientTypeListView.getSelectionModel().select(0);
         }
 
@@ -412,6 +503,20 @@ public class IngredientTypeOverviewCtrl {
         changeNutritionViewEditMode(false);
         changeViewEditMode(false);
 
+        allIngredientTypes = FXCollections.observableArrayList();
+        try {
+            allIngredientTypes.setAll(server.getIngredientTypes());
+        } catch (Exception e) {
+            System.out.println("ERROR: Could not load ingredient types from server.");
+            e.printStackTrace();
+        }
+
+        filteredIngredientTypes = new FilteredList<>(allIngredientTypes);
+        sortedIngredientTypes = new SortedList<>(filteredIngredientTypes);
+        ingredientTypeListView.setItems(sortedIngredientTypes);
+
+        setupSort();
+
         applyTranslations();
         onRefresh();
 
@@ -443,6 +548,7 @@ public class IngredientTypeOverviewCtrl {
 
         if (usedInRecipes.isEmpty()) {
             server.deleteIngredientType(ingredientType.id);
+            allIngredientTypes.remove(ingredientType);
             onRefresh();
             return;
         }
@@ -493,6 +599,7 @@ public class IngredientTypeOverviewCtrl {
                 }
             }
             server.deleteIngredientType(ingredientType.id);
+            allIngredientTypes.remove(ingredientType);
             onRefresh();
         }
     }
@@ -508,10 +615,11 @@ public class IngredientTypeOverviewCtrl {
 
         System.out.println(new ObjectMapper().writeValueAsString(ingredientType));
 
-        server.addIngredientType(ingredientType);
+        ingredientType = server.addIngredientType(ingredientType);
+        allIngredientTypes.add(ingredientType);
         onRefresh();
         ingredientTypeListView.getSelectionModel().select(
-                ingredientTypeListView.getItems().size() - 1
+                ingredientType
         );
 
         newIngredientType = true;
@@ -557,8 +665,9 @@ public class IngredientTypeOverviewCtrl {
             return;
         }
 
-        IngredientType ingredientType = ingredientTypeListView
-                .getSelectionModel().getSelectedItem();
+        IngredientType ingredientType = ingredientTypeListView.getSelectionModel()
+                .getSelectedItem();
+        int index = allIngredientTypes.indexOf(ingredientType);
         ingredientType.name = nameLabel.getText();
 
         String densityText = densityLabel.getText();
@@ -591,9 +700,15 @@ public class IngredientTypeOverviewCtrl {
 
         System.out.println("Ingredient type to be updated: " +
                 new ObjectMapper().writeValueAsString(ingredientType));
-        server.updateIngredientType(ingredientType.id, ingredientType);
+
+        allIngredientTypes.set(index, server.updateIngredientType(
+                ingredientType.id, ingredientType
+        ));
 
         onRefresh();
+        ingredientTypeListView.getSelectionModel().select(
+                ingredientType
+        );
         changeViewEditMode(false);
 
         // Update all recipes that use this ingredient type

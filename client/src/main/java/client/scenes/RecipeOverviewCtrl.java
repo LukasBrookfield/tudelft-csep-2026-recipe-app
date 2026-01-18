@@ -420,7 +420,7 @@ public class RecipeOverviewCtrl {
                 if (value == null) return "";
                 return switch (value) {
                     case SORT_ORDER_BY -> b.getString("recipe.sort.orderBy");
-                    case SORT_NAME_AZ -> translate(b, "recipe.sort.nameAZ", SORT_NAME_AZ);
+                    case SORT_NAME_AZ -> translate(b, "recipe.sort.nameAz", SORT_NAME_AZ);
                     case SORT_FEWEST_STEPS -> b.getString("recipe.sort.fewestSteps");
                     case SORT_FEWEST_ING -> b.getString("recipe.sort.fewestIngredients");
                     default -> value;
