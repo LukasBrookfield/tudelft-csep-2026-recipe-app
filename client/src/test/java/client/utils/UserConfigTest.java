@@ -12,6 +12,7 @@ public class UserConfigTest {
     private UserConfig userConfig;
     private List<Recipe> allRecipes;
     private List<ShoppingListItem> shoppingList;
+    List<String> selectedLanguages;
     private List<Long> favouriteRecipes;
     private User user;
     private UserStorage userStorage;
@@ -33,7 +34,8 @@ public class UserConfigTest {
                 new ShoppingListItem(new Ingredient(t, 3.0, Unit.HANDFUL, allRecipes.get(2)))
         ));
         favouriteRecipes = new ArrayList<>(List.of(1L, 2L));
-        user = new User(favouriteRecipes, shoppingList);
+        selectedLanguages = new ArrayList<>(List.of("en", "nl", "pt"));
+        user = new User(favouriteRecipes, shoppingList, selectedLanguages);
         userStorage = new TestUserStorage(user);
         userConfig = new UserConfig(userStorage, user);
     }

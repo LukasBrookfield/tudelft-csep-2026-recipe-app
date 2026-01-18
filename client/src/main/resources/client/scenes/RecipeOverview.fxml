@@ -7,6 +7,7 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.Tooltip?>
@@ -69,13 +70,14 @@
                         </TextField>
                         <ChoiceBox fx:id="sortChoiceBox" maxWidth="1.7976931348623157E308">
                            <VBox.margin>
-                              <Insets top="3.0" />
+                              <Insets bottom="3.0" top="3.0" />
                            </VBox.margin>
                         </ChoiceBox>
-                        <ChoiceBox fx:id="favouriteRecipeFilterBox" prefHeight="25.0" prefWidth="190.0">
+                        <MenuButton fx:id="filterBox" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Filter by">
                            <VBox.margin>
-                              <Insets bottom="3.0" top="3.0" />
-                           </VBox.margin></ChoiceBox>
+                              <Insets bottom="3.0" />
+                           </VBox.margin>
+                        </MenuButton>
                                 <ListView fx:id="recipeListView" prefWidth="190.0" VBox.vgrow="ALWAYS" />
                         <Label fx:id="searchStatusLabel" text="0 recipes found" />
                                 <HBox alignment="CENTER_LEFT" prefHeight="29.0" prefWidth="190.0" spacing="5.0">

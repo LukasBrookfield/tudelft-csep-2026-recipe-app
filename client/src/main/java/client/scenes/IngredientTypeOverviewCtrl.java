@@ -628,7 +628,7 @@ public class IngredientTypeOverviewCtrl {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.initModality(Modality.APPLICATION_MODAL); // disables the main stage
         ResourceBundle b = languages.bundle();
-        alert.setTitle(b.getString("ing.alert.removeUsed.title"));
+        alert.setTitle(b.getString("commons.warning"));
         alert.setHeaderText(null);
 
         Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
@@ -848,20 +848,20 @@ public class IngredientTypeOverviewCtrl {
 
         if (inputName == null || inputName.isBlank()) {
             System.out.println("The ingredient type needs a name.");
-            recipeUtils.displayAlertInputWarning("ingredient.warning.empty.name", textFields);
+            recipeUtils.displayAlertWarning("ingredient.warning.empty.name", textFields);
 
             return;
         }
 
         if(inputName != null && inputName.length()>50) {
             System.out.println("The ingredient type name exceeds 50 characters!");
-            recipeUtils.displayAlertInputWarning("ingredient.warning.name.exceeds.limit", textFields);
+            recipeUtils.displayAlertWarning("ingredient.warning.name.exceeds.limit", textFields);
             return;
         }
 
         if (Character.isDigit(inputName.trim().charAt(0))) {
             System.out.println("The ingredient type name cannot start with a digit.");
-            recipeUtils.displayAlertInputWarning("ingredient.warning.number", textFields);
+            recipeUtils.displayAlertWarning("ingredient.warning.number", textFields);
             return;
         }
 
@@ -870,7 +870,7 @@ public class IngredientTypeOverviewCtrl {
                 x -> x.name.equalsIgnoreCase(inputName));
         if (isDuplicate) {
             System.out.println("The name of the ingredient type must be unique!");
-            recipeUtils.displayAlertInputWarning("recipe.warning.ing.duplicate", null);
+            recipeUtils.displayAlertWarning("recipe.warning.ing.duplicate", null);
             return;
         }
 
@@ -911,27 +911,27 @@ public class IngredientTypeOverviewCtrl {
 
         if(!editDensityField.getText().isBlank() && editDensityField.getText().length()>6) {
             System.out.println("The density exceeds 8 characters!");
-            recipeUtils.displayAlertInputWarning("ingredient.warning.density.exceeds.limit", textFields);
+            recipeUtils.displayAlertWarning("ingredient.warning.density.exceeds.limit", textFields);
             return;
         }
         try {
             density = Double.parseDouble(editDensityField.getText());
         } catch (NumberFormatException e) {
             System.out.println("Density must be a double");
-            recipeUtils.displayAlertInputWarning("ingredient.warning.double.density", textFields);
+            recipeUtils.displayAlertWarning("ingredient.warning.double.density", textFields);
             return;
         }
 
         if (density < 0) {
             System.out.println("The density must be non-negative.");
-            recipeUtils.displayAlertInputWarning("ingredient.warning.density.negative", textFields);
+            recipeUtils.displayAlertWarning("ingredient.warning.density.negative", textFields);
             return;
         }
 
         //Check if ingredient density is larger than the density of Osmium
         if(density > 22.6) {
             System.out.println("The density is out of this world");
-            recipeUtils.displayAlertInputWarning("ingredient.warning.density.exceeds.limit", textFields);
+            recipeUtils.displayAlertWarning("ingredient.warning.density.exceeds.limit", textFields);
             return;
         }
         densityLabel.setText(String.valueOf(density));
@@ -1006,7 +1006,7 @@ public class IngredientTypeOverviewCtrl {
         }
 
         if (!textFields.isEmpty()) {
-            recipeUtils.displayAlertInputWarning("ingredient.warning.nutrition", textFields);
+            recipeUtils.displayAlertWarning("ingredient.warning.nutrition", textFields);
             System.out.println("Invalid nutritional input detected in specific fields.");
             return;
         }
