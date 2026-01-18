@@ -346,16 +346,17 @@ public class IngredientTypeOverviewCtrl {
                     ingredientType -> matchesAllWords(ingredientType, words)
             ));
 
-            String msg;
+            ResourceBundle b = languages.bundle();
+
             int matches = filteredIngredientTypes.size();
             if (matches == 0) {
-                msg = "No ingredients match your search";
+                searchStatusLabel.setText(b.getString("ing.search.zero"));
             } else if (matches == 1) {
-                msg = "1 ingredient found";
+                searchStatusLabel.setText(b.getString("ing.search.one"));
             } else {
-                msg = matches + " ingredients found";
+                searchStatusLabel.setText(MessageFormat.format(
+                        b.getString("ing.search.multiple"), matches));
             }
-            searchStatusLabel.setText(msg);
             searchStatusLabel.setVisible(true);
             searchStatusLabel.setManaged(true);
         }
@@ -780,6 +781,10 @@ public class IngredientTypeOverviewCtrl {
         }
 
         newIngredientType = false;
+
+        // apply the search filter again, because the ingredient might not match
+        // anymore after a name change
+        applySearchFilter(ingredientTypeSearchField.getText());
     }
 
     // Edit details section

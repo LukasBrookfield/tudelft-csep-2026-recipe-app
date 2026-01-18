@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 
+import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 import client.utils.ServerUtils;
 import commons.*;
@@ -89,7 +90,7 @@ public class RecipeOverviewCtrl {
 
     private double scaleFactor = 1.0;
 
-    private commons.RecipeNutrition lastNutrition = null;
+    private RecipeNutrition lastNutrition = null;
 
     // Root
 
@@ -971,7 +972,7 @@ public class RecipeOverviewCtrl {
     }
 
     private void refreshScaledViewOnly() {
-        commons.Recipe r = recipeListView.getSelectionModel().getSelectedItem();
+        Recipe r = recipeListView.getSelectionModel().getSelectedItem();
         if (r != null) updateServingsLabel(r.servings);
 
         ingredientListView.refresh();
@@ -1130,7 +1131,7 @@ public class RecipeOverviewCtrl {
 
         // This listens to key presses when the TextField is focused
         recipeSearchField.setOnKeyReleased(e -> {
-            if (e.getCode() == javafx.scene.input.KeyCode.ESCAPE) {
+            if (e.getCode() == KeyCode.ESCAPE) {
                 recipeSearchField.clear(); // sets the text to ""
                 applySearchFilter(""); // clears the filter
                 recipeListView.getSelectionModel().clearSelection(); // deselects any recipe
@@ -1167,17 +1168,17 @@ public class RecipeOverviewCtrl {
 
         filteredRecipes.setPredicate(currentPredicate.and(recipe -> mattchesAllWords(recipe, words)));
 
-        String msg;
+        ResourceBundle b = languages.bundle();
+
         int matches = filteredRecipes.size();
         if (matches == 0) {
-            msg = "No recipes match your search";
+            searchStatusLabel.setText(b.getString("recipe.search.zero"));
         } else if (matches == 1) {
-            msg = "1 recipe found";
+            searchStatusLabel.setText(b.getString("recipe.search.one"));
         } else {
-            msg = matches + " recipes found";
+            searchStatusLabel.setText(MessageFormat.format(
+                    b.getString("recipe.search.multiple"), matches));
         }
-
-        searchStatusLabel.setText(msg);
         searchStatusLabel.setVisible(true);
         searchStatusLabel.setManaged(true);
     }
