@@ -66,8 +66,8 @@
                               <Insets bottom="3.0" top="3.0" />
                            </VBox.margin>
                         </ChoiceBox>
-                        <ListView fx:id="ingredientTypeListView" prefWidth="190.0" VBox.vgrow="ALWAYS" />
-                        <Label text="0 ingredients found" />
+                        <ListView fx:id="ingredientTypeListView" VBox.vgrow="ALWAYS" />
+                        <Label fx:id="searchStatusLabel" text="0 ingredients found" />
                         <HBox alignment="CENTER_LEFT" prefHeight="29.0" prefWidth="190.0" spacing="5.0">
                            <children>
                               <Button fx:id="removeIngredientTypeButton" mnemonicParsing="false" onAction="#onRemoveIngredientTypeButton" prefHeight="25.0" prefWidth="25.0" text="✕">
@@ -92,7 +92,7 @@
                                  </tooltip></Button>
                            </children>
                            <VBox.margin>
-                              <Insets />
+                              <Insets top="3.0" />
                            </VBox.margin>
                         </HBox>
                      </children>
