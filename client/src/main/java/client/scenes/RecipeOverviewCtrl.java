@@ -468,18 +468,15 @@ public class RecipeOverviewCtrl {
         int index = allRecipes.indexOf(recipe);
 
         String language = recipe.language;
-        if ("en".equals(language)) {
-            recipe.language = "nl";
-        } else if ("nl".equals(language)) {
-            recipe.language = "pt";
-        } else {
-            recipe.language = "en";
+        List<String> languages = List.of("en", "nl", "pt");
+
+        int i = (languages.indexOf(language) + 1) % 3;
+        while (!user.isSelectedLanguage(languages.get(i))) {
+            i = (i + 1) % 3;
         }
 
-        System.out.println("language: " + recipe.language);
-        System.out.println(new ObjectMapper().writeValueAsString(recipe));
+        recipe.language = languages.get(i);
         allRecipes.set(index, server.updateRecipe(recipe.id, recipe));
-        System.out.println(new ObjectMapper().writeValueAsString(recipe));
         onRefresh();
     }
 
@@ -1139,6 +1136,10 @@ public class RecipeOverviewCtrl {
     private void updateFilteredList() {
         filteredRecipes.setPredicate(searchPredicate.and(favoritePredicate)
                 .and(ENPredicate).and(NLPredicate).and(PTPredicate));
+
+        if (recipeListView.getSelectionModel().getSelectedIndex() == -1) {
+            recipeListView.getSelectionModel().select(0);
+        }
     }
 
     private void setupSort() {
@@ -1457,6 +1458,7 @@ public class RecipeOverviewCtrl {
 
         Recipe clonedRecipe = new Recipe(recipe.name + " [clone]");
         clonedRecipe.servings = recipe.servings;
+        clonedRecipe.language = recipe.language;
         for (Ingredient ingredient :  recipe.ingredients) {
             Ingredient clonedIngredient = new Ingredient(ingredient.ingredientType,
                     ingredient.amount, ingredient.unit, null);
@@ -1471,10 +1473,10 @@ public class RecipeOverviewCtrl {
         recipe = server.addRecipe(recipe);
 
         // if user has filtered by favourite recipes, automatically make the new recipe a favourite
-//        if (favouriteRecipeFilterBox.getSelectionModel().getSelectedItem().equals(FILTER_FAV)) {
-//            user.addFavouriteRecipe(recipe);
-//            user.saveUser();
-//        }
+        if (showFavorites.isSelected()) {
+            user.addFavouriteRecipe(recipe);
+            user.saveUser();
+        }
 
         onRefresh();
 
@@ -2212,6 +2214,11 @@ public class RecipeOverviewCtrl {
         ResourceBundle b = languages.bundle();
         alert.setTitle(b.getString("recipe.alert.favDeleted.title"));
         alert.setHeaderText(null);
+
+        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+        stage.getIcons().add(new Image(Objects.requireNonNull(
+                getClass().getResourceAsStream("/FoodPalLogo.png"))));
+
 //        alert.setContentText(n + " of your favourite recipes have been deleted by others :(");
         alert.setContentText(MessageFormat.format(b.getString("recipe.alert.favDeleted.content"), n));
         alert.show();
