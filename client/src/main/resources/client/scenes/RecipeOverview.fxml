@@ -115,12 +115,6 @@
                                  </tooltip>
                               </Button>
                               <HBox alignment="CENTER_RIGHT" HBox.hgrow="ALWAYS" />
-                              <HBox alignment="CENTER" spacing="5.0">
-                                 <children>
-                                    <TextField fx:id="scaleFactorField" prefHeight="25.0" prefWidth="48.0" />
-                                    <Label text="x" />
-                                 </children>
-                              </HBox>
                                     </children>
                            <VBox.margin>
                               <Insets top="3.0" />
@@ -216,40 +210,46 @@
                            <children>
                               <HBox alignment="CENTER_LEFT" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="115.0" spacing="5.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
                                  <children>
-                                    <Label fx:id="servingsCaptionLabel" prefHeight="17.0" prefWidth="57.0" text="Servings:">
+                                    <Label fx:id="servingsCaptionLabel" prefHeight="17.0" prefWidth="73.0" text="Servings:">
                                        <HBox.margin>
                                           <Insets left="5.0" />
                                        </HBox.margin>
                                     </Label>
-                                    <Label fx:id="servingsLabel" alignment="CENTER_RIGHT" prefHeight="17.0" prefWidth="37.0" text="-">
+                                    <Label fx:id="servingsLabel" alignment="CENTER_RIGHT" contentDisplay="CENTER" prefHeight="17.0" prefWidth="75.0" text="-">
                                        <HBox.margin>
                                           <Insets right="5.0" />
                                        </HBox.margin>
                                     </Label>
                                  </children>
                               </HBox>
-                              <HBox alignment="CENTER_RIGHT" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="160.0" spacing="5.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
+                              <HBox alignment="CENTER" prefWidth="45.0" spacing="5.0">
+                                 <children>
+                                    <TextField fx:id="scaleFactorField" prefHeight="25.0" prefWidth="48.0" />
+                                    <Label text="x" />
+                                 </children>
+                              </HBox>
+                              <HBox alignment="CENTER_RIGHT" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="125.0" spacing="5.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
                                  <children>
                                     <Label fx:id="kcalCaptionLabel" prefHeight="23.0" prefWidth="83.0" text="Kcal per 100g:" HBox.hgrow="ALWAYS">
                                        <HBox.margin>
                                           <Insets left="5.0" />
                                        </HBox.margin>
                                     </Label>
-                                    <Label fx:id="recipeKcalPer100gLabel" alignment="CENTER_RIGHT" prefHeight="17.0" prefWidth="60.0" text="-">
+                                    <Label fx:id="recipeKcalPer100gLabel" alignment="CENTER_RIGHT" prefHeight="17.0" prefWidth="31.0" text="-">
                                        <HBox.margin>
                                           <Insets right="5.0" />
                                        </HBox.margin>
                                     </Label>
                                  </children>
                               </HBox>
-                              <HBox alignment="CENTER_RIGHT" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="108.0" spacing="5.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
+                              <HBox alignment="CENTER_RIGHT" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="95.0" spacing="5.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
                                  <children>
-                                    <Label fx:id="nutriScoreCaptionLabel" prefHeight="23.0" prefWidth="207.0" text="Nutri-score:" HBox.hgrow="ALWAYS">
+                                    <Label fx:id="nutriScoreCaptionLabel" prefHeight="23.0" prefWidth="249.0" text="Nutri-score:" HBox.hgrow="ALWAYS">
                                        <HBox.margin>
                                           <Insets left="5.0" />
                                        </HBox.margin>
                                     </Label>
-                                    <Label fx:id="nutriScoreLabel" alignment="CENTER_RIGHT" prefHeight="17.0" prefWidth="170.0" text="-">
+                                    <Label fx:id="nutriScoreLabel" alignment="CENTER_RIGHT" prefHeight="17.0" prefWidth="161.0" text="-">
                                        <HBox.margin>
                                           <Insets right="5.0" />
                                        </HBox.margin>
@@ -262,7 +262,7 @@
                            <children>
                               <HBox alignment="CENTER_LEFT" prefHeight="25.0" prefWidth="307.0" spacing="5.0">
                                  <children>
-                                    <TextField fx:id="editServingsField" minWidth="-Infinity" prefHeight="25.0" prefWidth="200.0" promptText="Enter the amount of servings" />
+                                    <TextField fx:id="editServingsField" minWidth="-Infinity" prefHeight="25.0" prefWidth="115.0" promptText="Enter servings" />
                                     <HBox alignment="CENTER_RIGHT" prefHeight="25.0" prefWidth="217.0" spacing="5.0" HBox.hgrow="ALWAYS">
                                        <children>
                                           <Button fx:id="cancelEditDetailsButton" minWidth="-Infinity" mnemonicParsing="false" onAction="#onCancelEditDetailsButton" text="Cancel" HBox.hgrow="ALWAYS" />
