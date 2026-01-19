@@ -63,7 +63,7 @@ public class RecipeControllerNutritionTest {
         Nutrition n = new Nutrition(10.0, 0.0, 0.0);
         IngredientType chicken = new IngredientType("Chicken", n, new ArrayList<>(), null);
 
-        Recipe r = new Recipe("Chicken bowl", new ArrayList<>(), new ArrayList<>(List.of("add chicken")), 1);
+        Recipe r = new Recipe("Chicken bowl", new ArrayList<>(), new ArrayList<>(List.of("add chicken")), 1, "en");
         r.ingredients.add(new Ingredient(chicken, 100.0, Unit.G, r));
         controller.add(r);
 

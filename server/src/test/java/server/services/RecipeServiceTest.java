@@ -51,7 +51,7 @@ public class RecipeServiceTest {
         salad = new Recipe("Salad",
                 new ArrayList<>(List.of(tomato, lettuce)),
                 new ArrayList<>(List.of("Do this", "And this")),
-                1);
+                1, "en");
     }
 
     @Test
