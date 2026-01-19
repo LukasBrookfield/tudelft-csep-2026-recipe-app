@@ -142,6 +142,53 @@ public class ServerUtils implements ServerUtility {
         });
     }
 
+    /**
+     * Establishes a subscription to receive real-time updates whenever the
+     * complete list of ingredient types changes.
+     *
+     * @param listener Consumer that receives the full updated list.
+     */
+    public void subscribeToIngredientTypeList(Consumer<List<IngredientType>> listener) {
+        connectWebSocketIfNeeded();
+
+        stompSession.subscribe("/topic/ingredientType/list", new StompFrameHandler() {
+            @Override
+            public Type getPayloadType(StompHeaders headers) {
+                return IngredientType[].class;
+            }
+
+            @Override
+            public void handleFrame(StompHeaders headers, Object payload) {
+                IngredientType[] array = (IngredientType[]) payload;
+                listener.accept(List.of(array));
+            }
+        });
+    }
+
+    /**
+     * Establishes a subscription to receive real-time updates whenever
+     * a specific ingredient type changes.
+     *
+     * @param id       IngredientType id to subscribe to.
+     * @param listener Consumer that receives the updated IngredientType.
+     */
+    public void subscribeToIngredientType(long id, Consumer<IngredientType> listener) {
+        connectWebSocketIfNeeded();
+
+        stompSession.subscribe("/topic/ingredientType/" + id, new StompFrameHandler() {
+            @Override
+            public Type getPayloadType(StompHeaders headers) {
+                return IngredientType.class;
+            }
+
+            @Override
+            public void handleFrame(StompHeaders headers, Object payload) {
+                listener.accept((IngredientType) payload);
+            }
+        });
+    }
+
+
     //recipes requests:
 
     /**
