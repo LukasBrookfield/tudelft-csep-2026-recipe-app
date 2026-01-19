@@ -169,6 +169,9 @@ public class RecipeOverviewCtrl {
     private ImageView languageImage;
 
     @FXML
+    private Tooltip languageToolTip;
+
+    @FXML
     private Button editRecipeButton;
 
     @FXML
@@ -383,6 +386,13 @@ public class RecipeOverviewCtrl {
 
         editUnitBox.setValue(editUnitBox.getValue());
         filterBox.setText(b.getString("recipe.filterBy"));
+
+        if (languageToolTip == null) {
+            languageToolTip = new Tooltip();
+            languageToolTip.setStyle("-fx-font-size: 13px");
+            Tooltip.install(languageImage, languageToolTip);
+        }
+        languageToolTip.setText(b.getString("language.tooltip"));
 
         downloadRecipeButton.setText(b.getString("common.btn.download"));
         printRecipeButton.setText(b.getString("common.btn.print"));

@@ -20,6 +20,7 @@ import javafx.scene.layout.StackPane;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -90,6 +91,8 @@ public class AddToShoppingListCtrl {
     @FXML
     private Label label;
 
+    private String labelText = "";
+
     @FXML
     private Button backEditIngredientButton;
 
@@ -126,7 +129,8 @@ public class AddToShoppingListCtrl {
             }
         });
 
-        label.setText(b.getString("addShopping.title"));
+        label.setText(MessageFormat.format(
+                b.getString("addShopping.title"), labelText));
         exitButton.setText(b.getString("addShopping.btn.exit"));
         confirmation.setText(b.getString("addShopping.btn.confirm"));
 
@@ -178,14 +182,17 @@ public class AddToShoppingListCtrl {
      * @param recipe The recipe
      * @param scale The scale
      */
-    public void setFields(Recipe recipe, double scale){
+    public void setFields(Recipe recipe, double scale) {
         newIngredientType = false;
         this.recipe = recipe;
-        if(recipe != null && recipe.ingredients != null){
+        if (recipe != null && recipe.ingredients != null) {
             shoppingListUtils.addIngredientsToListView(recipe, ingredientListView.getItems(), scale);
         }
-        if(recipe != null && recipe.name != null){
-            label.setText("Add to Shopping List - " + recipe.name);
+        if (recipe != null && recipe.name != null) {
+            ResourceBundle b = languages.bundle();
+            labelText = recipe.name;
+            label.setText(MessageFormat.format(
+                    b.getString("addShopping.title"), labelText));
         }
     }
 
@@ -466,7 +473,7 @@ public class AddToShoppingListCtrl {
     @FXML
     private void onExitButton(){
         ingredientListView.getItems().clear();
-        controller.showRecipeOverview();
+        controller.showScene(1);
     }
 
     /**
