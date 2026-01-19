@@ -43,11 +43,11 @@ public class IngredientControllerTest {
         recipe1 = new Recipe("cucumber salad",
                 new ArrayList<>(),
                 new ArrayList<>(List.of("add cucumbers")),
-                2);
+                2, "en");
         recipe2 = new Recipe("cucumber with salt",
                 new ArrayList<>(),
                 new ArrayList<>(List.of("add cucumbers")),
-                3);
+                3, "en");
         ingredient1 = new Ingredient(
                 new IngredientType("cucumber", null, new ArrayList<>(), null), 100.0, G, recipe1);
         ingredient2 = new Ingredient(

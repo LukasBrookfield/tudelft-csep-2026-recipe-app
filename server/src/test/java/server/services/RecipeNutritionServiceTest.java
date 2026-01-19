@@ -20,7 +20,7 @@ public class RecipeNutritionServiceTest {
         Nutrition nutrition = new Nutrition(10.0, 20.0, 5.0);
         IngredientType chicken = new IngredientType("Chicken", nutrition, new ArrayList<>(), null);
 
-        Recipe r = new Recipe("Chicken bowl", new ArrayList<>(), new ArrayList<>(List.of("add chicken")), 1);
+        Recipe r = new Recipe("Chicken bowl", new ArrayList<>(), new ArrayList<>(List.of("add chicken")), 1, "en");
 
         Ingredient ing = new Ingredient(chicken, 100.0, Unit.G, r);
         r.ingredients.add(ing);
@@ -40,7 +40,7 @@ public class RecipeNutritionServiceTest {
         Nutrition nutrition = new Nutrition(100.0, 0.0, 0.0);
         IngredientType sugar = new IngredientType("Sugar", nutrition, new ArrayList<>(), null);
 
-        Recipe r = new Recipe("Tea", new ArrayList<>(), new ArrayList<>(List.of("add sugar")), 1);
+        Recipe r = new Recipe("Tea", new ArrayList<>(), new ArrayList<>(List.of("add sugar")), 1, "en");
         r.ingredients.add(new Ingredient(sugar, 1.0, Unit.TO_TASTE, r));
 
         RecipeNutrition n = controller.compute(r);
@@ -53,7 +53,7 @@ public class RecipeNutritionServiceTest {
     @Test
     public void compute_ignoresIngredientsWithoutNutrition() {
         IngredientType unkown = new IngredientType("Unknown", null, new ArrayList<>(), null);
-        Recipe r = new Recipe("Mistery soup", new ArrayList<>(), new ArrayList<>(), 1);
+        Recipe r = new Recipe("Mistery soup", new ArrayList<>(), new ArrayList<>(), 1, "en");
         r.ingredients.add(new Ingredient(unkown, 1.0, Unit.TO_TASTE, r));
 
         RecipeNutrition n = controller.compute(r);

@@ -151,4 +151,23 @@ public interface ServerUtility {
      * @return true if the server responds, false if the connection fails
      */
     public boolean isServerAvailable();
+
+    /**
+     * Establishes a subscription to receive real-time updates whenever
+     * a specific ingredient type changes.
+     *
+     * @param id       IngredientType id to subscribe to.
+     * @param listener Consumer that receives the updated IngredientType.
+     */
+    public void subscribeToIngredientType(long id, Consumer<IngredientType> listener);
+
+    /**
+     * Establishes a subscription to receive real-time updates whenever the
+     * complete list of ingredient types changes.
+     *
+     * @param listener Consumer that receives the full updated list.
+     */
+    public void subscribeToIngredientTypeList(Consumer<List<IngredientType>> listener);
+
+
 }

@@ -158,7 +158,7 @@ public class IngredientTypeOverviewCtrlTest {
 
         // check all labels are correct
         assertEquals("New ingredient", ingredientTypeTitleLabel.getText());
-        assertEquals("-", nameLabel.getText());
+        assertEquals("New ingredient", nameLabel.getText());
         assertEquals("-", densityLabel.getText());
         assertEquals("-", proteinLabel.getText());
         assertEquals("-", fatLabel.getText());
@@ -209,8 +209,9 @@ public class IngredientTypeOverviewCtrlTest {
         robot.clickOn(doneEditButton);
         robot.clickOn(editIngredientTypeButton);
         robot.clickOn(editDetailsButton);
-        robot.clickOn(editNameField).type(KeyCode.END);;
-        robot.eraseText(20);
+        robot.clickOn(editNameField);
+        robot.push(KeyCode.CONTROL, KeyCode.A);
+        robot.type(KeyCode.BACK_SPACE);
         robot.write("Edited ingredient type");
         robot.clickOn(doneEditDetailsButton);
         robot.clickOn(doneEditButton);
@@ -237,7 +238,7 @@ public class IngredientTypeOverviewCtrlTest {
         robot.clickOn(cancelEditDetailsButton);
 
         // check if edit has been cancelled
-        assertEquals("-", nameLabel.getText());
+        assertEquals("New ingredient", nameLabel.getText());
         assertEquals("New ingredient", ingredientTypeTitleLabel.getText());
     }
 
@@ -250,7 +251,7 @@ public class IngredientTypeOverviewCtrlTest {
         robot.clickOn(doneEditDetailsButton);
 
         // check that edit hasn't gone through
-        assertEquals("-", nameLabel.getText());
+        assertEquals("New ingredient", nameLabel.getText());
     }
 
     @Test
