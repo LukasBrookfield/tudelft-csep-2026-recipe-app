@@ -397,7 +397,7 @@ public class IngredientTypeOverviewCtrl {
         // While in edit mode, the user can't change to a different ingredient
         ingredientTypeSearchField.getParent().setDisable(value);
 
-        sceneBox.getParent().setDisable(value);
+        sceneBox.setDisable(value);
         editIngredientTypeButton.setVisible(!value);
         cancelEditButton.getParent().setVisible(value);
         editDetailsButton.getParent().getParent().getParent().setVisible(value);
@@ -561,7 +561,22 @@ public class IngredientTypeOverviewCtrl {
         changeNutritionViewEditMode(false);
         changeViewEditMode(false);
 
+        searchStatusLabel.setVisible(false);
+        searchStatusLabel.setManaged(false);
+
+        // ONE backing list
         allIngredientTypes = FXCollections.observableArrayList();
+
+        // filtering/sorting pipeline
+        filteredIngredientTypes = new FilteredList<>(allIngredientTypes, currentPredicate);
+        sortedIngredientTypes = new SortedList<>(filteredIngredientTypes);
+        ingredientTypeListView.setItems(sortedIngredientTypes);
+
+        setupSort();
+        setupSearch();
+        applyTranslations();
+
+        // initial load
         try {
             allIngredientTypes.setAll(server.getIngredientTypes());
         } catch (Exception e) {
@@ -569,62 +584,25 @@ public class IngredientTypeOverviewCtrl {
             e.printStackTrace();
         }
 
-        searchStatusLabel.setVisible(false);
-        searchStatusLabel.setManaged(false);
-
-        filteredIngredientTypes = new FilteredList<>(allIngredientTypes);
-        sortedIngredientTypes = new SortedList<>(filteredIngredientTypes);
-        ingredientTypeListView.setItems(sortedIngredientTypes);
-
-        setupSort();
-        setupSearch();
-
-        applyTranslations();
-
-        // Backing list like RecipeOverviewCtrl
-        allIngredientTypes = FXCollections.observableArrayList();
-
-        // Initial load once
-        try {
-            List<IngredientType> fromServer = server.getIngredientTypes();
-            allIngredientTypes.setAll(fromServer);
-        } catch (Exception e) {
-            System.out.println("ERROR: Could not load ingredient types from server.");
-            e.printStackTrace();
-        }
-
-        ingredientTypeListView.setItems(allIngredientTypes);
-
-        // Subscribe to list updates (like recipes/list)
+        // subscribe to list updates
         server.subscribeToIngredientTypeList(list -> Platform.runLater(() -> {
             allIngredientTypes.setAll(list);
             ingredientTypeListView.refresh();
             onRefresh();
         }));
 
-        // Initial UI refresh
-        onRefresh();
-
-        // Selection listener: refresh UI + subscribe to selected ingredient type updates
         ingredientTypeListView.getSelectionModel().selectedItemProperty().addListener(
                 (obs, oldIt, newIt) -> {
                     onRefresh();
-                    if (newIt == null) return;
-
-                    subscribeToIngredientTypeIfNeeded(newIt.id);
+                    if (newIt != null) subscribeToIngredientTypeIfNeeded(newIt.id);
                 }
         );
 
         sceneBox.getSelectionModel().selectedItemProperty().addListener(
-                (obs, oldValue, newValue) -> {
-                    mainCtrl.showScene(sceneBox.getItems().indexOf(newValue));
-                });
+                (obs, oldValue, newValue) -> mainCtrl.showScene(sceneBox.getItems().indexOf(newValue))
+        );
 
-        // If something is selected at startup, subscribe to it
-        IngredientType selected = ingredientTypeListView.getSelectionModel().getSelectedItem();
-        if (selected != null) {
-            subscribeToIngredientTypeIfNeeded(selected.id);
-        }
+        onRefresh();
     }
 
     /**
@@ -733,26 +711,30 @@ public class IngredientTypeOverviewCtrl {
      */
     @FXML
     private void onAddIngredientTypeButton() throws JsonProcessingException {
-        // reset the search query, because "New ingredient" might not show
         ingredientTypeSearchField.clear();
         applySearchFilter("");
-        onRefresh();
 
         IngredientType ingredientType = new IngredientType(
-                "New ingredient", null, new ArrayList<>(), null);
+                "New Ingredient", null, new ArrayList<>(), null);
 
         IngredientType created = server.addIngredientType(ingredientType);
 
-        allIngredientTypes.add(created);
-        ingredientTypeListView.getSelectionModel().select(created);
+        // If websocket list update is working, it will arrive soon.
+        // But to give instant UX, you can also add it if it's not already there:
+        if (allIngredientTypes.stream().noneMatch(it -> it.id == created.id)) {
+            allIngredientTypes.add(created);
+        }
 
-        onRefresh();
+        ingredientTypeListView.getSelectionModel().select(created);
 
         newIngredientType = true;
         onEditIngredientTypeButton();
         nameLabel.setText("-");
         editDetailsButton.requestFocus();
+
+        onRefresh();
     }
+
 
 
     // Top right
@@ -879,10 +861,10 @@ public class IngredientTypeOverviewCtrl {
     private void onEditDetailsButton() {
         changeDetailsViewEditMode(true);
 
-        if (!nameLabel.getText().equals("-")) {
-            editNameField.setText(nameLabel.getText());
+        if (newIngredientType) {
+            editNameField.clear();
         } else {
-            editNameField.setText("");
+            editNameField.setText(nameLabel.getText().equals("-") ? "" : nameLabel.getText());
         }
     }
 
