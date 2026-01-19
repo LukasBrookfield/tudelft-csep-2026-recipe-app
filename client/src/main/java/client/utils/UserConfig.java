@@ -86,6 +86,23 @@ public class UserConfig {
         user.getFavouriteRecipes().remove(recipe.id);
     }
 
+    public boolean isSelectedLanguage(String language) {
+        return user.getSelectedLanguages().contains(language);
+    }
+
+    public void addSelectedLanguage(String language) {
+        if (!isSelectedLanguage(language)) {
+            user.getSelectedLanguages().add(language);
+        }
+    }
+
+    public void removeSelectedLanguage(String language) {
+        System.out.println(user.getSelectedLanguages());
+        System.out.println("Removing " + language);
+        user.getSelectedLanguages().remove(language);
+        System.out.println(user.getSelectedLanguages());
+    }
+
     public String getLanguageTag() {
         return user.getLanguageTag();
     }

@@ -143,4 +143,14 @@ public class TestServerUtils implements ServerUtility {
     public boolean isServerAvailable() {
         return false;
     }
+
+    @Override
+    public void subscribeToIngredientType(long id, Consumer<IngredientType> listener) {
+
+    }
+
+    @Override
+    public void subscribeToIngredientTypeList(Consumer<List<IngredientType>> listener) {
+
+    }
 }

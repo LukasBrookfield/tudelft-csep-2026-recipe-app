@@ -17,26 +17,28 @@ class UserTest {
 
     static final List<Long> FAVOURITE_RECIPES = List.of(123L, 456L);
     static final List<ShoppingListItem> SHOPPING_LIST = createShoppingList("A", ING_TYPE_A, ING_TYPE_B);
+    static final List<String> SELECTED_LANGUAGES = List.of("en", "nl", "pt");
 
     private User testUser;
 
     @BeforeEach
     void setUp() {
-        testUser = new User(FAVOURITE_RECIPES, SHOPPING_LIST);
+        testUser = new User(FAVOURITE_RECIPES,
+                SHOPPING_LIST, SELECTED_LANGUAGES);
     }
 
     @Test
     void testEquals() {
         // exactly equal user
-        User user2 = new User(FAVOURITE_RECIPES, SHOPPING_LIST);
+        User user2 = new User(FAVOURITE_RECIPES, SHOPPING_LIST, SELECTED_LANGUAGES);
         assertEquals(testUser, user2);
 
         // with empty shopping list
-        user2 = new User(FAVOURITE_RECIPES, Collections.emptyList());
+        user2 = new User(FAVOURITE_RECIPES, Collections.emptyList(), SELECTED_LANGUAGES);
         assertNotEquals(testUser, user2);
 
         // with empty favourite recipes
-        user2 = new User(Collections.emptyList(), SHOPPING_LIST);
+        user2 = new User(Collections.emptyList(), SHOPPING_LIST, SELECTED_LANGUAGES);
         assertNotEquals(testUser, user2);
 
         // with same ingredients, but different recipe name (absent, to be implemented differently later)
@@ -45,29 +47,29 @@ class UserTest {
 
         // with different shopping list
         List<ShoppingListItem> otherList = createShoppingList(RECIPE_A_NAME, ING_TYPE_A, ING_TYPE_C);
-        user2 = new User(FAVOURITE_RECIPES, otherList);
+        user2 = new User(FAVOURITE_RECIPES, otherList, SELECTED_LANGUAGES);
         assertNotEquals(testUser, user2);
     }
 
     @Test
     void testHashCode() {
 
-        User user2 = new User(FAVOURITE_RECIPES, SHOPPING_LIST);
+        User user2 = new User(FAVOURITE_RECIPES, SHOPPING_LIST, SELECTED_LANGUAGES);
         assertEquals(testUser.hashCode(), user2.hashCode());
 
         // with empty shopping list
-        user2 = new User(FAVOURITE_RECIPES, Collections.emptyList());
+        user2 = new User(FAVOURITE_RECIPES, Collections.emptyList(), SELECTED_LANGUAGES);
         assertNotEquals(testUser.hashCode(), user2.hashCode());
 
         // with empty favourite recipes
-        user2 = new User(Collections.emptyList(), SHOPPING_LIST);
+        user2 = new User(Collections.emptyList(), SHOPPING_LIST, SELECTED_LANGUAGES);
         assertNotEquals(testUser.hashCode(), user2.hashCode());
 
         // with same ingredients, but different recipe name (to be implemented later
 
         // with different shopping list
         List<ShoppingListItem> otherList = createShoppingList(RECIPE_A_NAME, ING_TYPE_A, ING_TYPE_C);
-        user2 = new User(FAVOURITE_RECIPES, otherList);
+        user2 = new User(FAVOURITE_RECIPES, otherList, SELECTED_LANGUAGES);
         assertNotEquals(testUser.hashCode(), user2.hashCode());
     }
 

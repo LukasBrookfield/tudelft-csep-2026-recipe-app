@@ -27,6 +27,8 @@ public class Recipe {
 
     public int servings;
 
+    public String language;
+
     /**
      * Constructs a Recipe object with only a name
      * @param name The name of the recipe
@@ -38,6 +40,11 @@ public class Recipe {
         this.servings = 1;
     }
 
+    public Recipe(String name, String language) {
+        this(name);
+        this.language = language;
+    }
+
     /**
      * Constructs a Recipe object
      * @param name The name of the recipe
@@ -45,11 +52,13 @@ public class Recipe {
      * @param steps A list of steps that you need to follow
      * @param servings The number of servings the recipe provides
      */
-    public Recipe(String name, List<Ingredient> ingredients, List<String> steps, int servings) {
+    public Recipe(String name, List<Ingredient> ingredients,
+                  List<String> steps, int servings, String language) {
         this.name = name;
         this.ingredients = ingredients;
         this.steps = steps;
         this.servings = servings;
+        this.language = language;
     }
 
     private Recipe() {}  // for object mapper

@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import commons.*;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -16,6 +17,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.collections.ObservableList;
 import javafx.util.StringConverter;
 
 import java.text.MessageFormat;
@@ -44,6 +46,8 @@ public class IngredientTypeOverviewCtrl {
     private final LanguageService languages;
 
     private int usedInRecipesCount = 0;
+    private Long subscribedIngredientTypeId = null;
+
 
     @FXML
     private AnchorPane rootPane;
@@ -417,7 +421,7 @@ public class IngredientTypeOverviewCtrl {
         // While in edit mode, the user can't change to a different ingredient
         ingredientTypeSearchField.getParent().setDisable(value);
 
-        sceneBox.getParent().setDisable(value);
+        sceneBox.setDisable(value);
         editIngredientTypeButton.setVisible(!value);
         cancelEditButton.getParent().setVisible(value);
         editDetailsButton.getParent().getParent().getParent().setVisible(value);
@@ -547,31 +551,18 @@ public class IngredientTypeOverviewCtrl {
      */
     @FXML
     public void onRefresh() {
-        try {
-            System.out.println(allIngredientTypes);
-            for (IngredientType ingredientType : server.getIngredientTypes()) {
-                if (!allIngredientTypes.contains(ingredientType)) {
-                    System.out.println("Adding ingredient type with id = " +
-                            ingredientType.id + ", name = " + ingredientType.name);
-                    allIngredientTypes.add(ingredientType);
-                }
-            }
-            System.out.println(allIngredientTypes);
-        } catch (Exception e) {
-            System.out.println("ERROR: Could not load ingredient types from server.");
-            e.printStackTrace();
-        }
-
         boolean empty = ingredientTypeListView.getItems().isEmpty();
         mainSeparator.getParent().setVisible(!empty);
 
         int index = ingredientTypeListView.getSelectionModel().getSelectedIndex();
-        if (index == -1) {
+        if (index == -1 && !empty) {
             ingredientTypeListView.getSelectionModel().select(0);
         }
 
         setLabelsAndFields();
     }
+
+
 
     /**
      * Changes between viewing and editing density
@@ -601,7 +592,22 @@ public class IngredientTypeOverviewCtrl {
         changeNutritionViewEditMode(false);
         changeViewEditMode(false);
 
+        searchStatusLabel.setVisible(false);
+        searchStatusLabel.setManaged(false);
+
+        // ONE backing list
         allIngredientTypes = FXCollections.observableArrayList();
+
+        // filtering/sorting pipeline
+        filteredIngredientTypes = new FilteredList<>(allIngredientTypes, currentPredicate);
+        sortedIngredientTypes = new SortedList<>(filteredIngredientTypes);
+        ingredientTypeListView.setItems(sortedIngredientTypes);
+
+        setupSort();
+        setupSearch();
+        applyTranslations();
+
+        // initial load
         try {
             allIngredientTypes.setAll(server.getIngredientTypes());
         } catch (Exception e) {
@@ -609,18 +615,12 @@ public class IngredientTypeOverviewCtrl {
             e.printStackTrace();
         }
 
-        searchStatusLabel.setVisible(false);
-        searchStatusLabel.setManaged(false);
-
-        filteredIngredientTypes = new FilteredList<>(allIngredientTypes);
-        sortedIngredientTypes = new SortedList<>(filteredIngredientTypes);
-        ingredientTypeListView.setItems(sortedIngredientTypes);
-
-        setupSort();
-        setupSearch();
-
-        applyTranslations();
-        onRefresh();
+        // subscribe to list updates
+        server.subscribeToIngredientTypeList(list -> Platform.runLater(() -> {
+            allIngredientTypes.setAll(list);
+            ingredientTypeListView.refresh();
+            onRefresh();
+        }));
 
         categoryBox.getItems().addAll(
                 Meat,
@@ -636,17 +636,47 @@ public class IngredientTypeOverviewCtrl {
         );
 
         ingredientTypeListView.getSelectionModel().selectedItemProperty().addListener(
-                (observable,
-                 oldIngredientType, newIngredientType) -> {
+                (obs, oldIt, newIt) -> {
                     onRefresh();
+                    if (newIt != null) subscribeToIngredientTypeIfNeeded(newIt.id);
                 }
         );
 
         sceneBox.getSelectionModel().selectedItemProperty().addListener(
-                (obs, oldValue, newValue) -> {
-                    mainCtrl.showScene(sceneBox.getItems().indexOf(newValue));
-                });
+                (obs, oldValue, newValue) -> mainCtrl.showScene(sceneBox.getItems().indexOf(newValue))
+        );
+
+        onRefresh();
     }
+
+    /**
+     * Helper to subscribe to a specific IngredientType object and update the UI
+     * @param id The id of the IngredientType object
+     */
+    private void subscribeToIngredientTypeIfNeeded(long id) {
+        if (subscribedIngredientTypeId != null && subscribedIngredientTypeId == id) return;
+        subscribedIngredientTypeId = id;
+
+        server.subscribeToIngredientType(id, updated -> Platform.runLater(() -> {
+
+            // Replace updated item inside allIngredientTypes so list stays correct
+            for (int i = 0; i < allIngredientTypes.size(); i++) {
+                if (allIngredientTypes.get(i).id == updated.id) {
+                    allIngredientTypes.set(i, updated);
+                    break;
+                }
+            }
+
+            // If the user is still viewing the same one, refresh right pane
+            IngredientType current = ingredientTypeListView.getSelectionModel().getSelectedItem();
+            if (current != null && current.id == updated.id) {
+                setLabelsAndFields();
+            }
+
+            ingredientTypeListView.refresh();
+        }));
+    }
+
 
     // Left sidebar
 
@@ -663,7 +693,7 @@ public class IngredientTypeOverviewCtrl {
 
         if (usedInRecipes.isEmpty()) {
             server.deleteIngredientType(ingredientType.id);
-            allIngredientTypes.remove(ingredientType);
+            allIngredientTypes.removeIf(it -> it.id == ingredientType.id);
             onRefresh();
             return;
         }
@@ -671,7 +701,7 @@ public class IngredientTypeOverviewCtrl {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.initModality(Modality.APPLICATION_MODAL); // disables the main stage
         ResourceBundle b = languages.bundle();
-        alert.setTitle(b.getString("ing.alert.removeUsed.title"));
+        alert.setTitle(b.getString("commons.warning"));
         alert.setHeaderText(null);
 
         Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
@@ -714,7 +744,7 @@ public class IngredientTypeOverviewCtrl {
                 }
             }
             server.deleteIngredientType(ingredientType.id);
-            allIngredientTypes.remove(ingredientType);
+            allIngredientTypes.removeIf(it -> it.id == ingredientType.id);
             onRefresh();
         }
     }
@@ -725,27 +755,45 @@ public class IngredientTypeOverviewCtrl {
      */
     @FXML
     private void onAddIngredientTypeButton() throws JsonProcessingException {
-        // reset the search query, because "New ingredient" might not show
         ingredientTypeSearchField.clear();
         applySearchFilter("");
-        onRefresh();
 
         IngredientType ingredientType = new IngredientType(
                 "New ingredient", null, new ArrayList<>(), null);
 
-        System.out.println(new ObjectMapper().writeValueAsString(ingredientType));
+        IngredientType created = server.addIngredientType(ingredientType);
 
-        ingredientType = server.addIngredientType(ingredientType);
-        allIngredientTypes.add(ingredientType);
-        onRefresh();
-        ingredientTypeListView.getSelectionModel().select(
-                ingredientType
-        );
+        // If websocket list update is working, it will arrive soon.
+        // But to give instant UX, you can also add it if it's not already there:
+        if (allIngredientTypes.stream().noneMatch(it -> it.id == created.id)) {
+            allIngredientTypes.add(created);
+        }
+
+        ingredientTypeListView.getSelectionModel().select(created);
 
         newIngredientType = true;
         onEditIngredientTypeButton();
         nameLabel.setText("-");
         editDetailsButton.requestFocus();
+
+        onRefresh();
+    }
+
+
+
+    // Top right
+
+    /**
+     * Changes the scene to Recipe Overview
+     */
+    @FXML
+    private void onToggleOverviewButton() {
+        mainCtrl.showRecipeOverview();
+    }
+
+    @FXML
+    private void onHomeButton() {
+        mainCtrl.showHomeScreen();
     }
 
     // Ingredient title row
@@ -767,9 +815,12 @@ public class IngredientTypeOverviewCtrl {
     private void onCancelEditButton() {
         if (newIngredientType) {
             IngredientType ingredientType = ingredientTypeListView.getSelectionModel().getSelectedItem();
-            server.deleteIngredientType(ingredientType.id);
-            allIngredientTypes.remove(ingredientType);
+            if (ingredientType != null) {
+                server.deleteIngredientType(ingredientType.id);
+                allIngredientTypes.removeIf(it -> it.id == ingredientType.id);
+            }
         }
+
         onRefresh();
         changeViewEditMode(false);
         newIngredientType = false;
@@ -855,10 +906,10 @@ public class IngredientTypeOverviewCtrl {
     private void onEditDetailsButton() {
         changeDetailsViewEditMode(true);
 
-        if (!nameLabel.getText().equals("-")) {
-            editNameField.setText(nameLabel.getText());
+        if (newIngredientType) {
+            editNameField.clear();
         } else {
-            editNameField.setText("");
+            editNameField.setText(nameLabel.getText().equals("-") ? "" : nameLabel.getText());
         }
     }
 
@@ -892,20 +943,20 @@ public class IngredientTypeOverviewCtrl {
 
         if (inputName == null || inputName.isBlank()) {
             System.out.println("The ingredient type needs a name.");
-            recipeUtils.displayAlertInputWarning("ingredient.warning.empty.name", textFields);
+            recipeUtils.displayAlertWarning("ingredient.warning.empty.name", textFields);
 
             return;
         }
 
         if(inputName != null && inputName.length()>50) {
             System.out.println("The ingredient type name exceeds 50 characters!");
-            recipeUtils.displayAlertInputWarning("ingredient.warning.name.exceeds.limit", textFields);
+            recipeUtils.displayAlertWarning("ingredient.warning.name.exceeds.limit", textFields);
             return;
         }
 
         if (Character.isDigit(inputName.trim().charAt(0))) {
             System.out.println("The ingredient type name cannot start with a digit.");
-            recipeUtils.displayAlertInputWarning("ingredient.warning.number", textFields);
+            recipeUtils.displayAlertWarning("ingredient.warning.number", textFields);
             return;
         }
 
@@ -914,7 +965,7 @@ public class IngredientTypeOverviewCtrl {
                 x -> x.name.equalsIgnoreCase(inputName));
         if (isDuplicate) {
             System.out.println("The name of the ingredient type must be unique!");
-            recipeUtils.displayAlertInputWarning("recipe.warning.ing.duplicate", null);
+            recipeUtils.displayAlertWarning("recipe.warning.ing.duplicate", null);
             return;
         }
 
@@ -955,27 +1006,27 @@ public class IngredientTypeOverviewCtrl {
 
         if(!editDensityField.getText().isBlank() && editDensityField.getText().length()>6) {
             System.out.println("The density exceeds 8 characters!");
-            recipeUtils.displayAlertInputWarning("ingredient.warning.density.exceeds.limit", textFields);
+            recipeUtils.displayAlertWarning("ingredient.warning.density.exceeds.limit", textFields);
             return;
         }
         try {
             density = Double.parseDouble(editDensityField.getText());
         } catch (NumberFormatException e) {
             System.out.println("Density must be a double");
-            recipeUtils.displayAlertInputWarning("ingredient.warning.double.density", textFields);
+            recipeUtils.displayAlertWarning("ingredient.warning.double.density", textFields);
             return;
         }
 
         if (density < 0) {
             System.out.println("The density must be non-negative.");
-            recipeUtils.displayAlertInputWarning("ingredient.warning.density.negative", textFields);
+            recipeUtils.displayAlertWarning("ingredient.warning.density.negative", textFields);
             return;
         }
 
         //Check if ingredient density is larger than the density of Osmium
         if(density > 22.6) {
             System.out.println("The density is out of this world");
-            recipeUtils.displayAlertInputWarning("ingredient.warning.density.exceeds.limit", textFields);
+            recipeUtils.displayAlertWarning("ingredient.warning.density.exceeds.limit", textFields);
             return;
         }
         densityLabel.setText(String.valueOf(density));
@@ -1050,7 +1101,7 @@ public class IngredientTypeOverviewCtrl {
         }
 
         if (!textFields.isEmpty()) {
-            recipeUtils.displayAlertInputWarning("ingredient.warning.nutrition", textFields);
+            recipeUtils.displayAlertWarning("ingredient.warning.nutrition", textFields);
             System.out.println("Invalid nutritional input detected in specific fields.");
             return;
         }

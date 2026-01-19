@@ -6,8 +6,12 @@ import commons.Unit;
 import jakarta.inject.Inject;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextInputControl;
+import javafx.scene.image.Image;
 import javafx.stage.Modality;
+import javafx.stage.Stage;
+
 import java.util.*;
 
 public class RecipeUtils {
@@ -89,28 +93,37 @@ public class RecipeUtils {
      * @param warningMessage Key to translated warning message
      * @param fields FXML fields to reset
      */
-    public void displayAlertInputWarning(String warningMessage, List<TextInputControl> fields) {
+    public void displayAlertWarning(String warningMessage, List<TextInputControl> fields) {
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.initModality(Modality.APPLICATION_MODAL);
 
         ResourceBundle b = languages.bundle();
-        alert.setTitle(b.getString("recipe.warning.invalid.user.input"));
+        alert.setTitle(b.getString("commons.warning"));
         alert.setHeaderText("Wooops...");
-        alert.setContentText(b.getString(warningMessage));
 
         alert.getDialogPane().applyCss();
+
+        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+        stage.getIcons().add(new Image(Objects.requireNonNull(
+                getClass().getResourceAsStream("/FoodPalLogo.png"))));
 
         Node header = alert.getDialogPane().lookup(".header-panel .label");
         if (header != null) {
             header.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
         }
 
-        Node content = alert.getDialogPane().lookup(".content.label");
-        if (content != null) {
-            content.setStyle("-fx-font-size: 12px;");
+        {
+            Node content = alert.getDialogPane().lookup(".content.label");
+            if (content != null) {
+                content.setStyle("-fx-font-size: 12px;");
+            }
         }
 
-        if(fields != null && !fields.isEmpty()) {
+        Label content = new Label(b.getString(warningMessage));
+        content.setPrefWidth(400);
+        alert.getDialogPane().setContent(content);
+
+        if (fields != null && !fields.isEmpty()) {
             clearFields(fields);
         }
 
