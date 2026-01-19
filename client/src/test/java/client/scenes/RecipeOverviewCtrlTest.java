@@ -62,9 +62,9 @@ public class RecipeOverviewCtrlTest {
     private Separator mainSeparator;
     private Label servingsLabel;
     private TextField editServingsField;
-    private Button editServingsButton;
-    private Button cancelEditServingsButton;
-    private Button doneEditServingsButton;
+    private Button editDetailsButton;
+    private Button cancelEditDetailsButton;
+    private Button doneEditDetailsButton;
     private Label ingredientsHeaderLabel;
     private ListView<Ingredient> ingredientListView;
     private Button removeIngredientButton;
@@ -92,6 +92,7 @@ public class RecipeOverviewCtrlTest {
     private ChoiceBox<String> sortChoiceBox;
     private Label recipeKcalPer100gLabel;
     private LanguageService languageService;
+    private ComboBox<IngredientType> editIngredientTypeBox;
 
     @Start
     private void start(Stage stage) throws IOException {
@@ -140,9 +141,9 @@ public class RecipeOverviewCtrlTest {
         mainSeparator = lookup(scene, "#mainSeparator");
         servingsLabel = lookup(scene, "#servingsLabel");
         editServingsField = lookup(scene, "#editServingsField");
-        editServingsButton = lookup(scene, "#editServingsButton");
-        cancelEditServingsButton = lookup(scene, "#cancelEditServingsButton");
-        doneEditServingsButton = lookup(scene, "#doneEditServingsButton");
+        editDetailsButton = lookup(scene, "#editDetailsButton");
+        cancelEditDetailsButton = lookup(scene, "#cancelEditDetailsButton");
+        doneEditDetailsButton = lookup(scene, "#doneEditDetailsButton");
         ingredientsHeaderLabel = lookup(scene, "#ingredientsHeaderLabel");
         ingredientListView = lookup(scene, "#ingredientListView");
         removeIngredientButton = lookup(scene, "#removeIngredientButton");
@@ -169,6 +170,7 @@ public class RecipeOverviewCtrlTest {
         searchStatusLabel = lookup(scene, "#searchStatusLabel");
         sortChoiceBox = lookup(scene, "#sortChoiceBox");
         recipeKcalPer100gLabel = lookup(scene, "#recipeKcalPer100gLabel");
+        editIngredientTypeBox = lookup(scene, "#editIngredientTypeBox");
     }
 
     private <T> T lookup(Scene scene, String id) {
@@ -178,11 +180,11 @@ public class RecipeOverviewCtrlTest {
     private void addRecipe(FxRobot robot, String name, int servings) {
         robot.clickOn(addRecipeButton);
         robot.write(name);
-        robot.clickOn(editServingsButton);
+        robot.clickOn(editDetailsButton);
         robot.clickOn(editServingsField);
         robot.eraseText(1);
         robot.write(String.valueOf(servings));
-        robot.clickOn(doneEditServingsButton);
+        robot.clickOn(doneEditDetailsButton);
     }
 
     private void addStep(FxRobot robot, String step) {
@@ -193,7 +195,7 @@ public class RecipeOverviewCtrlTest {
 
     private void addIngredient(FxRobot robot, String ingredientType, double amount, Unit unit) {
         robot.clickOn(addIngredientButton);
-        robot.clickOn(editIngredientNameField);
+        robot.clickOn(editIngredientTypeBox);
         robot.write(ingredientType);
         robot.clickOn(nextEditIngredientButton);
         robot.interact(() -> editUnitBox.getSelectionModel().select(unit.toString()));
@@ -367,26 +369,26 @@ public class RecipeOverviewCtrlTest {
     }
 
     @Test
-    void editServingsButtonTest(FxRobot robot) {
+    void editDetailsButtonTest(FxRobot robot) {
         addRecipe(robot, "Test recipe", 2);
-        robot.clickOn(editServingsButton);
+        robot.clickOn(editDetailsButton);
         robot.clickOn(editServingsField);
         robot.eraseText(1);
         robot.write("6");
-        robot.clickOn(doneEditServingsButton);
+        robot.clickOn(doneEditDetailsButton);
 
         // check if servings have been edited
         assertEquals("6", servingsLabel.getText());
     }
 
     @Test
-    void cancelEditServingsButtonTest(FxRobot robot) {
+    void cancelEditDetailsButtonTest(FxRobot robot) {
         addRecipe(robot, "Test recipe", 2);
-        robot.clickOn(editServingsButton);
+        robot.clickOn(editDetailsButton);
         robot.clickOn(editServingsField);
         robot.eraseText(1);
         robot.write("6");
-        robot.clickOn(cancelEditServingsButton);
+        robot.clickOn(cancelEditDetailsButton);
 
         // check that servings haven't been changed
         assertEquals("2", servingsLabel.getText());

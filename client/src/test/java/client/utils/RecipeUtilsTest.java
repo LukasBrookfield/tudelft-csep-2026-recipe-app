@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
-class TestRecipeUtils {
+class RecipeUtilsTest {
     private RecipeUtils recipeUtils;
     private Nutrition nutrition;
     private IngredientType cucumber;
@@ -63,7 +63,7 @@ class TestRecipeUtils {
 
     @Test
     void getCaloriesPer100gNullNutritionTest() {
-        assertEquals(0.0, recipeUtils.getCaloriesPer100g(flour));
+        assertEquals(-1.0, recipeUtils.getCaloriesPer100g(flour));
     }
 
     @Test

@@ -75,6 +75,29 @@ public class MainCtrl {
         primaryStage.show();
     }
 
+    /**
+     * Switches scenes based on the selection of the scene drop down
+     * @param scene 0 = home, 1 = recipe overview, 2 = ingredient overview, 3 = shopping list
+     */
+    public void showScene(int scene) {
+        switch (scene) {
+            case 0:
+                showHomeScreen();
+                break;
+            case 1:
+                recipeOverviewCtrl.sceneBox.getSelectionModel().select(1);
+                showRecipeOverview();
+                break;
+            case 2:
+                ingredientTypeOverviewCtrl.sceneBox.getSelectionModel().select(2);
+                showIngredientTypeOverview();
+                break;
+            case 3:
+                shoppingListCtrl.sceneBox.getSelectionModel().select(3);
+                showShoppingList();
+        }
+    }
+
     public void showHomeScreen() {
         primaryStage.setTitle(languages.bundle().getString("title.home"));
 //        primaryStage.setTitle("FoodPal - Home");
@@ -95,13 +118,12 @@ public class MainCtrl {
         ingredientTypeOverviewCtrl.onRefresh();
     }
 
-    public void showShoppingList(boolean currentScene) {
+    public void showShoppingList() {
         primaryStage.setTitle(languages.bundle().getString("title.shopping"));
 //        primaryStage.setTitle("FoodPal - Shopping List");
         primaryStage.setScene(shoppingListScene);
 
         shoppingListCtrl.set();
-        shoppingListCtrl.lastScene = currentScene;
     }
 
     public void showAddToShoppingList(Recipe recipe, double scaleFactor) {

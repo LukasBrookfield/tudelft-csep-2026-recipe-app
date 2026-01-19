@@ -27,18 +27,23 @@ public class HomeScreenCtrl {
     }
 
     @FXML
+    private void initialize() {
+        applyTranslations();
+    }
+
+    @FXML
     private void onRecipeOverviewButton() {
-        mainCtrl.showRecipeOverview();
+        mainCtrl.showScene(1);
     }
 
     @FXML
     private void onIngredientOverviewButton() {
-        mainCtrl.showIngredientTypeOverview();
+        mainCtrl.showScene(2);
     }
 
     @FXML
     private void onShoppingListButton() {
-        mainCtrl.showShoppingList(false);
+        mainCtrl.showScene(3);
     }
 
     public void applyTranslations() {

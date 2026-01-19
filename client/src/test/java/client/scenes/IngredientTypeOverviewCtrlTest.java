@@ -163,7 +163,7 @@ public class IngredientTypeOverviewCtrlTest {
         assertEquals("-", proteinLabel.getText());
         assertEquals("-", fatLabel.getText());
         assertEquals("-", carbsLabel.getText());
-        assertEquals("0.0", kcalLabel.getText());
+        assertEquals("-", kcalLabel.getText());
         assertEquals("This ingredient type is used in 0 recipes", usedInRecipesLabel.getText());
     }
 
@@ -340,6 +340,6 @@ public class IngredientTypeOverviewCtrlTest {
         assertEquals("-", proteinLabel.getText());
         assertEquals("-", fatLabel.getText());
         assertEquals("-", carbsLabel.getText());
-        assertEquals("0.0", kcalLabel.getText());
+        assertEquals("-", kcalLabel.getText());
     }
 }

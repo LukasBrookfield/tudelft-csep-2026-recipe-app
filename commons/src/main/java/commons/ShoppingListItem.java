@@ -3,14 +3,18 @@ package commons;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
+import java.util.ResourceBundle;
+
 public class ShoppingListItem {
-    private final Ingredient ingredient;
+    private Ingredient ingredient;
     private String recipeName;
 
     public ShoppingListItem(Ingredient ingredient) {
         this.ingredient = ingredient;
         this.recipeName = null;
     }
+
+    public ShoppingListItem() { } //for object mapper
 
     public Ingredient getIngredient() {
         return ingredient;
@@ -40,5 +44,12 @@ public class ShoppingListItem {
             return ingredient.toString();
         }
         return ingredient.toString() + " (" + recipeName + ")";
+    }
+
+    public String toString(ResourceBundle b) {
+        if(recipeName == null) {
+            return ingredient.toString();
+        }
+        return ingredient.toString(b) + " (" + recipeName + ")";
     }
 }

@@ -32,7 +32,7 @@ public class TestServerUtils implements ServerUtility {
 
     @Override
     public RecipeNutrition getRecipeNutrition(long id) {
-        return new RecipeNutrition(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0);
+        return new RecipeNutrition(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0, ' ');
     }
 
     @Override
