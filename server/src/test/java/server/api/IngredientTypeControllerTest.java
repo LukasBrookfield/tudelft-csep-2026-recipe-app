@@ -4,11 +4,14 @@ import commons.IngredientType;
 import commons.Nutrition;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import server.services.IngredientTypeService;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
 import static org.springframework.http.HttpStatus.BAD_REQUEST;
 
 public class IngredientTypeControllerTest {
@@ -18,12 +21,14 @@ public class IngredientTypeControllerTest {
     private TestIngredientTypeRepository repo;
     private IngredientTypeController sut;
     private IngredientTypeService ingredientTypeService;
+    private SimpMessagingTemplate messagingTemplate;
 
     @BeforeEach
     public void setup() {
         repo = new TestIngredientTypeRepository();
         ingredientTypeService = new IngredientTypeService(repo);
-        sut = new IngredientTypeController(repo, ingredientTypeService);
+        messagingTemplate = mock(SimpMessagingTemplate.class);
+        sut = new IngredientTypeController(repo, ingredientTypeService, messagingTemplate);
 
         ingredientType1 = new IngredientType(
                 "Onion", new Nutrition(60.0, 0.0, 0.0), new ArrayList<>(), null);
