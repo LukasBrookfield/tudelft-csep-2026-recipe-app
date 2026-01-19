@@ -22,11 +22,15 @@ public class ShoppingListUtils {
 
     private final IngredientScaling ingredientScaling;
     private final LanguageService languages;
+    private final UserConfig user;
 
     @Inject
-    public ShoppingListUtils(IngredientScaling ingredientScaling, LanguageService languages) {
+    public ShoppingListUtils(IngredientScaling ingredientScaling,
+                             LanguageService languages,
+                             UserConfig user) {
         this.ingredientScaling = ingredientScaling;
         this.languages = languages;
+        this.user = user;
     }
 
     /**
@@ -115,12 +119,11 @@ public class ShoppingListUtils {
 
     /**
      * Saves the list of ingredients to the user. Adds a recipes name to each ingredient.
-     * @param ingredientListView The list of ingredients
+     * @param shoppingListItems The list of ingredients
      * @param recipe The recipe from which ingredients comes from
-     * @param user The user
      */
-    public void confirmAddingIngredients(List<ShoppingListItem> ingredientListView, Recipe recipe, UserConfig user){
-        ingredientListView.forEach(ingredient -> {
+    public void confirmAddingIngredients(List<ShoppingListItem> shoppingListItems, Recipe recipe){
+        shoppingListItems.forEach(ingredient -> {
             ingredient.setRecipeName(recipe.name);
             user.addShoppingListItem(ingredient);
         });

@@ -152,7 +152,7 @@
                         </Label>
                         <HBox alignment="CENTER_LEFT" prefHeight="25.0" prefWidth="437.0" spacing="5.0">
                            <children>
-                              <HBox alignment="CENTER_LEFT" minHeight="-Infinity" prefHeight="25.0" prefWidth="205.0" spacing="5.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
+                              <HBox alignment="CENTER_LEFT" minHeight="-Infinity" minWidth="-Infinity" prefHeight="25.0" prefWidth="205.0" spacing="5.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;">
                                  <children>
                                     <Label fx:id="nameCaptionLabel" prefHeight="17.0" prefWidth="64.0" text="Name:">
                                        <HBox.margin>
@@ -168,6 +168,28 @@
                                  <HBox.margin>
                                     <Insets />
                                  </HBox.margin>
+                              </HBox>
+                              <HBox alignment="CENTER_LEFT" prefHeight="25.0" prefWidth="245.0" style="-fx-border-color: #C8C8C8; -fx-background-color: white;">
+                                 <children>
+                                    <Label fx:id="categoryCaptionLabel" minWidth="-Infinity" prefHeight="17.0" prefWidth="60.0" text="Category:">
+                                       <padding>
+                                          <Insets left="5.0" />
+                                       </padding>
+                                    </Label>
+                                    <StackPane prefHeight="23.0" prefWidth="194.0">
+                                       <children>
+                                          <Label fx:id="categoryLabel" alignment="CENTER_RIGHT" prefHeight="28.0" prefWidth="165.0" text="-">
+                                             <StackPane.margin>
+                                                <Insets right="5.0" />
+                                             </StackPane.margin>
+                                          </Label>
+                                          <ChoiceBox fx:id="categoryBox" prefWidth="150.0" style="-fx-background-color: white; -fx-border-color: #C8C8C8;" />
+                                       </children>
+                                       <HBox.margin>
+                                          <Insets />
+                                       </HBox.margin>
+                                    </StackPane>
+                                 </children>
                               </HBox>
                            </children>
                         </HBox>
