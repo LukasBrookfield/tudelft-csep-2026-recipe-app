@@ -8,7 +8,6 @@ import commons.Recipe;
 import commons.ShoppingListItem;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -17,12 +16,9 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
-import javafx.util.Callback;
 import javafx.util.StringConverter;
 
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
 import java.util.ResourceBundle;
 
 
@@ -30,7 +26,6 @@ public class AddToShoppingListCtrl {
     private static final String UNIT_PLACEHOLDER = "__SELECT_UNIT__";
 
     private final ServerUtils server;
-    private final UserConfig user;
     private final MainCtrl controller;
     private Recipe recipe;
     private final ShoppingListUtils shoppingListUtils;
@@ -141,6 +136,7 @@ public class AddToShoppingListCtrl {
         setTooltip(addIngredientButton, "common.tooltip.addIngredient");
         setTooltip(editIngredientButton, "common.tooltip.editIngredient");
     }
+
     @Inject
     AddToShoppingListCtrl(ServerUtils server,
                           UserConfig user,
@@ -148,7 +144,6 @@ public class AddToShoppingListCtrl {
                           LanguageService languages,
                           ShoppingListUtils shoppingListUtils) {
         this.server = server;
-        this.user = user;
         this.controller = controller;
         this.languages = languages;
         this.shoppingListUtils = shoppingListUtils;
@@ -475,7 +470,7 @@ public class AddToShoppingListCtrl {
      */
     @FXML
     private void onConfirmationButton(){
-        shoppingListUtils.confirmAddingIngredients(ingredientListView.getItems(), recipe, user);
+        shoppingListUtils.confirmAddingIngredients(ingredientListView.getItems(), recipe);
         onExitButton();
     }
 }
