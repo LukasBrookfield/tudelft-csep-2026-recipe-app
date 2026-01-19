@@ -351,10 +351,10 @@ public class ShoppingListUtils {
      */
     private int compareByNameASC(ShoppingListItem item1, ShoppingListItem item2){
         if(item1.getIngredient().ingredientType == null){
-            return -1;
+            return 1;
         }
         if(item2.getIngredient().ingredientType == null){
-            return 1;
+            return -1;
         }
 
         int compare = Comparator
@@ -376,13 +376,13 @@ public class ShoppingListUtils {
      */
     private int compareByNameDESC(ShoppingListItem item1, ShoppingListItem item2){
         if(item1.getIngredient().ingredientType == null){
-            return -1;
-        }
-        if(item2.getIngredient().ingredientType == null){
             return 1;
         }
+        if(item2.getIngredient().ingredientType == null){
+            return -1;
+        }
 
-        int compare = Comparator
+        int compare = - Comparator
                 .nullsFirst(String::compareTo)
                 .compare(item1.getIngredient().ingredientType.name, item2.getIngredient().ingredientType.name);
         if (compare == 0) {
@@ -401,16 +401,17 @@ public class ShoppingListUtils {
      */
     private int compareByRecipeNameASC(ShoppingListItem item1,  ShoppingListItem item2){
         if(item1.getIngredient().ingredientType == null){
-            return -1;
-        }
-        if(item2.getIngredient().ingredientType == null){
             return 1;
         }
+        if(item2.getIngredient().ingredientType == null){
+            return -1;
+        }
+
         int compare = Comparator
                 .nullsLast(String::compareTo)
                 .compare(item1.getRecipeName(), item2.getRecipeName());
         if (compare == 0) {
-            return compareByCategoryASC(item1, item2);
+            return compareByNameASC(item1, item2);
         }
         return compare;
     }
@@ -423,16 +424,17 @@ public class ShoppingListUtils {
      */
     private int compareByRecipeNameDESC(ShoppingListItem item1, ShoppingListItem item2){
         if(item1.getIngredient().ingredientType == null){
-            return -1;
-        }
-        if(item2.getIngredient().ingredientType == null){
             return 1;
         }
+        if(item2.getIngredient().ingredientType == null){
+            return -1;
+        }
+
         int compare = - Comparator
                 .nullsFirst(String::compareTo)
                 .compare(item1.getRecipeName(), item2.getRecipeName());
         if (compare == 0) {
-            return compareByCategoryDESC(item1, item2);
+            return compareByNameDESC(item1, item2);
         }
         return compare;
     }
@@ -445,10 +447,20 @@ public class ShoppingListUtils {
      */
     private int compareByCategoryASC(ShoppingListItem item1, ShoppingListItem item2){
         if(item1.getIngredient().ingredientType == null){
-            return -1;
+            return 1;
         }
         if(item2.getIngredient().ingredientType == null){
+            return -1;
+        }
+
+        if(item1.getIngredient().ingredientType.getCategory() == null && item2.getIngredient().ingredientType.getCategory() == null){
+            return compareByNameASC(item1, item2);
+        }
+        if(item1.getIngredient().ingredientType.getCategory() == null){
             return 1;
+        }
+        if(item2.getIngredient().ingredientType.getCategory() == null){
+            return -1;
         }
 
         ResourceBundle b = languages.bundle();
@@ -472,10 +484,20 @@ public class ShoppingListUtils {
      */
     private int compareByCategoryDESC(ShoppingListItem item1, ShoppingListItem item2){
         if(item1.getIngredient().ingredientType == null){
-            return -1;
+            return 1;
         }
         if(item2.getIngredient().ingredientType == null){
+            return -1;
+        }
+
+        if(item1.getIngredient().ingredientType.getCategory() == null && item2.getIngredient().ingredientType.getCategory() == null){
+            return compareByNameDESC(item1, item2);
+        }
+        if(item1.getIngredient().ingredientType.getCategory() == null){
             return 1;
+        }
+        if(item2.getIngredient().ingredientType.getCategory() == null){
+            return -1;
         }
 
         ResourceBundle b = languages.bundle();

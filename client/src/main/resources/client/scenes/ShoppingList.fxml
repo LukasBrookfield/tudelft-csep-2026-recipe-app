@@ -59,11 +59,20 @@
                         <Insets bottom="10.0" left="10.0" right="20.0" top="10.0" />
                      </padding>
                      <children>
-                        <Label fx:id="shoppingListHeaderLabel" prefHeight="19.0" prefWidth="170.0" text="Shopping List">
-                           <font>
-                              <Font name="System Bold" size="13.0" />
-                           </font>
-                        </Label>
+                        <HBox alignment="CENTER_LEFT" prefHeight="8.0" prefWidth="605.0">
+                           <children>
+                              <Label fx:id="shoppingListHeaderLabel" minWidth="-Infinity" prefHeight="19.0" prefWidth="293.0" text="Shopping List">
+                                 <font>
+                                    <Font name="System Bold" size="13.0" />
+                                 </font>
+                              </Label>
+                              <HBox alignment="BOTTOM_RIGHT" prefHeight="19.0" prefWidth="352.0">
+                                 <children>
+                                    <Button fx:id="sortButton" mnemonicParsing="false" onAction="#onSortButton" text="Sort" />
+                                 </children>
+                              </HBox>
+                           </children>
+                        </HBox>
                         <Separator prefWidth="200.0" />
                         <ListView fx:id="ingredientListView" prefHeight="355.0" prefWidth="570.0" />
                         <HBox spacing="5.0">
