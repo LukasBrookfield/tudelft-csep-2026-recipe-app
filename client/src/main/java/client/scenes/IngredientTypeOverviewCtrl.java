@@ -715,7 +715,7 @@ public class IngredientTypeOverviewCtrl {
         applySearchFilter("");
 
         IngredientType ingredientType = new IngredientType(
-                "New Ingredient", null, new ArrayList<>(), null);
+                "New ingredient", null, new ArrayList<>(), null);
 
         IngredientType created = server.addIngredientType(ingredientType);
 
