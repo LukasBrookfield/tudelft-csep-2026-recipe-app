@@ -71,5 +71,6 @@ public class RecipeService {
         toRecipe.steps.addAll(fromRecipe.steps);
 
         toRecipe.servings = fromRecipe.servings;
+        toRecipe.language = fromRecipe.language;
     }
 }

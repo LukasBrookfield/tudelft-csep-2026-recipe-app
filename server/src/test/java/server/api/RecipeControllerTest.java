@@ -47,11 +47,11 @@ public class RecipeControllerTest{
         recipe1 = new Recipe("cucumber salad",
                 new ArrayList<>(),
                 new ArrayList<>(List.of("add cucumbers")),
-                2);
+                2, "en");
         recipe2 = new Recipe("cucumber with salt",
                 new ArrayList<>(),
                 new ArrayList<>(List.of("add cucumbers")),
-                3);
+                3, "en");
     }
 
     @Test
@@ -75,7 +75,7 @@ public class RecipeControllerTest{
 
     @Test
     public void nullAddRecipeTestUsedDatabase () {
-        var r = new Recipe("name", null, null, 1);
+        var r = new Recipe("name", null, null, 1, "en");
         assertEquals(ResponseEntity.badRequest().build(), sut.add(r));
     }
 
@@ -139,7 +139,7 @@ public class RecipeControllerTest{
     @Test
     public void updateWrongIngredientTest () {
         sut.add(recipe1);
-        Recipe recipe = new Recipe("cucumber", null, null, 1);
+        Recipe recipe = new Recipe("cucumber", null, null, 1, "en");
         var result = sut.update(recipe1.id, recipe);
         assertEquals(BAD_REQUEST, result.getStatusCode());
     }
