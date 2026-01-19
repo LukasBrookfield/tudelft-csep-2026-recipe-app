@@ -7,7 +7,6 @@ import commons.IngredientType;
 import commons.ShoppingListItem;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
-import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -106,6 +105,7 @@ public class ShoppingListCtrl {
     private final LanguageService languages;
 
     private boolean newIngredientType = false;
+    private int sortingOption = 1;
 
     @Inject
     public ShoppingListCtrl(ServerUtility server,
@@ -179,6 +179,8 @@ public class ShoppingListCtrl {
         setTooltip(removeIngredientButton, "common.tooltip.removeIngredient");
         setTooltip(addIngredientButton, "common.tooltip.addIngredient");
         setTooltip(editIngredientButton, "common.tooltip.editIngredient");
+
+        applySort();
     }
 
     /**
@@ -209,6 +211,7 @@ public class ShoppingListCtrl {
     public void set(){
         ingredientListView.getItems().clear();
         ingredientListView.getItems().addAll(new ArrayList<>(user.getShoppingList()));
+        applySort();
         onRefresh();
     }
 
@@ -373,6 +376,22 @@ public class ShoppingListCtrl {
     }
 
     /**
+     * Increases sorting option and sorts listview
+     */
+    @FXML
+    private void onSortButton(){
+        sortingOption = (sortingOption)%6 + 1;
+        applySort();
+    }
+
+    /**
+     * Sorts the listview based on current sortingOption
+     */
+    private void applySort(){
+        shoppingListUtils.sort(ingredientListView.getItems(), sortingOption);
+    }
+
+    /**
      * On action method for the Remove Ingredient Button
      * Removes the currently selected ingredient (if any), note that a change like
      * this only affects the recipe if the user presses 'Done' later
@@ -489,6 +508,7 @@ public class ShoppingListCtrl {
 
         user.setShoppingList(new ArrayList<>(ingredientListView.getItems()));
         user.saveUser();
+        applySort();
         onRefresh();
     }
 

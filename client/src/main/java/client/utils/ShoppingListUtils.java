@@ -349,8 +349,17 @@ public class ShoppingListUtils {
      * @param item2 Shopping list item
      * @return integer value
      */
-    public int compareByNameASC(ShoppingListItem item1, ShoppingListItem item2){
-        int compare = item1.getIngredient().ingredientType.name.compareTo(item2.getIngredient().ingredientType.name);
+    private int compareByNameASC(ShoppingListItem item1, ShoppingListItem item2){
+        if(item1.getIngredient().ingredientType == null){
+            return -1;
+        }
+        if(item2.getIngredient().ingredientType == null){
+            return 1;
+        }
+
+        int compare = Comparator
+                .nullsLast(String::compareTo)
+                .compare(item1.getIngredient().ingredientType.name, item2.getIngredient().ingredientType.name);
         if (compare == 0) {
             return Comparator
                     .nullsLast(String::compareTo)
@@ -365,8 +374,17 @@ public class ShoppingListUtils {
      * @param item2 Shopping list item
      * @return integer value
      */
-    public int compareByNameDESC(ShoppingListItem item1, ShoppingListItem item2){
-        int compare = - item1.getIngredient().ingredientType.name.compareTo(item2.getIngredient().ingredientType.name); //the
+    private int compareByNameDESC(ShoppingListItem item1, ShoppingListItem item2){
+        if(item1.getIngredient().ingredientType == null){
+            return -1;
+        }
+        if(item2.getIngredient().ingredientType == null){
+            return 1;
+        }
+
+        int compare = Comparator
+                .nullsFirst(String::compareTo)
+                .compare(item1.getIngredient().ingredientType.name, item2.getIngredient().ingredientType.name);
         if (compare == 0) {
             return - Comparator
                     .nullsFirst(String::compareTo)
@@ -381,7 +399,13 @@ public class ShoppingListUtils {
      * @param item2 Shopping list item
      * @return integer value
      */
-    public int compareByRecipeNameASC(ShoppingListItem item1,  ShoppingListItem item2){
+    private int compareByRecipeNameASC(ShoppingListItem item1,  ShoppingListItem item2){
+        if(item1.getIngredient().ingredientType == null){
+            return -1;
+        }
+        if(item2.getIngredient().ingredientType == null){
+            return 1;
+        }
         int compare = Comparator
                 .nullsLast(String::compareTo)
                 .compare(item1.getRecipeName(), item2.getRecipeName());
@@ -397,7 +421,13 @@ public class ShoppingListUtils {
      * @param item2 Shopping list item
      * @return integer value
      */
-    public int compareByRecipeNameDESC(ShoppingListItem item1, ShoppingListItem item2){
+    private int compareByRecipeNameDESC(ShoppingListItem item1, ShoppingListItem item2){
+        if(item1.getIngredient().ingredientType == null){
+            return -1;
+        }
+        if(item2.getIngredient().ingredientType == null){
+            return 1;
+        }
         int compare = - Comparator
                 .nullsFirst(String::compareTo)
                 .compare(item1.getRecipeName(), item2.getRecipeName());
@@ -413,7 +443,14 @@ public class ShoppingListUtils {
      * @param item2 Shopping list item
      * @return integer value
      */
-    public int compareByCategoryASC(ShoppingListItem item1, ShoppingListItem item2){
+    private int compareByCategoryASC(ShoppingListItem item1, ShoppingListItem item2){
+        if(item1.getIngredient().ingredientType == null){
+            return -1;
+        }
+        if(item2.getIngredient().ingredientType == null){
+            return 1;
+        }
+
         ResourceBundle b = languages.bundle();
 
         int compare = Comparator.nullsLast(String::compareTo)
@@ -433,7 +470,14 @@ public class ShoppingListUtils {
      * @param item2 Shopping list item
      * @return integer value
      */
-    public int compareByCategoryDESC(ShoppingListItem item1, ShoppingListItem item2){
+    private int compareByCategoryDESC(ShoppingListItem item1, ShoppingListItem item2){
+        if(item1.getIngredient().ingredientType == null){
+            return -1;
+        }
+        if(item2.getIngredient().ingredientType == null){
+            return 1;
+        }
+
         ResourceBundle b = languages.bundle();
 
         int compare = - Comparator.nullsFirst(String::compareTo)
