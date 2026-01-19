@@ -782,18 +782,30 @@ public class RecipeOverviewCtrl {
                 favoritePredicate = defaultPredicate;
             }
             updateFilteredList();
+
+            // reapply the search filter, because the amount of matches might change
+            applySearchFilter(recipeSearchField.getText());
         });
 
         showEN.setOnAction((e) -> {
             setShowEN(showEN.isSelected());
+
+            // reapply the search filter, because the amount of matches might change
+            applySearchFilter(recipeSearchField.getText());
         });
 
         showNL.setOnAction((e) -> {
             setShowNL(showNL.isSelected());
+
+            // reapply the search filter, because the amount of matches might change
+            applySearchFilter(recipeSearchField.getText());
         });
 
         showPT.setOnAction((e) -> {
             setShowPT(showPT.isSelected());
+
+            // reapply the search filter, because the amount of matches might change
+            applySearchFilter(recipeSearchField.getText());
         });
 
         applyTranslations();
