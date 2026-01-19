@@ -622,9 +622,6 @@ public class IngredientTypeOverviewCtrl {
         applyTranslations();
         onRefresh();
 
-        sceneBox.getItems().addAll("Home", "Recipe overview", "Ingredient overview",
-                "Shopping list");
-
         categoryBox.getItems().addAll(
                 Meat,
                 Dairy,
