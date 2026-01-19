@@ -8,10 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import client.MyFXML;
-import client.utils.LanguageService;
-import client.utils.RecipeUtils;
-import client.utils.ServerUtility;
-import client.utils.UserConfig;
+import client.utils.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Injector;
 import commons.Ingredient;
@@ -94,6 +91,7 @@ public class RecipeOverviewCtrlTest {
     private Label recipeKcalPer100gLabel;
     private LanguageService languageService;
     private ComboBox<IngredientType> editIngredientTypeBox;
+    private ComboBox<LanguageOption> languageBox;
 
     @Start
     private void start(Stage stage) throws IOException {
@@ -173,6 +171,7 @@ public class RecipeOverviewCtrlTest {
         sortChoiceBox = lookup(scene, "#sortChoiceBox");
         recipeKcalPer100gLabel = lookup(scene, "#recipeKcalPer100gLabel");
         editIngredientTypeBox = lookup(scene, "#editIngredientTypeBox");
+        languageBox = lookup(scene, "#languageBox");
     }
 
     private <T> T lookup(Scene scene, String id) {
@@ -454,21 +453,23 @@ public class RecipeOverviewCtrlTest {
         assertEquals(recipe3, recipes.get(2));
     }
 
-//    @Test
-//    void filterFavouriteRecipesTest(FxRobot robot) {
-//        addRecipe(robot, "Test recipe 1", 3);
-//        robot.clickOn(doneEditButton);
-//        robot.clickOn(starRecipeButton);
-//        addRecipe(robot, "Test recipe 2", 5);
-//        robot.clickOn(doneEditButton);
-//
-//        // check that the favourite recipes have been correctly filtered
-//        List<Recipe> recipes = recipeListView.getItems();
-//        Recipe recipe1 = new Recipe("Test recipe 1", new ArrayList<>(), new ArrayList<>(), 3, "en");
-//        assertTrue(recipes.contains(recipe1));
-//        Recipe recipe2 = new Recipe("Test recipe 2", new ArrayList<>(), new ArrayList<>(), 5, "en");
-//        assertFalse(recipes.contains(recipe2));
-//    }
+    @Test
+    void filterFavouriteRecipesTest(FxRobot robot) {
+        addRecipe(robot, "Test recipe 1", 3);
+        robot.clickOn(doneEditButton);
+        robot.clickOn(starRecipeButton);
+        addRecipe(robot, "Test recipe 2", 5);
+        robot.clickOn(doneEditButton);
+        robot.clickOn(filterBox);
+        robot.clickOn("Show favorite recipes only");
+
+        // check that the favourite recipes have been correctly filtered
+        List<Recipe> recipes = recipeListView.getItems();
+        Recipe recipe1 = new Recipe("Test recipe 1", new ArrayList<>(), new ArrayList<>(), 3, "en");
+        assertTrue(recipes.contains(recipe1));
+        Recipe recipe2 = new Recipe("Test recipe 2", new ArrayList<>(), new ArrayList<>(), 5, "en");
+        assertFalse(recipes.contains(recipe2));
+    }
 
     @Test
     void moveStepsTest(FxRobot robot) {
@@ -487,5 +488,53 @@ public class RecipeOverviewCtrlTest {
         steps = preparationStepListView.getItems();
         assertEquals("Step 1", steps.getFirst());
         assertEquals("Step 2", steps.getLast());
+    }
+
+    @Test
+    void switchLanguageTest(FxRobot robot) {
+        robot.clickOn(languageBox);
+        robot.clickOn("Nederlands");
+
+        // check language has switched
+        assertEquals("nl", user.getLanguageTag());
+
+        robot.clickOn(languageBox);
+        robot.clickOn("Portugu\u00EAs");
+        assertEquals("pt", user.getLanguageTag());
+    }
+
+    @Test
+    void filterRecipesByLanguageTest(FxRobot robot) {
+        addRecipe(robot, "Test recipe 1", 3);
+        robot.clickOn(doneEditButton);
+        robot.clickOn(languageBox);
+        robot.clickOn("Nederlands");
+        addRecipe(robot, "Test recipe 2", 5);
+        robot.clickOn(doneEditButton);
+        robot.clickOn(filterBox);
+        robot.clickOn("Show Dutch recipes");
+
+        // check if only english recipes appear when only english option is selected
+        Recipe enRecipe = new Recipe("Test recipe 1", new ArrayList<>(),
+                new ArrayList<>(), 3, "en");
+        assertTrue(recipeListView.getItems().contains(enRecipe));
+        Recipe nlRecipe = new Recipe("Test recipe 2", new ArrayList<>(),
+                new ArrayList<>(), 5, "nl");
+        assertFalse(recipeListView.getItems().contains(nlRecipe));
+    }
+
+    @Test
+    void sortRecipesAlphabeticalTest(FxRobot robot) {
+
+    }
+
+    @Test
+    void sortRecipesFewestStepsTest(FxRobot robot) {
+
+    }
+
+    @Test
+    void sortRecipesFewestIngredientsTest(FxRobot robot) {
+        robot.clickOn(languageBox);
     }
 }
