@@ -13,16 +13,23 @@ import commons.Nutrition;
 import commons.Recipe;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.collections.ObservableList;
+import javafx.util.StringConverter;
+
 import java.text.MessageFormat;
 import java.util.*;
+import java.util.function.Predicate;
 
 public class IngredientTypeOverviewCtrl {
 
@@ -34,15 +41,21 @@ public class IngredientTypeOverviewCtrl {
 
     private final MainCtrl mainCtrl;
 
+    private Predicate<IngredientType> currentPredicate = ingredientType -> true;
+    private ObservableList<IngredientType> allIngredientTypes;
+    private FilteredList<IngredientType> filteredIngredientTypes;
+    private SortedList<IngredientType> sortedIngredientTypes;
+
     boolean newIngredientType = false;
 
     private final LanguageService languages;
 
     private int usedInRecipesCount = 0;
-    private ObservableList<IngredientType> allIngredientTypes;
-
     private Long subscribedIngredientTypeId = null;
 
+
+    @FXML
+    private AnchorPane rootPane;
 
     // Left sidebar
 
@@ -50,7 +63,13 @@ public class IngredientTypeOverviewCtrl {
     private TextField ingredientTypeSearchField;
 
     @FXML
+    private ChoiceBox<String> sortChoiceBox;
+
+    @FXML
     private ListView<IngredientType> ingredientTypeListView;
+
+    @FXML
+    private Label searchStatusLabel;
 
     @FXML
     private Button removeIngredientTypeButton;
@@ -61,10 +80,7 @@ public class IngredientTypeOverviewCtrl {
     // Top right
 
     @FXML
-    private Button toggleOverviewButton;
-
-    @FXML
-    private Button homeButton;
+    public ChoiceBox<String> sceneBox;
 
     // Ingredient title row
 
@@ -162,6 +178,11 @@ public class IngredientTypeOverviewCtrl {
     @FXML private Label carbsCaptionLabel;
     @FXML private Label kcalCaptionLabel;
 
+    private final String SORT_NAME_AZ = "Name (A-Z)";
+    private final String SORT_KCAL = "Least Kcal/100g first";
+
+    private int matches = 0;
+
     // Bottom
 
     @FXML
@@ -188,12 +209,19 @@ public class IngredientTypeOverviewCtrl {
     public void applyTranslations() {
         ResourceBundle b = languages.bundle();
 
-        toggleOverviewButton.setText(b.getString("ing.btn.viewRecipes"));
         ingredientTypeSearchField.setPromptText(b.getString("ing.search.prompt"));
 
         if ("New ingredient".equals(ingredientTypeTitleLabel.getText()) || ingredientTypeTitleLabel.getText().isBlank()) {
             ingredientTypeTitleLabel.setText(b.getString("ing.title.new"));
         }
+
+        sceneBox.getItems().setAll(
+                b.getString("home.btn.home"),
+                b.getString("home.btn.recipeOverview"),
+                b.getString("home.btn.ingredientOverview"),
+                b.getString("home.btn.shoppingList"));
+        if (rootPane != null && rootPane.getScene() != null && rootPane.getScene().getWindow() != null
+                && rootPane.getScene().getWindow().isShowing()) sceneBox.getSelectionModel().select(2);
 
         detailsHeaderLabel.setText(b.getString("ing.details.header"));
         nameCaptionLabel.setText(b.getString("ing.details.name"));
@@ -210,22 +238,51 @@ public class IngredientTypeOverviewCtrl {
         fatTextField.setPromptText(b.getString("ing.nutrition.fat.prompt"));
         carbsTextField.setPromptText(b.getString("ing.nutrition.carbs.prompt"));
 
+        cancelEditButton.setText(b.getString("common.btn.cancel"));
+        doneEditButton.setText(b.getString("common.btn.done"));
+
         cancelEditDetailsButton.setText(b.getString("common.btn.cancel"));
         doneEditDetailsButton.setText(b.getString("common.btn.done"));
+
+        cancelEditDensityButton.setText(b.getString("common.btn.cancel"));
+        doneEditDensityButton.setText(b.getString("common.btn.done"));
 
         cancelEditNutritionButton.setText(b.getString("common.btn.cancel"));
         doneEditNutritionButton.setText(b.getString("common.btn.done"));
 
         usedInRecipesLabel.setText(formatUsedInRecipes(usedInRecipesCount));
 
+        if (matches == 0) {
+            searchStatusLabel.setText(b.getString("ing.search.zero"));
+        } else if (matches == 1) {
+            searchStatusLabel.setText(b.getString("ing.search.one"));
+        } else {
+            searchStatusLabel.setText(MessageFormat.format(
+                    b.getString("ing.search.multiple"), matches));
+        }
+
         // tooltips
-        setTooltip(homeButton, "common.tooltip.home");
         setTooltip(removeIngredientTypeButton, "common.tooltip.removeIngredient");
         setTooltip(addIngredientTypeButton, "common.tooltip.addIngredient");
         setTooltip(editIngredientTypeButton, "common.tooltip.editIngredient");
         setTooltip(editDetailsButton, "common.tooltip.editName");
         setTooltip(editDensityButton, "common.tooltip.editDensity");
         setTooltip(editNutritionButton, "common.tooltip.editNutrition");
+
+        sortChoiceBox.setConverter(new StringConverter<>() {
+            @Override public String toString(String value) {
+                return switch (value) {
+                    case null -> "";
+                    case SORT_NAME_AZ -> b.getString("recipe.sort.nameAz");
+                    case SORT_KCAL -> b.getString("recipe.sort.kcal");
+                    default -> value;
+                };
+            }
+            @Override
+            public String fromString(String s) {
+                return "";
+            }
+        });
     }
 
     // General
@@ -241,30 +298,112 @@ public class IngredientTypeOverviewCtrl {
         this.languages = languages;
     }
 
+    private void setupSort() {
+        sortChoiceBox.getItems().addAll(
+                SORT_NAME_AZ, SORT_KCAL
+        );
+        sortChoiceBox.getSelectionModel().select(0);
+        sortChoiceBox.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, newValue) -> {
+                    applySort(newValue);
+                });
+    }
+
+    private void applySort(String option) {
+        if (SORT_NAME_AZ.equals(option)) {
+            sortedIngredientTypes.setComparator(
+                (type1, type2) -> {
+                    String s1 = type1.name == null ? "" : type1.name.toLowerCase();
+                    String s2 = type2.name == null ? "" : type2.name.toLowerCase();
+                    return s1.compareTo(s2);
+                });
+
+        } else {
+            sortedIngredientTypes.setComparator(
+                    (type1, type2) -> {
+                        Double d1 = recipeUtils.getCaloriesPer100g(type1);
+                        if (d1 < 0) {
+                            d1 = 1000000.0;
+                        }
+                        Double d2 = recipeUtils.getCaloriesPer100g(type2);
+                        if (d2 < 0) {
+                            d2 = 1000000.0;
+                        }
+                        if (d1.equals(d2)) {
+                            String s1 = type1.name == null ? "" : type1.name.toLowerCase();
+                            String s2 = type2.name == null ? "" : type2.name.toLowerCase();
+                            return s1.compareTo(s2);
+                        } else {
+                            return Double.compare(d1, d2);
+                        }
+                    });
+        }
+    }
+
+    private void setupSearch() {
+        ingredientTypeSearchField.textProperty().addListener(
+                (observable, oldValue, newValue) -> {
+                    applySearchFilter(newValue);
+                });
+
+    }
+
+    private void applySearchFilter(String query) {
+        if (query == null || query.isBlank()) {
+            filteredIngredientTypes.setPredicate(currentPredicate);
+            searchStatusLabel.setText("");
+            searchStatusLabel.setVisible(false);
+            searchStatusLabel.setManaged(false);
+        } else {
+            int total = allIngredientTypes.size();
+            searchStatusLabel.setText("Showing " + total + " ingredients");
+
+            String[] words = query.toLowerCase().trim().split("\\s+");
+            filteredIngredientTypes.setPredicate(currentPredicate.and(
+                    ingredientType -> matchesAllWords(ingredientType, words)
+            ));
+
+            ResourceBundle b = languages.bundle();
+
+            matches = filteredIngredientTypes.size();
+            if (matches == 0) {
+                searchStatusLabel.setText(b.getString("ing.search.zero"));
+            } else if (matches == 1) {
+                searchStatusLabel.setText(b.getString("ing.search.one"));
+            } else {
+                searchStatusLabel.setText(MessageFormat.format(
+                        b.getString("ing.search.multiple"), matches));
+            }
+            searchStatusLabel.setVisible(true);
+            searchStatusLabel.setManaged(true);
+        }
+    }
+
+    private boolean matchesAllWords(IngredientType ingredientType, String[] words) {
+        for (String word : words) {
+            if (!ingredientType.name.toLowerCase().contains(word)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     /**
      * Changes the scene between viewing and editing an ingredient type
      * @param value false for viewing mode, true for editing mode
      */
     @FXML
     private void changeViewEditMode(boolean value) {
+        // While in edit mode, the user can't change to a different ingredient
+        ingredientTypeSearchField.getParent().setDisable(value);
+
+        sceneBox.getParent().setDisable(value);
         editIngredientTypeButton.setVisible(!value);
         cancelEditButton.getParent().setVisible(value);
         editDetailsButton.getParent().getParent().getParent().setVisible(value);
 
         editDensityButton.setVisible(value);
         editNutritionButton.getParent().getParent().getParent().setVisible(value);
-
-        // While in edit mode, the user can't change to a different ingredient
-        ingredientTypeSearchField.setDisable(value);
-        ingredientTypeListView.setDisable(value);
-
-        // While in edit mode, the user can't remove the current ingredient
-        // or add a new one
-        addIngredientTypeButton.setVisible(!value);
-        removeIngredientTypeButton.setVisible(!value);
-
-        toggleOverviewButton.setVisible(!value);
-        homeButton.setVisible(!value);
     }
 
     /**
@@ -281,10 +420,10 @@ public class IngredientTypeOverviewCtrl {
 
         editNameField.getParent().setVisible(value);
 
-        cancelEditButton.setVisible(!value);
-        doneEditButton.setVisible(!value);
-        editNutritionButton.setVisible(!value);
-        editDensityButton.setVisible(!value);
+        cancelEditButton.setDisable(value);
+        doneEditButton.setDisable(value);
+        editNutritionButton.setDisable(value);
+        editDensityButton.setDisable(value);
     }
 
     /**
@@ -302,10 +441,10 @@ public class IngredientTypeOverviewCtrl {
         cancelEditNutritionButton.getParent().setVisible(value);
         proteinTextField.getParent().setVisible(value);
 
-        cancelEditButton.setVisible(!value);
-        doneEditButton.setVisible(!value);
-        editDetailsButton.setVisible(!value);
-        editDensityButton.setVisible(!value);
+        cancelEditButton.setDisable(value);
+        doneEditButton.setDisable(value);
+        editDetailsButton.setDisable(value);
+        editDensityButton.setDisable(value);
     }
 
     /**
@@ -349,8 +488,12 @@ public class IngredientTypeOverviewCtrl {
         usedInRecipesCount = usedInRecipes;
         usedInRecipesLabel.setText(formatUsedInRecipes(usedInRecipesCount));
 
-        kcalLabel.setText(String.valueOf(recipeUtils
-                .getCaloriesPer100g(ingredientType)));
+        Double kcal = recipeUtils.getCaloriesPer100g(ingredientType);
+        if (kcal < 0) {
+            kcalLabel.setText("-");
+        } else {
+            kcalLabel.setText(kcal.toString());
+        }
 
         proteinLabel.setText("-");
         fatLabel.setText("-");
@@ -380,12 +523,14 @@ public class IngredientTypeOverviewCtrl {
         boolean empty = ingredientTypeListView.getItems().isEmpty();
         mainSeparator.getParent().setVisible(!empty);
 
-        if (ingredientTypeListView.getSelectionModel().getSelectedIndex() == -1 && !empty) {
+        int index = ingredientTypeListView.getSelectionModel().getSelectedIndex();
+        if (index == -1 && !empty) {
             ingredientTypeListView.getSelectionModel().select(0);
         }
 
         setLabelsAndFields();
     }
+
 
 
     /**
@@ -398,10 +543,10 @@ public class IngredientTypeOverviewCtrl {
         cancelEditDensityButton.setVisible(value);
         editDensityField.getParent().setVisible(value);
 
-        cancelEditButton.setVisible(!value);
-        doneEditButton.setVisible(!value);
-        editDetailsButton.setVisible(!value);
-        editNutritionButton.setVisible(!value);
+        cancelEditButton.setDisable(value);
+        doneEditButton.setDisable(value);
+        editDetailsButton.setDisable(value);
+        editNutritionButton.setDisable(value);
 
         editDensityButton.getParent().setMouseTransparent(value);
     }
@@ -415,6 +560,24 @@ public class IngredientTypeOverviewCtrl {
         changeDensityViewEditMode(false);
         changeNutritionViewEditMode(false);
         changeViewEditMode(false);
+
+        allIngredientTypes = FXCollections.observableArrayList();
+        try {
+            allIngredientTypes.setAll(server.getIngredientTypes());
+        } catch (Exception e) {
+            System.out.println("ERROR: Could not load ingredient types from server.");
+            e.printStackTrace();
+        }
+
+        searchStatusLabel.setVisible(false);
+        searchStatusLabel.setManaged(false);
+
+        filteredIngredientTypes = new FilteredList<>(allIngredientTypes);
+        sortedIngredientTypes = new SortedList<>(filteredIngredientTypes);
+        ingredientTypeListView.setItems(sortedIngredientTypes);
+
+        setupSort();
+        setupSearch();
 
         applyTranslations();
 
@@ -451,6 +614,11 @@ public class IngredientTypeOverviewCtrl {
                     subscribeToIngredientTypeIfNeeded(newIt.id);
                 }
         );
+
+        sceneBox.getSelectionModel().selectedItemProperty().addListener(
+                (obs, oldValue, newValue) -> {
+                    mainCtrl.showScene(sceneBox.getItems().indexOf(newValue));
+                });
 
         // If something is selected at startup, subscribe to it
         IngredientType selected = ingredientTypeListView.getSelectionModel().getSelectedItem();
@@ -565,6 +733,11 @@ public class IngredientTypeOverviewCtrl {
      */
     @FXML
     private void onAddIngredientTypeButton() throws JsonProcessingException {
+        // reset the search query, because "New ingredient" might not show
+        ingredientTypeSearchField.clear();
+        applySearchFilter("");
+        onRefresh();
+
         IngredientType ingredientType = new IngredientType(
                 "New ingredient", null, new ArrayList<>(), null);
 
@@ -638,8 +811,9 @@ public class IngredientTypeOverviewCtrl {
             return;
         }
 
-        IngredientType ingredientType = ingredientTypeListView
-                .getSelectionModel().getSelectedItem();
+        IngredientType ingredientType = ingredientTypeListView.getSelectionModel()
+                .getSelectedItem();
+        int index = allIngredientTypes.indexOf(ingredientType);
         ingredientType.name = nameLabel.getText();
 
         String densityText = densityLabel.getText();
@@ -672,9 +846,15 @@ public class IngredientTypeOverviewCtrl {
 
         System.out.println("Ingredient type to be updated: " +
                 new ObjectMapper().writeValueAsString(ingredientType));
-        server.updateIngredientType(ingredientType.id, ingredientType);
+
+        allIngredientTypes.set(index, server.updateIngredientType(
+                ingredientType.id, ingredientType
+        ));
 
         onRefresh();
+        ingredientTypeListView.getSelectionModel().select(
+                ingredientType
+        );
         changeViewEditMode(false);
 
         // Update all recipes that use this ingredient type
@@ -683,6 +863,10 @@ public class IngredientTypeOverviewCtrl {
         }
 
         newIngredientType = false;
+
+        // apply the search filter again, because the ingredient might not match
+        // anymore after a name change
+        applySearchFilter(ingredientTypeSearchField.getText());
     }
 
     // Edit details section
@@ -723,9 +907,11 @@ public class IngredientTypeOverviewCtrl {
     private void onDoneEditDetailsButton() {
         List<TextInputControl> textFields = new ArrayList<>();
         textFields.add(editNameField);
-        String inputName = null;
+        String inputName;
         if(!editNameField.getText().isEmpty()) {
             inputName = editNameField.getText().trim();
+        } else {
+            inputName = null;
         }
 
         if (inputName == null || inputName.isBlank()) {
@@ -744,6 +930,15 @@ public class IngredientTypeOverviewCtrl {
         if (Character.isDigit(inputName.trim().charAt(0))) {
             System.out.println("The ingredient type name cannot start with a digit.");
             recipeUtils.displayAlertInputWarning("ingredient.warning.number", textFields);
+            return;
+        }
+
+        // check if ingredient type is unique
+        boolean isDuplicate = ingredientTypeListView.getItems().stream().anyMatch(
+                x -> x.name.equalsIgnoreCase(inputName));
+        if (isDuplicate) {
+            System.out.println("The name of the ingredient type must be unique!");
+            recipeUtils.displayAlertInputWarning("recipe.warning.ing.duplicate", null);
             return;
         }
 
@@ -794,6 +989,13 @@ public class IngredientTypeOverviewCtrl {
             recipeUtils.displayAlertInputWarning("ingredient.warning.double.density", textFields);
             return;
         }
+
+        if (density < 0) {
+            System.out.println("The density must be non-negative.");
+            recipeUtils.displayAlertInputWarning("ingredient.warning.density.negative", textFields);
+            return;
+        }
+
         //Check if ingredient density is larger than the density of Osmium
         if(density > 22.6) {
             System.out.println("The density is out of this world");

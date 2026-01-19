@@ -42,21 +42,45 @@ public class LanguagePickerCtrl {
         languageBox.setButtonCell(new LanguageCell(languages));
         // the selected item
 
-        String currentTag = languages.getLanguageTag();
+        selectTag(languages.getLanguageTag());
 
-        options.stream()
-                .filter(option -> option.tag().equalsIgnoreCase(currentTag))
-                .findFirst()    // first matching element wrapped in an Optional (in case there is no match)
-                .ifPresent(option -> languageBox.getSelectionModel().select(option));
+//        String currentTag = languages.getLanguageTag();
+//
+//        options.stream()
+//                .filter(option -> option.tag().equalsIgnoreCase(currentTag))
+//                .findFirst()    // first matching element wrapped in an Optional (in case there is no match)
+//                .ifPresent(option -> languageBox.getSelectionModel().select(option));
 
         languageBox.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal == null) return;
             if (oldVal != null && newVal.tag().equalsIgnoreCase(oldVal.tag())) return;
             // do nothing if the item is null or the language is the same
-            System.out.println("Selected language: " + newVal.tag());
+//            System.out.println("Selected language: " + newVal.tag());
+
             languages.setLanguageTag(newVal.tag());
             mainCtrl.applyTranslationsToAllScreens();
         });
+
+        languages.languageTagProperty().addListener((obs, oldVal, newVal) -> {
+            selectTag(newVal);
+
+            // so the picker updates as well:
+            languageBox.setButtonCell(new LanguageCell(languages));
+            languageBox.setCellFactory(cb -> new LanguageCell(languages));
+        });
+
+    }
+
+    private void selectTag(String tag){
+        if (tag == null) tag = "en";
+        for (var option : languageBox.getItems()) {
+            if (option.tag().equalsIgnoreCase(tag)) {
+                if (languageBox.getValue() == null || !languageBox.getValue().tag().equalsIgnoreCase("tag")) {
+                    languageBox.getSelectionModel().select(option);
+                }
+                return;
+            }
+        }
     }
 
     private static class LanguageCell extends ListCell<LanguageOption> {
@@ -79,13 +103,15 @@ public class LanguagePickerCtrl {
             if (empty || item == null){
                 setText(null);
                 setGraphic(null);
+                icon.setImage(null);
                 return;
             }
 
-            setText(languages.bundle().getString(item.labelKey()));
+//            setText(languages.bundle().getString(item.labelKey()));
+            setText(languages.translate(item.labelKey()));
 
-            var is = getClass().getResourceAsStream(item.flagPath());
-            if (is != null) icon.setImage(new Image(is));
+            var url = getClass().getResource(item.flagPath());
+            icon.setImage(url == null ? null : new Image(url.toExternalForm()));
             setGraphic(icon);
         }
     }
