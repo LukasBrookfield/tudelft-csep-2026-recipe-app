@@ -6,6 +6,7 @@ import client.utils.ServerUtility;
 import client.utils.UserConfig;
 import com.google.inject.Injector;
 import commons.*;
+import javafx.collections.FXCollections;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -21,6 +22,7 @@ import org.testfx.framework.junit5.Start;
 import org.testfx.util.WaitForAsyncUtils;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static com.google.inject.Guice.createInjector;
 import static org.junit.jupiter.api.Assertions.*;
@@ -66,6 +68,8 @@ public class IngredientTypeOverviewCtrlTest {
     private Button cancelEditNutritionButton;
     private Button doneEditNutritionButton;
     private Label usedInRecipesLabel;
+    private ChoiceBox<Category> categoryBox;
+    private ChoiceBox<String> sortChoiceBox;
 
     @Start
     private void start(Stage stage) {
@@ -135,6 +139,9 @@ public class IngredientTypeOverviewCtrlTest {
         fatTextField = lookup(scene, "#fatTextField");
         editDensityField = lookup(scene, "#editDensityField");
         carbsTextField = lookup(scene, "#carbsTextField");
+
+        categoryBox = lookup(scene, "#categoryBox");
+        sortChoiceBox = lookup(scene, "#sortChoiceBox");
     }
 
     private <T> T lookup(Scene scene, String id) {
@@ -341,5 +348,17 @@ public class IngredientTypeOverviewCtrlTest {
         assertEquals("-", fatLabel.getText());
         assertEquals("-", carbsLabel.getText());
         assertEquals("-", kcalLabel.getText());
+    }
+
+    @Test
+    void editCategoryTest(FxRobot robot) {
+        addIngredientType(robot, "Test ingredient type");
+        robot.interact(() -> categoryBox.getSelectionModel().select(Category.Dairy));
+        robot.clickOn(doneEditButton);
+
+        // check category has been set correctly
+        IngredientType type = new IngredientType("Test ingredient type", null, new ArrayList<>(), null);
+        type.setCategory(Category.Dairy);
+        assertTrue(ingredientTypeListView.getItems().contains(type));
     }
 }
