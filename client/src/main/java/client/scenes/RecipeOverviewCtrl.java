@@ -863,7 +863,8 @@ public class RecipeOverviewCtrl {
                 // apply the filter
                 filteredIngredientTypes.setPredicate(item -> {
                     if (newValue == null || newValue.isBlank()) return true;
-                    return item.name.toLowerCase().contains(newValue.toLowerCase());
+//                    return item.name.toLowerCase().contains(newValue.toLowerCase());
+                    return SearchUtils.containsNormalized(item.name, newValue);
                 });
 
                 editIngredientTypeBox.getSelectionModel().clearSelection();
@@ -1316,7 +1317,8 @@ public class RecipeOverviewCtrl {
         searchStatusLabel.setText("Showing " + total + " recipes");
 
         // spilt the query into words
-        String[] words = query.toLowerCase().trim().split("\\s+");
+//        String[] words = query.toLowerCase().trim().split("\\s+");
+        String[] words = SearchUtils.normalizeForSearch(query).split("\\s+");
 
         searchPredicate = recipe -> mattchesAllWords(recipe, words);
         updateFilteredList();
@@ -1383,7 +1385,7 @@ public class RecipeOverviewCtrl {
             }
         }
 
-        return sb.toString();
+        return SearchUtils.normalizeForSearch(sb.toString());
     }
 
 
