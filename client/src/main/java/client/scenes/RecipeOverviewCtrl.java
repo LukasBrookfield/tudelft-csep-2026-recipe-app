@@ -305,6 +305,7 @@ public class RecipeOverviewCtrl {
     private final LanguageService languages;
 
     private final Tooltip nutritionTooltip = new Tooltip();
+    private final AmountParser amountParser = new AmountParser();
 
     // created this because some parts on the code depend on the exact text these present
     private static final String FILTER_ALL = "All recipes";
@@ -2057,7 +2058,7 @@ public class RecipeOverviewCtrl {
         Double parsedAmount = null;
         if (!amountText.isEmpty()) {
             try {
-                parsedAmount = Double.parseDouble(amountText);
+                parsedAmount = amountParser.parseAmount(amountText);
                 if (parsedAmount <= 0) {
                     recipeUtils.displayAlertWarning("recipe.warning.ing.negative", textFields);
                     return;
