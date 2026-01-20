@@ -374,11 +374,15 @@ public class IngredientTypeOverviewCtrl {
             searchStatusLabel.setText("");
             searchStatusLabel.setVisible(false);
             searchStatusLabel.setManaged(false);
+            return;
         } else {
+
+
             int total = allIngredientTypes.size();
             searchStatusLabel.setText("Showing " + total + " ingredients");
 
-            String[] words = query.toLowerCase().trim().split("\\s+");
+            String normalized = SearchUtils.normalizeForSearch(query);
+            String[] words = normalized.toLowerCase().trim().split("\\s+");
             filteredIngredientTypes.setPredicate(currentPredicate.and(
                     ingredientType -> matchesAllWords(ingredientType, words)
             ));
@@ -400,10 +404,15 @@ public class IngredientTypeOverviewCtrl {
     }
 
     private boolean matchesAllWords(IngredientType ingredientType, String[] words) {
+        String name = (ingredientType.name == null) ? "" : ingredientType.name;
+        String searchableName = SearchUtils.normalizeForSearch(name);
+
         for (String word : words) {
-            if (!ingredientType.name.toLowerCase().contains(word)) {
-                return false;
-            }
+            if (word.isBlank()) continue;
+            if (searchableName.contains(word)) return false;
+//            if (!ingredientType.name.toLowerCase().contains(word)) {
+//                return false;
+//            }
         }
         return true;
     }
