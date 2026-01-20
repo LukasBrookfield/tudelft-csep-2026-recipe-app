@@ -717,7 +717,7 @@ public class RecipeOverviewCtrl {
                     if (n.totalGrams() <= 0) {
                         recipeKcalPer100gLabel.setText("-");
                     } else {
-                        recipeKcalPer100gLabel.setText(String.valueOf(Math.round(n.kcalPer100g())));
+                        recipeKcalPer100gLabel.setText(languages.formatInteger(Math.round(n.kcalPer100g())));
                     }
                     updateNutriScoreLabel(n);
                 });
@@ -1103,8 +1103,10 @@ public class RecipeOverviewCtrl {
     }
 
     private void updateServingsLabel(int baseServings) {
+        String baseText = languages.formatInteger(baseServings);
+
         if (scaleFactor == 1.0){
-            servingsLabel.setText(Integer.toString(baseServings));
+            servingsLabel.setText(baseText);
             return;
         }
 
@@ -1112,7 +1114,7 @@ public class RecipeOverviewCtrl {
 
         String scaledText = servingsFormatter.format(scaled);
 
-        servingsLabel.setText(baseServings + " (" + scaledText + ")");
+        servingsLabel.setText(baseText + " (" + scaledText + ")");
     }
 
     private void refreshScaledViewOnly() {
