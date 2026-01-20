@@ -8,6 +8,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 import java.text.MessageFormat;
+import java.text.NumberFormat;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -119,6 +120,18 @@ public class LanguageService {
     public String unitLabel(String unitValue) {
         if (unitValue == null || unitValue.isBlank()) return translate("unit.select");
         return translate("unit." + unitValue.toLowerCase());
+    }
+
+    public String formatInteger(long value){
+        NumberFormat nf = NumberFormat.getIntegerInstance(locale);
+        nf.setGroupingUsed(true);   //1,000 vs 1000
+        return nf.format(value);
+    }
+
+    public String formatDecimal(double value, int fractionDigits){
+        NumberFormat nf = NumberFormat.getNumberInstance(locale);
+        nf.setMaximumFractionDigits(fractionDigits);
+        return nf.format(value);
     }
 
 }
