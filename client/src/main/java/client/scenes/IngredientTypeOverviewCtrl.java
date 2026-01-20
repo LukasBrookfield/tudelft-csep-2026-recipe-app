@@ -515,7 +515,7 @@ public class IngredientTypeOverviewCtrl {
             categoryLabel.setText("-");
         }
         if (ingredientType.density != null) {
-            densityLabel.setText(String.valueOf(ingredientType.density));
+            densityLabel.setText(languages.formatDecimal(ingredientType.density, 2));
         } else {
             densityLabel.setText("-");
         }
@@ -528,7 +528,7 @@ public class IngredientTypeOverviewCtrl {
         if (kcal < 0) {
             kcalLabel.setText("-");
         } else {
-            kcalLabel.setText(kcal.toString());
+            kcalLabel.setText(languages.formatInteger(Math.round(kcal)));
         }
 
         proteinLabel.setText("-");
@@ -539,13 +539,13 @@ public class IngredientTypeOverviewCtrl {
             return;
         }
         if (ingredientType.nutrition.protein != null) {
-            proteinLabel.setText(String.valueOf(ingredientType.nutrition.protein) + "g");
+            proteinLabel.setText(languages.formatDecimal(ingredientType.nutrition.protein, 1) + "g");
         }
         if (ingredientType.nutrition.fat != null) {
-            fatLabel.setText(String.valueOf(ingredientType.nutrition.fat) + "g");
+            fatLabel.setText(languages.formatDecimal(ingredientType.nutrition.fat,1) + "g");
         }
         if (ingredientType.nutrition.carbs != null) {
-            carbsLabel.setText(String.valueOf(ingredientType.nutrition.carbs) + "g");
+            carbsLabel.setText(languages.formatDecimal(ingredientType.nutrition.carbs,1) + "g");
         }
     }
 
