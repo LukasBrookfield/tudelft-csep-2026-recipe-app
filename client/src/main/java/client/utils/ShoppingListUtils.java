@@ -24,6 +24,8 @@ public class ShoppingListUtils {
     private final LanguageService languages;
     private final UserConfig user;
 
+    private static final AmountParser amountParser = new AmountParser();
+
     @Inject
     public ShoppingListUtils(IngredientScaling ingredientScaling,
                              LanguageService languages,
@@ -86,7 +88,7 @@ public class ShoppingListUtils {
 
         if(!unit.equals("TO_TASTE")){
             try{
-                Double.parseDouble(amount);
+                amountParser.parseAmount(amount);
             }catch(Exception e){
                 System.out.println("Invalid amount");
                 return false;
@@ -106,7 +108,7 @@ public class ShoppingListUtils {
     public void applyEditsToIngredient(Ingredient ingredient, String name, String amount, String unit){
         ingredient.ingredientType.name = name;
         if (!amount.isEmpty()) {
-            ingredient.amount = Double.parseDouble(amount);
+            ingredient.amount = amountParser.parseAmount(amount);
         } else {
             ingredient.amount = null;
         }
