@@ -805,7 +805,7 @@ public class IngredientTypeOverviewCtrl {
         if (densityText.isBlank() || densityText.equals("-")) {
             ingredientType.density = null;
         } else {
-            ingredientType.density = Double.parseDouble(densityText);
+            ingredientType.density = Double.parseDouble(densityText.trim().replaceAll(",", "."));
         }
 
         if (!proteinLabel.getText().equals("-") || !fatLabel.getText().equals("-")
@@ -817,15 +817,15 @@ public class IngredientTypeOverviewCtrl {
 
             if (!proteinLabel.getText().equals("-")) {
                 ingredientType.nutrition.protein = Double.parseDouble(proteinLabel.getText()
-                        .substring(0, proteinLabel.getText().length() - 1));
+                        .substring(0, proteinLabel.getText().length() - 1).trim().replaceAll(",", "."));
             }
             if (!fatLabel.getText().equals("-")) {
                 ingredientType.nutrition.fat = Double.parseDouble(fatLabel.getText()
-                        .substring(0, fatLabel.getText().length() - 1));
+                        .substring(0, fatLabel.getText().length() - 1).trim().replaceAll(",", "."));
             }
             if (!carbsLabel.getText().equals("-")) {
                 ingredientType.nutrition.carbs = Double.parseDouble(carbsLabel.getText()
-                        .substring(0, carbsLabel.getText().length() - 1));
+                        .substring(0, carbsLabel.getText().length() - 1).trim().replaceAll(",", "."));
             }
         }
 
