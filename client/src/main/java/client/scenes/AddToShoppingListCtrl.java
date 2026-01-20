@@ -26,7 +26,7 @@ import java.util.ResourceBundle;
 public class AddToShoppingListCtrl {
     private static final String UNIT_PLACEHOLDER = "__SELECT_UNIT__";
 
-    private final ServerUtils server;
+    private final ServerUtility server;
     private final MainCtrl controller;
     private Recipe recipe;
     private final ShoppingListUtils shoppingListUtils;
@@ -142,7 +142,7 @@ public class AddToShoppingListCtrl {
     }
 
     @Inject
-    AddToShoppingListCtrl(ServerUtils server,
+    AddToShoppingListCtrl(ServerUtility server,
                           UserConfig user,
                           MainCtrl controller,
                           LanguageService languages,
