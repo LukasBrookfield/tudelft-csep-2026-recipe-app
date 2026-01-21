@@ -430,7 +430,7 @@ public class IngredientTypeOverviewCtrl {
         // While in edit mode, the user can't change to a different ingredient
         ingredientTypeSearchField.getParent().setDisable(value);
 
-        sceneBox.setDisable(value);
+        sceneBox.getParent().setDisable(value);
         editIngredientTypeButton.setVisible(!value);
         cancelEditButton.getParent().setVisible(value);
         editDetailsButton.getParent().getParent().getParent().setVisible(value);
