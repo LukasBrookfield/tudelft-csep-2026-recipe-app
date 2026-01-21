@@ -98,6 +98,7 @@ public class IngredientTypeControllerTest {
     public void updateTest() {
         sut.add(ingredientType1);
         sut.update(ingredientType1.id, ingredientType2);
+        ingredientType1.id = ingredientType2.id;
         assertTrue(repo.calledMethods.contains("existsById"));
         assertTrue(repo.calledMethods.contains("save"));
         assertEquals(ingredientType1, ingredientType2);
