@@ -788,8 +788,6 @@ public class IngredientTypeOverviewCtrl {
         onRefresh();
     }
 
-
-
     // Top right
 
     /**
@@ -969,9 +967,17 @@ public class IngredientTypeOverviewCtrl {
             return;
         }
 
+        IngredientType selected = ingredientTypeListView.getSelectionModel()
+                .getSelectedItem();
+
         // check if ingredient type is unique
-        boolean isDuplicate = ingredientTypeListView.getItems().stream().anyMatch(
-                x -> x.name.equalsIgnoreCase(inputName));
+        boolean isDuplicate = false;
+        for (IngredientType ingredientType : ingredientTypeListView.getItems()) {
+            if (ingredientType.equals(selected)) {
+                continue;
+            }
+            isDuplicate |= ingredientType.name.equalsIgnoreCase(inputName);
+        }
         if (isDuplicate) {
             System.out.println("The name of the ingredient type must be unique!");
             recipeUtils.displayAlertWarning("recipe.warning.ing.duplicate", null);
