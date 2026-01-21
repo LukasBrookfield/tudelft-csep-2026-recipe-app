@@ -8,10 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import client.MyFXML;
-import client.utils.LanguageService;
-import client.utils.RecipeUtils;
-import client.utils.ServerUtility;
-import client.utils.UserConfig;
+import client.utils.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Injector;
 import commons.Ingredient;
@@ -20,6 +17,7 @@ import commons.Recipe;
 import commons.Unit;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Pair;
 import org.junit.jupiter.api.Test;
@@ -94,6 +92,8 @@ public class RecipeOverviewCtrlTest {
     private Label recipeKcalPer100gLabel;
     private LanguageService languageService;
     private ComboBox<IngredientType> editIngredientTypeBox;
+    private ComboBox<LanguageOption> languageBox;
+    private TextField scaleFactorField;
 
     @Start
     private void start(Stage stage) throws IOException {
@@ -173,6 +173,8 @@ public class RecipeOverviewCtrlTest {
         sortChoiceBox = lookup(scene, "#sortChoiceBox");
         recipeKcalPer100gLabel = lookup(scene, "#recipeKcalPer100gLabel");
         editIngredientTypeBox = lookup(scene, "#editIngredientTypeBox");
+        languageBox = lookup(scene, "#languageBox");
+        scaleFactorField = lookup(scene, "#scaleFactorField");
     }
 
     private <T> T lookup(Scene scene, String id) {
@@ -260,13 +262,11 @@ public class RecipeOverviewCtrlTest {
     }
 
     @Test
-    void doneEditRecipeButtonTest(FxRobot robot) {
-
-    }
-
-    @Test
     void cancelEditRecipeButtonTest(FxRobot robot) {
+        robot.clickOn(addRecipeButton);
+        robot.clickOn(cancelEditButton);
 
+        assertTrue(recipeListView.getItems().isEmpty());
     }
 
     @Test
@@ -454,21 +454,23 @@ public class RecipeOverviewCtrlTest {
         assertEquals(recipe3, recipes.get(2));
     }
 
-//    @Test
-//    void filterFavouriteRecipesTest(FxRobot robot) {
-//        addRecipe(robot, "Test recipe 1", 3);
-//        robot.clickOn(doneEditButton);
-//        robot.clickOn(starRecipeButton);
-//        addRecipe(robot, "Test recipe 2", 5);
-//        robot.clickOn(doneEditButton);
-//
-//        // check that the favourite recipes have been correctly filtered
-//        List<Recipe> recipes = recipeListView.getItems();
-//        Recipe recipe1 = new Recipe("Test recipe 1", new ArrayList<>(), new ArrayList<>(), 3, "en");
-//        assertTrue(recipes.contains(recipe1));
-//        Recipe recipe2 = new Recipe("Test recipe 2", new ArrayList<>(), new ArrayList<>(), 5, "en");
-//        assertFalse(recipes.contains(recipe2));
-//    }
+    @Test
+    void filterFavouriteRecipesTest(FxRobot robot) {
+        addRecipe(robot, "Test recipe 1", 3);
+        robot.clickOn(doneEditButton);
+        robot.clickOn(starRecipeButton);
+        addRecipe(robot, "Test recipe 2", 5);
+        robot.clickOn(doneEditButton);
+        robot.clickOn(filterBox);
+        robot.clickOn("Show favorite recipes only");
+
+        // check that the favourite recipes have been correctly filtered
+        List<Recipe> recipes = recipeListView.getItems();
+        Recipe recipe1 = new Recipe("Test recipe 1", new ArrayList<>(), new ArrayList<>(), 3, "en");
+        assertTrue(recipes.contains(recipe1));
+        Recipe recipe2 = new Recipe("Test recipe 2", new ArrayList<>(), new ArrayList<>(), 5, "en");
+        assertFalse(recipes.contains(recipe2));
+    }
 
     @Test
     void moveStepsTest(FxRobot robot) {
@@ -487,5 +489,94 @@ public class RecipeOverviewCtrlTest {
         steps = preparationStepListView.getItems();
         assertEquals("Step 1", steps.getFirst());
         assertEquals("Step 2", steps.getLast());
+    }
+
+    @Test
+    void switchLanguageTest(FxRobot robot) {
+        robot.clickOn(languageBox);
+        robot.clickOn("Nederlands");
+
+        // check language has switched
+        assertEquals("nl", user.getLanguageTag());
+
+        robot.clickOn(languageBox);
+        robot.clickOn("Portugu\u00EAs");
+        assertEquals("pt", user.getLanguageTag());
+    }
+
+    @Test
+    void filterRecipesByLanguageTest(FxRobot robot) {
+        addRecipe(robot, "Test recipe 1", 3);
+        robot.clickOn(doneEditButton);
+        robot.clickOn(languageBox);
+        robot.clickOn("Nederlands");
+        addRecipe(robot, "Test recipe 2", 5);
+        robot.clickOn(doneEditButton);
+        robot.clickOn(languageBox);
+        robot.clickOn("Portugu\u00EAs");
+        addRecipe(robot, "Test recipe 3", 6);
+        robot.clickOn(doneEditButton);
+        robot.clickOn(filterBox);
+        robot.clickOn("Show Dutch recipes");
+
+        // check if only english recipes appear when only english option is selected
+        Recipe enRecipe = new Recipe("Test recipe 1", new ArrayList<>(),
+                new ArrayList<>(), 3, "en");
+        assertTrue(recipeListView.getItems().contains(enRecipe));
+        Recipe nlRecipe = new Recipe("Test recipe 2", new ArrayList<>(),
+                new ArrayList<>(), 5, "nl");
+        assertFalse(recipeListView.getItems().contains(nlRecipe));
+        Recipe ptRecipe = new Recipe("Test recipe 3", new ArrayList<>(),
+                new ArrayList<>(), 6, "pt");
+        assertTrue(recipeListView.getItems().contains(ptRecipe));
+    }
+
+    @Test
+    void sortRecipesFewestStepsTest(FxRobot robot) {
+        addRecipe(robot, "Test recipe 1", 3);
+        robot.clickOn(doneEditButton);
+        recipeListView.getItems().getFirst().steps.add("Step 1");
+        addRecipe(robot, "Test recipe 2", 5);
+        robot.clickOn(doneEditButton);
+        robot.interact(() -> sortChoiceBox.getSelectionModel().select("Fewest steps first"));
+
+        // check recipes are sorted in right order
+        Recipe recipe1 = new Recipe("Test recipe 1", new ArrayList<>(), new ArrayList<>(), 3, "en");
+        recipe1.steps.add("Step 1");
+        assertEquals(recipe1, recipeListView.getItems().get(1));
+        Recipe recipe2 = new Recipe("Test recipe 2", new ArrayList<>(), new ArrayList<>(), 5, "en");
+        assertEquals(recipe2, recipeListView.getItems().getFirst());
+    }
+
+    @Test
+    void sortRecipesFewestIngredientsTest(FxRobot robot) {
+        Recipe recipe1 = new Recipe("Test recipe 1", new ArrayList<>(), new ArrayList<>(), 3, "en");
+        Ingredient i = new Ingredient(new IngredientType("ing", null, new ArrayList<>(), null),
+                100.0, Unit.G, recipe1);
+        recipe1.ingredients.add(i);
+
+        addRecipe(robot, "Test recipe 1", 3);
+        robot.clickOn(doneEditButton);
+        recipeListView.getItems().getFirst().ingredients.add(i);
+        addRecipe(robot, "Test recipe 2", 5);
+        robot.clickOn(doneEditButton);
+        robot.interact(() -> sortChoiceBox.getSelectionModel().select("Fewest ingredients first"));
+
+        // check recipes are sorted in right order
+        assertEquals(recipe1, recipeListView.getItems().get(1));
+        Recipe recipe2 = new Recipe("Test recipe 2", new ArrayList<>(), new ArrayList<>(), 5, "en");
+        assertEquals(recipe2, recipeListView.getItems().getFirst());
+    }
+
+    @Test
+    void scaleRecipesTest(FxRobot robot) {
+        addRecipe(robot, "Test recipe 1", 1);
+        robot.clickOn(doneEditButton);
+        robot.clickOn(scaleFactorField).type(KeyCode.END);
+        robot.eraseText(1);
+        robot.write("2").type(KeyCode.ENTER);
+
+        // check if servings have been scaled by factor of 2
+        assertEquals("1 (2)", servingsLabel.getText());
     }
 }

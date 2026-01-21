@@ -85,11 +85,6 @@
                                              <children>
                                                 <ChoiceBox fx:id="editUnitBox" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="195.0" />
                                                 <TextField fx:id="editIngredientAmountField" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="195.0" promptText="Amount" />
-                                                <HBox HBox.hgrow="ALWAYS">
-                                                   <HBox.margin>
-                                                      <Insets left="-2.5" right="-2.5" />
-                                                   </HBox.margin>
-                                                </HBox>
                                                 <HBox alignment="CENTER_RIGHT" spacing="5.0">
                                                    <children>
                                                       <Button fx:id="backEditIngredientButton" minWidth="-Infinity" mnemonicParsing="false" onAction="#onBackEditIngredientButton" text="Back" />
@@ -101,8 +96,8 @@
                                           <HBox fx:id="editIngredientTypeContainer" prefHeight="25.0" prefWidth="454.0" spacing="5.0">
                                              <children>
                                                 <ComboBox fx:id="editIngredientTypeBox" minWidth="250.0" prefWidth="250.0" />
-                                                <Button fx:id="cancelEditIngredientButton" alignment="CENTER" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onCancelEditIngredientButton" prefHeight="25.0" prefWidth="75.0" text="Cancel" textAlignment="CENTER" />
-                                                <Button fx:id="nextButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onNext" prefHeight="25.0" prefWidth="75.0" text="Next" />
+                                                <Button fx:id="cancelEditIngredientButton" alignment="CENTER" minWidth="-Infinity" mnemonicParsing="false" onAction="#onCancelEditIngredientButton" text="Cancel" textAlignment="CENTER" />
+                                                <Button fx:id="nextButton" minWidth="-Infinity" mnemonicParsing="false" onAction="#onNext" text="Next" />
                                              </children>
                                           </HBox>
                                        </children>

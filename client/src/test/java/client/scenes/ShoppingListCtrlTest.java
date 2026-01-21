@@ -52,7 +52,7 @@ public class ShoppingListCtrlTest {
     private Button exitButton;
     private Label shoppingListHeaderLabel;
     private Button backEditIngredientButton;
-
+    private Button resetButton;
 
     @Start
     private void start(Stage stage) throws IOException {
@@ -94,6 +94,7 @@ public class ShoppingListCtrlTest {
         exitButton = lookup(scene, "#exitButton");
         backEditIngredientButton = lookup(scene, "#backEditIngredientButton");
         shoppingListHeaderLabel = lookup(scene, "#shoppingListHeaderLabel");
+        resetButton = lookup(scene, "#resetButton");
     }
 
     @SuppressWarnings("unchecked")
@@ -200,5 +201,16 @@ public class ShoppingListCtrlTest {
 
         // check if item has been edited in local user file
         assertTrue(user.getShoppingList().contains(item));
+    }
+
+    @Test
+    void resetShoppingListTest(FxRobot robot) {
+        addItem(robot, "Test ingredient", Unit.G, 125.5);
+        robot.clickOn(doneEditIngredientButton);
+        robot.clickOn(resetButton);
+
+        // check if shopping list has been reset
+        assertTrue(ingredientListView.getItems().isEmpty());
+        assertTrue(user.getShoppingList().isEmpty());
     }
 }

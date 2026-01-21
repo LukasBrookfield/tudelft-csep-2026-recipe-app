@@ -12,7 +12,7 @@ public class IngredientType {
     @GeneratedValue(strategy = GenerationType.AUTO)
     public long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     public String name;
 
     @Enumerated(EnumType.ORDINAL)

@@ -92,9 +92,9 @@ public class RecipeOverviewCtrl {
     boolean newStep = false;
     private Long newRecipeId = null;
 
-    private final IngredientScaling ingredientScaling = new IngredientScaling();
-    private final ScaleFactorParser scaleFactorParser = new ScaleFactorParser();
-    private final QuantityFormatter servingsFormatter = new QuantityFormatter();
+    private final IngredientScaling ingredientScaling;
+    private final ScaleFactorParser scaleFactorParser;
+    private final QuantityFormatter servingsFormatter;
 
     private double scaleFactor = 1.0;
 
@@ -166,10 +166,22 @@ public class RecipeOverviewCtrl {
     private TextField recipeTitleField;
 
     @FXML
-    private ImageView languageImage;
+    private ImageView recipeLanguage;
 
     @FXML
     private Tooltip languageToolTip;
+
+    @FXML
+    private ComboBox<ImageView> recipeLanguageBox;
+
+    @FXML
+    private ImageView ENFlag;
+
+    @FXML
+    private ImageView NLFlag;
+
+    @FXML
+    private ImageView PTFlag;
 
     @FXML
     private Button editRecipeButton;
@@ -391,9 +403,8 @@ public class RecipeOverviewCtrl {
         if (languageToolTip == null) {
             languageToolTip = new Tooltip();
             languageToolTip.setStyle("-fx-font-size: 13px");
-            Tooltip.install(languageImage, languageToolTip);
+            Tooltip.install(recipeLanguage, languageToolTip);
         }
-        languageToolTip.setText(b.getString("language.tooltip"));
 
         downloadRecipeButton.setText(b.getString("common.btn.download"));
         printRecipeButton.setText(b.getString("common.btn.print"));
@@ -473,34 +484,40 @@ public class RecipeOverviewCtrl {
         refreshStartTooltip();
     }
 
-    @FXML
-    private void switchLanguage() throws JsonProcessingException {
-        Recipe recipe = recipeListView.getSelectionModel().getSelectedItem();
-        int index = allRecipes.indexOf(recipe);
-
-        String language = recipe.language;
-        List<String> languages = List.of("en", "nl", "pt");
-
-        int i = (languages.indexOf(language) + 1) % 3;
-        while (!user.isSelectedLanguage(languages.get(i))) {
-            i = (i + 1) % 3;
-        }
-
-        recipe.language = languages.get(i);
-        allRecipes.set(index, server.updateRecipe(recipe.id, recipe));
-        onRefresh();
-    }
+//    @FXML
+//    private void switchLanguage() throws JsonProcessingException {
+//        Recipe recipe = recipeListView.getSelectionModel().getSelectedItem();
+//        int index = allRecipes.indexOf(recipe);
+//
+//        String language = recipe.language;
+//        List<String> languages = List.of("en", "nl", "pt");
+//
+//        int i = (languages.indexOf(language) + 1) % 3;
+//        while (!user.isSelectedLanguage(languages.get(i))) {
+//            i = (i + 1) % 3;
+//        }
+//
+//        recipe.language = languages.get(i);
+//        allRecipes.set(index, server.updateRecipe(recipe.id, recipe));
+//        onRefresh();
+//    }
 
     @Inject
     public RecipeOverviewCtrl(ServerUtility server,
                               RecipeUtils recipeUtils,
                               UserConfig user,
-                              MainCtrl mainCtrl, LanguageService languages) {
+                              MainCtrl mainCtrl, LanguageService languages,
+                              IngredientScaling ingredientScaling,
+                              ScaleFactorParser scaleFactorParser,
+                              QuantityFormatter servingsFormatter) {
         this.server = server;
         this.recipeUtils = recipeUtils;
         this.user = user;
         this.mainCtrl = mainCtrl;
         this.languages = languages;
+        this.ingredientScaling = ingredientScaling;
+        this.scaleFactorParser = scaleFactorParser;
+        this.servingsFormatter = servingsFormatter;
     }
 
     /**
@@ -514,6 +531,7 @@ public class RecipeOverviewCtrl {
         recipeSearchField.getParent().setDisable(value);
         recipeTitleLabel.setVisible(!value);
         recipeTitleField.setVisible(value);
+        recipeLanguageBox.setVisible(value);
         starRecipeButton.getParent().setVisible(!value);
         doneEditButton.getParent().setVisible(value);
 
@@ -661,7 +679,19 @@ public class RecipeOverviewCtrl {
             Image image = new Image(Objects.requireNonNull(
                     getClass().getResourceAsStream(
                             "/flags/" + recipe.language + ".png")));
-            languageImage.setImage(image);
+            recipeLanguage.setImage(image);
+
+            ResourceBundle b = languages.bundle();
+            if ("en".equals(recipe.language)) {
+                recipeLanguageBox.getSelectionModel().select(0);
+                languageToolTip.setText(b.getString("language.tooltip.en"));
+            } else if ("nl".equals(recipe.language)) {
+                recipeLanguageBox.getSelectionModel().select(1);
+                languageToolTip.setText(b.getString("language.tooltip.nl"));
+            } else {
+                recipeLanguageBox.getSelectionModel().select(2);
+                languageToolTip.setText(b.getString("language.tooltip.pt"));
+            }
 
             List<Ingredient> ingredients = new ArrayList<>(recipe.ingredients);
             ingredientListView.setItems(FXCollections.observableList(ingredients));
@@ -780,6 +810,8 @@ public class RecipeOverviewCtrl {
         changeViewEditMode(false);
         recipeTitleField.setVisible(false);
 
+        Tooltip.install(kcalCaptionLabel, nutritionTooltip);
+
         showFavorites = new CheckMenuItem("");
         showEN = new CheckMenuItem("");
         showNL = new CheckMenuItem("");
@@ -800,6 +832,7 @@ public class RecipeOverviewCtrl {
 
         showEN.setOnAction((e) -> {
             setShowEN(showEN.isSelected());
+            recipeLanguageBox.getItems().setAll(ENFlag, NLFlag, PTFlag);
 
             // reapply the search filter, because the amount of matches might change
             applySearchFilter(recipeSearchField.getText());
@@ -807,6 +840,7 @@ public class RecipeOverviewCtrl {
 
         showNL.setOnAction((e) -> {
             setShowNL(showNL.isSelected());
+            recipeLanguageBox.getItems().setAll(ENFlag, NLFlag, PTFlag);
 
             // reapply the search filter, because the amount of matches might change
             applySearchFilter(recipeSearchField.getText());
@@ -814,6 +848,7 @@ public class RecipeOverviewCtrl {
 
         showPT.setOnAction((e) -> {
             setShowPT(showPT.isSelected());
+            recipeLanguageBox.getItems().setAll(ENFlag, NLFlag, PTFlag);
 
             // reapply the search filter, because the amount of matches might change
             applySearchFilter(recipeSearchField.getText());
@@ -824,6 +859,42 @@ public class RecipeOverviewCtrl {
         editUnitBox.getItems().addAll(UNIT_PLACEHOLDER, "G", "KG", "ML", "L", "TBSP", "TSP", "PINCH",
                 "HANDFUL", "TO_TASTE");
         editUnitBox.getSelectionModel().select(0);
+
+        ENFlag = new ImageView(new Image(Objects.requireNonNull(getClass()
+                .getResourceAsStream("/flags/en.png"))));
+        NLFlag = new ImageView(new Image(Objects.requireNonNull(getClass()
+                .getResourceAsStream("/flags/nl.png"))));
+        PTFlag = new ImageView(new Image(Objects.requireNonNull(getClass()
+                .getResourceAsStream("/flags/pt.png"))));
+
+        recipeLanguageBox.getItems().setAll(ENFlag, NLFlag, PTFlag);
+        recipeLanguageBox.setCellFactory(cb -> {
+            ImageView image = new ImageView();
+            return new ListCell<ImageView>() {
+                @Override
+                protected void updateItem(ImageView item, boolean empty) {
+                    if (item == null || empty) {
+                        setGraphic(null);
+                        image.setImage(null);
+                    } else {
+                        super.updateItem(item, empty);
+                        image.setImage(item.getImage());
+                        image.setFitWidth(20);
+                        image.setFitHeight(20);
+                        setGraphic(image);
+
+                        boolean disable =
+                                (item.equals(ENFlag) && !user.isSelectedLanguage("en"))
+                                || (item.equals(NLFlag) && !user.isSelectedLanguage("nl"))
+                                || (item.equals(PTFlag) && !user.isSelectedLanguage("pt"));
+                        setDisable(disable);
+                        setOpacity(disable ? 0.5 : 1);
+                    }
+                    setText(null);
+                }
+            };
+        });
+        recipeLanguageBox.setButtonCell(recipeLanguageBox.getCellFactory().call(null));
 
         // load all ingredient types from server
         allIngredientTypes = FXCollections.observableArrayList();
@@ -1129,28 +1200,44 @@ public class RecipeOverviewCtrl {
     }
 
     private void updateNutritionTooltip(){
+
+        Tooltip t = recipeKcalPer100gLabel.getTooltip();
+
         if (lastNutrition == null) {
             // no nutrition loaded yet (or recipe has none)
-            Tooltip t = recipeKcalPer100gLabel.getTooltip();
-            if (t != null) t.setText("Nutrition info not available yet.");
+            String msg = languages.translate("recipe.tooltip.nutrition.notAvailable");
+            if (t == null) recipeKcalPer100gLabel.setTooltip(new Tooltip(msg));
+            else t.setText(msg);
             return;
         }
-        double baseKcal = lastNutrition.totalKcal();
-        double baseGrams = lastNutrition.totalGrams();
+        long baseKcal = Math.round(lastNutrition.totalKcal());
+        long baseGrams = Math.round(lastNutrition.totalGrams());
 
-        double scaledKcal = baseKcal * scaleFactor;
-        double scaledGrams = baseGrams * scaleFactor;
+        long scaledKcal = Math.round(lastNutrition.totalKcal() * scaleFactor);
+        long scaledGrams = Math.round(lastNutrition.totalGrams() * scaleFactor);
+
+        long ignored = lastNutrition.ignoredIngredients();
+
+        String baseKcalStr = languages.formatInteger(baseKcal);
+        String baseGramsStr = languages.formatInteger(baseGrams);
+        String scaledKcalStr = languages.formatInteger(scaledKcal);
+        String scaledGramsStr = languages.formatInteger(scaledGrams);
+        String ignoredStr = languages.formatInteger(ignored);
 
         long ingored = lastNutrition.ignoredIngredients();
 
-        String text =
-                "Base totals:\n " + Math.round(baseKcal) + " kcal, "
-                        + Math.round(baseGrams) + " grams\n\n" +
-                        "Scaled (x" + scaleFactorParser.formatForField(scaleFactor) + "):\n "
-                + Math.round(scaledKcal) + " kcal, " + Math.round(scaledGrams) + " grams\n\n" +
-                        "Ignored (informal) ingredients: " + ingored;
+        String scaleStr = scaleFactorParser.formatForField(scaleFactor);
 
-        Tooltip t = recipeKcalPer100gLabel.getTooltip();
+        String text = languages.translate("recipe.tooltip.nutrition.text", baseKcalStr, baseGramsStr,
+                scaleStr, scaledKcalStr, scaledGramsStr, ignoredStr);
+
+//        String text =
+//                "Base totals:\n " + Math.round(baseKcal) + " kcal, "
+//                        + Math.round(baseGrams) + " grams\n\n" +
+//                        "Scaled (x" + scaleFactorParser.formatForField(scaleFactor) + "):\n "
+//                + Math.round(scaledKcal) + " kcal, " + Math.round(scaledGrams) + " grams\n\n" +
+//                        "Ignored (informal) ingredients: " + ingored;
+
         if (t == null) {
             recipeKcalPer100gLabel.setTooltip(new Tooltip(text));
         }
@@ -1784,6 +1871,15 @@ public class RecipeOverviewCtrl {
 
         recipe.name = recipeTitleField.getText();
 
+        ImageView lang = recipeLanguageBox.getSelectionModel().getSelectedItem();
+        if (lang.equals(ENFlag)) {
+            recipe.language = "en";
+        } else if (lang.equals(NLFlag)) {
+            recipe.language = "nl";
+        } else {
+            recipe.language = "pt";
+        }
+
         recipe.servings = parseBaseServings(servingsLabel.getText());
         recipe.ingredients = new ArrayList<>(ingredientListView.getItems().stream().toList());
 
@@ -1941,9 +2037,6 @@ public class RecipeOverviewCtrl {
             editIngredientTypeBox.getSelectionModel().clearSelection();
             editIngredientTypeBox.setValue(null);
         }
-
-        cancelEditButton.setVisible(false);
-        doneEditButton.setVisible(false);
     }
 
     /**
