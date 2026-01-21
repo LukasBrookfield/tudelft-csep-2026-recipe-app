@@ -100,6 +100,8 @@ public class RecipeOverviewCtrl {
 
     private RecipeNutrition lastNutrition = null;
 
+    private final SearchUtils searchUtils;
+
     // Root
 
     @FXML
@@ -495,11 +497,12 @@ public class RecipeOverviewCtrl {
     public RecipeOverviewCtrl(ServerUtility server,
                               RecipeUtils recipeUtils,
                               UserConfig user,
-                              MainCtrl mainCtrl, LanguageService languages) {
+                              MainCtrl mainCtrl, SearchUtils searchUtils, LanguageService languages) {
         this.server = server;
         this.recipeUtils = recipeUtils;
         this.user = user;
         this.mainCtrl = mainCtrl;
+        this.searchUtils = searchUtils;
         this.languages = languages;
     }
 
@@ -865,7 +868,7 @@ public class RecipeOverviewCtrl {
                 filteredIngredientTypes.setPredicate(item -> {
                     if (newValue == null || newValue.isBlank()) return true;
 //                    return item.name.toLowerCase().contains(newValue.toLowerCase());
-                    return SearchUtils.containsNormalized(item.name, newValue);
+                    return searchUtils.containsNormalized(item.name, newValue);
                 });
 
                 editIngredientTypeBox.getSelectionModel().clearSelection();
@@ -1321,7 +1324,7 @@ public class RecipeOverviewCtrl {
 
         // spilt the query into words
 //        String[] words = query.toLowerCase().trim().split("\\s+");
-        String[] words = SearchUtils.normalizeForSearch(query).split("\\s+");
+        String[] words = searchUtils.normalizeForSearch(query).split("\\s+");
 
         searchPredicate = recipe -> mattchesAllWords(recipe, words);
         updateFilteredList();
@@ -1388,7 +1391,7 @@ public class RecipeOverviewCtrl {
             }
         }
 
-        return SearchUtils.normalizeForSearch(sb.toString());
+        return searchUtils.normalizeForSearch(sb.toString());
     }
 
 
