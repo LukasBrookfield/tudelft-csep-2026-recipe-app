@@ -378,11 +378,15 @@ public class IngredientTypeOverviewCtrl {
             searchStatusLabel.setText("");
             searchStatusLabel.setVisible(false);
             searchStatusLabel.setManaged(false);
+            return;
         } else {
+
+
             int total = allIngredientTypes.size();
             searchStatusLabel.setText("Showing " + total + " ingredients");
 
-            String[] words = query.toLowerCase().trim().split("\\s+");
+            String normalized = SearchUtils.normalizeForSearch(query);
+            String[] words = normalized.toLowerCase().trim().split("\\s+");
             filteredIngredientTypes.setPredicate(currentPredicate.and(
                     ingredientType -> matchesAllWords(ingredientType, words)
             ));
@@ -404,10 +408,15 @@ public class IngredientTypeOverviewCtrl {
     }
 
     private boolean matchesAllWords(IngredientType ingredientType, String[] words) {
+        String name = (ingredientType.name == null) ? "" : ingredientType.name;
+        String searchableName = SearchUtils.normalizeForSearch(name);
+
         for (String word : words) {
-            if (!ingredientType.name.toLowerCase().contains(word)) {
-                return false;
-            }
+            if (word.isBlank()) continue;
+            if (searchableName.contains(word)) return false;
+//            if (!ingredientType.name.toLowerCase().contains(word)) {
+//                return false;
+//            }
         }
         return true;
     }
@@ -510,7 +519,7 @@ public class IngredientTypeOverviewCtrl {
             categoryLabel.setText("-");
         }
         if (ingredientType.density != null) {
-            densityLabel.setText(String.valueOf(ingredientType.density));
+            densityLabel.setText(languages.formatDecimal(ingredientType.density, 2));
         } else {
             densityLabel.setText("-");
         }
@@ -523,7 +532,7 @@ public class IngredientTypeOverviewCtrl {
         if (kcal < 0) {
             kcalLabel.setText("-");
         } else {
-            kcalLabel.setText(kcal.toString());
+            kcalLabel.setText(languages.formatInteger(Math.round(kcal)));
         }
 
         proteinLabel.setText("-");
@@ -534,13 +543,13 @@ public class IngredientTypeOverviewCtrl {
             return;
         }
         if (ingredientType.nutrition.protein != null) {
-            proteinLabel.setText(String.valueOf(ingredientType.nutrition.protein) + "g");
+            proteinLabel.setText(languages.formatDecimal(ingredientType.nutrition.protein, 1) + "g");
         }
         if (ingredientType.nutrition.fat != null) {
-            fatLabel.setText(String.valueOf(ingredientType.nutrition.fat) + "g");
+            fatLabel.setText(languages.formatDecimal(ingredientType.nutrition.fat,1) + "g");
         }
         if (ingredientType.nutrition.carbs != null) {
-            carbsLabel.setText(String.valueOf(ingredientType.nutrition.carbs) + "g");
+            carbsLabel.setText(languages.formatDecimal(ingredientType.nutrition.carbs,1) + "g");
         }
     }
 
@@ -847,7 +856,7 @@ public class IngredientTypeOverviewCtrl {
         if (densityText.isBlank() || densityText.equals("-")) {
             ingredientType.density = null;
         } else {
-            ingredientType.density = Double.parseDouble(densityText);
+            ingredientType.density = Double.parseDouble(densityText.trim().replaceAll(",", "."));
         }
 
         if (!proteinLabel.getText().equals("-") || !fatLabel.getText().equals("-")
@@ -859,15 +868,15 @@ public class IngredientTypeOverviewCtrl {
 
             if (!proteinLabel.getText().equals("-")) {
                 ingredientType.nutrition.protein = Double.parseDouble(proteinLabel.getText()
-                        .substring(0, proteinLabel.getText().length() - 1));
+                        .substring(0, proteinLabel.getText().length() - 1).trim().replaceAll(",", "."));
             }
             if (!fatLabel.getText().equals("-")) {
                 ingredientType.nutrition.fat = Double.parseDouble(fatLabel.getText()
-                        .substring(0, fatLabel.getText().length() - 1));
+                        .substring(0, fatLabel.getText().length() - 1).trim().replaceAll(",", "."));
             }
             if (!carbsLabel.getText().equals("-")) {
                 ingredientType.nutrition.carbs = Double.parseDouble(carbsLabel.getText()
-                        .substring(0, carbsLabel.getText().length() - 1));
+                        .substring(0, carbsLabel.getText().length() - 1).trim().replaceAll(",", "."));
             }
         }
 
