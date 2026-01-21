@@ -312,20 +312,20 @@ public class IngredientTypeOverviewCtrlTest {
         robot.clickOn(proteinTextField);
         robot.write("15.5");
         robot.clickOn(fatTextField);
-        robot.write("2.25");
+        robot.write("2.2");
         robot.clickOn(carbsTextField);
         robot.write("20");
         robot.clickOn(doneEditNutritionButton);
         robot.clickOn(doneEditButton);
 
         // check if all nutrition labels have been updated
-        assertEquals("15.5g", proteinLabel.getText());
-        assertEquals("2.25g", fatLabel.getText());
-        assertEquals("20.0g", carbsLabel.getText());
+        assertEquals("15.5g", proteinLabel.getText().replaceAll(",","."));
+        assertEquals("2.2g", fatLabel.getText().replaceAll(",","."));
+        assertEquals("20g", carbsLabel.getText().replaceAll(",","."));
 
-        Nutrition n = new Nutrition(20.0, 15.5, 2.25);
-        assertEquals(recipeUtils.getCaloriesPer100g(
-                        new IngredientType("New ingredient", n, new ArrayList<>(), null)),
+        Nutrition n = new Nutrition(20.0, 15.5, 2.2);
+        assertEquals(Math.round(recipeUtils.getCaloriesPer100g(
+                        new IngredientType("New ingredient", n, new ArrayList<>(), null))),
                 Double.valueOf(kcalLabel.getText()));
     }
 

@@ -8,6 +8,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
 import java.text.MessageFormat;
+import java.text.NumberFormat;
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
@@ -20,18 +21,50 @@ public class LanguageService {
     private final StringProperty languageTag = new SimpleStringProperty("en");
     // used locale and not just the tag because it allows things like formating decimals or dates
     // (and with a universal tag, I can easily set a locale)
+    private static final Locale FALLBACK_LOCALE = Locale.ENGLISH;
+
 
     @Inject
     public LanguageService(UserConfig userConfig) {
         this.userConfig = userConfig;
 
         String tag = userConfig.getLanguageTag();
-        if (tag == null || tag.isEmpty()) tag = "en";
+//        if (tag == null || tag.isEmpty()) tag = "en";
+        if (tag == null || tag.isBlank()) {
+            // first ever lanuch of the app, use the OS language
+            tag = mapToSupportedTag(Locale.getDefault());
+        }
 
 //        this.locale = Locale.forLanguageTag(tag);
 //        Locale.setDefault(this.locale);
 
         applyTag(tag, false);
+    }
+
+    private static String mapToSupportedTag(Locale osLocale){
+        if (osLocale == null) return "en";
+        String lang = osLocale.getLanguage();
+        if (lang == null) return "en";
+
+        lang = lang.toLowerCase(Locale.ROOT);
+
+        return switch (lang) {
+            case "en", "nl", "pt" -> lang;
+            default -> "en";
+        };
+    }
+
+    private String getStringWithEnglishFallback(String key){
+        try {
+            return bundle().getString(key);
+        } catch (MissingResourceException e) {
+        }
+        try {
+            ResourceBundle fallback = ResourceBundle.getBundle("languages.messages", FALLBACK_LOCALE);
+            return fallback.getString(key);
+        } catch (MissingResourceException e) {
+            return "!!" + key + "!!";
+        }
     }
 
     public Locale getLocale() {
@@ -104,12 +137,12 @@ public class LanguageService {
      * (in the cases of variable bits, namely numbers and names).
      */
     public String translate(String key, Object... args){
-        String raw;
-        try {
-            raw = bundle().getString(key);
-        } catch (MissingResourceException e) {
-            raw = "!!" + key + "!!"; // to note which keys are missing
-        }
+        String raw = getStringWithEnglishFallback(key);
+//        try {
+//            raw = bundle().getString(key);
+//        } catch (MissingResourceException e) {
+//            raw = "!!" + key + "!!"; // to note which keys are missing
+//        }
         if (args == null || args.length == 0) return raw;
         return new MessageFormat(raw, locale).format(args);
         // the MessageFormat takes the text (with placeholders,
@@ -119,6 +152,18 @@ public class LanguageService {
     public String unitLabel(String unitValue) {
         if (unitValue == null || unitValue.isBlank()) return translate("unit.select");
         return translate("unit." + unitValue.toLowerCase());
+    }
+
+    public String formatInteger(long value){
+        NumberFormat nf = NumberFormat.getIntegerInstance(locale);
+        nf.setGroupingUsed(true);   //1,000 vs 1000
+        return nf.format(value);
+    }
+
+    public String formatDecimal(double value, int fractionDigits){
+        NumberFormat nf = NumberFormat.getNumberInstance(locale);
+        nf.setMaximumFractionDigits(fractionDigits);
+        return nf.format(value);
     }
 
 }

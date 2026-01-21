@@ -305,6 +305,7 @@ public class RecipeOverviewCtrl {
     private final LanguageService languages;
 
     private final Tooltip nutritionTooltip = new Tooltip();
+    private final AmountParser amountParser = new AmountParser();
 
     // created this because some parts on the code depend on the exact text these present
     private static final String FILTER_ALL = "All recipes";
@@ -717,7 +718,7 @@ public class RecipeOverviewCtrl {
                     if (n.totalGrams() <= 0) {
                         recipeKcalPer100gLabel.setText("-");
                     } else {
-                        recipeKcalPer100gLabel.setText(String.valueOf(Math.round(n.kcalPer100g())));
+                        recipeKcalPer100gLabel.setText(languages.formatInteger(Math.round(n.kcalPer100g())));
                     }
                     updateNutriScoreLabel(n);
                 });
@@ -863,7 +864,8 @@ public class RecipeOverviewCtrl {
                 // apply the filter
                 filteredIngredientTypes.setPredicate(item -> {
                     if (newValue == null || newValue.isBlank()) return true;
-                    return item.name.toLowerCase().contains(newValue.toLowerCase());
+//                    return item.name.toLowerCase().contains(newValue.toLowerCase());
+                    return SearchUtils.containsNormalized(item.name, newValue);
                 });
 
                 editIngredientTypeBox.getSelectionModel().clearSelection();
@@ -1102,8 +1104,10 @@ public class RecipeOverviewCtrl {
     }
 
     private void updateServingsLabel(int baseServings) {
+        String baseText = languages.formatInteger(baseServings);
+
         if (scaleFactor == 1.0){
-            servingsLabel.setText(Integer.toString(baseServings));
+            servingsLabel.setText(baseText);
             return;
         }
 
@@ -1111,7 +1115,7 @@ public class RecipeOverviewCtrl {
 
         String scaledText = servingsFormatter.format(scaled);
 
-        servingsLabel.setText(baseServings + " (" + scaledText + ")");
+        servingsLabel.setText(baseText + " (" + scaledText + ")");
     }
 
     private void refreshScaledViewOnly() {
@@ -1316,7 +1320,8 @@ public class RecipeOverviewCtrl {
         searchStatusLabel.setText("Showing " + total + " recipes");
 
         // spilt the query into words
-        String[] words = query.toLowerCase().trim().split("\\s+");
+//        String[] words = query.toLowerCase().trim().split("\\s+");
+        String[] words = SearchUtils.normalizeForSearch(query).split("\\s+");
 
         searchPredicate = recipe -> mattchesAllWords(recipe, words);
         updateFilteredList();
@@ -1383,7 +1388,7 @@ public class RecipeOverviewCtrl {
             }
         }
 
-        return sb.toString();
+        return SearchUtils.normalizeForSearch(sb.toString());
     }
 
 
@@ -2053,7 +2058,7 @@ public class RecipeOverviewCtrl {
         Double parsedAmount = null;
         if (!amountText.isEmpty()) {
             try {
-                parsedAmount = Double.parseDouble(amountText);
+                parsedAmount = amountParser.parseAmount(amountText);
                 if (parsedAmount <= 0) {
                     recipeUtils.displayAlertWarning("recipe.warning.ing.negative", textFields);
                     return;
