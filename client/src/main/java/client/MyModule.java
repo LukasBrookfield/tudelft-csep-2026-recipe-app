@@ -30,5 +30,8 @@ public class MyModule implements Module {
         binder.bind(RecipeUtils.class).in(Scopes.SINGLETON);
         binder.bind(ShoppingListUtils.class).in(Scopes.SINGLETON);
         binder.bind(CategoryUtils.class).in(Scopes.SINGLETON);
+        binder.bind(IngredientScaling.class).in(Scopes.SINGLETON);
+        binder.bind(ScaleFactorParser.class).in(Scopes.SINGLETON);
+        binder.bind(QuantityFormatter.class).in(Scopes.SINGLETON);
     }
 }
