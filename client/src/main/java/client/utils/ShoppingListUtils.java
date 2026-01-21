@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -305,5 +306,210 @@ public class ShoppingListUtils {
             System.out.println("ERROR: Could not send PDF to printer.");
             e.printStackTrace();
         }
+    }
+
+    /**
+     * Sorts the list of shopping list items based on name, recipe name and category
+     * @param items The list of shopping list item
+     * @param sortingOption Which sorting option to use (1-6)
+     * @throws IllegalArgumentException The exception when using an incorrect option
+     */
+    public void sort(List<ShoppingListItem> items, int sortingOption) throws IllegalArgumentException{
+
+        //we only allow 6 sorting options from 1-6
+        if(sortingOption < 1 || sortingOption > 6){
+            throw new IllegalArgumentException();
+        }
+
+        switch (sortingOption) {
+            case 1: //sort by name ASC
+                items.sort(this::compareByNameASC);
+                break;
+            case 2: //sort by name DESC
+                items.sort(this::compareByNameDESC);
+                break;
+            case 3: //sort by recipe name ASC
+                items.sort(this::compareByRecipeNameASC);
+                break;
+            case 4: //sort by recipe name DESC
+                items.sort(this::compareByRecipeNameDESC);
+                break;
+            case 5: //sort by category ASC
+                items.sort(this::compareByCategoryASC);
+                break;
+            case 6: //sort by category DESC
+                items.sort(this::compareByCategoryDESC);
+                break;
+        }
+    }
+
+    /**
+     * Returns positive value if item1 is bigger than item2 base on the name in ascending order
+     * @param item1 Shopping list item
+     * @param item2 Shopping list item
+     * @return integer value
+     */
+    private int compareByNameASC(ShoppingListItem item1, ShoppingListItem item2){
+        if(item1.getIngredient().ingredientType == null){
+            return 1;
+        }
+        if(item2.getIngredient().ingredientType == null){
+            return -1;
+        }
+
+        int compare = Comparator
+                .nullsLast(String::compareTo)
+                .compare(item1.getIngredient().ingredientType.name, item2.getIngredient().ingredientType.name);
+        if (compare == 0) {
+            return Comparator
+                    .nullsLast(String::compareTo)
+                    .compare(item1.getRecipeName(), item2.getRecipeName());
+        }
+        return compare;
+    }
+
+    /**
+     * Returns positive value if item1 is bigger than item2 base on the name in descending order
+     * @param item1 Shopping list item
+     * @param item2 Shopping list item
+     * @return integer value
+     */
+    private int compareByNameDESC(ShoppingListItem item1, ShoppingListItem item2){
+        if(item1.getIngredient().ingredientType == null){
+            return 1;
+        }
+        if(item2.getIngredient().ingredientType == null){
+            return -1;
+        }
+
+        int compare = - Comparator
+                .nullsFirst(String::compareTo)
+                .compare(item1.getIngredient().ingredientType.name, item2.getIngredient().ingredientType.name);
+        if (compare == 0) {
+            return - Comparator
+                    .nullsFirst(String::compareTo)
+                    .compare(item1.getRecipeName(), item2.getRecipeName());
+        }
+        return compare;
+    }
+
+    /**
+     * Returns positive value if item1 is bigger than item2 base on the recipe name in ascending order
+     * @param item1 Shopping list item
+     * @param item2 Shopping list item
+     * @return integer value
+     */
+    private int compareByRecipeNameASC(ShoppingListItem item1,  ShoppingListItem item2){
+        if(item1.getIngredient().ingredientType == null){
+            return 1;
+        }
+        if(item2.getIngredient().ingredientType == null){
+            return -1;
+        }
+
+        int compare = Comparator
+                .nullsLast(String::compareTo)
+                .compare(item1.getRecipeName(), item2.getRecipeName());
+        if (compare == 0) {
+            return compareByNameASC(item1, item2);
+        }
+        return compare;
+    }
+
+    /**
+     * Returns positive value if item1 is bigger than item2 base on the recipe name in descending order
+     * @param item1 Shopping list item
+     * @param item2 Shopping list item
+     * @return integer value
+     */
+    private int compareByRecipeNameDESC(ShoppingListItem item1, ShoppingListItem item2){
+        if(item1.getIngredient().ingredientType == null){
+            return 1;
+        }
+        if(item2.getIngredient().ingredientType == null){
+            return -1;
+        }
+
+        int compare = - Comparator
+                .nullsFirst(String::compareTo)
+                .compare(item1.getRecipeName(), item2.getRecipeName());
+        if (compare == 0) {
+            return compareByNameDESC(item1, item2);
+        }
+        return compare;
+    }
+
+    /**
+     * Returns positive value if item1 is bigger than item2 base on the category in ascending order
+     * @param item1 Shopping list item
+     * @param item2 Shopping list item
+     * @return integer value
+     */
+    private int compareByCategoryASC(ShoppingListItem item1, ShoppingListItem item2){
+        if(item1.getIngredient().ingredientType == null){
+            return 1;
+        }
+        if(item2.getIngredient().ingredientType == null){
+            return -1;
+        }
+
+        if(item1.getIngredient().ingredientType.getCategory() == null && item2.getIngredient().ingredientType.getCategory() == null){
+            return compareByNameASC(item1, item2);
+        }
+        if(item1.getIngredient().ingredientType.getCategory() == null){
+            return 1;
+        }
+        if(item2.getIngredient().ingredientType.getCategory() == null){
+            return -1;
+        }
+
+        ResourceBundle b = languages.bundle();
+
+        int compare = Comparator.nullsLast(String::compareTo)
+                .compare(b.getString("common.category." + item1.getIngredient().ingredientType.getCategory()),
+                        b.getString("common.category." + item2.getIngredient().ingredientType.getCategory()));
+
+        if(compare == 0){
+            return compareByNameASC(item1, item2);
+        }
+
+        return compare;
+    }
+
+    /**
+     * Returns positive value if item1 is bigger than item2 base on the category in descending order
+     * @param item1 Shopping list item
+     * @param item2 Shopping list item
+     * @return integer value
+     */
+    private int compareByCategoryDESC(ShoppingListItem item1, ShoppingListItem item2){
+        if(item1.getIngredient().ingredientType == null){
+            return 1;
+        }
+        if(item2.getIngredient().ingredientType == null){
+            return -1;
+        }
+
+        if(item1.getIngredient().ingredientType.getCategory() == null && item2.getIngredient().ingredientType.getCategory() == null){
+            return compareByNameDESC(item1, item2);
+        }
+        if(item1.getIngredient().ingredientType.getCategory() == null){
+            return 1;
+        }
+        if(item2.getIngredient().ingredientType.getCategory() == null){
+            return -1;
+        }
+
+        ResourceBundle b = languages.bundle();
+
+        int compare = - Comparator.nullsFirst(String::compareTo)
+                .compare(b.getString("common.category." + item1.getIngredient().ingredientType.getCategory()),
+                        b.getString("common.category." + item2.getIngredient().ingredientType.getCategory()));
+
+        if(compare == 0){
+            return compareByNameDESC(item1, item2);
+        }
+
+        return compare;
     }
 }
