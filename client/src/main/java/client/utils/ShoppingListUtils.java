@@ -15,9 +15,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.Comparator;
+import java.util.*;
 import java.util.List;
-import java.util.ResourceBundle;
+
+import static commons.Category.*;
 
 public class ShoppingListUtils {
 
@@ -54,6 +55,19 @@ public class ShoppingListUtils {
                         })
                         .toList()
         );
+    }
+
+    /**
+     * Gets shopping list items form a list of shopping list entries
+     * @param shoppingList The list of shopping list entries
+     * @return Shopping list items array list
+     */
+    public ArrayList<ShoppingListItem> getShoppingListItems(List<ShoppingListEntry> shoppingList) {
+        return new ArrayList<>(shoppingList.
+                stream().
+                filter(x -> x.getClass().equals(ShoppingListItem.class)).
+                map(x -> (ShoppingListItem)x).
+                toList());
     }
 
     /**
@@ -144,6 +158,20 @@ public class ShoppingListUtils {
         } else {
             return ingredientScaling.format(item.getIngredient(), 1.0, languages.bundle()) +
                     " (" + item.getRecipeName() + ")";
+        }
+    }
+
+    /**
+     * Formats the shopping list header, for displaying in shopping list
+     * @param header The header
+     * @return The header as a string
+     */
+    public String shoppingListHeaderString(ShoppingListHeader header){
+        ResourceBundle b = languages.bundle();
+        try {
+            return b.getString("common.category."+header.getCategory());
+        }catch(Exception e){
+            return header.toString();
         }
     }
 
@@ -313,36 +341,51 @@ public class ShoppingListUtils {
     /**
      * Sorts the list of shopping list items based on name, recipe name and category
      * @param items The list of shopping list item
-     * @param sortingOption Which sorting option to use (1-6)
+     * @param sortingOption Which sorting option to use (1-3)
      * @throws IllegalArgumentException The exception when using an incorrect option
      */
-    public void sort(List<ShoppingListItem> items, int sortingOption) throws IllegalArgumentException{
+    public void sort(List<ShoppingListEntry> items, int sortingOption) throws IllegalArgumentException{
 
-        //we only allow 6 sorting options from 1-6
-        if(sortingOption < 1 || sortingOption > 6){
+        //we only allow 6 sorting options from 1-3
+        if(sortingOption < 1 || sortingOption > 3){
             throw new IllegalArgumentException();
         }
 
+        ArrayList<ShoppingListItem> shoppingListItems =  getShoppingListItems(items);
+
         switch (sortingOption) {
             case 1: //sort by name ASC
-                items.sort(this::compareByNameASC);
+                shoppingListItems.sort(this::compareByNameASC);
+                items.clear();
+                items.addAll(shoppingListItems);
                 break;
-            case 2: //sort by name DESC
-                items.sort(this::compareByNameDESC);
+            case 2: //sort by recipe name ASC
+                shoppingListItems.sort(this::compareByRecipeNameASC);
+                items.clear();
+                items.addAll(shoppingListItems);
                 break;
-            case 3: //sort by recipe name ASC
-                items.sort(this::compareByRecipeNameASC);
-                break;
-            case 4: //sort by recipe name DESC
-                items.sort(this::compareByRecipeNameDESC);
-                break;
-            case 5: //sort by category ASC
+            case 3: //sort by category ASC
+                items.clear();
+                items.addAll(shoppingListItems);
+                addHeaders(items);
                 items.sort(this::compareByCategoryASC);
                 break;
-            case 6: //sort by category DESC
-                items.sort(this::compareByCategoryDESC);
-                break;
         }
+    }
+
+
+    private void addHeaders(List<ShoppingListEntry> items) {
+        HashSet<Category> categories = new HashSet<Category>();
+        items.stream().filter(x -> x.getClass().equals(ShoppingListItem.class)).map(x -> (ShoppingListItem) x).forEach(x -> {
+            if(x.getIngredient().ingredientType.getCategory() != null) {
+                categories.add(x.getIngredient().ingredientType.getCategory());
+            }else{
+                categories.add(Other);
+            }
+        });
+        categories.forEach(x -> {
+            items.add(new ShoppingListHeader(x));
+        });
     }
 
     /**
@@ -365,31 +408,6 @@ public class ShoppingListUtils {
         if (compare == 0) {
             return Comparator
                     .nullsLast(String::compareTo)
-                    .compare(item1.getRecipeName(), item2.getRecipeName());
-        }
-        return compare;
-    }
-
-    /**
-     * Returns positive value if item1 is bigger than item2 base on the name in descending order
-     * @param item1 Shopping list item
-     * @param item2 Shopping list item
-     * @return integer value
-     */
-    private int compareByNameDESC(ShoppingListItem item1, ShoppingListItem item2){
-        if(item1.getIngredient().ingredientType == null){
-            return 1;
-        }
-        if(item2.getIngredient().ingredientType == null){
-            return -1;
-        }
-
-        int compare = - Comparator
-                .nullsFirst(String::compareTo)
-                .compare(item1.getIngredient().ingredientType.name, item2.getIngredient().ingredientType.name);
-        if (compare == 0) {
-            return - Comparator
-                    .nullsFirst(String::compareTo)
                     .compare(item1.getRecipeName(), item2.getRecipeName());
         }
         return compare;
@@ -419,99 +437,80 @@ public class ShoppingListUtils {
     }
 
     /**
-     * Returns positive value if item1 is bigger than item2 base on the recipe name in descending order
-     * @param item1 Shopping list item
-     * @param item2 Shopping list item
-     * @return integer value
-     */
-    private int compareByRecipeNameDESC(ShoppingListItem item1, ShoppingListItem item2){
-        if(item1.getIngredient().ingredientType == null){
-            return 1;
-        }
-        if(item2.getIngredient().ingredientType == null){
-            return -1;
-        }
-
-        int compare = - Comparator
-                .nullsFirst(String::compareTo)
-                .compare(item1.getRecipeName(), item2.getRecipeName());
-        if (compare == 0) {
-            return compareByNameDESC(item1, item2);
-        }
-        return compare;
-    }
-
-    /**
      * Returns positive value if item1 is bigger than item2 base on the category in ascending order
      * @param item1 Shopping list item
      * @param item2 Shopping list item
      * @return integer value
      */
-    private int compareByCategoryASC(ShoppingListItem item1, ShoppingListItem item2){
+    private int compareItemByCategoryASC(ShoppingListItem item1, ShoppingListItem item2){
         if(item1.getIngredient().ingredientType == null){
-            return 1;
+            return -1;
         }
         if(item2.getIngredient().ingredientType == null){
-            return -1;
-        }
-
-        if(item1.getIngredient().ingredientType.getCategory() == null && item2.getIngredient().ingredientType.getCategory() == null){
-            return compareByNameASC(item1, item2);
-        }
-        if(item1.getIngredient().ingredientType.getCategory() == null){
             return 1;
         }
-        if(item2.getIngredient().ingredientType.getCategory() == null){
-            return -1;
-        }
 
-        ResourceBundle b = languages.bundle();
-
-        int compare = Comparator.nullsLast(String::compareTo)
-                .compare(b.getString("common.category." + item1.getIngredient().ingredientType.getCategory()),
-                        b.getString("common.category." + item2.getIngredient().ingredientType.getCategory()));
-
-        if(compare == 0){
+        if(compareCategories(getCategory(item1), getCategory(item2)) == 0){
             return compareByNameASC(item1, item2);
         }
-
-        return compare;
+        return compareCategories(getCategory(item1), getCategory(item2));
     }
 
     /**
-     * Returns positive value if item1 is bigger than item2 base on the category in descending order
-     * @param item1 Shopping list item
-     * @param item2 Shopping list item
+     * Returns positive value if item1 is bigger than item2 base on the category in ascending order
+     * @param item1 Shopping list entry
+     * @param item2 Shopping list entry
      * @return integer value
      */
-    private int compareByCategoryDESC(ShoppingListItem item1, ShoppingListItem item2){
-        if(item1.getIngredient().ingredientType == null){
-            return 1;
-        }
-        if(item2.getIngredient().ingredientType == null){
-            return -1;
-        }
-
-        if(item1.getIngredient().ingredientType.getCategory() == null && item2.getIngredient().ingredientType.getCategory() == null){
-            return compareByNameDESC(item1, item2);
-        }
-        if(item1.getIngredient().ingredientType.getCategory() == null){
-            return 1;
-        }
-        if(item2.getIngredient().ingredientType.getCategory() == null){
-            return -1;
-        }
-
+    private int compareByCategoryASC(ShoppingListEntry item1, ShoppingListEntry item2){
         ResourceBundle b = languages.bundle();
 
-        int compare = - Comparator.nullsFirst(String::compareTo)
-                .compare(b.getString("common.category." + item1.getIngredient().ingredientType.getCategory()),
-                        b.getString("common.category." + item2.getIngredient().ingredientType.getCategory()));
-
-        if(compare == 0){
-            return compareByNameDESC(item1, item2);
+        if(item1.getClass().equals(ShoppingListItem.class) && item2.getClass().equals(ShoppingListItem.class)){
+            return compareItemByCategoryASC((ShoppingListItem) item1, (ShoppingListItem) item2);
         }
+        if(item1.getClass().equals(ShoppingListHeader.class) && item2.getClass().equals(ShoppingListHeader.class)){
+            return compareCategories(getCategory(item1), getCategory(item2));
+        }
+        if(item1.getClass().equals(ShoppingListHeader.class) && item2.getClass().equals(ShoppingListItem.class)){
+            if(compareCategories(getCategory(item1), getCategory(item2)) == 0){
+                return -1;
+            }
+            return compareCategories(getCategory(item1), getCategory(item2));
+        }
+        if(item1.getClass().equals(ShoppingListItem.class) && item2.getClass().equals(ShoppingListHeader.class)){
+            if(compareCategories(getCategory(item1), getCategory(item2)) == 0){
+                return 1;
+            }
+            return compareCategories(getCategory(item1), getCategory(item2));
+        }
+        return 0;
+    }
 
-        return compare;
+    /**
+     * Returns positive value if c1 is bigger than c2 base on the category in ascending order
+     * @param c1 The first category
+     * @param c2 The second category
+     * @return integer value
+     */
+    private int compareCategories(Category c1, Category c2) {
+        if (c1 == c2) return 0;
+
+        // Other always last
+        if (c1 == Other || c1 == null) return 1;
+        if (c2 == Other || c2 == null) return -1;
+
+        ResourceBundle b = languages.bundle();
+        return b.getString("common.category." + c1)
+                .compareTo(b.getString("common.category." + c2));
+    }
+
+    private Category getCategory(ShoppingListEntry entry) {
+        if (entry.getClass().equals(ShoppingListHeader.class)) {
+            return ((ShoppingListHeader)entry).getCategory();
+        }
+        if (entry.getClass().equals(ShoppingListItem.class)) {
+            return ((ShoppingListItem)entry).getIngredient().ingredientType.getCategory();
+        }
+        return Other;
     }
 }
