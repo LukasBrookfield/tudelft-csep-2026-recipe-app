@@ -92,9 +92,9 @@ public class RecipeOverviewCtrl {
     boolean newStep = false;
     private Long newRecipeId = null;
 
-    private final IngredientScaling ingredientScaling = new IngredientScaling();
-    private final ScaleFactorParser scaleFactorParser = new ScaleFactorParser();
-    private final QuantityFormatter servingsFormatter = new QuantityFormatter();
+    private final IngredientScaling ingredientScaling;
+    private final ScaleFactorParser scaleFactorParser;
+    private final QuantityFormatter servingsFormatter;
 
     private double scaleFactor = 1.0;
 
@@ -495,12 +495,18 @@ public class RecipeOverviewCtrl {
     public RecipeOverviewCtrl(ServerUtility server,
                               RecipeUtils recipeUtils,
                               UserConfig user,
-                              MainCtrl mainCtrl, LanguageService languages) {
+                              MainCtrl mainCtrl, LanguageService languages,
+                              IngredientScaling ingredientScaling,
+                              ScaleFactorParser scaleFactorParser,
+                              QuantityFormatter servingsFormatter) {
         this.server = server;
         this.recipeUtils = recipeUtils;
         this.user = user;
         this.mainCtrl = mainCtrl;
         this.languages = languages;
+        this.ingredientScaling = ingredientScaling;
+        this.scaleFactorParser = scaleFactorParser;
+        this.servingsFormatter = servingsFormatter;
     }
 
     /**
