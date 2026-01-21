@@ -6,10 +6,7 @@ import java.util.ArrayList;
 import client.MyFXML;
 import client.utils.*;
 import com.google.inject.Injector;
-import commons.Ingredient;
-import commons.IngredientType;
-import commons.ShoppingListItem;
-import commons.Unit;
+import commons.*;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
@@ -35,7 +32,7 @@ public class ShoppingListCtrlTest {
     private LanguageService languages;
 
     // FXML components
-    private ListView<Ingredient> ingredientListView;
+    private ListView<ShoppingListEntry> ingredientListView;
     private Button removeIngredientButton;
     private TextField editIngredientNameField;
     private TextField editIngredientAmountField;
@@ -171,6 +168,11 @@ public class ShoppingListCtrlTest {
     void removeItemTest(FxRobot robot) {
         addItem(robot, "Test ingredient", Unit.ML, 44.4);
         robot.clickOn(doneEditIngredientButton);
+
+        robot.interact(() ->
+                ingredientListView.getSelectionModel().select(0)
+        );
+
         robot.clickOn(removeIngredientButton);
 
         // check if item has been removed from list view
@@ -184,6 +186,11 @@ public class ShoppingListCtrlTest {
     void editItemTest(FxRobot robot) {
         addItem(robot, "Test ingredient", Unit.G, 125.5);
         robot.clickOn(doneEditIngredientButton);
+
+        robot.interact(() ->
+                ingredientListView.getSelectionModel().select(0)
+        );
+        
         robot.clickOn(editIngredientButton);
         robot.clickOn(editIngredientTypeBox).type(KeyCode.END);
         robot.eraseText(20);
@@ -197,7 +204,13 @@ public class ShoppingListCtrlTest {
         ShoppingListItem item =  new ShoppingListItem(ing);
 
         // check if item has been edited in list view
-        assertTrue(ingredientListView.getItems().contains(item));
+        assertTrue(ingredientListView.
+                getItems().
+                stream().
+                filter(x -> x.getClass().equals(ShoppingListItem.class)).
+                map(x -> (ShoppingListItem)x).
+                toList().
+                contains(item));
 
         // check if item has been edited in local user file
         assertTrue(user.getShoppingList().contains(item));
