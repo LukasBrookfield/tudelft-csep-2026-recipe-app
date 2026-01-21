@@ -2013,9 +2013,6 @@ public class RecipeOverviewCtrl {
             editIngredientTypeBox.getSelectionModel().clearSelection();
             editIngredientTypeBox.setValue(null);
         }
-
-        cancelEditButton.setVisible(false);
-        doneEditButton.setVisible(false);
     }
 
     /**
