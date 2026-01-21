@@ -780,6 +780,8 @@ public class RecipeOverviewCtrl {
         changeViewEditMode(false);
         recipeTitleField.setVisible(false);
 
+        Tooltip.install(kcalCaptionLabel, nutritionTooltip);
+
         showFavorites = new CheckMenuItem("");
         showEN = new CheckMenuItem("");
         showNL = new CheckMenuItem("");
@@ -1129,28 +1131,44 @@ public class RecipeOverviewCtrl {
     }
 
     private void updateNutritionTooltip(){
+
+        Tooltip t = recipeKcalPer100gLabel.getTooltip();
+
         if (lastNutrition == null) {
             // no nutrition loaded yet (or recipe has none)
-            Tooltip t = recipeKcalPer100gLabel.getTooltip();
-            if (t != null) t.setText("Nutrition info not available yet.");
+            String msg = languages.translate("recipe.tooltip.nutrition.notAvailable");
+            if (t == null) recipeKcalPer100gLabel.setTooltip(new Tooltip(msg));
+            else t.setText(msg);
             return;
         }
-        double baseKcal = lastNutrition.totalKcal();
-        double baseGrams = lastNutrition.totalGrams();
+        long baseKcal = Math.round(lastNutrition.totalKcal());
+        long baseGrams = Math.round(lastNutrition.totalKcal());
 
-        double scaledKcal = baseKcal * scaleFactor;
-        double scaledGrams = baseGrams * scaleFactor;
+        long scaledKcal = Math.round(lastNutrition.totalKcal() * scaleFactor);
+        long scaledGrams = Math.round(lastNutrition.totalGrams() * scaleFactor);
+
+        long ignored = lastNutrition.ignoredIngredients();
+
+        String baseKcalStr = languages.formatInteger(baseKcal);
+        String baseGramsStr = languages.formatInteger(baseGrams);
+        String scaledKcalStr = languages.formatInteger(scaledKcal);
+        String scaledGramsStr = languages.formatInteger(scaledGrams);
+        String ignoredStr = languages.formatInteger(ignored);
 
         long ingored = lastNutrition.ignoredIngredients();
 
-        String text =
-                "Base totals:\n " + Math.round(baseKcal) + " kcal, "
-                        + Math.round(baseGrams) + " grams\n\n" +
-                        "Scaled (x" + scaleFactorParser.formatForField(scaleFactor) + "):\n "
-                + Math.round(scaledKcal) + " kcal, " + Math.round(scaledGrams) + " grams\n\n" +
-                        "Ignored (informal) ingredients: " + ingored;
+        String scaleStr = scaleFactorParser.formatForField(scaleFactor);
 
-        Tooltip t = recipeKcalPer100gLabel.getTooltip();
+        String text = languages.translate("recipe.tooltip.nutrition.text", baseKcalStr, baseGramsStr,
+                scaleStr, scaledKcalStr, scaledGramsStr, ignoredStr);
+
+//        String text =
+//                "Base totals:\n " + Math.round(baseKcal) + " kcal, "
+//                        + Math.round(baseGrams) + " grams\n\n" +
+//                        "Scaled (x" + scaleFactorParser.formatForField(scaleFactor) + "):\n "
+//                + Math.round(scaledKcal) + " kcal, " + Math.round(scaledGrams) + " grams\n\n" +
+//                        "Ignored (informal) ingredients: " + ingored;
+
         if (t == null) {
             recipeKcalPer100gLabel.setTooltip(new Tooltip(text));
         }
