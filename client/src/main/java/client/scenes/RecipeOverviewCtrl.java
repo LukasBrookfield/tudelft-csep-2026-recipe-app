@@ -1142,7 +1142,7 @@ public class RecipeOverviewCtrl {
             return;
         }
         long baseKcal = Math.round(lastNutrition.totalKcal());
-        long baseGrams = Math.round(lastNutrition.totalKcal());
+        long baseGrams = Math.round(lastNutrition.totalGrams());
 
         long scaledKcal = Math.round(lastNutrition.totalKcal() * scaleFactor);
         long scaledGrams = Math.round(lastNutrition.totalGrams() * scaleFactor);
