@@ -187,6 +187,8 @@ public class IngredientTypeOverviewCtrl {
 
     private int matches = 0;
 
+    private final SearchUtils searchUtils;
+
     // Bottom
 
     @FXML
@@ -314,12 +316,13 @@ public class IngredientTypeOverviewCtrl {
                                       RecipeUtils recipeUtils,
                                       MainCtrl mainCtrl,
                                       LanguageService languages,
-                                      CategoryUtils categoryUtils) {
+                                      CategoryUtils categoryUtils, SearchUtils searchUtils) {
         this.server = server;
         this.recipeUtils = recipeUtils;
         this.mainCtrl = mainCtrl;
         this.languages = languages;
         this.categoryUtils = categoryUtils;
+        this.searchUtils = searchUtils;
     }
 
     private void setupSort() {
@@ -385,7 +388,7 @@ public class IngredientTypeOverviewCtrl {
             int total = allIngredientTypes.size();
             searchStatusLabel.setText("Showing " + total + " ingredients");
 
-            String normalized = SearchUtils.normalizeForSearch(query);
+            String normalized = searchUtils.normalizeForSearch(query);
             String[] words = normalized.toLowerCase().trim().split("\\s+");
             filteredIngredientTypes.setPredicate(currentPredicate.and(
                     ingredientType -> matchesAllWords(ingredientType, words)
@@ -409,7 +412,7 @@ public class IngredientTypeOverviewCtrl {
 
     private boolean matchesAllWords(IngredientType ingredientType, String[] words) {
         String name = (ingredientType.name == null) ? "" : ingredientType.name;
-        String searchableName = SearchUtils.normalizeForSearch(name);
+        String searchableName = searchUtils.normalizeForSearch(name);
 
         for (String word : words) {
             if (word.isBlank()) continue;
