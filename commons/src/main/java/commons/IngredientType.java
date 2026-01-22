@@ -12,7 +12,7 @@ public class IngredientType {
     @GeneratedValue(strategy = GenerationType.AUTO)
     public long id;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     public String name;
 
     @Enumerated(EnumType.ORDINAL)
@@ -63,14 +63,12 @@ public class IngredientType {
 
     @Override
     public boolean equals(Object obj) {
-        return EqualsBuilder.reflectionEquals(this, obj,
-                "id", "ingredients");  // excludes id and ingredients
+        return EqualsBuilder.reflectionEquals(this, obj);
     }
 
     @Override
     public int hashCode() {
-        return HashCodeBuilder.reflectionHashCode(this,
-                "id", "ingredients");  // excludes id and ingredients
+        return HashCodeBuilder.reflectionHashCode(this);
     }
 
     @Override

@@ -433,7 +433,7 @@ public class IngredientTypeOverviewCtrl {
         // While in edit mode, the user can't change to a different ingredient
         ingredientTypeSearchField.getParent().setDisable(value);
 
-        sceneBox.setDisable(value);
+        sceneBox.getParent().setDisable(value);
         editIngredientTypeButton.setVisible(!value);
         cancelEditButton.getParent().setVisible(value);
         editDetailsButton.getParent().getParent().getParent().setVisible(value);
@@ -703,6 +703,8 @@ public class IngredientTypeOverviewCtrl {
 
         List<Recipe> usedInRecipes = getUsedInRecipes(ingredientType);
 
+        if (ingredientType == null) return;
+
         if (usedInRecipes.isEmpty()) {
             server.deleteIngredientType(ingredientType.id);
             allIngredientTypes.removeIf(it -> it.id == ingredientType.id);
@@ -790,8 +792,6 @@ public class IngredientTypeOverviewCtrl {
 
         onRefresh();
     }
-
-
 
     // Top right
 
@@ -890,6 +890,7 @@ public class IngredientTypeOverviewCtrl {
                 ingredientType.id, ingredientType
         ));
 
+        applySort(sortChoiceBox.getSelectionModel().getSelectedItem());
         onRefresh();
         ingredientTypeListView.getSelectionModel().select(
                 ingredientType
@@ -972,9 +973,17 @@ public class IngredientTypeOverviewCtrl {
             return;
         }
 
+        IngredientType selected = ingredientTypeListView.getSelectionModel()
+                .getSelectedItem();
+
         // check if ingredient type is unique
-        boolean isDuplicate = ingredientTypeListView.getItems().stream().anyMatch(
-                x -> x.name.equalsIgnoreCase(inputName));
+        boolean isDuplicate = false;
+        for (IngredientType ingredientType : ingredientTypeListView.getItems()) {
+            if (ingredientType.equals(selected)) {
+                continue;
+            }
+            isDuplicate |= ingredientType.name.equalsIgnoreCase(inputName);
+        }
         if (isDuplicate) {
             System.out.println("The name of the ingredient type must be unique!");
             recipeUtils.displayAlertWarning("recipe.warning.ing.duplicate", null);
