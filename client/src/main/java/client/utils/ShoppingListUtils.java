@@ -183,7 +183,7 @@ public class ShoppingListUtils {
      * @throws Exception        if the content cannot be added to the document
      */
     public void addRecipeContentToDocument(Document doc,
-                                            List<ShoppingListItem> shoppingListItems) throws Exception {
+                                            List<ShoppingListEntry> shoppingListItems) throws Exception {
 
         //the language for title
 
@@ -191,9 +191,10 @@ public class ShoppingListUtils {
         // Define fonts
         Font titleFont = FontFactory.getFont(FontFactory.HELVETICA, 18, Font.BOLD);
         Font dateFont = FontFactory.getFont(FontFactory.HELVETICA, 12, Font.BOLD);
-        Font sectinFont = FontFactory.getFont(FontFactory.HELVETICA, 14, Font.BOLD);
+        Font sectinFont = FontFactory.getFont(FontFactory.HELVETICA, 16, Font.BOLD);
         Font bodyFont = FontFactory.getFont(FontFactory.HELVETICA, 12);
         Font recipeFont = FontFactory.getFont(FontFactory.HELVETICA, 12, Font.ITALIC);
+        Font headerFont =  FontFactory.getFont(FontFactory.HELVETICA, 14, Font.BOLD);
 
         doc.open();
         doc.add(new Paragraph(b.getString("shopping.title"), titleFont));
@@ -201,15 +202,30 @@ public class ShoppingListUtils {
         doc.add(new Paragraph(" "));
         doc.add(new Paragraph(" "));
         doc.add(new Paragraph(languages.bundle().getString("shoppingListItemsHeader") + ":", sectinFont));
-        for (ShoppingListItem i : shoppingListItems) {
-            Paragraph p = new Paragraph();
+        for (ShoppingListEntry i : shoppingListItems) {
+            if(i.getClass().equals(ShoppingListHeader.class)){
+                ShoppingListHeader header = (ShoppingListHeader)i;
 
-            doc.add(new Paragraph(" "));
-            p.add(new Chunk(" • " + ingredientScaling.format(i.getIngredient(), 1, languages.bundle()), bodyFont));
-            if(i.getRecipeName() != null){
-                p.add(new Chunk(" " + i.getRecipeName(), recipeFont));
+                doc.add(new Paragraph(" "));
+
+                try {
+                    doc.add(new Paragraph(b.getString("common.category." + header.getCategory()), headerFont));
+                }catch(Exception e){
+                    doc.add(new Paragraph("This category is not supported in this language " + header.getCategory(),  headerFont));
+                }
             }
-            doc.add(p);
+            if(i.getClass().equals(ShoppingListItem.class)){
+                ShoppingListItem item = (ShoppingListItem)i;
+
+                Paragraph p = new Paragraph();
+
+                doc.add(new Paragraph(" "));
+                p.add(new Chunk(" • " + ingredientScaling.format(item.getIngredient(), 1, languages.bundle()), bodyFont));
+                if(item.getRecipeName() != null){
+                    p.add(new Chunk(" " + item.getRecipeName(), recipeFont));
+                }
+                doc.add(p);
+            }
         }
     }
 
@@ -221,7 +237,7 @@ public class ShoppingListUtils {
      * @throws Exception        if the PDF cannot be created
      */
     public void writeRecipePDF(File file,
-                                List<ShoppingListItem> shoppingListItems) throws Exception {
+                                List<ShoppingListEntry> shoppingListItems) throws Exception {
 
         Document doc = new Document();
 
@@ -278,7 +294,7 @@ public class ShoppingListUtils {
         chooser.setInitialFileName(safeName + ".pdf");
     }
 
-    public void saveListToFile(File file, List<ShoppingListItem> shoppingListItems){
+    public void saveListToFile(File file, List<ShoppingListEntry> shoppingListItems){
         // If the user presses "Cancel", file will be null
         if (file == null) {
             System.out.println("PDF not saved.");
@@ -301,7 +317,7 @@ public class ShoppingListUtils {
      * Prints sends the PDF created base of the list of ShoppingListItems
      * @param shoppingListItems The list of ShoppingListItems
      */
-    public void printShoppingList(List<ShoppingListItem> shoppingListItems) {
+    public void printShoppingList(List<ShoppingListEntry> shoppingListItems) {
         File tempFile;
 
         try {
@@ -493,7 +509,7 @@ public class ShoppingListUtils {
      * @return integer value
      */
     private int compareCategories(Category c1, Category c2) {
-        if (c1 == c2) return 0;
+        if (c1 == c2 || (c1 == null && c2 == Other) || (c1 == Other && c2 == null)) return 0;
 
         // Other always last
         if (c1 == Other || c1 == null) return 1;

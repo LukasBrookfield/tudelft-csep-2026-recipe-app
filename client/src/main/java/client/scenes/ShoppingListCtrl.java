@@ -373,7 +373,7 @@ public class ShoppingListCtrl {
         shoppingListUtils.setFileChooser(chooser);
         // Show the dialog
         File file = chooser.showSaveDialog(rootPane.getScene().getWindow());
-        shoppingListUtils.saveListToFile(file, user.getShoppingList());
+        shoppingListUtils.saveListToFile(file, ingredientListView.getItems());
     }
 
     /**
@@ -382,7 +382,7 @@ public class ShoppingListCtrl {
      */
     @FXML
     private void onPrintButton() {
-        shoppingListUtils.printShoppingList(shoppingListUtils.getShoppingListItems(ingredientListView.getItems()));
+        shoppingListUtils.printShoppingList(ingredientListView.getItems());
     }
 
     /**
