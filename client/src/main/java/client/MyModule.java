@@ -10,6 +10,7 @@ import com.google.inject.Scopes;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
 import org.glassfish.jersey.client.ClientConfig;
+import org.springframework.core.annotation.MergedAnnotations;
 
 public class MyModule implements Module {
 
@@ -33,5 +34,7 @@ public class MyModule implements Module {
         binder.bind(IngredientScaling.class).in(Scopes.SINGLETON);
         binder.bind(ScaleFactorParser.class).in(Scopes.SINGLETON);
         binder.bind(QuantityFormatter.class).in(Scopes.SINGLETON);
+        binder.bind(SearchUtils.class).in(Scopes.SINGLETON);
+        binder.bind(AmountParser.class).in(Scopes.SINGLETON);
     }
 }
