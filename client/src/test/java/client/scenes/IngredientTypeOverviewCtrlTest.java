@@ -160,6 +160,7 @@ public class IngredientTypeOverviewCtrlTest {
     void addIngredientTypeTest(FxRobot robot) {
         robot.clickOn(addIngredientTypeButton);
         IngredientType type = new IngredientType("New ingredient", null, new ArrayList<>(), null);
+        type.id = 1;
         // check if ingredient type has been added to the list view
         assertTrue(ingredientTypeListView.getItems().contains(type));
 
@@ -359,6 +360,7 @@ public class IngredientTypeOverviewCtrlTest {
 
         // check category has been set correctly
         IngredientType type = new IngredientType("Test ingredient type", null, new ArrayList<>(), null);
+        type.id = 1;
         type.setCategory(Category.Dairy);
         assertTrue(ingredientTypeListView.getItems().contains(type));
     }

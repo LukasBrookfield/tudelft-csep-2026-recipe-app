@@ -700,6 +700,8 @@ public class IngredientTypeOverviewCtrl {
 
         List<Recipe> usedInRecipes = getUsedInRecipes(ingredientType);
 
+        if (ingredientType == null) return;
+
         if (usedInRecipes.isEmpty()) {
             server.deleteIngredientType(ingredientType.id);
             allIngredientTypes.removeIf(it -> it.id == ingredientType.id);
@@ -885,6 +887,7 @@ public class IngredientTypeOverviewCtrl {
                 ingredientType.id, ingredientType
         ));
 
+        applySort(sortChoiceBox.getSelectionModel().getSelectedItem());
         onRefresh();
         ingredientTypeListView.getSelectionModel().select(
                 ingredientType
