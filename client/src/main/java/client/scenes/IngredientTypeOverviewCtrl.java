@@ -887,6 +887,7 @@ public class IngredientTypeOverviewCtrl {
                 ingredientType.id, ingredientType
         ));
 
+        applySort(sortChoiceBox.getSelectionModel().getSelectedItem());
         onRefresh();
         ingredientTypeListView.getSelectionModel().select(
                 ingredientType
