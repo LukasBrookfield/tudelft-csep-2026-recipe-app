@@ -526,8 +526,6 @@ public class AddToShoppingListCtrl {
     }
 
     private void changeEditState(AddToShoppingListCtrl.EditMode state, boolean active) {
-        if (state == AddToShoppingListCtrl.EditMode.NO_EDIT)
-            return;
         editButtonMap.get(state).defaultButton.setDefaultButton(active);
         editButtonMap.get(state).cancelButton.setCancelButton(active);
     }
