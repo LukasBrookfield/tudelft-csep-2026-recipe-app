@@ -26,10 +26,11 @@ import java.util.ResourceBundle;
 public class AddToShoppingListCtrl {
     private static final String UNIT_PLACEHOLDER = "__SELECT_UNIT__";
 
-    private final ServerUtils server;
+    private final ServerUtility server;
     private final MainCtrl controller;
     private Recipe recipe;
     private final ShoppingListUtils shoppingListUtils;
+    private final RecipeUtils recipeUtils;
 
     private ObservableList<IngredientType> allIngredientTypes;
     private FilteredList<IngredientType> filteredIngredientTypes;
@@ -142,15 +143,17 @@ public class AddToShoppingListCtrl {
     }
 
     @Inject
-    AddToShoppingListCtrl(ServerUtils server,
+    AddToShoppingListCtrl(ServerUtility server,
                           UserConfig user,
                           MainCtrl controller,
                           LanguageService languages,
-                          ShoppingListUtils shoppingListUtils) {
+                          ShoppingListUtils shoppingListUtils,
+                          RecipeUtils recipeUtils) {
         this.server = server;
         this.controller = controller;
         this.languages = languages;
         this.shoppingListUtils = shoppingListUtils;
+        this.recipeUtils = recipeUtils;
     }
 
     /**
@@ -433,6 +436,7 @@ public class AddToShoppingListCtrl {
 
         if (ingredientType.name.isEmpty()) {
             System.out.println("The ingredient type needs a name.");
+            recipeUtils.displayAlertWarning("ingredient.warning.empty.name", null);
             return;
         }
 

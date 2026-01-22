@@ -2,12 +2,18 @@ package client.utils;
 
 import commons.Ingredient;
 import commons.Unit;
+import jakarta.inject.Inject;
 
 import java.util.ResourceBundle;
 
 public class IngredientScaling {
 
-    private final QuantityFormatter num = new QuantityFormatter();
+    private final QuantityFormatter num;
+
+    @Inject
+    public IngredientScaling(QuantityFormatter num) {
+        this.num = num;
+    }
 
     @SuppressWarnings("checkstyle:Indentation")
     public String format(Ingredient ing, double scaleFactor, ResourceBundle b){
