@@ -5,7 +5,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import java.util.ResourceBundle;
 
-public class ShoppingListItem {
+public class ShoppingListItem implements ShoppingListEntry {
     private Ingredient ingredient;
     private String recipeName;
 
