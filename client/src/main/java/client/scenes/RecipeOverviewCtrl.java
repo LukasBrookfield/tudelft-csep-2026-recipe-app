@@ -319,7 +319,7 @@ public class RecipeOverviewCtrl {
     private final LanguageService languages;
 
     private final Tooltip nutritionTooltip = new Tooltip();
-    private final AmountParser amountParser = new AmountParser();
+    private final AmountParser amountParser;
 
     // created this because some parts on the code depend on the exact text these present
     private static final String FILTER_ALL = "All recipes";
@@ -511,7 +511,7 @@ public class RecipeOverviewCtrl {
                               MainCtrl mainCtrl, LanguageService languages,
                               IngredientScaling ingredientScaling,
                               ScaleFactorParser scaleFactorParser,
-                              QuantityFormatter servingsFormatter, SearchUtils searchUtils) {
+                              QuantityFormatter servingsFormatter, SearchUtils searchUtils, AmountParser amountParser) {
         this.server = server;
         this.recipeUtils = recipeUtils;
         this.user = user;
@@ -521,6 +521,7 @@ public class RecipeOverviewCtrl {
         this.ingredientScaling = ingredientScaling;
         this.scaleFactorParser = scaleFactorParser;
         this.servingsFormatter = servingsFormatter;
+        this.amountParser = amountParser;
     }
 
     /**
