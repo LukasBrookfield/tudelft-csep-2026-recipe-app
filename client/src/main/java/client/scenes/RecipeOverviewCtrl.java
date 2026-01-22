@@ -2142,25 +2142,21 @@ public class RecipeOverviewCtrl {
             return;
         }
 
-        if(amountText.length()>8){
+        if (amountText.length() > 8){
             System.out.println("Amount exceeds the limit!");
             recipeUtils.displayAlertWarning("recipe.warning.ing.exceed.limit", textFields);
             return;
         }
 
-        Double parsedAmount = null;
-        if (!amountText.isEmpty()) {
-            try {
-                parsedAmount = amountParser.parseAmount(amountText);
-                if (parsedAmount <= 0) {
-                    recipeUtils.displayAlertWarning("recipe.warning.ing.negative", textFields);
-                    return;
-                }
-            } catch (NumberFormatException e) {
-                recipeUtils.displayAlertWarning("recipe.warning.ing.nonNumeric", textFields);
-                System.out.println("Enter a valid number.");
-                return;
-            }
+        Double parsedAmount = amountParser.parseAmount(amountText);
+        if (parsedAmount == null) {
+            recipeUtils.displayAlertWarning("recipe.warning.ing.nonNumeric", textFields);
+            System.out.println("Enter a valid number.");
+            return;
+        }
+        if (parsedAmount <= 0) {
+            recipeUtils.displayAlertWarning("recipe.warning.ing.negative", textFields);
+            return;
         }
 
         int index = ingredientListView.getSelectionModel().getSelectedIndex();
