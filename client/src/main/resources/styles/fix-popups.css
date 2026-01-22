@@ -8,7 +8,7 @@
     -fx-text-fill: black;
 }
 
-/* Fix ComboBox dropdown (if you have any ComboBoxes too) */
+/* Fix ComboBox dropdown */
 .combo-box-popup .list-view {
     -fx-background-color: white;
 }
