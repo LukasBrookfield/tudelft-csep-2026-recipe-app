@@ -5,7 +5,6 @@ import com.google.inject.Inject;
 import commons.*;
 import commons.Ingredient;
 import commons.IngredientType;
-import commons.Recipe;
 import commons.ShoppingListItem;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
