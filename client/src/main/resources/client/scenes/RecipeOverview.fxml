@@ -350,7 +350,7 @@
                                           </HBox>
                                           <HBox alignment="CENTER_RIGHT" prefHeight="0.0" prefWidth="0.0" spacing="5.0">
                                              <children>
-                                                <Button fx:id="onBackEditIngredientButton" minWidth="-Infinity" mnemonicParsing="false" onAction="#onBackEditIngredientButton" text="Back" HBox.hgrow="ALWAYS" />
+                                                <Button fx:id="backEditIngredientButton" minWidth="-Infinity" mnemonicParsing="false" onAction="#onBackEditIngredientButton" text="Back" HBox.hgrow="ALWAYS" />
                                                 <Button fx:id="doneEditIngredientButton" minWidth="-Infinity" mnemonicParsing="false" onAction="#onDoneEditIngredientButton" text="Done" HBox.hgrow="ALWAYS" />
                                              </children>
                                           </HBox>

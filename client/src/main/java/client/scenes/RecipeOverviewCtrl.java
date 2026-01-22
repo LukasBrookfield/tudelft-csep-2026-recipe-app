@@ -9,7 +9,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
-import client.utils.ServerUtils;
 import javafx.stage.Stage;
 import commons.*;
 import javafx.application.Platform;
@@ -1097,7 +1096,10 @@ public class RecipeOverviewCtrl {
                 (obs, oldValue, newValue) -> {
                     mainCtrl.showScene(sceneBox.getItems().indexOf(newValue));
                 });
-        activateButtons(EditMode.NO_EDIT);
+
+        editButtonsSetup();
+
+        enterEditState(EditMode.NO_EDIT);
     }
 
     private void updateNutriScoreLabel(RecipeNutrition recipeNutrition) {
@@ -1555,6 +1557,8 @@ public class RecipeOverviewCtrl {
 
         addRecipeToServer(new Recipe(
                 languages.bundle().getString("recipe.title.new"), language));
+        leaveEditState(EditMode.NO_EDIT);
+        enterEditState(EditMode.EDIT_NAME);
     }
 
     @FXML
@@ -1806,6 +1810,8 @@ public class RecipeOverviewCtrl {
     private void onEditRecipeButton() {
         changeViewEditMode(true);
         recipeTitleField.setText(recipeTitleLabel.getText());
+        leaveEditState(EditMode.NO_EDIT);
+        enterEditState(EditMode.EDIT_NAME);
     }
 
     /**
@@ -1827,6 +1833,8 @@ public class RecipeOverviewCtrl {
         onRefresh();
         changeViewEditMode(false);
         newRecipe = false;
+        leaveEditState(EditMode.EDIT_NAME);
+        enterEditState(EditMode.NO_EDIT);
     }
 
     /**
@@ -1894,6 +1902,8 @@ public class RecipeOverviewCtrl {
         // apply the search filter again, because the recipe might not
         // match anymore after a name change
         applySearchFilter(recipeSearchField.getText());
+        leaveEditState(EditMode.EDIT_NAME);
+        enterEditState(EditMode.NO_EDIT);
     }
 
     private int parseBaseServings(String servings) {
@@ -1914,6 +1924,8 @@ public class RecipeOverviewCtrl {
     private void onEditDetailsButton() {
         editServingsField.setText(Integer.toString(getBaseServingsFromLabel()));
         changeDetailsViewEditMode(true);
+        leaveEditState(EditMode.EDIT_NAME);
+        enterEditState(EditMode.EDIT_DETAILS);
     }
 
     @FXML
@@ -2005,6 +2017,8 @@ public class RecipeOverviewCtrl {
         // Clear the placeholder so the user doesn't have to delete "New ingredient"
         editIngredientAmountField.clear();
         editUnitBox.getSelectionModel().select(0);
+        leaveEditState(EditMode.EDIT_NAME);
+        enterEditState(EditMode.EDIT_INGREDIENT_1);
     }
 
     /**
@@ -2032,6 +2046,8 @@ public class RecipeOverviewCtrl {
             editIngredientTypeBox.getSelectionModel().clearSelection();
             editIngredientTypeBox.setValue(null);
         }
+        leaveEditState(EditMode.EDIT_NAME);
+        enterEditState(EditMode.EDIT_INGREDIENT_1);
     }
 
     /**
@@ -2048,7 +2064,8 @@ public class RecipeOverviewCtrl {
         newIngredient = false;
 
         // activate button behaviour
-        activateButtons(EditMode.NO_EDIT);
+        leaveEditState(EditMode.EDIT_INGREDIENT_1);
+        enterEditState(EditMode.EDIT_NAME);
     }
 
     /**
@@ -2099,7 +2116,8 @@ public class RecipeOverviewCtrl {
         }
 
         // activate button behaviour
-        activateButtons(EditMode.EDIT_INGREDIENT_2);
+        leaveEditState(EditMode.EDIT_INGREDIENT_1);
+        enterEditState(EditMode.EDIT_INGREDIENT_2);
     }
 
     /**
@@ -2110,6 +2128,8 @@ public class RecipeOverviewCtrl {
     @FXML
     private void onBackEditIngredientButton() {
         changeIngredientTypeViewEditMode(1);
+        leaveEditState(EditMode.EDIT_INGREDIENT_2);
+        enterEditState(EditMode.EDIT_INGREDIENT_1);
     }
 
     /**
@@ -2192,7 +2212,8 @@ public class RecipeOverviewCtrl {
         newIngredient = false;
 
         // activate button behaviour
-        activateButtons(EditMode.NO_EDIT);
+        leaveEditState(EditMode.EDIT_INGREDIENT_2);
+        enterEditState(EditMode.EDIT_NAME);
     }
 
     // Edit preparation step section
@@ -2256,7 +2277,8 @@ public class RecipeOverviewCtrl {
         // Force focus into the step field
         editStepField.requestFocus();
 
-        activateButtons(EditMode.EDIT_PREPARATION);
+        leaveEditState(EditMode.EDIT_NAME);
+        enterEditState(EditMode.EDIT_STEPS);
     }
 
     /**
@@ -2272,7 +2294,8 @@ public class RecipeOverviewCtrl {
         doneEditButton.setVisible(true);
         newStep = false;
 
-        activateButtons(EditMode.NO_EDIT);
+        leaveEditState(EditMode.EDIT_STEPS);
+        enterEditState(EditMode.EDIT_NAME);
     }
 
     /**
@@ -2303,6 +2326,8 @@ public class RecipeOverviewCtrl {
         cancelEditButton.setVisible(true);
         doneEditButton.setVisible(true);
         newStep = false;
+        leaveEditState(EditMode.EDIT_STEPS);
+        enterEditState(EditMode.EDIT_NAME);
     }
 
     /**
@@ -2353,69 +2378,50 @@ public class RecipeOverviewCtrl {
         alert.show();
     }
 
-
+    // ----------------------------------------------------------------------------------
+    // -- enums and classes to change the edit buttons when the edit state changes
     // possible ingredient edit states
     private enum EditMode {
         NO_EDIT,
+        EDIT_NAME,
+        EDIT_DETAILS,
         EDIT_INGREDIENT_1,
         EDIT_INGREDIENT_2,
-        EDIT_PREPARATION,
+        EDIT_STEPS,
     }
 
-    private void activateButtons(EditMode mode) {
-        switch (mode) {
-            case NO_EDIT -> {
-                // exit form
-                cancelEditButton.setCancelButton(true);
-                // edit ingredient - first step
-                cancelEditIngredientButton.setCancelButton(false);
-                nextEditIngredientButton.setDefaultButton(false);
-                // edit preparation
-                cancelEditStepButton.setCancelButton(false);
-                doneEditStepButton.setDefaultButton(false);
-                // edit ingredient - second step
-                doneEditIngredientButton.setCancelButton(false);
-                backEditIngredientButton.setDefaultButton(false);
-            }
-            case EDIT_INGREDIENT_1 -> {
-                // exit form
-                cancelEditButton.setCancelButton(false);
-                // edit ingredient - first step
-                cancelEditIngredientButton.setCancelButton(true);
-                nextEditIngredientButton.setDefaultButton(true);
-                // edit preparation
-                cancelEditStepButton.setCancelButton(false);
-                doneEditStepButton.setDefaultButton(false);
-                // edit ingredient - second step
-                doneEditIngredientButton.setCancelButton(false);
-                backEditIngredientButton.setDefaultButton(false);
-            }
-            case EDIT_INGREDIENT_2 -> {
-                // exit form
-                cancelEditButton.setCancelButton(false);
-                // edit ingredient - first step
-                cancelEditIngredientButton.setCancelButton(false);
-                nextEditIngredientButton.setDefaultButton(false);
-                // edit preparation
-                cancelEditStepButton.setCancelButton(false);
-                doneEditStepButton.setDefaultButton(false);
-                // edit ingredient - second step
-                doneEditIngredientButton.setCancelButton(true);
-                backEditIngredientButton.setDefaultButton(true);
-            }
-            case EDIT_PREPARATION -> {
-                // exit form
-                cancelEditButton.setCancelButton(false);
-                // edit ingredient - first step
-                cancelEditIngredientButton.setCancelButton(false);
-                nextEditIngredientButton.setDefaultButton(false);
-                // edit preparation
-                cancelEditStepButton.setCancelButton(true);
-                doneEditStepButton.setDefaultButton(true);
-                // edit ingredient - second step
-                doneEditIngredientButton.setCancelButton(false);
-                backEditIngredientButton.setDefaultButton(false);
-            }
+    private void enterEditState(EditMode state) {
+        changeEditState(state,true);
+    }
+
+    private void leaveEditState(EditMode state) {
+        changeEditState(state, false);
+    }
+
+    private void changeEditState(EditMode state, boolean active) {
+        if (state == EditMode.NO_EDIT)
+            return;
+        editButtonMap.get(state).defaultButton.setDefaultButton(active);
+        editButtonMap.get(state).cancelButton.setCancelButton(active);
+    }
+
+    class EditButtonSet {
+        Button defaultButton;
+        Button cancelButton;
+
+        EditButtonSet(Button def, Button can) {
+            defaultButton = def;
+            cancelButton = can;
         }
+    }
+
+    Map<EditMode, EditButtonSet> editButtonMap = new HashMap<>();
+
+    private void editButtonsSetup() {
+        editButtonMap.put(EditMode.EDIT_NAME, new EditButtonSet(doneEditButton, cancelEditButton));
+        editButtonMap.put(EditMode.EDIT_DETAILS, new EditButtonSet(doneEditDetailsButton, cancelEditDetailsButton));
+        editButtonMap.put(EditMode.EDIT_INGREDIENT_1, new EditButtonSet(nextEditIngredientButton, cancelEditIngredientButton));
+        editButtonMap.put(EditMode.EDIT_INGREDIENT_2, new EditButtonSet(doneEditIngredientButton, backEditIngredientButton));
+        editButtonMap.put(EditMode.EDIT_STEPS, new EditButtonSet(doneEditStepButton, cancelEditStepButton));
     }
 }
