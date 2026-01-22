@@ -1,13 +1,16 @@
 package client.utils;
 
+import com.google.inject.Inject;
+
 import java.text.Normalizer;
 import java.util.Locale;
 
 public class SearchUtils {
 
-    private SearchUtils(){}
+    @Inject
+    public SearchUtils(){}
 
-    public static String normalizeForSearch(String s) {
+    public String normalizeForSearch(String s) {
         if (s == null ) return "";
 
         String lower = s.toLowerCase(Locale.ROOT).trim();
@@ -20,7 +23,7 @@ public class SearchUtils {
         return normalized.replaceAll("\\s+", " ");
     }
 
-    public static boolean containsNormalized(String searching, String found){
+    public boolean containsNormalized(String searching, String found){
         return normalizeForSearch(searching).contains(normalizeForSearch(found));
     }
 }

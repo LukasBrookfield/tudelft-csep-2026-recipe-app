@@ -100,6 +100,8 @@ public class RecipeOverviewCtrl {
 
     private RecipeNutrition lastNutrition = null;
 
+    private final SearchUtils searchUtils;
+
     // Root
 
     @FXML
@@ -317,7 +319,7 @@ public class RecipeOverviewCtrl {
     private final LanguageService languages;
 
     private final Tooltip nutritionTooltip = new Tooltip();
-    private final AmountParser amountParser = new AmountParser();
+    private final AmountParser amountParser;
 
     // created this because some parts on the code depend on the exact text these present
     private static final String FILTER_ALL = "All recipes";
@@ -509,15 +511,17 @@ public class RecipeOverviewCtrl {
                               MainCtrl mainCtrl, LanguageService languages,
                               IngredientScaling ingredientScaling,
                               ScaleFactorParser scaleFactorParser,
-                              QuantityFormatter servingsFormatter) {
+                              QuantityFormatter servingsFormatter, SearchUtils searchUtils, AmountParser amountParser) {
         this.server = server;
         this.recipeUtils = recipeUtils;
         this.user = user;
         this.mainCtrl = mainCtrl;
+        this.searchUtils = searchUtils;
         this.languages = languages;
         this.ingredientScaling = ingredientScaling;
         this.scaleFactorParser = scaleFactorParser;
         this.servingsFormatter = servingsFormatter;
+        this.amountParser = amountParser;
     }
 
     /**
@@ -936,7 +940,7 @@ public class RecipeOverviewCtrl {
                 filteredIngredientTypes.setPredicate(item -> {
                     if (newValue == null || newValue.isBlank()) return true;
 //                    return item.name.toLowerCase().contains(newValue.toLowerCase());
-                    return SearchUtils.containsNormalized(item.name, newValue);
+                    return searchUtils.containsNormalized(item.name, newValue);
                 });
 
                 editIngredientTypeBox.getSelectionModel().clearSelection();
@@ -1408,7 +1412,7 @@ public class RecipeOverviewCtrl {
 
         // spilt the query into words
 //        String[] words = query.toLowerCase().trim().split("\\s+");
-        String[] words = SearchUtils.normalizeForSearch(query).split("\\s+");
+        String[] words = searchUtils.normalizeForSearch(query).split("\\s+");
 
         searchPredicate = recipe -> mattchesAllWords(recipe, words);
         updateFilteredList();
@@ -1475,7 +1479,7 @@ public class RecipeOverviewCtrl {
             }
         }
 
-        return SearchUtils.normalizeForSearch(sb.toString());
+        return searchUtils.normalizeForSearch(sb.toString());
     }
 
 

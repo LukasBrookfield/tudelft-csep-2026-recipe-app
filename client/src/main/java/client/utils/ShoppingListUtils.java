@@ -27,17 +27,18 @@ public class ShoppingListUtils {
     private final UserConfig user;
     private final RecipeUtils recipeUtils;
 
-    private static final AmountParser amountParser = new AmountParser();
+    private final AmountParser amountParser;
 
     @Inject
     public ShoppingListUtils(IngredientScaling ingredientScaling,
                              LanguageService languages,
                              UserConfig user,
-                             RecipeUtils recipeUtils) {
+                             RecipeUtils recipeUtils, AmountParser amountParser) {
         this.ingredientScaling = ingredientScaling;
         this.languages = languages;
         this.user = user;
         this.recipeUtils = recipeUtils;
+        this.amountParser = amountParser;
     }
 
     /**

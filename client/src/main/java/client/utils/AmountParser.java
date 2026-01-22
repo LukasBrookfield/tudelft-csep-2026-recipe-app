@@ -1,6 +1,10 @@
 package client.utils;
 
+import com.google.inject.Inject;
+
 public class AmountParser {
+    @Inject
+    public AmountParser(){}
 
     public Double parseAmount(String raw){
         if (raw == null) return null;
