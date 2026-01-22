@@ -4,6 +4,7 @@ import client.utils.*;
 import com.google.inject.Inject;
 import commons.Ingredient;
 import commons.IngredientType;
+import commons.Recipe;
 import commons.ShoppingListItem;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
@@ -27,6 +28,8 @@ public class ShoppingListCtrl {
     private static final String UNIT_PLACEHOLDER = "__SELECT_UNIT__";
 
     private final ServerUtility server;
+
+    private final RecipeUtils recipeUtils;
 
     private final UserConfig user;
 
@@ -110,11 +113,13 @@ public class ShoppingListCtrl {
 
     @Inject
     public ShoppingListCtrl(ServerUtility server,
+                            RecipeUtils recipeUtils,
                             UserConfig user,
                             MainCtrl mainCtrl,
                             LanguageService languages,
                             ShoppingListUtils shoppingListUtils) {
         this.server = server;
+        this.recipeUtils = recipeUtils;
         this.user = user;
         this.mainCtrl = mainCtrl;
         this.languages = languages;
@@ -122,10 +127,12 @@ public class ShoppingListCtrl {
     }
 
     public ShoppingListCtrl(ServerUtility server,
+                            RecipeUtils recipeUtils,
                             UserConfig user,
                             MainCtrl mainCtrl,
                             ShoppingListUtils shoppingListUtils) {
-        this(server, user, mainCtrl, LanguageService.defaultService(), shoppingListUtils);
+        this(server, recipeUtils, user, mainCtrl,
+                LanguageService.defaultService(), shoppingListUtils);
     }
 
     private void setTooltip(Control c, String key) {
@@ -539,6 +546,7 @@ public class ShoppingListCtrl {
         ingredientType.name = ingredientType.name.trim();
         if (ingredientType.name.isEmpty()) {
             System.out.println("The ingredient type needs a name.");
+            recipeUtils.displayAlertWarning("ingredient.warning.empty.name", null);
             return;
         }
 

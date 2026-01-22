@@ -24,16 +24,19 @@ public class ShoppingListUtils {
     private final IngredientScaling ingredientScaling;
     private final LanguageService languages;
     private final UserConfig user;
+    private final RecipeUtils recipeUtils;
 
     private static final AmountParser amountParser = new AmountParser();
 
     @Inject
     public ShoppingListUtils(IngredientScaling ingredientScaling,
                              LanguageService languages,
-                             UserConfig user) {
+                             UserConfig user,
+                             RecipeUtils recipeUtils) {
         this.ingredientScaling = ingredientScaling;
         this.languages = languages;
         this.user = user;
+        this.recipeUtils = recipeUtils;
     }
 
     /**
@@ -72,28 +75,28 @@ public class ShoppingListUtils {
 
         if ("__SELECT_UNIT__".equals(unit)) {
             System.out.println("Unit is required.");
+            recipeUtils.displayAlertWarning("recipe.warning.ing.unit", null);
             return false;
         }
 
         if (!unit.equals("TO_TASTE")
                 && amount.isEmpty()) {
             System.out.println("This unit needs an amount.");
+            recipeUtils.displayAlertWarning("recipe.warning.ing.required", null);
             return false;
         }
 
         if (unit.equals("TO_TASTE")
                 && !amount.isEmpty()) {
             System.out.println("This unit cannot have an amount.");
+            recipeUtils.displayAlertWarning("recipe.warning.ing.TO_TASTE", null);
             return false;
         }
 
-        if(!unit.equals("TO_TASTE")){
-            try{
-                amountParser.parseAmount(amount);
-            }catch(Exception e){
-                System.out.println("Invalid amount");
-                return false;
-            }
+        if (!unit.equals("TO_TASTE") && amountParser.parseAmount(amount) == null){
+            System.out.println("Invalid amount");
+            recipeUtils.displayAlertWarning("recipe.warning.ing.nonNumeric", null);
+            return false;
         }
 
         return true;
