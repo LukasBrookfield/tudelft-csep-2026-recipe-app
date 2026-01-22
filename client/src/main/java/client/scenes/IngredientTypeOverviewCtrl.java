@@ -17,7 +17,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.collections.ObservableList;
 import javafx.util.StringConverter;
 
 import java.text.MessageFormat;
@@ -656,6 +655,9 @@ public class IngredientTypeOverviewCtrl {
         );
 
         onRefresh();
+
+        editButtonsSetup();
+        enterEditState(EditMode.NO_EDIT);
     }
 
     /**
@@ -756,6 +758,8 @@ public class IngredientTypeOverviewCtrl {
             allIngredientTypes.removeIf(it -> it.id == ingredientType.id);
             onRefresh();
         }
+
+        enterEditState(EditMode.NO_EDIT);
     }
 
     /**
@@ -786,6 +790,9 @@ public class IngredientTypeOverviewCtrl {
         editDetailsButton.requestFocus();
 
         onRefresh();
+
+        leaveEditState(EditMode.NO_EDIT);
+        enterEditState(EditMode.EDIT_CATEGORY);
     }
 
     // Top right
@@ -812,6 +819,9 @@ public class IngredientTypeOverviewCtrl {
     @FXML
     private void onEditIngredientTypeButton() {
         changeViewEditMode(true);
+
+        leaveEditState(EditMode.NO_EDIT);
+        enterEditState(EditMode.EDIT_CATEGORY);
     }
 
     /**
@@ -831,6 +841,9 @@ public class IngredientTypeOverviewCtrl {
         onRefresh();
         changeViewEditMode(false);
         newIngredientType = false;
+
+        leaveEditState(EditMode.EDIT_CATEGORY);
+        enterEditState(EditMode.NO_EDIT);
     }
 
     /**
@@ -901,6 +914,9 @@ public class IngredientTypeOverviewCtrl {
         // apply the search filter again, because the ingredient might not match
         // anymore after a name change
         applySearchFilter(ingredientTypeSearchField.getText());
+
+        leaveEditState(EditMode.EDIT_CATEGORY);
+        enterEditState(EditMode.NO_EDIT);
     }
 
     // Edit details section
@@ -918,6 +934,9 @@ public class IngredientTypeOverviewCtrl {
         } else {
             editNameField.setText(nameLabel.getText().equals("-") ? "" : nameLabel.getText());
         }
+
+        leaveEditState(EditMode.EDIT_CATEGORY);
+        enterEditState(EditMode.EDIT_DETAILS);
     }
 
     /**
@@ -930,6 +949,9 @@ public class IngredientTypeOverviewCtrl {
         }
 
         changeDetailsViewEditMode(false);
+
+        leaveEditState(EditMode.EDIT_DETAILS);
+        enterEditState(EditMode.EDIT_CATEGORY);
     }
 
     /**
@@ -986,6 +1008,9 @@ public class IngredientTypeOverviewCtrl {
 
         nameLabel.setText(inputName.trim());
         changeDetailsViewEditMode(false);
+
+        leaveEditState(EditMode.EDIT_DETAILS);
+        enterEditState(EditMode.EDIT_CATEGORY);
     }
 
     /**
@@ -994,6 +1019,9 @@ public class IngredientTypeOverviewCtrl {
     @FXML
     private void onEditDensityButton() {
         changeDensityViewEditMode(true);
+
+        leaveEditState(EditMode.EDIT_CATEGORY);
+        enterEditState(EditMode.EDIT_DENSITY);
     }
 
     /**
@@ -1002,6 +1030,9 @@ public class IngredientTypeOverviewCtrl {
     @FXML
     private void onCancelEditDensityButton() {
         changeDensityViewEditMode(false);
+
+        leaveEditState(EditMode.EDIT_DENSITY);
+        enterEditState(EditMode.EDIT_CATEGORY);
     }
 
     /**
@@ -1046,6 +1077,9 @@ public class IngredientTypeOverviewCtrl {
         }
         densityLabel.setText(String.valueOf(density));
         changeDensityViewEditMode(false);
+
+        leaveEditState(EditMode.EDIT_DENSITY);
+        enterEditState(EditMode.EDIT_CATEGORY);
     }
 
     // Edit nutrition section
@@ -1064,6 +1098,9 @@ public class IngredientTypeOverviewCtrl {
                 .substring(0, fatLabel.getText().length() - 1));
         carbsTextField.setText(carbsLabel.getText()
                 .substring(0, carbsLabel.getText().length() - 1));
+
+        leaveEditState(EditMode.EDIT_CATEGORY);
+        enterEditState(EditMode.EDIT_NUTRITION);
     }
 
     /**
@@ -1072,6 +1109,9 @@ public class IngredientTypeOverviewCtrl {
     @FXML
     private void onCancelEditNutritionButton() {
         changeNutritionViewEditMode(false);
+
+        leaveEditState(EditMode.EDIT_NUTRITION);
+        enterEditState(EditMode.EDIT_CATEGORY);
     }
 
     /**
@@ -1126,5 +1166,56 @@ public class IngredientTypeOverviewCtrl {
         carbsLabel.setText(cText.isEmpty() ? "-" : cText + "g");
         kcalLabel.setText("-");
         changeNutritionViewEditMode(false);
+
+        leaveEditState(EditMode.EDIT_NUTRITION);
+        enterEditState(EditMode.EDIT_CATEGORY);
+    }
+
+
+
+    // ----------------------------------------------------------------------------------
+    // -- enums and classes to change the edit buttons when the edit state changes
+    // possible ingredient edit states
+    private enum EditMode {
+        NO_EDIT,
+        EDIT_CATEGORY,
+        EDIT_DETAILS,
+        EDIT_DENSITY,
+        EDIT_NUTRITION,
+    }
+
+    private void enterEditState(IngredientTypeOverviewCtrl.EditMode state) {
+        changeEditState(state,true);
+    }
+
+    private void leaveEditState(IngredientTypeOverviewCtrl.EditMode state) {
+        changeEditState(state, false);
+    }
+
+    private void changeEditState(IngredientTypeOverviewCtrl.EditMode state, boolean active) {
+        if (state == EditMode.NO_EDIT)
+            return;
+        editButtonMap.get(state).defaultButton.setDefaultButton(active);
+        editButtonMap.get(state).cancelButton.setCancelButton(active);
+    }
+
+    class EditButtonSet {
+        Button defaultButton;
+        Button cancelButton;
+
+        EditButtonSet(Button def, Button can) {
+            defaultButton = def;
+            cancelButton = can;
+        }
+    }
+
+    Map<IngredientTypeOverviewCtrl.EditMode, IngredientTypeOverviewCtrl.EditButtonSet> editButtonMap = new HashMap<>();
+
+    private void editButtonsSetup() {
+        editButtonMap.put(EditMode.NO_EDIT, new EditButtonSet(null, null));
+        editButtonMap.put(EditMode.EDIT_CATEGORY, new EditButtonSet(doneEditButton, cancelEditButton));
+        editButtonMap.put(EditMode.EDIT_DETAILS, new EditButtonSet(doneEditDetailsButton, cancelEditDetailsButton));
+        editButtonMap.put(EditMode.EDIT_DENSITY, new EditButtonSet(doneEditDensityButton, cancelEditDensityButton));
+        editButtonMap.put(EditMode.EDIT_NUTRITION, new EditButtonSet(doneEditNutritionButton, cancelEditNutritionButton));
     }
 }
