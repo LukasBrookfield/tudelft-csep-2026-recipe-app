@@ -416,7 +416,7 @@ public class IngredientTypeOverviewCtrl {
 
         for (String word : words) {
             if (word.isBlank()) continue;
-            if (searchableName.contains(word)) return false;
+            if (!searchableName.contains(word)) return false;
 //            if (!ingredientType.name.toLowerCase().contains(word)) {
 //                return false;
 //            }
