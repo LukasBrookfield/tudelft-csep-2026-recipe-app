@@ -385,6 +385,7 @@ public class RecipeOverviewCtrl {
             }
         });
 
+
         sceneBox.getItems().setAll(
                 b.getString("home.btn.home"),
                 b.getString("home.btn.recipeOverview"),
@@ -854,7 +855,7 @@ public class RecipeOverviewCtrl {
 
         applyTranslations();
 
-        editUnitBox.getItems().addAll(UNIT_PLACEHOLDER, "G", "KG", "ML", "L", "TBSP", "TSP", "PINCH",
+        editUnitBox.getItems().addAll(UNIT_PLACEHOLDER,"UNIT", "G", "KG", "ML", "L", "TBSP", "TSP", "PINCH",
                 "HANDFUL", "TO_TASTE");
         editUnitBox.getSelectionModel().select(0);
 
