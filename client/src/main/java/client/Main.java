@@ -7,6 +7,8 @@ import static com.google.inject.Guice.createInjector;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 import client.scenes.*;
@@ -35,6 +37,9 @@ public class Main extends Application {
                 try {
                     new File(path).getCanonicalPath();
                 } catch (IOException | NullPointerException e) {
+                    break;
+                }
+                if (!Files.isDirectory(Path.of(path))) {
                     break;
                 }
                 UserStorage storage = INJECTOR.getInstance(UserStorage.class);
