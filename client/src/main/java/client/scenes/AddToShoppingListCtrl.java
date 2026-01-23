@@ -20,6 +20,8 @@ import javafx.util.StringConverter;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.ResourceBundle;
 
 
@@ -311,6 +313,9 @@ public class AddToShoppingListCtrl {
             String n2 = obj2.name == null ? "" : obj2.name.toLowerCase();
             return n1.compareTo(n2);
         });
+
+        editButtonsSetup();
+        enterEditState(EditMode.NO_EDIT);
     }
 
     /**
@@ -348,6 +353,9 @@ public class AddToShoppingListCtrl {
 
         //if we create a new ingredient we go to edit mode
         onEditIngredientButton();
+
+        leaveEditState(EditMode.NO_EDIT);
+        enterEditState(EditMode.EDIT_NAME);
     }
 
     /**
@@ -377,6 +385,9 @@ public class AddToShoppingListCtrl {
         changeIngredientViewEditMode(true);
 
         Ingredient ingredient = ingredientListView.getSelectionModel().getSelectedItem().getIngredient();
+
+        leaveEditState(EditMode.NO_EDIT);
+        enterEditState(EditMode.EDIT_NAME);
     }
 
     /**
@@ -391,6 +402,9 @@ public class AddToShoppingListCtrl {
         changeIngredientViewEditMode(false);
         editIngredientTypeBox.hide();
         onRefresh();
+
+        leaveEditState(EditMode.EDIT_NAME);
+        enterEditState(EditMode.NO_EDIT);
     }
 
     /**
@@ -424,6 +438,9 @@ public class AddToShoppingListCtrl {
         changeIngredientViewEditMode(false);
         editIngredientTypeBox.hide();
         onRefresh();
+
+        leaveEditState(EditMode.EDIT_AMOUNT);
+        enterEditState(EditMode.NO_EDIT);
     }
 
     /**
@@ -453,6 +470,9 @@ public class AddToShoppingListCtrl {
         if (editUnitBox.getValue() == null || editUnitBox.getValue().isEmpty()) {
             editUnitBox.getSelectionModel().select(0);
         }
+
+        leaveEditState(EditMode.EDIT_NAME);
+        enterEditState(EditMode.EDIT_AMOUNT);
     }
 
     /**
@@ -463,6 +483,9 @@ public class AddToShoppingListCtrl {
     @FXML
     private void onBackEditIngredientButton() {
         changeIngredientTypeViewEditMode(false);
+
+        leaveEditState(EditMode.EDIT_AMOUNT);
+        enterEditState(EditMode.EDIT_NAME);
     }
 
     /**
@@ -473,6 +496,7 @@ public class AddToShoppingListCtrl {
     private void onExitButton(){
         ingredientListView.getItems().clear();
         controller.showScene(1);
+        leaveEditState(EditMode.NO_EDIT);
     }
 
     /**
@@ -483,5 +507,48 @@ public class AddToShoppingListCtrl {
     private void onConfirmationButton(){
         shoppingListUtils.confirmAddingIngredients(ingredientListView.getItems(), recipe);
         onExitButton();
+        leaveEditState(EditMode.NO_EDIT);
+    }
+
+
+
+    // ----------------------------------------------------------------------------------
+    // -- enums and classes to change the edit buttons when the edit state changes
+    // possible ingredient edit states
+    private enum EditMode {
+        NO_EDIT,
+        EDIT_NAME,
+        EDIT_AMOUNT,
+    }
+
+    private void enterEditState(AddToShoppingListCtrl.EditMode state) {
+        changeEditState(state,true);
+    }
+
+    private void leaveEditState(AddToShoppingListCtrl.EditMode state) {
+        changeEditState(state, false);
+    }
+
+    private void changeEditState(AddToShoppingListCtrl.EditMode state, boolean active) {
+        editButtonMap.get(state).defaultButton.setDefaultButton(active);
+        editButtonMap.get(state).cancelButton.setCancelButton(active);
+    }
+
+    class EditButtonSet {
+        Button defaultButton;
+        Button cancelButton;
+
+        EditButtonSet(Button def, Button can) {
+            defaultButton = def;
+            cancelButton = can;
+        }
+    }
+
+    Map<AddToShoppingListCtrl.EditMode, AddToShoppingListCtrl.EditButtonSet> editButtonMap = new HashMap<>();
+
+    private void editButtonsSetup() {
+        editButtonMap.put(AddToShoppingListCtrl.EditMode.NO_EDIT, new AddToShoppingListCtrl.EditButtonSet(confirmation, exitButton));
+        editButtonMap.put(AddToShoppingListCtrl.EditMode.EDIT_NAME, new AddToShoppingListCtrl.EditButtonSet(nextButton, cancelEditIngredientButton));
+        editButtonMap.put(AddToShoppingListCtrl.EditMode.EDIT_AMOUNT, new AddToShoppingListCtrl.EditButtonSet(doneEditIngredientButton, backEditIngredientButton));
     }
 }
