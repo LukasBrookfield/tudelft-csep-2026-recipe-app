@@ -175,6 +175,9 @@ public class RecipeOverviewCtrlTest {
         editIngredientTypeBox = lookup(scene, "#editIngredientTypeBox");
         languageBox = lookup(scene, "#languageBox");
         scaleFactorField = lookup(scene, "#scaleFactorField");
+
+        user.setLanguageTag("en");
+        languageBox.getSelectionModel().select(0);
     }
 
     private <T> T lookup(Scene scene, String id) {
@@ -436,6 +439,7 @@ public class RecipeOverviewCtrlTest {
 
     @Test
     void sortRecipesTest(FxRobot robot) {
+        System.out.println(user.getLanguageTag());
         addRecipe(robot, "bbb", 3);
         robot.clickOn(doneEditButton);
         addRecipe(robot, "bbz", 2);
