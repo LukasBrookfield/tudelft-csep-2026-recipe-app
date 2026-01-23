@@ -2174,12 +2174,12 @@ public class RecipeOverviewCtrl {
         }
 
         Double parsedAmount = amountParser.parseAmount(amountText);
-        if (parsedAmount == null) {
+        if (!"TO_TASTE".equals(selectedUnit) && parsedAmount == null) {
             recipeUtils.displayAlertWarning("recipe.warning.ing.nonNumeric", textFields);
             System.out.println("Enter a valid number.");
             return;
         }
-        if (parsedAmount <= 0) {
+        if (!"TO_TASTE".equals(selectedUnit) && parsedAmount <= 0) {
             recipeUtils.displayAlertWarning("recipe.warning.ing.negative", textFields);
             return;
         }
