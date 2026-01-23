@@ -255,7 +255,7 @@ public class ShoppingListCtrl {
         } else {
             editIngredientTypeBox.hide();
         }
-        editIngredientTypeBox.getSelectionModel().clearSelection();
+        //editIngredientTypeBox.getSelectionModel().clearSelection();
         editIngredientTypeContainer.setVisible(!value);
         editIngredientBox.setVisible(value);
         editIngredientTypeContainer.setManaged(value);
@@ -301,7 +301,7 @@ public class ShoppingListCtrl {
 
         changeIngredientViewEditMode(false);
 
-        editUnitBox.getItems().addAll(UNIT_PLACEHOLDER, "G", "KG", "ML", "L", "TBSP", "TSP", "PINCH",
+        editUnitBox.getItems().addAll(UNIT_PLACEHOLDER,"UNIT", "G", "KG", "ML", "L", "TBSP", "TSP", "PINCH",
                 "HANDFUL", "TO_TASTE");
 
         ingredientListView.getSelectionModel().selectedItemProperty().addListener(
