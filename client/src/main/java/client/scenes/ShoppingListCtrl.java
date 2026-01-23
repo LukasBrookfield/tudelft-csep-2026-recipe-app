@@ -491,6 +491,7 @@ public class ShoppingListCtrl {
         }
 
         changeIngredientViewEditMode(1);
+        editIngredientTypeBox.requestFocus();
 
         // activate buttons
         activateButtons(EditMode.EDIT_1);
@@ -549,7 +550,6 @@ public class ShoppingListCtrl {
         }
 
         changeIngredientViewEditMode(0);
-        editIngredientTypeBox.hide();
 
         user.setShoppingList(shoppingListUtils.getShoppingListItems(ingredientListView.getItems()));
         user.saveUser();
