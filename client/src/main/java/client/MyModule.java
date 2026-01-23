@@ -25,7 +25,7 @@ public class MyModule implements Module {
         binder.bind(Client.class).toInstance(ClientBuilder.newClient(new ClientConfig()));
         binder.bind(ServerUtility.class).toInstance(new ServerUtils(ClientBuilder.newClient(new ClientConfig())));
         binder.bind(UserStorage.class).toInstance(new JsonUserStorage(
-                "UserConfig.json", new ObjectMapper()));
+                JsonUserStorage.FILE_NAME, new ObjectMapper()));
         binder.bind(UserConfig.class).in(Scopes.SINGLETON);
         binder.bind(ShoppingListCtrl.class);
         binder.bind(RecipeUtils.class).in(Scopes.SINGLETON);
