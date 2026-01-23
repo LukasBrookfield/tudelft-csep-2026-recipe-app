@@ -1,15 +1,20 @@
 package client;
 
+import client.utils.*;
+
 import static com.google.inject.Guice.createInjector;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
 
 import client.scenes.*;
-import client.utils.ServerUtility;
+import client.utils.JsonUserStorage;
 import com.google.inject.Injector;
 
-import client.utils.ServerUtils;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
@@ -19,11 +24,31 @@ public class Main extends Application {
     private static final MyFXML FXML = INJECTOR.getInstance(MyFXML.class);
 
     public static void main(String[] args) throws URISyntaxException, IOException {
-        launch();
+        launch(args);
     }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        List<String> params = getParameters().getUnnamed();
+        System.out.println("Command line parameters:" + params);
+        for (int i = 0; i < params.size(); i++) {
+            if (params.get(i).equals("-cfg") && i + 1 < params.size()) {
+                String path = getParameters().getUnnamed().get(i + 1);
+                try {
+                    new File(path).getCanonicalPath();
+                } catch (IOException | NullPointerException e) {
+                    break;
+                }
+                if (!Files.isDirectory(Path.of(path))) {
+                    break;
+                }
+                UserStorage storage = INJECTOR.getInstance(UserStorage.class);
+                if (storage.getClass() == JsonUserStorage.class) {
+                    ((JsonUserStorage) storage).setFilePath(path + JsonUserStorage.FILE_NAME);
+                }
+                break;
+            }
+        }
 
         var serverUtils = INJECTOR.getInstance(ServerUtility.class);
         if (!serverUtils.isServerAvailable()) {

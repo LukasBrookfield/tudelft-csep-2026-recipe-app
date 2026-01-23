@@ -1,6 +1,7 @@
 package commons;
 
 public enum Unit {
+    UNIT,     // unit
     G,        // grams
     KG,       // kilograms
     L,        // liters
