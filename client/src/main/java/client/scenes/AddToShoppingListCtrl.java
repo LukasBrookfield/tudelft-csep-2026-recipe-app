@@ -200,29 +200,11 @@ public class AddToShoppingListCtrl {
      * Changes the scene between viewing and editing the ingredients
      * @param value false for viewing mode, true for editing mode
      */
-    private void changeIngredientViewEditMode(boolean value) {
-        addRemoveEditHBox.setVisible(!value);
-        addRemoveEditHBox.setMouseTransparent(value);
-        editPane.setVisible(value);
-        if (value) changeIngredientTypeViewEditMode(false);
-        ingredientListView.setDisable(value);
-        exitButton.getParent().setDisable(value);
-    }
-
-    /**
-     * Changes the scene between editing ingredient and ingredient type
-     * @param value false for type mode, true for ingredient mode
-     */
-    private void changeIngredientTypeViewEditMode(boolean value) {
-        if (!value) {
-            editIngredientTypeBox.show();
-        } else {
-            editIngredientTypeBox.hide();
-        }
-        editIngredientTypeBox.getSelectionModel().clearSelection();
-        editIngredientTypeContainer.setVisible(!value);
-        editIngredientBox.setVisible(value);
-        editIngredientTypeContainer.setManaged(value);
+    private void changeIngredientViewEditMode(int value) {
+        editIngredientTypeBox.setVisible(value == 1);
+        removeIngredientButton.getParent().setVisible(value == 0);
+        cancelEditIngredientButton.getParent().setVisible(value == 1);
+        editIngredientAmountField.getParent().setVisible(value == 2);
     }
 
     /**
@@ -263,7 +245,7 @@ public class AddToShoppingListCtrl {
             });
         });
 
-        changeIngredientViewEditMode(false);
+        changeIngredientViewEditMode(0);
         editUnitBox.getItems().addAll(UNIT_PLACEHOLDER, "G", "KG", "ML", "L", "TBSP", "TSP", "PINCH",
                 "HANDFUL", "TO_TASTE");
 
@@ -382,7 +364,7 @@ public class AddToShoppingListCtrl {
             return;
         }
 
-        changeIngredientViewEditMode(true);
+        changeIngredientViewEditMode(1);
 
         Ingredient ingredient = ingredientListView.getSelectionModel().getSelectedItem().getIngredient();
 
@@ -399,7 +381,7 @@ public class AddToShoppingListCtrl {
             onRemoveIngredientButton();
         }
         newIngredientType = false;
-        changeIngredientViewEditMode(false);
+        changeIngredientViewEditMode(0);
         editIngredientTypeBox.hide();
         onRefresh();
 
@@ -435,7 +417,7 @@ public class AddToShoppingListCtrl {
             allIngredientTypes.add(ingredient.ingredientType);
         }
 
-        changeIngredientViewEditMode(false);
+        changeIngredientViewEditMode(0);
         editIngredientTypeBox.hide();
         onRefresh();
 
@@ -457,7 +439,7 @@ public class AddToShoppingListCtrl {
             return;
         }
 
-        changeIngredientTypeViewEditMode(true);
+        changeIngredientViewEditMode(2);
 
         Ingredient ingredient = ingredientListView.getSelectionModel()
                 .getSelectedItem().getIngredient();
@@ -482,7 +464,7 @@ public class AddToShoppingListCtrl {
      */
     @FXML
     private void onBackEditIngredientButton() {
-        changeIngredientTypeViewEditMode(false);
+        changeIngredientViewEditMode(0);
 
         leaveEditState(EditMode.EDIT_AMOUNT);
         enterEditState(EditMode.EDIT_NAME);
