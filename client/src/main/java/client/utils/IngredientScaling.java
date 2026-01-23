@@ -28,6 +28,7 @@ public class IngredientScaling {
         }
 
         double f = (scaleFactor < 0) ? 1.0 : scaleFactor;
+        if (ing.amount == null) return ing.toString(b);
         double scaled = ing.amount * f;
         Unit unit = ing.unit;
 
@@ -61,7 +62,7 @@ public class IngredientScaling {
             // prefer fractions for spoons
             case TBSP -> spoonText("tbsp", scaled, name, b);
             case TSP -> spoonText("tsp", scaled, name, b);
-
+            case UNIT -> num.formatInteger(scaled) + " " + name;
             default -> name;
         };
     }
