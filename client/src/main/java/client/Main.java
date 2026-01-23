@@ -19,7 +19,7 @@ public class Main extends Application {
     private static final MyFXML FXML = INJECTOR.getInstance(MyFXML.class);
 
     public static void main(String[] args) throws URISyntaxException, IOException {
-        launch();
+        launch();g
     }
 
     @Override
