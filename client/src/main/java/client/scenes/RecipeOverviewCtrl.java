@@ -1637,6 +1637,7 @@ public class RecipeOverviewCtrl {
         doc.add(new Paragraph(languages.bundle().getString("recipeHeader") + ": " + title, titleFont));
         doc.add(new Paragraph(" "));
         doc.add(new Paragraph(languages.bundle().getString("servingsHeader") + ": " + servings));
+        doc.add(new Paragraph(" "));
         doc.add(new Paragraph(languages.bundle().getString("ingredientsHeader") + ":", sectinFont));
         for (Ingredient i : ingredients) {
             doc.add(new Paragraph(" • " + ingredientScaling.format(i, scaleFactor, languages.bundle()), bodyFont));

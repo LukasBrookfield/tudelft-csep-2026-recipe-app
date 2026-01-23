@@ -47,6 +47,7 @@ public class IngredientTypeOverviewCtrl {
     private int usedInRecipesCount = 0;
     private Long subscribedIngredientTypeId = null;
 
+    private Category selectedCategory = null;
 
     @FXML
     private AnchorPane rootPane;
@@ -437,7 +438,6 @@ public class IngredientTypeOverviewCtrl {
         cancelEditButton.getParent().setVisible(value);
         editDetailsButton.getParent().getParent().getParent().setVisible(value);
 
-        categoryBox.setVisible(value);
         editDensityButton.setVisible(value);
         editNutritionButton.getParent().getParent().getParent().setVisible(value);
     }
@@ -455,6 +455,7 @@ public class IngredientTypeOverviewCtrl {
         editDetailsButton.getParent().setMouseTransparent(value);
 
         editNameField.getParent().setVisible(value);
+        categoryBox.setVisible(value);
 
         cancelEditButton.setDisable(value);
         doneEditButton.setDisable(value);
@@ -514,10 +515,13 @@ public class IngredientTypeOverviewCtrl {
 
         ingredientTypeTitleLabel.setText(ingredientType.name);
         nameLabel.setText(ingredientType.name);
-        categoryBox.getSelectionModel().select(ingredientType.getCategory());
-        if(ingredientType.getCategory() != null){
+
+        selectedCategory = ingredientType.getCategory();
+        categoryBox.getSelectionModel().select(selectedCategory);
+
+        if (ingredientType.getCategory() != null) {
             categoryLabel.setText(categoryUtils.format(ingredientType.getCategory()));
-        }else{
+        } else {
             categoryLabel.setText("-");
         }
         if (ingredientType.density != null) {
@@ -941,6 +945,8 @@ public class IngredientTypeOverviewCtrl {
             editNameField.setText(nameLabel.getText().equals("-") ? "" : nameLabel.getText());
         }
 
+        categoryBox.getSelectionModel().select(selectedCategory);
+
         leaveEditState(EditMode.EDIT_CATEGORY);
         enterEditState(EditMode.EDIT_DETAILS);
     }
@@ -955,6 +961,7 @@ public class IngredientTypeOverviewCtrl {
         }
 
         changeDetailsViewEditMode(false);
+        categoryLabel.setText(categoryUtils.format(selectedCategory));
 
         leaveEditState(EditMode.EDIT_DETAILS);
         enterEditState(EditMode.EDIT_CATEGORY);
@@ -1013,6 +1020,8 @@ public class IngredientTypeOverviewCtrl {
         }
 
         nameLabel.setText(inputName.trim());
+        selectedCategory = categoryBox.getSelectionModel().getSelectedItem();
+        categoryLabel.setText(categoryUtils.format(selectedCategory));
         changeDetailsViewEditMode(false);
 
         leaveEditState(EditMode.EDIT_DETAILS);
