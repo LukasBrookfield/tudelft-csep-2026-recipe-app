@@ -10,6 +10,10 @@ public class ScaleFactorParser {
         String s = raw.trim();
         if (s.isEmpty()) return 1.0;
 
+        if ("Infinity".equals(s)) {
+            return 1.0;
+        }
+
         // if someone writes "x" too
         if (s.endsWith("x") || s.endsWith("X") || s.endsWith("×")) {
             s = s.substring(0, s.length() - 1).trim();
@@ -35,6 +39,9 @@ public class ScaleFactorParser {
             try {
                 double num = Double.parseDouble(parts[0].trim());
                 double denom = Double.parseDouble(parts[1].trim());
+                if (denom == 0) {
+                    return 1.0;
+                }
                 double v = num / denom;
                 return v > 0 ? v : 1.0;
             } catch (NumberFormatException e) {

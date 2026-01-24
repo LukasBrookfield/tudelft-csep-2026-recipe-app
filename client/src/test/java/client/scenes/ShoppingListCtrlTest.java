@@ -120,9 +120,7 @@ public class ShoppingListCtrlTest {
     void testAfterAddingItemButton(FxRobot robot) {
         robot.clickOn(addIngredientButton);
 
-        assertFalse(addIngredientButton.isVisible());
-        assertFalse(removeIngredientButton.isVisible());
-        assertFalse(editIngredientButton.isVisible());
+        assertFalse(addIngredientButton.getParent().isVisible());
     }
 
     @Test

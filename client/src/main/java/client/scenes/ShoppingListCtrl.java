@@ -233,32 +233,11 @@ public class ShoppingListCtrl {
      * Changes the scene between viewing and editing the ingredients
      * @param value false for viewing mode, true for editing mode
      */
-    private void changeIngredientViewEditMode(boolean value) {
-        removeIngredientButton.setVisible(!value);
-        addIngredientButton.setVisible(!value);
-        editIngredientButton.setVisible(!value);
-        editPane.setVisible(value);
-        removeIngredientButton.getParent().setMouseTransparent(value);
-        if (value) changeIngredientTypeViewEditMode(false);
-        ingredientListView.setDisable(value);
-        sortButton.setDisable(value);
-        sceneBox.getParent().setDisable(value);
-    }
-
-    /**
-     * Changes the scene between editing ingredient and ingredient type
-     * @param value false for type mode, true for ingredient mode
-     */
-    private void changeIngredientTypeViewEditMode(boolean value) {
-        if (!value) {
-            editIngredientTypeBox.show();
-        } else {
-            editIngredientTypeBox.hide();
-        }
-        //editIngredientTypeBox.getSelectionModel().clearSelection();
-        editIngredientTypeContainer.setVisible(!value);
-        editIngredientBox.setVisible(value);
-        editIngredientTypeContainer.setManaged(value);
+    private void changeIngredientViewEditMode(int value) {
+        editIngredientTypeBox.setVisible(value == 1);
+        removeIngredientButton.getParent().setVisible(value == 0);
+        cancelEditIngredientButton.getParent().setVisible(value == 1);
+        editIngredientAmountField.getParent().setVisible(value == 2);
     }
 
     /**
@@ -299,7 +278,7 @@ public class ShoppingListCtrl {
             });
         });
 
-        changeIngredientViewEditMode(false);
+        changeIngredientViewEditMode(0);
 
         editUnitBox.getItems().addAll(UNIT_PLACEHOLDER,"UNIT", "G", "KG", "ML", "L", "TBSP", "TSP", "PINCH",
                 "HANDFUL", "TO_TASTE");
@@ -511,7 +490,8 @@ public class ShoppingListCtrl {
             editIngredientTypeBox.setValue(null);
         }
 
-        changeIngredientViewEditMode(true);
+        changeIngredientViewEditMode(1);
+        editIngredientTypeBox.requestFocus();
 
         // activate buttons
         activateButtons(EditMode.EDIT_1);
@@ -526,7 +506,7 @@ public class ShoppingListCtrl {
             onRemoveIngredientButton();
         }
         newIngredientType = false;
-        changeIngredientViewEditMode(false);
+        changeIngredientViewEditMode(0);
         editIngredientTypeBox.hide();
         onRefresh();
 
@@ -569,8 +549,7 @@ public class ShoppingListCtrl {
             allIngredientTypes.add(ingredient.ingredientType);
         }
 
-        changeIngredientViewEditMode(false);
-        editIngredientTypeBox.hide();
+        changeIngredientViewEditMode(0);
 
         user.setShoppingList(shoppingListUtils.getShoppingListItems(ingredientListView.getItems()));
         user.saveUser();
@@ -596,7 +575,7 @@ public class ShoppingListCtrl {
             return;
         }
 
-        changeIngredientTypeViewEditMode(true);
+        changeIngredientViewEditMode(2);
         Ingredient ingredient;
         ShoppingListEntry shoppingListEntry = ingredientListView.getSelectionModel().getSelectedItem();
         if(shoppingListEntry.getClass().equals(ShoppingListItem.class)) {
@@ -626,7 +605,7 @@ public class ShoppingListCtrl {
      */
     @FXML
     private void onBackEditIngredientButton() {
-        changeIngredientTypeViewEditMode(false);
+        changeIngredientViewEditMode(1);
 
         // change button behaviour
         activateButtons(EditMode.EDIT_1);
