@@ -24,8 +24,6 @@ public class User {
         this.favouriteRecipes = favouriteRecipes;
         this.shoppingList = shoppingList;
         this.selectedLanguages = selectedLanguages;
-
-        this.languageTag = "en";    // default language - english
     }
 
     /**
@@ -35,7 +33,6 @@ public class User {
         this.favouriteRecipes = new ArrayList<>();
         this.shoppingList = new ArrayList<>();
         this.selectedLanguages = new ArrayList<>(List.of("en", "nl", "pt"));
-        this.languageTag = "en";
     }
 
     public List<Long> getFavouriteRecipes() {

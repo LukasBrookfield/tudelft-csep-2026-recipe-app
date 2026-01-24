@@ -1638,6 +1638,7 @@ public class RecipeOverviewCtrl {
         doc.add(new Paragraph(languages.bundle().getString("recipeHeader") + ": " + title, titleFont));
         doc.add(new Paragraph(" "));
         doc.add(new Paragraph(languages.bundle().getString("servingsHeader") + ": " + servings));
+        doc.add(new Paragraph(" "));
         doc.add(new Paragraph(languages.bundle().getString("ingredientsHeader") + ":", sectinFont));
         for (Ingredient i : ingredients) {
             doc.add(new Paragraph(" • " + ingredientScaling.format(i, scaleFactor, languages.bundle()), bodyFont));
@@ -2175,12 +2176,12 @@ public class RecipeOverviewCtrl {
         }
 
         Double parsedAmount = amountParser.parseAmount(amountText);
-        if (parsedAmount == null) {
+        if (!"TO_TASTE".equals(selectedUnit) && parsedAmount == null) {
             recipeUtils.displayAlertWarning("recipe.warning.ing.nonNumeric", textFields);
             System.out.println("Enter a valid number.");
             return;
         }
-        if (parsedAmount <= 0) {
+        if (!"TO_TASTE".equals(selectedUnit) && parsedAmount <= 0) {
             recipeUtils.displayAlertWarning("recipe.warning.ing.negative", textFields);
             return;
         }
